@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="auto_backup_options">
+    <item>täglich</item>
+    <item>wöchentlich</item>
+    <item>monatlich</item>
+    <item>aus</item>
+  </string-array>
+  <string-array name="pin_lock_auto_options">
+    <item>Sofort</item>
+    <item>1 Minute</item>
+    <item>5 Minuten</item>
+    <item>15 Minuten</item>
+    <item>1 Stunde</item>
+    <item>24 Stunden</item>
+  </string-array>
+  <string-array name="wifi_backup_options">
+    <item>Nur WLAN verwenden</item>
+    <item>WLAN oder Mobilfunk</item>
+  </string-array>
+  <string name="app_name">Criptext</string>
+  <string name="tour_title1">Willkommen bei Criptext!</string>
+  <string name="mk_label_yesterday">Gestern</string>
+  <string name="mk_label_today">Heute</string>
+  <string name="error_no_app_for_file">Möglicherweise verfügen Sie nicht über eine geeignete App, um diesen Inhalt anzuzeigen</string>
+  <string name="web_view_open_in_chrome">Öffnen in %1$s</string>
+  <string name="attachment_limit_reached">Nur %1$d Anhänge pro E-Mail erlaubt.</string>
+  <string name="attachment_history_opened">geöffnet:</string>
+  <string name="title_sync">Postfachsynchronisation</string>
+  <string name="link_auth_title">Geräteauthentifizierung</string>
+  <string name="link_auth_sub_title">Möchten Sie genehmigen?</string>
+  <string name="link_auth_message">%1$s</string>
+  <string name="establishing">Sichere Verbindung herstellen</string>
+  <string name="cancel_sync">Synchronisation abbrechen</string>
+  <string name="device_ready">Gerät bereit</string>
+  <string name="preparing_mailbox">Postfach verschlüsseln</string>
+  <string name="getting_keys">Abrufen von Schlüsseln</string>
+  <string name="uploading_mailbox">Postfach wird hochgeladen</string>
+  <string name="mailbox_upload_successful">Postfach erfolgreich hochgeladen!</string>
+  <string name="keep_waiting_title">Nun, das ist seltsam ...</string>
+  <string name="keep_waiting_message">Es ist etwas passiert, das diesen Prozess verzögert. Möchten Sie weiter warten?</string>
+  <string name="sending_keys">Senden von Schlüsseln</string>
+  <string name="waiting_for_mailbox">Warten auf Postfach</string>
+  <string name="downloading_mailbox">Postfach wird heruntergeladen</string>
+  <string name="processing_mailbox">Postfach entschlüsseln</string>
+  <string name="sync_complete">Synchronisation abgeschlossen!</string>
+  <string name="push_approve">Genehmigen</string>
+  <string name="push_deny">Ablehnen</string>
+  <string name="push_link_error_title">Gerätevalidierung</string>
+  <string name="push_link_error_message_approve">Fehler beim Genehmigen des Geräts, Authentifizierungsanforderung erneut senden.</string>
+  <string name="push_link_error_message_deny">Fehler beim Ablehnen des Geräts. Prüfen Sie Ihre Internetverbindung.</string>
+  <string name="push_read">Als gelesen markieren</string>
+  <string name="push_trash">Löschen</string>
+  <string name="push_reply">Antworten</string>
+  <string name="push_email_error_title">Neue E-Mail</string>
+  <string name="push_email_update_mailbox_title">Überprüfen Sie Ihr Postfach</string>
+  <string name="push_email_update_mailbox_body">Möglicherweise haben Sie neue E-Mails.</string>
+  <string name="push_mail_error_message_read">Fehler beim Markieren dieser E-Mail als gelesen. Überprüfen Sie Ihre Internetverbindung.</string>
+  <string name="push_mail_error_message_trash">Fehler beim Verschieben dieser E-Mail in den Papierkorb. Überprüfen Sie Ihre Internetverbindung.</string>
+  <string name="new_email_snack">Sie haben (%1$d) neue E-Mail(s).</string>
+  <string name="send">Senden</string>
+  <string name="save">Speichern</string>
+  <string name="archive">Archiv</string>
+  <string name="delete">Löschen</string>
+  <string name="delete_permanent">Dauerhaft löschen</string>
+  <string name="forward">Vorwärts</string>
+  <string name="unsend">Zurückrufen</string>
+  <string name="mailbox_add_labels">Labels hinzufügen</string>
+  <string name="mailbox_not_spam">Kein Spam</string>
+  <string name="mailbox_not_trash">Aus dem Papierkorb wiederherstellen</string>
+  <string name="mailbox_move_to">Verschieben nach</string>
+  <string name="empty_trash_banner">E-Mails, die länger als 30 Tage im Papierkorb waren, werden automatisch gelöscht.</string>
+  <string name="empty_trash">Leerer Papierkorb</string>
+  <string name="reply_all">Alle beantworten</string>
+  <string name="slider_inbox">Posteingang</string>
+  <string name="slider_draft">Entwürfe</string>
+  <string name="slider_starred">Markiert</string>
+  <string name="slider_sent">Gesendet</string>
+  <string name="slider_junk">Spam</string>
+  <string name="slider_trash">Papierkorb</string>
+  <string name="slider_labels">Labels</string>
+  <string name="slider_allmail">Alle E-Mails</string>
+  <string name="slider_settings">Einstellungen</string>
+  <string name="slider_invite_friend">Einen Freund einladen</string>
+  <string name="slider_support">Support</string>
+  <string name="invite_title">Laden Sie einen Freund zu Criptext ein!</string>
+  <string name="invite_text">Schau dir Criptext an. Ich benutze es, um privat und sicher mit jedem zu mailen! Kostenlos erhältlich unter https://criptext.com/dl</string>
+  <string name="sync_phonebook_text">Die E-Mails Ihrer Kontakte wurden synchronisiert</string>
+  <string name="sync_phonebook_permission">Für die Synchronisierung von Telefonbuchkontakten ist eine Berechtigung zum Lesen von Kontakten erforderlich.</string>
+  <string name="sync_dialog_title">Zugriff auf Telefonbuchkontakte</string>
+  <string name="sync_dialog_message">Dadurch kann Criptext beim Erstellen von E-Mails E-Mail-Adressen aus Ihrem Telefonbuch vorschlagen.
+
+Möchten Sie die Telefonbuchkontakte aktivieren?</string>
+  <string name="error_sync_contact">Keine Kontakte mit E-Mail vorhanden.</string>
+  <string name="already_sync_contact">Kontakte bereits synchronisiert</string>
+  <string name="start_guide_unsend_button">Öffnen Sie dieses Menü, um die Schaltfläche \"Zurückrufen\" zu finden</string>
+  <string name="start_guide_email_read">Sieht so aus, als ob diese E-Mail gelesen wurde.</string>
+  <string name="start_guide_secure_attachments">Fügen Sie sichere Anhänge hinzu</string>
+  <string name="start_guide_multiple_conversations">Tippen und halten Sie, um mehrere Konversationen auszuwählen</string>
+  <string name="start_guide_notification">Sehen Sie, wer Ihre E-Mails liest</string>
+  <string name="start_guide_email">Tippen Sie hier, um eine sichere E-Mail zu verfassen</string>
+  <string name="title_swipe">Wisch Optionen</string>
+  <string name="title_profile_name">Profilname</string>
+  <string name="title_privacy_policy">Datenschutzerklärung</string>
+  <string name="title_terms_of_service">Nutzungsbedingungen</string>
+  <string name="title_open_source_libraries">Open-Source-Bibliotheken</string>
+  <string name="title_logout">Abmelden</string>
+  <string name="title_delete_account">Konto löschen</string>
+  <string name="title_remove_device">Gerät entfernen</string>
+  <string name="title_enter_password">Geben Sie Ihr Passwort ein
+um fortzufahren</string>
+  <string name="title_custom_dialog">Neues Label</string>
+  <string name="hint_custom_dialog">Geben Sie den Namen ein</string>
+  <string name="title_profile_photo">Profilfoto</string>
+  <string name="title_change_password">Passwort ändern</string>
+  <string name="title_sync_phonebook">Synchronisieren von Telefonbuchkontakten</string>
+  <string name="title_recovery_email">Wiederherstellungs-E-Mail</string>
+  <string name="title_signature">Unterschrift</string>
+  <string name="title_signature_cap">UNTERSCHRIFT</string>
+  <string name="title_recovery_email_cap">WIEDERHERSTELLUNGS-E-MAIL</string>
+  <string name="title_change_password_cap">PASSWORT ÄNDERN</string>
+  <string name="title_allow_notifications">Benachrichtigungen zulassen</string>
+  <string name="title_allow_preview">Benachrichtigungsvorschau</string>
+  <string name="title_two_fa">Zwei-Faktor-Authentifizierung</string>
+  <string name="title_read_receipts">Belege lesen</string>
+  <string name="title_privacy">Privatsphäre und Sicherheit</string>
+  <string name="title_badges">Badge App-Symbol</string>
+  <string name="title_sounds">Geräusche</string>
+  <string name="separator_account">KONTO</string>
+  <string name="separator_about">ÜBER</string>
+  <string name="status_not_confirmed">(nicht verifiziert)</string>
+  <string name="status_confirmed">(verifiziert)</string>
+  <string name="criptext_version">Criptext Beta</string>
+  <string name="password_enter_error">Das Passwort ist falsch.</string>
+  <string name="change_password_success">Das Passwort wurde geändert.</string>
+  <string name="old_password">Altes Passwort eingeben</string>
+  <string name="new_password">Neues Passwort eingeben</string>
+  <string name="new_confirm_password">Neues Passwort wiederholen</string>
+  <string name="device_last_activity">Letzter aktiver </string>
+  <string name="device_last_activity_time">\t %1$s</string>
+  <string name="device_last_activity_time_2_months">\t vor mehr als 2 Monaten.</string>
+  <string name="recovery_email_title">Aktuell</string>
+  <string name="button_resend_confirmation">Link erneut senden</string>
+  <string name="recovery_confirmation_resend_failed">Beim Senden des Bestätigungslinks ist ein Fehler aufgetreten. Versuchen Sie es später noch einmal.</string>
+  <string name="resend_confirmation_dialog_message">Überprüfen Sie Ihren Posteingang auf eine E-Mail von Criptext und klicken Sie auf den darin enthaltenen Link, um Ihre neue Wiederherstellungs-E-Mail zu bestätigen.</string>
+  <string name="resend_confirmation_dialog_title">Bestätigungslink gesendet</string>
+  <string name="recovery_email_hint">Neue Wiederherstellungs-E-Mail eingeben</string>
+  <string name="change_email_title">Neu</string>
+  <string name="change_email_note"><b>Hinweis: </b>Wenn Sie Ihre Wiederherstellungs-E-Mail ändern, wird die Zwei-Faktor-Authentifizierung deaktiviert.</string>
+  <string name="button_change_email_confirm">E-Mail ändern</string>
+  <string name="recovery_email_has_changed">Wiederherstellungs-E-Mail wurde erfolgreich geändert</string>
+  <string name="recovery_email_change_fail_same">Wiederherstellungs-E-Mail ist bereits %1$s</string>
+  <string name="two_fa_button">Verstanden!</string>
+  <string name="title_warning_two_fa">
+    <b>Wiederherstellungs-E-Mail nicht gesetzt</b>
+  </string>
+  <string name="title_enabled_two_fa">
+    <b>2FA aktiviert!</b>
+  </string>
+  <string name="message_enabled_two_fa">Wenn Sie sich das nächste Mal auf einem anderen Gerät anmelden, müssen Sie Ihr Kennwort eingeben und die Anmeldung von einem vorhandenen Gerät aus bestätigen.</string>
+  <string name="message_warning_two_fa">Um die Zwei-Faktor-Authentifizierung zu aktivieren, müssen Sie eine Wiederherstellungs-E-Mail auf Ihrem Konto einrichten und überprüfen.</string>
+  <string name="message_warning_2_two_fa">
+    <b>Bitte gehen Sie in Ihre Einstellungen &gt; Wiederherstellungs-E-Mail, um diesen Schritt abzuschließen.</b>
+  </string>
+  <string name="forgot_password_title">Passwort zurücksetzen</string>
+  <string name="forgot_password_title_no_recovery">Keine Wiederherstellungs-E-Mail</string>
+  <string name="forgot_password_message"><![CDATA[Ein Link zum Zurücksetzen des Passworts wurde gesendet an:
+
+ <b>%1$s</b> 
+
+ Der Link läuft in 30 Minuten ab.]]></string>
+  <string name="forgot_password_message_no_recovery">Passwortwiederherstellung ist unmöglich, da keine 
+ Wiederherstellungs-E-Mail für Ihr Konto festgelegt wurde. Für weitere Unterstützung kontaktieren Sie bitte: 
+
+ <b> support@criptext.com </b></string>
+  <string name="forgot_password_error">Fehler beim Kontaktieren des Servers. Versuchen Sie es später erneut</string>
+  <string name="forgot_password_error_400">Für dieses Konto wurde keine Wiederherstellungs-E-Mail-Adresse eingerichtet oder bestätigt. Ohne diese Adresse können Sie das Passwort nicht zurücksetzen</string>
+  <string name="change_password_current">Aktuell</string>
+  <string name="change_password_new">Neu</string>
+  <string name="remote_change_password_advice">Bestätigen Sie Ihr neues Passwort. 
+ Wenn Sie abbrechen, wird das Gerät abgemeldet und alle lokalen Daten <b> werden gelöscht. </b></string>
+  <string name="update_password_success">Das Passwort für dieses Gerät wurde aktualisiert.</string>
+  <string name="title_remote_change_password">Ihr Passwort hat sich geändert</string>
+  <string name="logout_dialog_message">Sind Sie sicher, dass Sie sich abmelden möchten?</string>
+  <string name="logout_dialog_message_2_fa">Da dies Ihr einziges aktives Gerät ist, wird <b> 2FA </b> wenn Sie sich abmelden. Wollen Sie fortfahren?</string>
+  <string name="login_out_dialog_message">Abmeldung...</string>
+  <string name="delete_account_dialog_title">Konto löschen</string>
+  <string name="delete_account_dialog_message"><b>WARNUNG:</b> Wenn Sie Ihr Konto löschen, werden alle Postfach- und Kontodaten auf allen Geräten gelöscht und Ihr Benutzername kann in Zukunft nicht mehr verwendet werden.
+Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
+  <string name="delete_account_toast_message">Konto wurde erfolgreich gelöscht.</string>
+  <string name="remove_device_dialog_message">Wenn Sie dieses Gerät entfernen, wird es sich aus der Ferne von Ihrem Konto abmelden.</string>
+  <string name="removing_device_dialog_message">Gerät entfernen...</string>
+  <string name="privacy_toolbar_title">DATENSCHUTZ UND SICHERHEIT</string>
+  <string name="pin_lock_switch_text">PIN-Sperre verwenden</string>
+  <string name="pin_lock_change">PIN Code ändern</string>
+  <string name="pin_lock_auto">Automatische Sperre</string>
+  <string name="pin_lock_message_1">Wenn Sie Ihren PIN-Code vergessen haben, müssen Sie sich abmelden und erneut anmelden.</string>
+  <string name="pin_lock_message_2"><b> Warnung: </b> 10 fehlgeschlagene Versuche führen dazu, dass alle Daten aus Sicherheitsgründen aus der App gelöscht werden.</string>
+  <string name="attempts_remaining">Falsche PIN, %1$d Versuche verbleiben</string>
+  <string name="attempts_remaining_critical"><![CDATA[<b>WARNUNG:</b>%1$dVersuche, bis zum sicheren Löschen der Daten.]]></string>
+  <string name="pin_forgot_dialog_title">Abmelden</string>
+  <string name="pin_forgot_dialog_message">Sind Sie sicher, dass Sie sich abmelden möchten?</string>
+  <string name="pin_code_forgot_text">
+ <u> Abmelden </u> 
+</string>
+  <string name="pin_code_step_disable">PIN deaktivieren</string>
+  <string name="pin_code_step_create">Erstellen Sie einen PIN-Code</string>
+  <string name="pin_code_step_change">Geben Sie Ihren aktuellen PIN-Code ein</string>
+  <string name="pin_code_step_unlock">Geben Sie Ihren PIN-Code ein, um den Posteingang zu entsperren</string>
+  <string name="pin_code_step_enable_confirm">Bestätigen Sie Ihren PIN-Code</string>
+  <string name="notification_preview_message">Vorschau des Inhalts von E-Mails in Push-Benachrichtigungen anzeigen.</string>
+  <string name="read_receipts_message">Wenn deaktiviert, können Sie nicht wissen, wann andere Ihre E-Mails lesen.</string>
+  <string name="pin_code_fingerprint_text">Fingerabdruck</string>
+  <string name="pin_code_fingerprint_success">Fingerabdruck erkannt</string>
+  <string name="pin_code_fingerprint_not_recognized">Fingerabdruck nicht erkannt. Versuchen Sie es erneut</string>
+  <string name="title_non_criptext_mail_dialog">Nicht-Criptext-Empfänger</string>
+  <string name="set_pass_non_criptext_mail_dialog">Verschlüsselt senden</string>
+  <string name="set_pass_detail_non_criptext_mail_dialog">Legen Sie eine Passphrase fest und geben Sie sie an Nicht-Criptext-Empfänger weiter, damit sie Ihre E-Mails lesen können.</string>
+  <string name="pass_hint_non_criptext_email_dialog">Passphrase</string>
+  <string name="switch_off_non_criptext_email_dialog"><b> Hinweis: </b> Nicht-Criptext-E-Mail-Adressen erhalten eine normale, unverschlüsselte E-Mail.</string>
+  <string name="subtitle_expiration_dialog">Verschlüsselte E-Mails an Nicht-Criptext-Empfänger verfallen in 10 Tagen</string>
+  <string name="unsent">zurückgerufen</string>
+  <string name="password_length_error">Das Passwort muss aus mindestens 8 Zeichen bestehen.</string>
+  <string name="password_mismatch_error">Die Passwörter stimmen nicht überein.</string>
+  <string name="taken_username_error">Dieser Benutzername ist nicht verfügbar.</string>
+  <string name="username_doesnt_exist">der Benutzername existiert nicht</string>
+  <string name="username_invalid_error">Ungültiger Benutzername.</string>
+  <string name="username_length_error">Der Benutzername muss aus mindestens 3 Zeichen bestehen.</string>
+  <string name="email_invalid_error">Ungültige E-Mail-Adresse.</string>
+  <string name="fullname_length_error">Der Name ist zu lang.</string>
+  <string name="fullname_empty_error">Der Name darf nicht leer sein.</string>
+  <string name="fullname_hint">Vollständiger Name</string>
+  <string name="recovery_optional_hint">Wiederherstellungs-E-Mail (optional)</string>
+  <string name="username_hint">Benutzername</string>
+  <string name="login">Anmelden</string>
+  <string name="login_body">Überprüfen und genehmigen Sie Ihr vorhandenes Criptext-Gerät, um fortzufahren.</string>
+  <string name="didnt_get_prompt">Haben Sie die Aufforderung nicht erhalten?</string>
+  <string name="not_approved">Warnung: Mehrfache Ablehnungen könnten 
+dazu führen, dass Ihr Gerät von Criptext auf die 
+schwarze Liste gesetzt wird</string>
+  <string name="button_resendit">Senden Sie es erneut</string>
+  <string name="cant_access_device">
+ <u> Mit Passwort anmelden? </u> 
+</string>
+  <string name="title_failed">Anmeldung abgelehnt</string>
+  <string name="login_rejected">Gerät abgelehnt.</string>
+  <string name="creating_keys">Schlüssel erstellen</string>
+  <string name="too_many_login_attempts">Zu viele Anmeldeversuche, versuchen Sie es später noch einmal.</string>
+  <string name="too_many_devices">Zu viele Geräte sind bereits angemeldet.</string>
+  <string name="no_devices_available">Keine Geräte zur Authentifizierung dieses Geräts verfügbar.</string>
+  <string name="sign_in_warning_dialog_message"><![CDATA[Anmelden mit einem anderen E-Mail-Konto
+       <b> löscht alle</b> auf diesem Gerät gespeicherten <b>Postfachdaten</b> für das Konto. 
+
+ <b>%1$s</b>
+
+
+        Wollen Sie fortfahren?]]></string>
+  <string name="sign_in_warning_dialog_title">Anmeldungswarnung</string>
+  <string name="password_warning_dialog_title">Warnung</string>
+  <string name="password_warning_dialog_message">Wenn Sie sich mit Ihrem Passwort anmelden, wird der 
+ <b> Postfachverlauf von anderen Geräten auf diesem Gerät nicht verfügbar sein </b> . Wollen Sie fortfahren?</string>
+  <string name="slide_1_title">
+    <b>Willkommen!</b>
+  </string>
+  <string name="slide_1_text">Ihre sichere E-Mail-Erfahrung beginnt jetzt. Seien Sie bereit für Datenschutz ohne Kompromisse.</string>
+  <string name="slide_2_title">
+    <b>Starke Privatsphäre</b>
+  </string>
+  <string name="slide_2_text">Criptext sammelt keine E-Mail-Daten. Ihre E-Mails werden nur auf Ihrem Gerät gespeichert.</string>
+  <string name="slide_3_title">
+    <b> Die Macht liegt bei Ihnen </b> 
+</string>
+  <string name="slide_3_text">Sie erstellen Informationen, wir glauben, dass Sie das Recht haben, diese zu besitzen.</string>
+  <string name="new_secure_email">Neue sichere E-Mail</string>
+  <string name="password">Passwort</string>
+  <string name="confirm_password">Passwort bestätigen</string>
+  <string name="sending_email">E-Mail wird gesendet...</string>
+  <string name="documents">Dokumente</string>
+  <string name="photo_library">Fotobibliothek</string>
+  <string name="camera">Kamera</string>
+  <string name="inbox">Posteingang</string>
+  <string name="device_removed">Gerät erfolgreich entfernt</string>
+  <string name="titulo_mailbox">Posteingang</string>
+  <string name="titulo_mailbox_sent">Gesendet</string>
+  <string name="titulo_mailbox_draft">Entwurf</string>
+  <string name="titulo_mailbox_starred">Markiert</string>
+  <string name="titulo_mailbox_spam">Spam</string>
+  <string name="titulo_mailbox_trash">Papierkorb</string>
+  <string name="titulo_mailbox_all_mail">Alle E-Mails</string>
+  <string name="title_settings">EINSTELLUNGEN</string>
+  <string name="spam">Spam</string>
+  <string name="cancel">Abbrechen</string>
+  <string name="ok">Okay</string>
+  <string name="accept">Akzeptieren</string>
+  <string name="trash">Papierkorb</string>
+  <string name="more">Weitere Optionen</string>
+  <string name="only_more">mehr</string>
+  <string name="criptext_com">\@criptext.com</string>
+  <string name="sign_up">Registrieren</string>
+  <string name="not_registered">Nicht registriert?</string>
+  <string name="recover_email_warning_content_start_title">Warnung!</string>
+  <string name="recover_email_warning_content_start">Sie haben keine Wiederherstellungs-E-Mail festgelegt 
+ Eine <b> Kontowiederherstellung ist daher nicht möglich </b> 
+ wenn Sie Ihr Passwort vergessen haben</string>
+  <string name="delete_thread_warning">Sind Sie sicher, dass Sie die ausgewählten Themen DAUERHAFT löschen möchten?</string>
+  <string name="empty_trash_warning">Sind Sie sicher, dass Sie E-Mails im Papierkorb dauerhaft löschen möchten?</string>
+  <string name="delete_email_warning">Sind Sie sicher, dass Sie diese E-Mail dauerhaft löschen möchten?</string>
+  <string name="trash_is_now_empty">Der Papierkorb ist jetzt leer.</string>
+  <string name="sign_up_terms_and_conditions_start">Ich habe gelesen und bin damit einverstanden</string>
+  <string name="sign_up_terms_and_conditions_end">Allgemeine Geschäftsbedingungen</string>
+  <string name="btn_create_account">Registrieren</string>
+  <string name="txt_create_criptext_account">Erstellen Sie Ihr Criptext-Konto</string>
+  <string name="yes">Ja</string>
+  <string name="no">Nein</string>
+  <string name="btn_continue">Fortfahren</string>
+  <string name="btn_continue_with_time">Fortfahren(%1$d)</string>
+  <string name="discard">Verwerfen</string>
+  <string name="search_email">E-Mail suchen</string>
+  <string name="activity_feed">AKTIVITÄTEN FEED</string>
+  <string name="noactivity">Es gibt noch nichts Neues</string>
+  <string name="enjoy_your_day">Genießen Sie Ihren Tag</string>
+  <string name="mute">Stummschaltung</string>
+  <string name="unmute">Stummschaltung aufheben</string>
+  <string name="invalid_address_error">\"%1$s\" ist keine gültige Adresse. Bitte kreuzen Sie das Eingabefeld \"%2$s\" an.</string>
+  <string name="no_recipients_error">Sie benötigen mindestens einen Empfänger.</string>
+  <string name="title_activity_composer">Neue sichere E-Mail</string>
+  <string name="preparing_file">Datei wird vorbereitet...</string>
+  <string name="too_many_files">Zu viele Dateien sind bereits angehängt. Das Maximum ist 10.</string>
+  <string name="stay_in_composer_title">Ausstehende Anhänge</string>
+  <string name="stay_in_composer_message">Einige Anhänge hochgeladen werden.
+Möchten Sie sie verwerfen und fortfahren?</string>
+  <string name="wait_for_attachments">Bitte warten Sie, bis die Verarbeitung Ihrer Anhänge abgeschlossen ist.</string>
+  <string name="message">Nachricht</string>
+  <string name="subject">Betreff</string>
+  <string name="error_moving_threads">Fehler beim Verschieben von Themen. Bitte versuchen Sie es erneut</string>
+  <string name="error_updating_labels">Fehler beim Aktualisieren der E-Mail-Labels. Bitte versuchen Sie es erneut</string>
+  <string name="error_updating_status">Fehler beim Aktualisieren des E-Mail-Status. Bitte versuchen Sie es erneut</string>
+  <string name="error_moving_emails">Fehler beim Verschieben der E-Mail. Bitte versuchen Sie es erneut</string>
+  <string name="error_getting_counters">Fehler beim Abrufen von Labelzählern. Bitte versuchen Sie es erneut</string>
+  <string name="error_getting_email">Fehler beim Empfangen von E-Mails. Bitte versuchen Sie es erneut</string>
+  <string name="error_updating_account">Fehler beim Aktualisieren des Benutzerkontos. Bitte versuchen Sie es erneut</string>
+  <string name="error_login_out">Fehler beim Abmelden. Bitte versuchen Sie es erneut</string>
+  <string name="error_listing_devices">Fehler beim Abrufen Ihrer Geräteliste vom Server.</string>
+  <string name="error_getting_labels">Fehler beim Abrufen der Labels. Bitte versuchen Sie es erneut</string>
+  <string name="error_creating_labels">Fehler beim Erstellen eines Labels. Bitte versuchen Sie es erneut</string>
+  <string name="error_getting_contacts">Fehler beim Abrufen der Kontakte. Bitte versuchen Sie es erneut</string>
+  <string name="error_saving_as_draft">Fehler beim Speichern der E-Mail. Bitte versuchen Sie es erneut</string>
+  <string name="error_saving_too_many_recipients">Fehler beim Speichern der E-Mail. Empfängerlimit erreicht: %1$d</string>
+  <string name="error_checking_availability">Fehler bei der Überprüfung der Verfügbarkeit des Benutzernamens</string>
+  <string name="you_wanna_save">Möchten Sie dies als Entwurf speichern?</string>
+  <string name="unable_to_upload">Es ist nicht möglich, %1$s hochzuladen. Bitte versuchen Sie es erneut</string>
+  <string name="error_attach_file">Datei zu groß</string>
+  <string name="error_downloading_file">Die Datei kann nicht heruntergeladen werden. Bitte versuchen Sie es erneut</string>
+  <string name="composer_load_error">Beim Laden von Composer-Daten ist ein unerwarteter Fehler aufgetreten.</string>
+  <string name="network_error_exception">Benutzer konnte nicht registriert werden. Bitte überprüfen Sie Ihre Internetverbindung.</string>
+  <string name="json_error_exception">Benutzer konnte nicht registriert werden. Ungültige Serverantwort.</string>
+  <string name="device_removed_remotely_exception">Dieses Gerät wurde entfernt.</string>
+  <string name="fail_register_try_again_error_exception">Benutzer konnte nicht registriert werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="send_network_error">E-Mail konnte nicht gesendet werden. Bitte überprüfe deine Internetverbindung.</string>
+  <string name="send_limit_reached">E-Mail konnte nicht gesendet werden. E-Mail-Obergrenze erreicht. Versuchen Sie es später noch einmal.</string>
+  <string name="send_json_error">E-Mail konnte nicht gesendet werden. Ungültige Serverantwort.</string>
+  <string name="send_bad_status">E-Mail konnte nicht gesendet werden. Falscher Statuscode: %1$s</string>
+  <string name="send_try_again_error">E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="login_network_error_exception">Benutzer konnte nicht authentifiziert werden. Bitte überprüfe deine Internetverbindung.</string>
+  <string name="login_json_error_exception">Benutzer konnte nicht authentifiziert werden. Ungültige Serverantwort.</string>
+  <string name="login_fail_try_again_error_exception">Benutzer konnte nicht authentifiziert werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="login_failed_body">Ihre Anfrage, auf dieses Konto zuzugreifen, wurde von einem verifizierten Gerät abgelehnt.</string>
+  <string name="login_user">estocambia@criptex.com</string>
+  <string name="button_confirm">Bestätigen</string>
+  <string name="forgot_password">Passwort vergessen?</string>
+  <string name="reply">Antworten</string>
+  <string name="mark_as_read">als gelesen markieren</string>
+  <string name="mark_as_spam">Als Spam markieren</string>
+  <string name="print">Drucken</string>
+  <string name="mark_as_unread">Als ungelesen markieren</string>
+  <string name="criptextdotcom">gcarlo\@criptext.com</string>
+  <string name="failed_getting_labels">Fehler beim Abrufen von Labels.</string>
+  <string name="fail_unsend_email">E-Mail konnte nicht zurückgerufen werden. Bitte versuchen Sie es später noch einmal</string>
+  <string name="fail_unsend_email_expired">E-Mail konnte nicht zurückgerufen werden. Die Zeit (1h) für das Zurückrufen ist bereits abgelaufen.</string>
+  <string name="failed_getting_emails">Die E-Mails konnten nicht abgerufen werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="failed_empty_trash">E-Mail(s) konnten nicht gelöscht werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="nothing_to_update">Nichts zu aktualisieren.</string>
+  <string name="failed_searching_emails">Die Suche nach E-Mails konnte nicht durchgeführt werden. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="updating_mailbox">Postfach wird aktualisiert...</string>
+  <string name="email_already_decrypted">Postfach ist bereits aktualisiert!</string>
+  <string name="failed_to_create_link_device_file">Verbindungsgeräteprozess fehlgeschlagen. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="server_error_exception">Serverfehler. Bitte versuchen Sie es später noch einmal.</string>
+  <string name="server_bad_status">Server konnte nicht kontaktiert werden. Falscher Statuscode: %1$s</string>
+  <string name="too_many_requests_exception_hour">Zu viele aufeinanderfolgende Versuche. Bitte versuchen Sie es in %1$d Stunde (n) erneut.</string>
+  <string name="too_many_requests_exception_minute">Zu viele aufeinanderfolgende Versuche. Bitte versuchen Sie es in %1$d Minuten erneut.</string>
+  <string name="too_many_requests_exception_no_time_found">Zu viele aufeinanderfolgende Versuche. Bitte versuchen Sie es erneut.</string>
+  <string name="payload_too_large">Die Datei %1$s überschreitet %2$s</string>
+  <string name="web_socket_error">Unbekanntes Serverereignis. Ereigniscode: %1$d</string>
+  <string name="nosubject">(Kein Betreff)</string>
+  <string name="nocontent">(Kein Inhalt)</string>
+  <string name="unknown">Unbekannt</string>
+  <string name="to">An</string>
+  <string name="to_me">An mich</string>
+  <string name="label_as">Beschriften als</string>
+  <string name="email_sent">E-Mail gesendet</string>
+  <string name="from_popup">Von:</string>
+  <string name="to_popup">An:\u0020\u0020</string>
+  <string name="cc_popup">CC:\u0020\u0020</string>
+  <string name="bcc_popup">BCC:\u0020</string>
+  <string name="reply_popup">Antworten Auf:</string>
+  <string name="date_popup">Datum:</string>
+  <string name="subject_popup">Betreff:</string>
+  <string name="no_history">Kein Suchverlauf</string>
+  <string name="no_history_subtitle">Machen Sie Ihre erste Suche</string>
+  <string name="no_mails">Sie haben noch keine E-Mails</string>
+  <string name="no_mails_subtitle">Senden Sie eine E-Mail, um loszulegen</string>
+  <string name="no_search_results">Keine Suchergebnisse</string>
+  <string name="no_search_subtitle">Papierkorb- und Spam-E-Mails werden nicht angezeigt</string>
+  <string name="draft">Entwurf</string>
+  <string name="on">An</string>
+  <string name="off">Aus</string>
+  <string name="write_signature">Tragen Sie hier Ihre Unterschrift ein ...</string>
+  <string name="draft_saved">Entwurf gespeichert</string>
+  <string name="profile_name_updated">Profilname aktualisiert</string>
+  <string name="show_label_in_list">In der Labelliste anzeigen</string>
+  <string name="new_label">Neues Label erstellen</string>
+  <string name="current_device">Aktuelles Gerät</string>
+  <string name="general">Allgemeines</string>
+  <string name="labels">Labels</string>
+  <string name="devices">Geräte</string>
+  <string name="feed_opened">geöffnet:</string>
+  <string name="feed_downloaded">heruntergeladen:</string>
+  <string name="feed_new">NEU</string>
+  <string name="feed_older">ÄLTER</string>
+  <string name="new_email_notification">Neue E-Mail-Benachrichtigung</string>
+  <string name="link_device_notification">Benachrichtigung zur Geräteauthentifizierung</string>
+  <string name="error_notification">Fehlerbenachrichtigung</string>
+  <string name="email_open_notification">E-Mail-Öffnungsbenachrichtigung</string>
+  <string name="full_mail_item_open_default">Es ist eine Tatsache</string>
+  <string name="push_link_device_message">Wollen Sie das genehmigen: %1$s?</string>
+  <string name="done_signature">ERLEDIGT</string>
+  <string name="unsent_at">zurückgerufen an:</string>
+  <string name="title_dark_theme">Dunkles Thema</string>
+  <string name="separator_appearance">AUSSEHEN</string>
+  <string name="error_email_max_size">Die E-Mail hat das Anhangslimit überschritten %1$s</string>
+  <string name="forwarded_message">Weitergeleitete Nachricht</string>
+  <string name="support_mail_line">Nicht unterhalb dieser Linie schreiben.</string>
+  <string name="reply_on">Auf</string>
+  <string name="reply_wrote">schrieb:</string>
+  <string name="mail_template_at">bei</string>
+  <string name="feed_someone">Jemand</string>
+  <string name="see">Siehe</string>
+  <string name="sync_device_notification">Manuelle Benachrichtigung zur Authentifizierung der Synchronisierung</string>
+  <string name="manual_sync_dialog_message_1">Überprüfen und genehmigen Sie diese Synchronisierung von Ihren vorhandenen Criptext-Geräten aus.</string>
+  <string name="sync_version_incorrect">Sie können Ihr Postfach nicht von diesem Gerät aus synchronisieren, stellen Sie sicher, dass beide Geräte auf dem neuesten Stand sind.</string>
+  <string name="sync_confirmation_dialog_title">Synchronisationswarnung</string>
+  <string name="sync_confirmation_dialog_message">Ihre gesamten Postfachdaten werden gelöscht und durch die Postfachdaten von Ihrem anderen Gerät ersetzt. 
+
+<b>Sind Sie sicher, dass Sie weitermachen wollen?</b></string>
+  <string name="mailbox_sync_complete">Postfachsynchronisation abgeschlossen</string>
+  <string name="messages">Nachrichten</string>
+  <string name="print_all">Alles drucken</string>
+  <string name="update_now_title">Jetzt aktualisieren!</string>
+  <string name="update_now_message"><b>Tippen Sie hier</b>, um Criptext auf die neueste Version zu aktualisieren und die neuen Funktionen zu genießen.</string>
+  <string name="empty_inbox_message_top">Posteingang ist leer</string>
+  <string name="empty_inbox_message_bottom">Entspannen und genießen</string>
+  <string name="empty_spam_message_top">Keine Spam-E-Mails</string>
+  <string name="empty_spam_message_bottom">Das ist großartig! Lassen wir es uns so</string>
+  <string name="empty_sent_message_top">Keine gesendeten E-Mails</string>
+  <string name="empty_sent_message_bottom">Beginnen wir mit ein paar</string>
+  <string name="empty_starred_message_top">Keine markierten E-Mails</string>
+  <string name="empty_starred_message_bottom">Markieren Sie Ihre relevanten E-Mails</string>
+  <string name="empty_trash_message_top">Der Papierkorb ist leer</string>
+  <string name="empty_trash_message_bottom">Dieser Ort ist wirklich sauber!</string>
+  <string name="empty_draft_message_top">Keine Entwürfe</string>
+  <string name="empty_draft_message_bottom">Hier gibt es nichts zu tun</string>
+  <string name="empty_allmail_message_top">Keine E-Mails</string>
+  <string name="empty_allmail_message_bottom">Überhaupt!</string>
+  <string name="update_now_title">Update verfügbar!</string>
+  <string name="update_now_message">Tippen Sie hier, um Criptext auf die neueste Version zu aktualisieren und die neuen Funktionen zu genießen.</string>
+  <string name="filter_unread">Ungelesene anzeigen</string>
+  <string name="filter_none">Alle anzeigen</string>
+  <string name="title_change_reply_to">\'Antwort an\' Adresse ändern</string>
+  <string name="reply_to_email_hint">Neue \'Antwort an\' E-Mail eingeben</string>
+  <string name="reply_to_email_has_changed">\'Antwort an\' E-Mail erfolgreich geändert</string>
+  <string name="email_source_toolbar_title">E-MAIL-QUELLE</string>
+  <string name="email_source">E-Mail-Quelle</string>
+  <string name="title_reply_to_cap">\'ANTWORT AN\' E-MAIL</string>
+  <string name="reply_to_email_removed">\'Antwort an\' E-Mail erfolgreich entfernt</string>
+  <string name="retry">Sendeversuch wiederholen</string>
+  <string name="view_image">Bild anzeigen</string>
+  <string name="save_image">Bild speichern</string>
+  <string name="move_to_downloads_success">Inline-Bild wurde gespeichert unter: %1$s</string>
+  <string name="move_to_downloads_exists">Das Inline-Bild ist bereits in den Downloads</string>
+  <string name="title_profile">Profil</string>
+  <string name="profile_toolbar_title">PROFIL</string>
+  <string name="remove_picture">Bild entfernen</string>
+  <string name="profile_picture_updated">Profilbild erfolgreich aktualisiert</string>
+  <string name="profile_picture_update_failed">Fehler beim Aktualisieren des Profilbildes</string>
+  <string name="profile_picture_deleted">Profilbild erfolgreich gelöscht</string>
+  <string name="profile_picture_delete_failed">Fehler beim Löschen des Profilbildes</string>
+  <string name="remove_picture">Bild entfernen</string>
+  <string name="profile_picture_updated">Profilbild erfolgreich aktualisiert</string>
+  <string name="profile_picture_update_failed">Fehler beim Aktualisieren des Profilbildes</string>
+  <string name="profile_picture_deleted">Profilbild erfolgreich gelöscht</string>
+  <string name="profile_picture_delete_failed">Fehler beim Löschen des Profilbildes</string>
+  <string name="change_name_btn_text">Name bearbeiten</string>
+  <string name="error_email_max_files_title">Dateienkapazität</string>
+  <string name="username_not_available_error">Benutzername nicht verfügbar</string>
+  <string name="title_account">Konto</string>
+  <string name="title_faq">FAQ</string>
+  <string name="separator_general">ALLGEMEIN</string>
+  <string name="devices_toolbar_title">GERÄTE</string>
+  <string name="labels_toolbar_title">LABELS</string>
+  <string name="pin_toolbar_title">PIN-SPERRE</string>
+  <string name="username_not_available">Benutzername nicht verfügbar</string>
+  <string name="drawer_add_account">Ein bestehendes Konto hinzufügen</string>
+  <string name="drawer_create_account_account">Ein Konto erstellen</string>
+  <string name="snack_bar_active_account">Jetzt angemeldet als %1$s</string>
+  <string name="title_devices">Geräte</string>
+  <string name="title_labels">Labels</string>
+  <string name="title_pin_lock">Pin-Sperre</string>
+  <string name="privacy_two_fa_message">Eine sekundäre Validierung zum Schutz Ihres Kontos.</string>
+  <string name="privacy_read_receipts_message">Erfahren Sie, wann Ihre E-Mails geöffnet oder gelesen werden. Wenn Sie diese Option deaktivieren, werden Sie keine Lesebestätigungen senden oder empfangen.</string>
+  <string name="user_already_logged_in">Konto bereits hinzugefügt!</string>
+  <string name="web_view_open_in_browser">Im Browser öffnen</string>
+  <string name="cloud_backup_toolbar_title">CLOUD-SICHERUNG</string>
+  <string name="title_cloud_backup">Cloud-Sicherung</string>
+  <string name="cloud_backup_switch">Sicherung auf Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Sicherung erstellen</string>
+  <string name="cloud_backup_now">Jetzt sichern</string>
+  <string name="cloud_backup_auto_backup">Automatische Sicherung</string>
+  <string name="cloud_backup_change_google_account">Google-Konto ändern</string>
+  <string name="cloud_backup_backup_over">Nur WLAN verwenden</string>
+  <string name="cloud_backup_create_file">Sicherungsdatei erstellen</string>
+  <string name="cloud_progress_upload_message" formatted="false">Hochladen in die Cloud (%1$d %%%)</string>
+  <string name="cloud_backup_message_1">Sichern Sie Ihr gesamtes Postfach auf Google Drive, damit Sie Ihr Criptext-Konto auf einem neuen Gerät wiederherstellen können, wenn Sie dieses Gerät verlieren. Hinweis: Google Drive Backups sind nicht verschlüsselt und Criptext ist nicht verantwortlich für Ihre Google Drive Daten.</string>
+  <string name="cloud_backup_message_2"><b>Hinweis:</b> Automatische Sicherung funktioniert nur mit Cloud-Backup.</string>
+  <string name="cloud_backup_create_file_progress_message">Bitte warten Sie einen Moment … %1$d%%</string>
+  <string name="cloud_backup_share_intent_title">Teilen Sie Ihre Datei</string>
+  <string name="cloud_backup_share_intent_message">Teilen Ihres Postfachs …</string>
+  <string name="cloud_backup_passphrase_title">Passphrase eingeben</string>
+  <string name="cloud_backup_passphrase_switch">Sicherung verschlüsseln</string>
+  <string name="cloud_backup_passphrase_on_message">Wenn Sie dieses Passwort verlieren/vergessen, können Sie diese Sicherung in Zukunft nicht mehr wiederherstellen.</string>
+  <string name="cloud_backup_passphrase_off_message"><b>Warnung:</b> Zu Ihrem Schutz empfehlen wir Ihnen, Ihre Sicherung zu verschlüsseln.</string>
+  <string name="cloud_backup_size">
+    <b>Größe: </b>
+  </string>
+  <string name="cloud_backup_last_modified">
+    <b> Letzte Sicherung: </b>
+  </string>
+  <string name="cloud_backup_backing_up">Sichern …</string>
+  <string name="cloud_backup_mb">(%1$d MB)</string>
+  <string name="restore_backup_dialog_title">Sicherung wiederherstellen</string>
+  <string name="restore_backup_dialog_message">Stellen Sie Ihre E-Mails aus Google Drive wieder her, bevor Sie zu Ihrem Posteingang gehen.</string>
+  <string name="restore_backup_dialog_skip_restore">
+    <u>Wiederherstellung überspringen</u>
+  </string>
+  <string name="restore_backup_dialog_button">Wiederherstellen vom Laufwerk</string>
+  <string name="restore_backup_title">Sicherung gefunden</string>
+  <string name="restore_backup_title_encrypted">Verschlüsselte Sicherung gefunden</string>
+  <string name="restore_backup_last_modified">Letzte Sicherung: %1$s</string>
+  <string name="restore_backup_size">Größe: %1$d MB</string>
+  <string name="restore_backup_button">Wiederherstellen</string>
+  <string name="restore_backup_not_found_message">Sind Sie sicher, dass Sie das richtige Laufwerkskonto gewählt haben? Vielleicht sollten Sie es noch einmal versuchen.</string>
+  <string name="restore_backup_not_found_title">Sicherung nicht gefunden</string>
+  <string name="restore_backup_fail_message">Es ist etwas passiert, das diesen Prozess verzögert.</string>
+  <string name="restore_backup_fail_question">Wollen Sie es weiter versuchen?</string>
+  <string name="restore_backup_retry">Wiederholen</string>
+  <string name="restore_backup_no_account">Kein Google-Konto gefunden</string>
+  <string name="restore_backup_restoring_title">Wiederherstellung …</string>
+  <string name="titulo_mailbox_custom">%1$s</string>
+  <string name="me">mir</string>
+  <string name="no_account_to_sync">Kein Konto zum Synchronisieren.</string>
+  <string name="title_external_encryption">E-Mails an Externe verschlüsseln</string>
+  <string name="email_hint">E-Mail-Adresse</string>
+  <string name="privacy_encrypt_external">Wenn Sie E-Mails an Nicht-Criptext-Konten senden, werden Sie immer gefragt, ob Sie diese E-Mail mit einem Passwort verschlüsseln möchten.</string>
+  <string name="change_password_login_btn">Passwort ändern</string>
+  <string name="change_password_login_title">Ändern Sie das Passwort für:</string>
+  <string name="account_suspended_dialog_title">Konto gesperrt</string>
+  <string name="account_suspended_dialog_message"><![CDATA[Das Konto <b>%1$s</b> wurde von Ihrem Administrator vorübergehend gesperrt. Für weitere Informationen wenden Sie sich bitte an Ihren Firmenadministrator.]]></string>
+  <string name="account_suspended_dialog_button">Konto wechseln</string>
+  <string name="account_suspended_sign_in_error">Dieses Konto ist gesperrt.</string>
+  <string name="profile_danger_separator">GEFAHRENZONE</string>
+  <string name="email_sent_secure">🔒 E-Mail gesendet</string>
+  <string name="start_guide_secure">Das Schloss-Symbol bedeutet, dass diese E-Mail verschlüsselt ist.</string>
+  <string name="restore_backup_dialog_cancel_restore">
+    <u>Wiederherstellung abbrechen</u>
+  </string>
+  <string name="restore_backup_backed_up">Gesichert: %1$s</string>
+  <string name="restore_backup_save_backup">Speichern</string>
+  <string name="export_backup_option">Sicherungsdatei exportieren</string>
+  <string name="export_backup_option_explain">Erstellen Sie eine Sicherung Ihres Posteingangs, das auf externe Laufwerke exportiert werden kann.</string>
+  <string name="restore_backup_option">Backup wiederherstellen</string>
+  <string name="restore_backup_option_explain">Stellen Sie Ihr Postfach einfach aus einer lokalen oder Cloud-Sicherungsdatei wieder her</string>
+  <string name="restore_backup_local_title">Aus Sicherungsdatei wiederherstellen</string>
+  <string name="restore_backup_local_dialog_button">Wiederherstellen aus lokaler Datei</string>
+  <string name="restore_backup_change_button">Datei ändern</string>
+  <string name="export_backup_file_ready">Sicherungsdatei wurde gespeichert</string>
+  <string name="restore_backup_dialog_select_file">Datei auswählen</string>
+  <string name="restore_backup_version_incompatible">Ihre Dateiversion ist nicht kompatibel</string>
+  <string name="restore_backup_account_incompatible">Diese Datei gehört nicht zu diesem Konto.</string>
+  <string name="restore_backup_fail">Die gewählte Datei ist entweder keine Criptext Sicherungsdatei oder aus einer älteren Version</string>
+  <string name="restore_backup_fail_title">Ungültige Datei</string>
+  <string name="restore_backup_bad_file">Die ausgewählte Datei ist keine gültige Sicherungsdatei.</string>
+  <string name="restore_backup_intent_title">Sicherung freigeben oder in Dateien speichern …</string>
+  <string name="sign_in_remove_message">Sie haben das Gerätelimit (%1$d) auf Ihrem Konto erreicht. Löschen Sie mindestens (%2$d) Gerät, um fortzufahren. Nach dem Löschen wird Ihre aktive Sitzung auf diesem Gerät abgemeldet.</string>
+  <string name="sign_in_remove_success_remaining">Sie müssen noch (2) weitere Geräte entfernen, bevor Sie sich anmelden können.</string>
+  <string name="sign_in_remove_dialog_title">Geräte entfernen </string>
+  <string name="sign_in_remove_error_dialog_title">Abgelaufene Sitzung</string>
+  <string name="sign_in_remove_error_dialog_message">Es tut uns leid, aber Ihre Sitzung ist abgelaufen. Dies bedeutet, dass Sie die für Inaktivität zulässige Zeit überschritten haben. Bitte versuchen Sie es erneut.</string>
+  <string name="contact_support">Haben Sie Probleme? <b>Kontaktieren Sie den Support</b></string>
+  <string name="sync_screen_message">Verlassen Sie die App nicht und schalten Sie Ihren Bildschirm nicht aus, während dieser Prozess läuft.</string>
+  <string name="domain_validation_error">Es ist nicht gelungen, die Kontaktedomänenüberprüfung abzurufen</string>
+  <string name="contact_db_get_error">Es ist nicht gelungen, Kontakte aus der lokalen Datenbank wiederherzustellen.</string>
+  <string name="from_db_get_error">Es ist nicht gelungen, Konten aus der lokalen Datenbank abzurufen.</string>
+  <string name="general_network_error_exception">Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.</string>
+  <string name="copy_to_download_error">Fehler beim Kopieren der Datei (%1$s) zu Downloads.</string>
+  <string name="unable_to_delete_draft">Fehler beim Löschen des Entwurfs. Ex: (%1$s)</string>
+  <string name="unable_to_move_email">Fehler beim Verschieben von E-Mails. Beispiel: (%1$s)</string>
+  <string name="local_error">Fehler bei lokalen Änderungen. Beispiel: (%1$s)</string>
+  <string name="keybundle_get_error">Fehler beim Erhalten des Schlüsselbundes. Beispiel: (%1$s)</string>
+  <string name="criptext_backup_not_found">Criptext-Sicherung nicht gefunden.</string>
+  <string name="unknown_error">Unbekannter Fehler. Beispiel: (%1$s)</string>
+  <string name="invalid_temp_token">Die zeitliche Sitzung ist abgelaufen. Bitte versuchen Sie es erneut.</string>
+  <string name="profile_footer_option">Zeige \"Gesendet mit Criptext\".</string>
+  <string name="job_backup_notification">Hintergrund-Backup-Servicebenachrichtigung</string>
+  <string name="uploading_to_google_drive">Hochladen auf Google Drive…</string>
+  <string name="upload_to_google_drive_success">Upload erfolgreich!</string>
+  <string name="login_fail_try_again_error_with_exception">Fehler beim Authentifizieren des Benutzers. Fehler: %1$s.</string>
+  <string name="open_email_notification_text">📩 Die E-Mail \"%1$s\" wurde geöffnet.</string>
+  <string name="rate_us_title">Gefällt Ihnen Criptext?</string>
+  <string name="rate_us_message">Wenn ja, nehmen Sie sich bitte einen Moment Zeit, um es zu bewerten. Danke für Ihre Unterstützung!</string>
+  <string name="rate_us">Bewerten Sie uns</string>
+  <string name="rate_remind_later">Später erinnern</string>
+  <string name="username_is_not_criptext">Keine gültige Criptext-Adresse oder Benutzername.</string>
+  <string name="rate_no_thanks">Nein
+Danke</string>
+  <string name="title_delete_label">Label löschen</string>
+  <string name="message_delete_label">Sind Sie sicher, dass Sie Label %1$s löschen möchten?</string>
+  <string name="error_deleting_label">Fehler beim Löschen Label. Bitte versuchen Sie es erneut</string>
+  <string name="recovery_code">
+    <u>Send Recovery Code</u>
+  </string>
+  <string name="recovery_code_dialog_title">Recovery Code</string>
+  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
+  <string name="recovery_code_dialog_hint">Code</string>
+  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
+  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
+  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+</resources>
