@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="auto_backup_options">
+    <item>Daily</item>
+    <item>Weekly</item>
+    <item>Monthly</item>
+    <item>Off</item>
+  </string-array>
+  <string-array name="pin_lock_auto_options">
+    <item>Немедленно</item>
+    <item>1 минута</item>
+    <item>5 минут</item>
+    <item>15 минут</item>
+    <item>1 час</item>
+    <item>24 часа</item>
+  </string-array>
+  <string-array name="wifi_backup_options">
+    <item>Wifi only</item>
+    <item>Wifi or cellular</item>
+  </string-array>
+  <string name="app_name">Criptext</string>
+  <string name="tour_title1">Добро пожаловать в Criptext!</string>
+  <string name="mk_label_yesterday">Вчера</string>
+  <string name="mk_label_today">Сегодня</string>
+  <string name="error_no_app_for_file">Возможно, у вас нет нужного приложения для просмотра данного контента</string>
+  <string name="web_view_open_in_chrome">Открыто в %1$s</string>
+  <string name="attachment_limit_reached">Разрешено только %1$d приложений в одном электронном письме.</string>
+  <string name="attachment_history_opened">открыто:</string>
+  <string name="title_sync">Синхронизация почтового ящика</string>
+  <string name="link_auth_title">Аутентификация устройства</string>
+  <string name="link_auth_sub_title">Хотите одобрить?</string>
+  <string name="link_auth_message">%1$s </string>
+  <string name="establishing">Установление безопасного соединения</string>
+  <string name="cancel_sync">Отмена синхронизации</string>
+  <string name="device_ready">Устройство готово</string>
+  <string name="preparing_mailbox">Шифрование почтового ящика</string>
+  <string name="getting_keys">Получение ключей</string>
+  <string name="uploading_mailbox">Загрузка почтового ящика</string>
+  <string name="mailbox_upload_successful">Почтовый ящик успешно загружен!</string>
+  <string name="keep_waiting_title">Что-то выглядит странным...</string>
+  <string name="keep_waiting_message">Что-то произошло, что замедляет данный процесс. Хотите немного подождать?</string>
+  <string name="sending_keys">Отправка ключей</string>
+  <string name="waiting_for_mailbox">Ожидание почтового ящика</string>
+  <string name="downloading_mailbox">Скачивание почтового ящика</string>
+  <string name="processing_mailbox">Шифрование почтового ящика</string>
+  <string name="sync_complete">Синхронизация выполнена!</string>
+  <string name="push_approve">Одобрить</string>
+  <string name="push_deny">Отклонить</string>
+  <string name="push_link_error_title">Проверка устройства</string>
+  <string name="push_link_error_message_approve">Ошибка одобрения устройства, отправить запрос аутентификации заново.</string>
+  <string name="push_link_error_message_deny">Ошибка отклонения устройства. Проверьте свое интернет соединение.</string>
+  <string name="push_read">Отметить прочитанным</string>
+  <string name="push_trash">Удалить</string>
+  <string name="push_reply">Ответить</string>
+  <string name="push_email_error_title">Новое письмо</string>
+  <string name="push_email_update_mailbox_title">Проверить свою почту</string>
+  <string name="push_email_update_mailbox_body">У вас возможно имеются новые письма.</string>
+  <string name="push_mail_error_message_read">Ошибка в отметке данного письма прочитанным. Проверьте свое интернет соединение.</string>
+  <string name="push_mail_error_message_trash">Ошибка отправки данного письмо в корзину. Проверьте свое интернет соединение.</string>
+  <string name="new_email_snack">У вас ( %1$d )новых сообщений</string>
+  <string name="send">Отправить</string>
+  <string name="save">Сохранить</string>
+  <string name="archive">Архивировать</string>
+  <string name="delete">Удалить</string>
+  <string name="delete_permanent">Удалить навсегда</string>
+  <string name="forward">Переслать</string>
+  <string name="unsend">Отменить отправку</string>
+  <string name="mailbox_add_labels">Добавить ярлыки</string>
+  <string name="mailbox_not_spam">Не спам</string>
+  <string name="mailbox_not_trash">Извлечь из корзины</string>
+  <string name="mailbox_move_to">Перевести в</string>
+  <string name="empty_trash_banner">Электронные письма, находящиеся в корзине автоматически удаляются через 30 дней.</string>
+  <string name="empty_trash">Очистить корзину</string>
+  <string name="reply_all">Ответить всем</string>
+  <string name="slider_inbox">Входящие</string>
+  <string name="slider_draft">Черновики</string>
+  <string name="slider_starred">Отмеченные звездочкой</string>
+  <string name="slider_sent">Отправленные</string>
+  <string name="slider_junk">Спам</string>
+  <string name="slider_trash">Корзина</string>
+  <string name="slider_labels">Ярлыки</string>
+  <string name="slider_allmail">Вся почта</string>
+  <string name="slider_settings">Настройки</string>
+  <string name="slider_invite_friend">Пригласить друга</string>
+  <string name="slider_support">Поддержка</string>
+  <string name="invite_title">Пригласить друга в Criptext!</string>
+  <string name="invite_text">Обратите внимание на Criptext, я пользуюсь им для скрытной и безопасной отправки сообщений любым пользователям! Получите его бесплатно на https://criptext.com/dl  </string>
+  <string name="sync_phonebook_text">Электронные адреса ваших контактов синхронизированы </string>
+  <string name="sync_phonebook_permission">Для синхронизации контактов в телефонной книге, требуется разрешение на прочтение контактов.</string>
+  <string name="sync_dialog_title">Доступ к контактам телефонной книги</string>
+  <string name="sync_dialog_message">Это позволит Criptext предлагать адреса электронной почты с вашей телефонной книги при создании сообщений.
+
+Хотите подключить контакты телефонной книги?</string>
+  <string name="error_sync_contact">Нет контактов </string>
+  <string name="already_sync_contact">Контакты уже синхронизированы.</string>
+  <string name="start_guide_unsend_button">Откройте данное меню для нахождения кнопки отмены отправки </string>
+  <string name="start_guide_email_read">Кажется, данное письмо было прочитано</string>
+  <string name="start_guide_secure_attachments">Добавить безопасные приложения</string>
+  <string name="start_guide_multiple_conversations">Нажмите и удерживайте для выбора нескольких цепочек сообщений</string>
+  <string name="start_guide_notification">Проверка читателей ваших сообщений</string>
+  <string name="start_guide_email">Нажмите для создания безопасного сообщения</string>
+  <string name="title_swipe">Проведите пальцем для выбора параметров</string>
+  <string name="title_profile_name">Имя профиля</string>
+  <string name="title_privacy_policy">Политика конфиденциальности</string>
+  <string name="title_terms_of_service">Условия использования</string>
+  <string name="title_open_source_libraries">Библиотеки с открытым исходным кодом</string>
+  <string name="title_logout">Выйти</string>
+  <string name="title_delete_account">Удалить учетную запись</string>
+  <string name="title_remove_device">Удалить устройство</string>
+  <string name="title_enter_password">Введите свой пароль для продолжения</string>
+  <string name="title_custom_dialog">Новый ярлык</string>
+  <string name="hint_custom_dialog">Введите имя</string>
+  <string name="title_profile_photo">Фотография профиля</string>
+  <string name="title_change_password">Изменить пароль</string>
+  <string name="title_sync_phonebook">Синхронизировать контакты телефонной книги</string>
+  <string name="title_recovery_email">Электронная почта для восстановления</string>
+  <string name="title_signature">Подпись</string>
+  <string name="title_signature_cap">ПОДПИСЬ</string>
+  <string name="title_recovery_email_cap">ЭЛЕКТРОННАЯ ПОЧТА ДЛЯ ВОССТАНОВЛЕНИЯ</string>
+  <string name="title_change_password_cap">ИЗМЕНИТЬ ПАРОЛЬ</string>
+  <string name="title_allow_notifications">Разрешить уведомления</string>
+  <string name="title_allow_preview">Предварительный просмотр уведомления</string>
+  <string name="title_two_fa">Двухуровневая авторизация</string>
+  <string name="title_read_receipts">Прочитать подтверждения получения</string>
+  <string name="title_privacy">Конфиденциальность и безопасность</string>
+  <string name="title_badges">Значок уведомления в иконке приложения</string>
+  <string name="title_sounds">Звуки</string>
+  <string name="separator_account">УЧЕТНАЯ ЗАПИСЬ</string>
+  <string name="separator_about">ИНФОРМАЦИЯ</string>
+  <string name="status_not_confirmed">(не проверено)</string>
+  <string name="status_confirmed">(проверено)</string>
+  <string name="criptext_version">Criptext Beta</string>
+  <string name="password_enter_error">Пароль неправильный.</string>
+  <string name="change_password_success">Пароль изменен.</string>
+  <string name="old_password">Ввести старый пароль</string>
+  <string name="new_password">Ввести новый пароль</string>
+  <string name="new_confirm_password">Повторить новый пароль</string>
+  <string name="device_last_activity">Последнее посещение</string>
+  <string name="device_last_activity_time">\t%1$s</string>
+  <string name="device_last_activity_time_2_months">\t Более 2 месяцев назад.</string>
+  <string name="recovery_email_title">Текущий</string>
+  <string name="button_resend_confirmation">Отправить ссылку заново</string>
+  <string name="recovery_confirmation_resend_failed">При отправке ссылки подтверждения произошла ошибка. Попробуйте позже.</string>
+  <string name="resend_confirmation_dialog_message">Проверьте почту на наличие письма от Criptext и нажмите на ссылку для подтверждения электронной почты для восстановления.</string>
+  <string name="resend_confirmation_dialog_title">Ссылка подтверждения отправлена.</string>
+  <string name="recovery_email_hint">Ввести новую электронную почту для восстановления</string>
+  <string name="change_email_title">Новый</string>
+  <string name="change_email_note"><b> Примечание: </b> Изменение вашей электронной почты отключит двухуровневую авторизацию.</string>
+  <string name="button_change_email_confirm">Изменить электронную почту</string>
+  <string name="recovery_email_has_changed">Электронная почта для восстановления успешно изменена</string>
+  <string name="recovery_email_change_fail_same">Электронной почтой для восстановления является %1$s</string>
+  <string name="two_fa_button">Понятно!</string>
+  <string name="title_warning_two_fa">
+    <b>Электронная почта для восстановления не настроена</b>
+  </string>
+  <string name="title_enabled_two_fa">
+    <b>Двухуровневая авторизация включена!</b>
+  </string>
+  <string name="message_enabled_two_fa">В следующий раз, когда вы осуществите вход из другого устройства, вам нужно будет ввести свой пароль и затем активировать вход из существующего устройства.</string>
+  <string name="message_warning_two_fa">Для включения двухуровневой авторизации, вы должны настроить и подтвердить электронную почту для восстановления в вашей учетной записи</string>
+  <string name="message_warning_2_two_fa">
+    <b>Для выполнения данного шага, зайдите в Настройки &gt; Электронная почта для восстановления.</b>
+  </string>
+  <string name="forgot_password_title">Восстановление пароля</string>
+  <string name="forgot_password_title_no_recovery">Нет электронной почты для восстановления</string>
+  <string name="forgot_password_message"><![CDATA[Ссылка на восстановление пароля была отправлена на:
+
+<b>%1$s</b>
+
+Срок действия ссылки истечет через 30 минут. ]]></string>
+  <string name="forgot_password_message_no_recovery">Восстановление пароля невозможно в связи с отсутствием электронной почты для восстановления в вашей учетной записи. Для получения помощи, напишите на:
+
+<b>support@criptext.com</b></string>
+  <string name="forgot_password_error">Ошибка связи с сервером, попробуйте позже</string>
+  <string name="forgot_password_error_400">Электронная почта для восстановления не настроена или утверждена для данной учетной записи. Без нее вы не можете восстановить пароль.</string>
+  <string name="change_password_current">Текущий</string>
+  <string name="change_password_new">Новый</string>
+  <string name="remote_change_password_advice">Подтвердите свой новый пароль.
+Если отмените, то устройство будет отключено и все локальные данные <b>будут удалены.</b></string>
+  <string name="update_password_success">Пароль обновлен для данного устройства.</string>
+  <string name="title_remote_change_password">Ваш пароль изменен</string>
+  <string name="logout_dialog_message">Вы уверены, что хотите выйти?</string>
+  <string name="logout_dialog_message_2_fa">Так как это ваше единственное активное устройство, <b> двухуровневая авторизация будет отключена</b> если вы выйдете из устройства. Хотите продолжить?</string>
+  <string name="login_out_dialog_message">Выход...</string>
+  <string name="delete_account_dialog_title">Удалить учетную запись</string>
+  <string name="delete_account_dialog_message"><b>ПРЕДУПРЕЖДЕНИЕ:</b> Удаление вашей учетной записи приведет к удалению всей почты и данных учетной записи на всех устройствах, а также к блокировке вашего имени пользователя в будущем.
+Вы уверены, что хотите удалить учетную запись?</string>
+  <string name="delete_account_toast_message">Учетная запись успешно удалена.</string>
+  <string name="remove_device_dialog_message">Удаления данного устройства приведет к удаленному выходу из вашей учетной записи.</string>
+  <string name="removing_device_dialog_message">Удаление устройства...</string>
+  <string name="privacy_toolbar_title">КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ</string>
+  <string name="pin_lock_switch_text">Использовать PIN блокировку</string>
+  <string name="pin_lock_change">Изменить PIN код</string>
+  <string name="pin_lock_auto">Автоблокировка</string>
+  <string name="pin_lock_message_1">Если вы забыли свой PIN код, то вам следует осуществить выход и зайти заново.</string>
+  <string name="pin_lock_message_2"><b>Предупреждение:</b> 10 безуспешных попыток к тому, что все данные будут удалены из приложения в целях безопасности.</string>
+  <string name="attempts_remaining">Неправильный PIN, осталось %1$d попыток.</string>
+  <string name="attempts_remaining_critical"><![CDATA[<b>ВНИМАНИЕ:</b> %1$d попыток осталось до удаления данных.]]></string>
+  <string name="pin_forgot_dialog_title">Выйти</string>
+  <string name="pin_forgot_dialog_message">Вы уверены, что хотите выйти?</string>
+  <string name="pin_code_forgot_text">
+    <u>Выход</u>
+  </string>
+  <string name="pin_code_step_disable">Отключить PIN</string>
+  <string name="pin_code_step_create">Создать PIN код</string>
+  <string name="pin_code_step_change">Введите свой текущий PIN код</string>
+  <string name="pin_code_step_unlock">Введите свой PIN код для разблокировки входящих писем</string>
+  <string name="pin_code_step_enable_confirm">Подтвердите свой PIN код</string>
+  <string name="notification_preview_message">Предварительный просмотр сообщений во Всплывающих уведомлениях.</string>
+  <string name="read_receipts_message">При отключении, вы не будете знать, прочтены ли ваши сообщения.</string>
+  <string name="pin_code_fingerprint_text">Отпечаток пальца</string>
+  <string name="pin_code_fingerprint_success">Отпечаток пальца принят</string>
+  <string name="pin_code_fingerprint_not_recognized">Отпечаток пальца не принят. Попробуйте заново</string>
+  <string name="title_non_criptext_mail_dialog">Получатель, не пользующийся Criptext</string>
+  <string name="set_pass_non_criptext_mail_dialog">Отправить в зашифрованном виде</string>
+  <string name="set_pass_detail_non_criptext_mail_dialog">Назначить кодовую фразу и отправить ее получателям, не пользующимся Criptext, чтобы они могли читать ваши сообщения. </string>
+  <string name="pass_hint_non_criptext_email_dialog">Кодовая фраза</string>
+  <string name="switch_off_non_criptext_email_dialog"><b>Примечание:</b> почтовые адреса, не имеющие Criptext получат обычные, незашифрованные письма.</string>
+  <string name="subtitle_expiration_dialog">Зашифрованные сообщения получателям, не пользующимся Criptext будут действовать в течение 10 дней</string>
+  <string name="unsent">Не отправлено</string>
+  <string name="password_length_error">Пароль должен содержать как минимум 8 знаков.</string>
+  <string name="password_mismatch_error">Пароли не совпадают</string>
+  <string name="taken_username_error">Данное имя пользователя не доступно.</string>
+  <string name="username_doesnt_exist">Имя пользователя не существует</string>
+  <string name="username_invalid_error">Неправильное имя пользователя.</string>
+  <string name="username_length_error">Имя пользователя должно содержать как минимум 3 знака.</string>
+  <string name="email_invalid_error">Неправильное название электронной почты.</string>
+  <string name="fullname_length_error">Название слишком длинное.</string>
+  <string name="fullname_empty_error">Название не может быть пустым.</string>
+  <string name="fullname_hint">ФИО</string>
+  <string name="recovery_optional_hint">Электронная почта для восстановления (необязательно)</string>
+  <string name="username_hint">Имя пользователя</string>
+  <string name="login">Вход</string>
+  <string name="login_body">Проверьте и разрешите на своем существующем устройстве Criptext для продолжения.</string>
+  <string name="didnt_get_prompt">Не получили подсказку?</string>
+  <string name="not_approved">Предупреждение: Множественные отклонения могут привести к тому, что ваше устройство будет внесено в черный список Criptext.</string>
+  <string name="button_resendit">Заново отправить</string>
+  <string name="cant_access_device">
+    <u>Войти с паролем?</u>
+  </string>
+  <string name="title_failed">Вход отклонен</string>
+  <string name="login_rejected">Устройство отклонено.</string>
+  <string name="creating_keys">Создание ключей</string>
+  <string name="too_many_login_attempts">Слишком много попыток входа, попробуйте позже.</string>
+  <string name="too_many_devices">Вход со слишком большого количество устройств.</string>
+  <string name="no_devices_available">Нет устройств для установления подлинности данного устройства.</string>
+  <string name="sign_in_warning_dialog_message"><![CDATA[Вход с помощью другой учетной записи 
+        <b>приведет к удалению всех почтовых сообщений</b>, хранящихся на данном устройстве, принадлежащей учетной записи  
+
+ <b>%1$s</b>
+
+
+       Хотите продолжить?]]></string>
+  <string name="sign_in_warning_dialog_title">Предупреждение о входе</string>
+  <string name="password_warning_dialog_title">Предупреждение</string>
+  <string name="password_warning_dialog_message">Если вы осуществите вход с помощью вашего пароля, ваша
+        <b>история почтовых сообщений из других устройств не будет доступна</b> на данном устройстве. Хотите продолжить?</string>
+  <string name="slide_1_title">
+    <b>Добро пожаловать!</b>
+  </string>
+  <string name="slide_1_text">Ваш безопасный сеанс использования начнется сейчас. Будьте готовы к конфиденциальности без подвергания рискам.</string>
+  <string name="slide_2_title">
+    <b>Мощная конфиденциальность</b>
+  </string>
+  <string name="slide_2_text">Criptext не собирает данные электронной почты. Ваши сообщения хранятся только на вашем устройстве.</string>
+  <string name="slide_3_title">
+    <b>Мощь принадлежит вам</b>
+  </string>
+  <string name="slide_3_text">Вы создаете информацию, и мы верим, что вы имеете право на владение ей.</string>
+  <string name="new_secure_email">Новое безопасное сообщение</string>
+  <string name="password">Пароль</string>
+  <string name="confirm_password">Подтвердите пароль</string>
+  <string name="sending_email">Отправка сообщения...</string>
+  <string name="documents">Документы</string>
+  <string name="photo_library">Библиотека фотографий</string>
+  <string name="camera">Камера</string>
+  <string name="inbox">Входящие</string>
+  <string name="device_removed">Устройство успешно удалено</string>
+  <string name="titulo_mailbox">Входящие</string>
+  <string name="titulo_mailbox_sent">Отправленные</string>
+  <string name="titulo_mailbox_draft">Черновики</string>
+  <string name="titulo_mailbox_starred">Отмеченные звездой</string>
+  <string name="titulo_mailbox_spam">Спам</string>
+  <string name="titulo_mailbox_trash">Корзина</string>
+  <string name="titulo_mailbox_all_mail">Вся почта</string>
+  <string name="title_settings">НАСТРОЙКИ</string>
+  <string name="spam">Спам</string>
+  <string name="cancel">Отмена</string>
+  <string name="ok">Хорошо</string>
+  <string name="accept">Принять</string>
+  <string name="trash">Корзина</string>
+  <string name="more">Дополнительные параметры</string>
+  <string name="only_more">еще</string>
+  <string name="criptext_com">\@criptext.com</string>
+  <string name="sign_up">Подписаться</string>
+  <string name="not_registered">Не зарегистрированы?</string>
+  <string name="recover_email_warning_content_start_title">Предупреждение!</string>
+  <string name="recover_email_warning_content_start">Вы не установили адрес электронной почты для восстановления, поэтому  <b>восстановление аккаунта будет невозможно</b>, если вы забудете ваш пароль</string>
+  <string name="delete_thread_warning">Вы уверены, что хотите удалить выбранный поток (потоки) БЕЗВОЗВРАТНО?</string>
+  <string name="empty_trash_warning">Вы уверены, что хотите удалить электронное сообщение (сообщения) в Корзине БЕЗВОЗВРАТНО?</string>
+  <string name="delete_email_warning">Вы уверены, что хотите удалить этот адрес электронной почты БЕЗВОЗВРАТНО?</string>
+  <string name="trash_is_now_empty">Теперь корзина пуста.</string>
+  <string name="sign_up_terms_and_conditions_start">Я прочитал(а) и согласен(-на) с</string>
+  <string name="sign_up_terms_and_conditions_end">Условиями</string>
+  <string name="btn_create_account">Зарегистрироваться</string>
+  <string name="txt_create_criptext_account">Создайте свой аккаунт Criptext</string>
+  <string name="yes">Да</string>
+  <string name="no">Нет</string>
+  <string name="btn_continue">Продолжить</string>
+  <string name="btn_continue_with_time">Продолжить(%1$d)</string>
+  <string name="discard">Сбросить</string>
+  <string name="search_email">Искать адрес электронной почты</string>
+  <string name="activity_feed">ЛЕНТА АКТИВНОСТИ</string>
+  <string name="noactivity">Еще нет ничего нового</string>
+  <string name="enjoy_your_day">Хорошего дня</string>
+  <string name="mute">Выключить звук</string>
+  <string name="unmute">Включить звук</string>
+  <string name="invalid_address_error">\"%1$s\" является недействительным адресом. Проверьте поле ввода \"%2$s\".</string>
+  <string name="no_recipients_error">Вам нужен хотя бы один получатель.</string>
+  <string name="title_activity_composer">Новое защищенное электронное сообщение</string>
+  <string name="preparing_file">Идет подготовка файла...</string>
+  <string name="too_many_files">Уже прикреплено слишком много файлов. Максимальное количество - 10.</string>
+  <string name="stay_in_composer_title">Ожидающие вложения</string>
+  <string name="stay_in_composer_message">Загружаются некоторые вложения.
+Вы хотите сбросить их и продолжить?</string>
+  <string name="wait_for_attachments">Подождите, пока завершится обработка ваших вложений.</string>
+  <string name="message">Сообщение</string>
+  <string name="subject">Тема</string>
+  <string name="error_moving_threads">Ошибка переноса потоков. Повторите попытку</string>
+  <string name="error_updating_labels">Ошибка обновления этикеток электронной почты. Повторите попытку</string>
+  <string name="error_updating_status">Ошибка обновления статуса электронного сообщения. Повторите попытку</string>
+  <string name="error_moving_emails">Ошибка перемещения электронного сообщения. Повторите попытку</string>
+  <string name="error_getting_counters">Ошибка получения счетчиков этикеток. Повторите попытку</string>
+  <string name="error_getting_email">Ошибка получения адреса электронной почты. Повторите попытку</string>
+  <string name="error_updating_account">Ошибка обновления аккаунта пользователя. Повторите попытку</string>
+  <string name="error_login_out">Ошибка выхода. Повторите попытку</string>
+  <string name="error_listing_devices">Ошибка получения списка ваших устройств от сервера.</string>
+  <string name="error_getting_labels">Ошибка получения этикеток. Повторите попытку</string>
+  <string name="error_creating_labels">Ошибка создания этикетки. Повторите попытку</string>
+  <string name="error_getting_contacts">Ошибка получения контактов. Повторите попытку</string>
+  <string name="error_saving_as_draft">Ошибка сохранения адреса электронной почты. Повторите попытку</string>
+  <string name="error_saving_too_many_recipients">	
+Ошибка сохранения адреса электронного сообщения. Достигнуто предельное число получателей: %1$d</string>
+  <string name="error_checking_availability">Ошибка проверки наличия имени пользователя</string>
+  <string name="you_wanna_save">Вы хотите сохранить это в качестве черновика?</string>
+  <string name="unable_to_upload">Не удается загрузить %1$s. Повторите попытку</string>
+  <string name="error_attach_file">Файл слишком большой</string>
+  <string name="error_downloading_file">Не удается загрузить файл. Повторите попытку</string>
+  <string name="composer_load_error">Произошла непредвиденная ошибка при загрузке данных составителя.</string>
+  <string name="network_error_exception">Не удалось зарегистрировать пользователя. Проверьте ваше подключение к Интернету.</string>
+  <string name="json_error_exception">	
+Не удалось зарегистрировать пользователя. Неверный ответ сервера.</string>
+  <string name="device_removed_remotely_exception">Это устройство было удалено.</string>
+  <string name="fail_register_try_again_error_exception">Не удалось зарегистрировать пользователя. Повторите попытку позже.</string>
+  <string name="send_network_error">Не удалось отправить электронное сообщение. Проверьте ваше подключение к Интернету.</string>
+  <string name="send_limit_reached">Не удалось отправить электронное сообщение. Достигнуто максимальное количество электронных сообщений. Повторите попытку позже.</string>
+  <string name="send_json_error">Не удалось отправить электронное сообщение. Неверный ответ сервера.</string>
+  <string name="send_bad_status">Не удалось отправить электронное сообщение. Неверный код состояния: %1$s</string>
+  <string name="send_try_again_error">Не удалось отправить электронное сообщение. Повторите попытку позже.</string>
+  <string name="login_network_error_exception">Не удалось аутентифицировать пользователя. Проверьте ваше подключение к Интернету.</string>
+  <string name="login_json_error_exception">Не удалось аутентифицировать пользователя. Неверный ответ сервера.</string>
+  <string name="login_fail_try_again_error_exception">Не удалось аутентифицировать пользователя. Повторите попытку позже.</string>
+  <string name="login_failed_body">Ваш запрос доступа к этому аккаунту был отклонен проверенным устройством.</string>
+  <string name="login_user">estocambia@criptex.com</string>
+  <string name="button_confirm">Подтвердить</string>
+  <string name="forgot_password">Забыли пароль?</string>
+  <string name="reply">Ответить</string>
+  <string name="mark_as_read">Пометить как прочитанное</string>
+  <string name="mark_as_spam">Пометить как спам</string>
+  <string name="print">Печатать</string>
+  <string name="mark_as_unread">Пометить как непрочитанное</string>
+  <string name="criptextdotcom">gcarlo\@criptext.com</string>
+  <string name="failed_getting_labels">Не удалось получить этикетки.</string>
+  <string name="fail_unsend_email">Не удалось отменить отправку электронного сообщения. Повторите попытку позже.</string>
+  <string name="fail_unsend_email_expired">Не удалось отменить отправку электронного сообщения. Время (1ч) для отмены отправки уже истекло.</string>
+  <string name="failed_getting_emails">Не удалось получить электронные сообщения. Повторите попытку позже.</string>
+  <string name="failed_empty_trash">Не удалось удалить электронное сообщение(-я). Повторите попытку позже.</string>
+  <string name="nothing_to_update">Обновлять нечего.</string>
+  <string name="failed_searching_emails">Не удалось извлечь электронные сообщения. Повторите попытку позже.</string>
+  <string name="updating_mailbox">Идет обновление почтового ящика...</string>
+  <string name="email_already_decrypted">Почтовый ящик уже обновлен!</string>
+  <string name="failed_to_create_link_device_file">Произошел сбой процесса подключения устройства. Повторите попытку позже.</string>
+  <string name="server_error_exception">Ошибка сервера. Повторите попытку позже.</string>
+  <string name="server_bad_status">Не удалось связаться с сервером. Неверный код состояния: %1$s</string>
+  <string name="too_many_requests_exception_hour">Слишком много последовательных попыток. Повторите попытку через %1$d час(ов).</string>
+  <string name="too_many_requests_exception_minute">Слишком много последовательных попыток. Повторите попытку через %1$d минут.</string>
+  <string name="too_many_requests_exception_no_time_found">Слишком много последовательных попыток. Повторите попытку.</string>
+  <string name="payload_too_large">Файл %1$s превышает %2$s</string>
+  <string name="web_socket_error">Неопознанное событие сервера. Код события: %1$d</string>
+  <string name="nosubject">(Нет темы)</string>
+  <string name="nocontent">(Нет содержимого)</string>
+  <string name="unknown">Неизвестный</string>
+  <string name="to">Кому</string>
+  <string name="to_me">Мне</string>
+  <string name="label_as">Пометить как</string>
+  <string name="email_sent">Электронное сообщение отправлено</string>
+  <string name="from_popup">От:</string>
+  <string name="to_popup">Кому:\u0020\u0020</string>
+  <string name="cc_popup">Копия:\u0020\u0020</string>
+  <string name="bcc_popup">Скрытая копия:\u0020</string>
+  <string name="reply_popup">Ответить:</string>
+  <string name="date_popup">Дата:</string>
+  <string name="subject_popup">Тема:</string>
+  <string name="no_history">Отсутствует история поиска</string>
+  <string name="no_history_subtitle">Выполните ваш первый поиск</string>
+  <string name="no_mails">У вас еще нет электронных сообщений</string>
+  <string name="no_mails_subtitle">Отправьте электронное сообщение, чтобы начать</string>
+  <string name="no_search_results">Поиск не дал результатов</string>
+  <string name="no_search_subtitle">Электронные сообщения из корзины и папки для спама не отображаются</string>
+  <string name="draft">Черновик</string>
+  <string name="on">Вкл.</string>
+  <string name="off">Выкл.</string>
+  <string name="write_signature">Поставьте здесь вашу подпись...</string>
+  <string name="draft_saved">Черновик сохранен</string>
+  <string name="profile_name_updated">Имя профиля обновлено</string>
+  <string name="show_label_in_list">Показать в списке этикеток</string>
+  <string name="new_label">Создать новую этикетку</string>
+  <string name="current_device">Данное устройство</string>
+  <string name="general">Общие сведения</string>
+  <string name="labels">Этикетки</string>
+  <string name="devices">Устройства</string>
+  <string name="feed_opened">открыто:</string>
+  <string name="feed_downloaded">загружено:</string>
+  <string name="feed_new">НОВОЕ</string>
+  <string name="feed_older">БОЛЕЕ СТАРОЕ</string>
+  <string name="new_email_notification">Уведомление о новом электронном сообщении</string>
+  <string name="link_device_notification">Уведомление об аутентификации устройства</string>
+  <string name="error_notification">Уведомление об ошибке</string>
+  <string name="email_open_notification">Уведомление об открытии электронного сообщения</string>
+  <string name="full_mail_item_open_default">Давно известен тот факт, что читатель будет отвлекаться на содержание текста сайта, глядя на его дизайн. Смысл использования Lorem Ipsum в том, что он имеет более или менее нормальное распределение букв.</string>
+  <string name="push_link_device_message">Вы действительно хотите одобрить: %1$s?</string>
+  <string name="done_signature">ГОТОВО</string>
+  <string name="unsent_at">Не Отправлено:</string>
+  <string name="title_dark_theme">Темная Тема</string>
+  <string name="separator_appearance">ОФОРМЛЕНИЕ</string>
+  <string name="error_email_max_size">Число вложений в данном письме превышает допустимый предел: %1$s</string>
+  <string name="forwarded_message">Пересланное сообщение</string>
+  <string name="support_mail_line">Не пишите под этой чертой.</string>
+  <string name="reply_on">На</string>
+  <string name="reply_wrote">написал:</string>
+  <string name="mail_template_at">\@</string>
+  <string name="feed_someone">Кто-то</string>
+  <string name="see">См</string>
+  <string name="sync_device_notification">Уведомление о ручной аутентификации синхронизации</string>
+  <string name="manual_sync_dialog_message_1">Проверьте и подтвердите выполнение синхронизации с ваших устройств, где установлен Criptext.</string>
+  <string name="sync_version_incorrect">Вы не можете выполнить синхронизацию вашего почтового ящика с этого устройства; убедитесь, что оба устройства обновлены.</string>
+  <string name="sync_confirmation_dialog_title">Предупреждение о синхронизации</string>
+  <string name="sync_confirmation_dialog_message">Все данные вашего почтового ящика будут стерты и заменены данными почтового ящика с другого вашего устройства.
+<b>Вы уверены, что хотите продолжить?</b></string>
+  <string name="mailbox_sync_complete">Синхронизация почтового ящика закончена</string>
+  <string name="messages">Сообщения</string>
+  <string name="print_all">Печатать все</string>
+  <string name="update_now_title">Обновить сейчас!</string>
+  <string name="update_now_message"><b>Нажмите здесь,</b> чтобы установить последнюю версию Criptext и наслаждаться новыми функциями.</string>
+  <string name="empty_inbox_message_top">Папка «Входящие» пустая</string>
+  <string name="empty_inbox_message_bottom">Расслабьтесь и получайте удовольствие</string>
+  <string name="empty_spam_message_top">Спам отсутствует</string>
+  <string name="empty_spam_message_bottom">Прекрасно! Пусть так и будет</string>
+  <string name="empty_sent_message_top">Отправленные письма отсутствуют</string>
+  <string name="empty_sent_message_bottom">Давайте начнем</string>
+  <string name="empty_starred_message_top">Отмеченные письма отсутствуют</string>
+  <string name="empty_starred_message_bottom">Выделите нужные письма</string>
+  <string name="empty_trash_message_top">Корзина пуста</string>
+  <string name="empty_trash_message_bottom">Здесь действительно чисто!</string>
+  <string name="empty_draft_message_top">Черновики отсутствуют</string>
+  <string name="empty_draft_message_bottom">Здесь нечего делать</string>
+  <string name="empty_allmail_message_top">Писем нет</string>
+  <string name="empty_allmail_message_bottom">Совсем!</string>
+  <string name="update_now_title">Доступны обновления!</string>
+  <string name="update_now_message">Нажмите здесь, чтобы установить последнюю версию Criptext и наслаждаться новыми функциями.</string>
+  <string name="filter_unread">Показать непрочитанные</string>
+  <string name="filter_none">Показать все</string>
+  <string name="title_change_reply_to">Reply-to Email</string>
+  <string name="reply_to_email_hint">Enter new reply to email</string>
+  <string name="reply_to_email_has_changed">Reply To email changed successfully</string>
+  <string name="email_source_toolbar_title">EMAIL SOURCE</string>
+  <string name="email_source">Show Source</string>
+  <string name="title_reply_to_cap">REPLY TO EMAIL</string>
+  <string name="reply_to_email_removed">Reply To email removed successfully</string>
+  <string name="retry">Retry Send</string>
+  <string name="view_image">View Image</string>
+  <string name="save_image">Save Image</string>
+  <string name="move_to_downloads_success">Inline image was saved to: %1$s</string>
+  <string name="move_to_downloads_exists">Inline image is already in downloads</string>
+  <string name="title_profile">Profile</string>
+  <string name="profile_toolbar_title">PROFILE</string>
+  <string name="remove_picture">Remove Picture</string>
+  <string name="profile_picture_updated">Profile picture updated successfully</string>
+  <string name="profile_picture_update_failed">Error on updating profile picture</string>
+  <string name="profile_picture_deleted">Profile picture deleted successfully</string>
+  <string name="profile_picture_delete_failed">Error on deleting profile picture</string>
+  <string name="remove_picture">Remove Picture</string>
+  <string name="profile_picture_updated">Profile picture updated successfully</string>
+  <string name="profile_picture_update_failed">Error on updating profile picture</string>
+  <string name="profile_picture_deleted">Profile picture deleted successfully</string>
+  <string name="profile_picture_delete_failed">Error on deleting profile picture</string>
+  <string name="change_name_btn_text">Edit Name</string>
+  <string name="error_email_max_files_title">Files Capacity</string>
+  <string name="username_not_available_error">Username not available</string>
+  <string name="title_account">Account</string>
+  <string name="title_faq">FAQ</string>
+  <string name="separator_general">GENERAL</string>
+  <string name="devices_toolbar_title">DEVICES</string>
+  <string name="labels_toolbar_title">LABELS</string>
+  <string name="pin_toolbar_title">PIN LOCK</string>
+  <string name="username_not_available">Username not available</string>
+  <string name="drawer_add_account">Add an Existing Account</string>
+  <string name="drawer_create_account_account">Create an Account</string>
+  <string name="snack_bar_active_account">Now logged in as %1$s</string>
+  <string name="title_devices">Devices</string>
+  <string name="title_labels">Labels</string>
+  <string name="title_pin_lock">Pin Lock</string>
+  <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
+  <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
+  <string name="user_already_logged_in">Account already added!</string>
+  <string name="web_view_open_in_browser">Open in browser</string>
+  <string name="cloud_backup_toolbar_title">MAILBOX BACKUP</string>
+  <string name="title_cloud_backup">Mailbox Backup</string>
+  <string name="cloud_backup_switch">Backup to Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Create Backup</string>
+  <string name="cloud_backup_now">Backup Now</string>
+  <string name="cloud_backup_auto_backup">Auto Backup</string>
+  <string name="cloud_backup_change_google_account">Change Google Account</string>
+  <string name="cloud_backup_backup_over">Use Wifi Only</string>
+  <string name="cloud_backup_create_file">Create Backup File</string>
+  <string name="cloud_progress_upload_message">Uploading to Cloud (%1$d %%)</string>
+  <string name="cloud_backup_message_1">Backup your entire mailbox to Google Drive so that you can restore your Criptext account to a new device if you lose this device. Note: Google Drive backups are not encrypted and Criptext is not responsible for your Google Drive data.</string>
+  <string name="cloud_backup_message_2"><b>Note:</b> Auto Backup works only with cloud backup</string>
+  <string name="cloud_backup_create_file_progress_message">Please wait a moment… %1$d%%</string>
+  <string name="cloud_backup_share_intent_title">Share your file</string>
+  <string name="cloud_backup_share_intent_message">Sharing your mailbox…</string>
+  <string name="cloud_backup_passphrase_title">Export Backup File</string>
+  <string name="cloud_backup_passphrase_switch">Encrypt Backup</string>
+  <string name="cloud_backup_passphrase_on_message">If you lose/forget this passphrase you won\'t be able to restore this backup in the future</string>
+  <string name="cloud_backup_passphrase_off_message"><b>Note:</b> for your security we suggest you chose to encrypt the backup file.</string>
+  <string name="cloud_backup_size">
+    <b>Size: </b>
+  </string>
+  <string name="cloud_backup_last_modified">
+    <b>Last Backup: </b>
+  </string>
+  <string name="cloud_backup_backing_up">Backing up…</string>
+  <string name="cloud_backup_mb">(%1$d MB)</string>
+  <string name="restore_backup_dialog_title">Restore Backup</string>
+  <string name="restore_backup_dialog_message">Restore your emails from a local backup or Google Drive. This can be done later from Settings &gt; Mailbox Backup &gt; Restore Backup</string>
+  <string name="restore_backup_dialog_skip_restore">
+    <u>Skip Restore</u>
+  </string>
+  <string name="restore_backup_dialog_button">Restore from Drive</string>
+  <string name="restore_backup_title">Backup found</string>
+  <string name="restore_backup_title_encrypted">Encrypted backup found</string>
+  <string name="restore_backup_last_modified">Last Backup: %1$s</string>
+  <string name="restore_backup_size">Size: %1$d MB</string>
+  <string name="restore_backup_button">Restore</string>
+  <string name="restore_backup_not_found_message">Are you sure you chose the correct drive account?, maybe you should try again</string>
+  <string name="restore_backup_not_found_title">Backup not found</string>
+  <string name="restore_backup_fail_message">Something has happened that is delaying this process.</string>
+  <string name="restore_backup_fail_question">Do your want to keep trying?</string>
+  <string name="restore_backup_retry">Retry</string>
+  <string name="restore_backup_no_account">No Google Account Found</string>
+  <string name="restore_backup_restoring_title">Restoring…</string>
+  <string name="titulo_mailbox_custom">%1$s</string>
+  <string name="me">me</string>
+  <string name="no_account_to_sync">No account to sync.</string>
+  <string name="title_external_encryption">Encrypt for Unsecured Addresses</string>
+  <string name="email_hint">Email or Username</string>
+  <string name="privacy_encrypt_external">Get asked if you want to encrypt the email before sending it to an address that is outside the Criptext network. (I.e. Gmail)</string>
+  <string name="change_password_login_btn">Change Password</string>
+  <string name="change_password_login_title">Change the password for:</string>
+  <string name="account_suspended_dialog_title">Account Suspended</string>
+  <string name="account_suspended_dialog_message"><![CDATA[The account <b>%1$s</b> has been temporarily suspended by your administrator. Please contact your company administrator for more information.]]></string>
+  <string name="account_suspended_dialog_button">Switch Account</string>
+  <string name="account_suspended_sign_in_error">This account is suspended.</string>
+  <string name="profile_danger_separator">DANGER ZONE</string>
+  <string name="email_sent_secure">🔒 Email Sent</string>
+  <string name="start_guide_secure">Lock icon means this
+ email is encrypted.</string>
+  <string name="restore_backup_dialog_cancel_restore">
+    <u>Cancel Restore</u>
+  </string>
+  <string name="restore_backup_backed_up">Backed up: %1$s</string>
+  <string name="restore_backup_save_backup">Save</string>
+  <string name="export_backup_option">Export Backup File</string>
+  <string name="export_backup_option_explain">Generate a backup of your inbox that can be exported to external drives</string>
+  <string name="restore_backup_option">Restore Backup</string>
+  <string name="restore_backup_option_explain">Easily restore your mailbox from a local or cloud backup file</string>
+  <string name="restore_backup_local_title">Restore from Backup File</string>
+  <string name="restore_backup_local_dialog_button">Restore from local file</string>
+  <string name="restore_backup_change_button">Change File</string>
+  <string name="export_backup_file_ready">Backup File has been saved</string>
+  <string name="restore_backup_dialog_select_file">Select File</string>
+  <string name="restore_backup_version_incompatible">Your file version is incompatible</string>
+  <string name="restore_backup_account_incompatible">This file does not belong to this account</string>
+  <string name="restore_backup_fail">The selected file is either not a Criptext backup file or from an older version</string>
+  <string name="restore_backup_fail_title">Invalid File</string>
+  <string name="restore_backup_bad_file">The selected file is not a valid backup file.</string>
+  <string name="restore_backup_intent_title">Share backup or save it to files…</string>
+  <string name="sign_in_remove_message">You have reached the device limit (%1$d) on your account. Delete at least (%2$d) device in order to proceed. Once deleted, your active session on that device will be signed out.</string>
+  <string name="sign_in_remove_success_remaining">You must remove (%1$d) more devices before signing in.</string>
+  <string name="sign_in_remove_dialog_title">Remove Devices</string>
+  <string name="sign_in_remove_error_dialog_title">Session Expired</string>
+  <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
+  <string name="contact_support">Having trouble? <b>Contact Support</b></string>
+  <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
+  <string name="domain_validation_error">Failed to get Contacts Domain Validation (%1$d)</string>
+  <string name="contact_db_get_error">Failed to retrieve contacts from the local data base.</string>
+  <string name="from_db_get_error">Failed to get accounts from the local data base.</string>
+  <string name="general_network_error_exception">Network error. Please check your internet connection.</string>
+  <string name="copy_to_download_error">Error copying the file (%1$s) to downloads.</string>
+  <string name="unable_to_delete_draft">Error deleting draft. Ex: (%1$s)</string>
+  <string name="unable_to_move_email">Error moving email. Ex: (%1$s)</string>
+  <string name="local_error">Error making local changes. Ex: (%1$s)</string>
+  <string name="keybundle_get_error">Error getting key bundle. Ex: (%1$s)</string>
+  <string name="criptext_backup_not_found">Criptext backup not found.</string>
+  <string name="unknown_error">Unknown error. Ex: (%1$s)</string>
+  <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
+  <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
+  <string name="job_backup_notification">Background Backup Service Notification</string>
+  <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
+  <string name="upload_to_google_drive_success">Upload Successful!</string>
+  <string name="login_fail_try_again_error_with_exception">Failed to authenticate user. Error: %1$s.</string>
+  <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
+  <string name="rate_us_title">Enjoying Criptext?</string>
+  <string name="rate_us_message">If you do, please take a moment to rate it. Thanks for your support!</string>
+  <string name="rate_us">Rate
+Us</string>
+  <string name="rate_remind_later">Remind
+Later</string>
+  <string name="username_is_not_criptext">Not a valid Criptext address or username.</string>
+  <string name="rate_no_thanks">No
+Thanks</string>
+  <string name="title_delete_label">Delete Label</string>
+  <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
+  <string name="error_deleting_label">Error deleting label. Please try again</string>
+  <string name="recovery_code">
+    <u>Send Recovery Code</u>
+  </string>
+  <string name="recovery_code_dialog_title">Recovery Code</string>
+  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
+  <string name="recovery_code_dialog_hint">Code</string>
+  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
+  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
+  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+</resources>
