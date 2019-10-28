@@ -605,9 +605,9 @@
   </string>
   <string name="recovery_code_dialog_title">Recovery Code</string>
   <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
-  <string name="recovery_code_dialog_message_with_email">Please check your recovery email, %1$s, and enter the code that was sent to you.</string>
   <string name="recovery_code_dialog_hint">Code</string>
   <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
   <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
   <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+  <string name="recovery_code_dialog_message_with_email">Please check your recovery email, %1$s, and enter the code that was sent to you.</string>
 </resources>
