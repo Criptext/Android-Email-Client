@@ -43,6 +43,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
     private val apiClient = SignUpAPIClient(httpClient)
     private val isValidate = code != null
     private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
+    private var emailAddress: String? = null
 
     override val canBeParallelized = true
 
@@ -55,7 +56,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
         val message = createErrorMessage(ex)
         if(!isValidate) {
             if (ex is ServerErrorException && ex.errorCode == ServerCodes.BadRequest)
-                return SignInResult.RecoveryCode.Success(isValidate)
+                return SignInResult.RecoveryCode.Success(isValidate, emailAddress)
         }
         return SignInResult.RecoveryCode.Failure(isValidate, message, ex)
     }
@@ -63,7 +64,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
     override fun work(reporter: ProgressReporter<SignInResult.RecoveryCode>): SignInResult.RecoveryCode? {
         val result = Result.of {
             if(!isValidate) {
-                apiClient.postTwoFAGenerateCode(recipientId, domain, jwt)
+                emailAddress = JSONObject(apiClient.postTwoFAGenerateCode(recipientId, domain, jwt).body).getString("address")
             } else {
                 val json = JSONObject(apiClient.postValidateTwoFACode(recipientId, domain, jwt, code!!).body)
                 val deviceId = json.getInt("deviceId")
@@ -79,7 +80,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.RecoveryCode.Success(isValidate)
+                SignInResult.RecoveryCode.Success(isValidate, emailAddress)
             }
             is Result.Failure -> catchException(result.error)
         }

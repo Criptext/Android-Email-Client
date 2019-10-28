@@ -402,7 +402,9 @@ class SignInSceneController(
                     scene.dismissRecoveryCodeDialog()
                     scene.showKeyGenerationHolder()
                 } else {
-                    scene.showRecoveryCode()
+                    val message = if(result.emailAddress == null) UIMessage(R.string.recovery_code_dialog_message)
+                    else UIMessage(R.string.recovery_code_dialog_message_with_email, arrayOf(result.emailAddress))
+                    scene.showRecoveryCode(message)
                 }
             }
             is SignInResult.RecoveryCode.Failure -> {

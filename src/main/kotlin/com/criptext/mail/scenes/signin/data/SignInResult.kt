@@ -29,7 +29,7 @@ sealed class SignInResult {
     }
 
     sealed class RecoveryCode: SignInResult() {
-        data class Success(val isValidate: Boolean): RecoveryCode()
+        data class Success(val isValidate: Boolean, val emailAddress: String?): RecoveryCode()
         data class Failure(val isValidate: Boolean, val message: UIMessage,
                 val exception: Exception): RecoveryCode()
     }
