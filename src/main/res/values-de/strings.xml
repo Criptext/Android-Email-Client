@@ -477,7 +477,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="reply_to_email_hint">Neue \'Antwort an\' E-Mail eingeben</string>
   <string name="reply_to_email_has_changed">\'Antwort an\' E-Mail erfolgreich geändert</string>
   <string name="email_source_toolbar_title">E-MAIL-QUELLE</string>
-  <string name="email_source">E-Mail-Quelle</string>
+  <string name="email_source">Quelle anzeigen</string>
   <string name="title_reply_to_cap">\'ANTWORT AN\' E-MAIL</string>
   <string name="reply_to_email_removed">\'Antwort an\' E-Mail erfolgreich entfernt</string>
   <string name="retry">Sendeversuch wiederholen</string>
@@ -553,7 +553,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="restore_backup_not_found_message">Sind Sie sicher, dass Sie das richtige Laufwerkskonto gewählt haben? Vielleicht sollten Sie es noch einmal versuchen.</string>
   <string name="restore_backup_not_found_title">Sicherung nicht gefunden</string>
   <string name="restore_backup_fail_message">Es ist etwas passiert, das diesen Prozess verzögert.</string>
-  <string name="restore_backup_fail_question">Wollen Sie es weiter versuchen?</string>
+  <string name="restore_backup_fail_question">Wollen Sie es weiter versuchen? </string>
   <string name="restore_backup_retry">Wiederholen</string>
   <string name="restore_backup_no_account">Kein Google-Konto gefunden</string>
   <string name="restore_backup_restoring_title">Wiederherstellung …</string>
@@ -561,7 +561,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="me">mir</string>
   <string name="no_account_to_sync">Kein Konto zum Synchronisieren.</string>
   <string name="title_external_encryption">E-Mails an Externe verschlüsseln</string>
-  <string name="email_hint">E-Mail-Adresse</string>
+  <string name="email_hint">E-Mail Adresse oder Benutzername</string>
   <string name="privacy_encrypt_external">Wenn Sie E-Mails an Nicht-Criptext-Konten senden, werden Sie immer gefragt, ob Sie diese E-Mail mit einem Passwort verschlüsseln möchten.</string>
   <string name="change_password_login_btn">Passwort ändern</string>
   <string name="change_password_login_title">Ändern Sie das Passwort für:</string>
@@ -622,18 +622,18 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="rate_us">Bewerten Sie uns</string>
   <string name="rate_remind_later">Später erinnern</string>
   <string name="username_is_not_criptext">Keine gültige Criptext-Adresse oder Benutzername.</string>
-  <string name="rate_no_thanks">Nein
-Danke</string>
+  <string name="rate_no_thanks">Nein\nDanke</string>
   <string name="title_delete_label">Label löschen</string>
   <string name="message_delete_label">Sind Sie sicher, dass Sie Label %1$s löschen möchten?</string>
   <string name="error_deleting_label">Fehler beim Löschen Label. Bitte versuchen Sie es erneut</string>
   <string name="recovery_code">
-    <u>Send Recovery Code</u>
-  </string>
-  <string name="recovery_code_dialog_title">Recovery Code</string>
-  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
+ <u> Wiederherstellungscode senden </u> 
+</string>
+  <string name="recovery_code_dialog_title">Wiederherstellungscode</string>
+  <string name="recovery_code_dialog_message">Bitte überprüfen Sie Ihre Wiederherstellungs-E-Mail und geben Sie den an Sie gesendeten Code ein.</string>
   <string name="recovery_code_dialog_hint">Code</string>
-  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
-  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
-  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+  <string name="recovery_code_dialog_error">Falscher Wiederherstellungscode</string>
+  <string name="recovery_code_validation_error">Der Wiederherstellungscode ist mindestens 6 Zeichen lang.</string>
+  <string name="recovery_code_validation_error_empty">Der Wiederherstellungscode darf nicht leer sein.</string>
+  <string name="recovery_code_dialog_message_with_email">Bitte überprüfen Sie Ihre Wiederherstellungs-E-Mail, %1$s , und geben Sie den an Sie gesendeten Code ein.</string>
 </resources>
