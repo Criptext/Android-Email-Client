@@ -603,6 +603,7 @@
   </string>
   <string name="recovery_code_dialog_title">Código de Recuperación</string>
   <string name="recovery_code_dialog_message">Por favor revisa tu correo de recuperación e introduce el código que te hemos enviado.</string>
+  <string name="recovery_code_dialog_message_with_email">Por favor revisa tu correo de recuperación, %1$s, e introduce el código que te hemos enviado.</string>
   <string name="recovery_code_dialog_hint">Código</string>
   <string name="recovery_code_dialog_error">Código de Recuperación Incorrecto</string>
   <string name="recovery_code_validation_error">El código de recuperación no puede ser menor a 6 dígitos.</string>
