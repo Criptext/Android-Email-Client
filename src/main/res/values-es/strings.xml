@@ -450,11 +450,11 @@
   <string name="title_change_reply_to">Cambiar Correo de Respuesta</string>
   <string name="reply_to_email_hint">Introduce un nuevo correo de respuesta</string>
   <string name="reply_to_email_has_changed">Correo de respuesta modificado exitosamente</string>
-  <string name="email_source_toolbar_title">FUENTE DEL CORREO</string>
+  <string name="email_source_toolbar_title">FUENTE DE EMAIL</string>
   <string name="email_source">Mostrar Original</string>
   <string name="title_reply_to_cap">CORREO DE RESPUESTA</string>
   <string name="reply_to_email_removed">Correo de respuesta removido exitosamente</string>
-  <string name="retry">Reintentar Envio</string>
+  <string name="retry">Reintentar Envío</string>
   <string name="view_image">Ver Imagen</string>
   <string name="save_image">Guardar Imagen</string>
   <string name="move_to_downloads_success">Imagen se guardó en: %1$s</string>
@@ -603,9 +603,9 @@
   </string>
   <string name="recovery_code_dialog_title">Código de Recuperación</string>
   <string name="recovery_code_dialog_message">Por favor revisa tu correo de recuperación e introduce el código que te hemos enviado.</string>
-  <string name="recovery_code_dialog_message_with_email">Por favor revisa tu correo de recuperación, %1$s, e introduce el código que te hemos enviado.</string>
   <string name="recovery_code_dialog_hint">Código</string>
   <string name="recovery_code_dialog_error">Código de Recuperación Incorrecto</string>
   <string name="recovery_code_validation_error">El código de recuperación no puede ser menor a 6 dígitos.</string>
   <string name="recovery_code_validation_error_empty">El código de recuperación no puede estar vacio.</string>
+  <string name="recovery_code_dialog_message_with_email">Por favor revisa tu correo de recuperación, %1$s, e introduce el código que te hemos enviado.</string>
 </resources>
