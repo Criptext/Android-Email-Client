@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="auto_backup_options">
-    <item>Daily</item>
-    <item>Weekly</item>
-    <item>Monthly</item>
-    <item>Off</item>
+    <item>du quotidien</item>
+    <item>Hebdomadaire</item>
+    <item>Mensuel</item>
+    <item>Désactiver</item>
   </string-array>
   <string-array name="pin_lock_auto_options">
     <item>Immédiatement</item>
@@ -15,8 +15,8 @@
     <item>24 heures</item>
   </string-array>
   <string-array name="wifi_backup_options">
-    <item>Wifi only</item>
-    <item>Wifi or cellular</item>
+    <item>Wifi seulement</item>
+    <item>Wifi ou cellulaire</item>
   </string-array>
   <string name="app_name">Criptext</string>
   <string name="tour_title1">Bienvenue sur Criptext !</string>
@@ -470,7 +470,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="reply_to_email_hint">Entrez la nouvelle Adresse de Réponse</string>
   <string name="reply_to_email_has_changed">Adresse de Réponse modifié avec succès</string>
   <string name="email_source_toolbar_title">EMAIL D\'ORIGINE</string>
-  <string name="email_source">Email D\'origine</string>
+  <string name="email_source">Voir L\'origine</string>
   <string name="title_reply_to_cap">RÉPONDRE À L’EMAIL</string>
   <string name="reply_to_email_removed">Adresse de Réponse supprimée avec succès</string>
   <string name="retry">Réessayer l\'Envoi</string>
@@ -487,145 +487,146 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="profile_picture_delete_failed">Erreur de suppression de la photo de profil</string>
   <string name="change_name_btn_text">Modifier le Nom</string>
   <string name="error_email_max_files_title">Taille des Fichiers</string>
-  <string name="username_not_available_error">Username not available</string>
-  <string name="title_account">Account</string>
+  <string name="username_not_available_error">Nom d\'utilisateur non disponible</string>
+  <string name="title_account">Compte</string>
   <string name="title_faq">FAQ</string>
-  <string name="separator_general">GENERAL</string>
-  <string name="devices_toolbar_title">DEVICES</string>
-  <string name="labels_toolbar_title">LABELS</string>
-  <string name="pin_toolbar_title">PIN LOCK</string>
-  <string name="username_not_available">Username not available</string>
-  <string name="drawer_add_account">Add an Existing Account</string>
-  <string name="drawer_create_account_account">Create an Account</string>
-  <string name="snack_bar_active_account">Now logged in as %1$s</string>
-  <string name="title_devices">Devices</string>
-  <string name="title_labels">Labels</string>
-  <string name="title_pin_lock">Pin Lock</string>
-  <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
-  <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
-  <string name="user_already_logged_in">Account already added!</string>
-  <string name="web_view_open_in_browser">Open in browser</string>
-  <string name="cloud_backup_toolbar_title">MAILBOX BACKUP</string>
-  <string name="title_cloud_backup">Mailbox Backup</string>
-  <string name="cloud_backup_switch">Backup to Google Drive</string>
-  <string name="cloud_backup_make_backup_button">Create Backup</string>
-  <string name="cloud_backup_now">Backup Now</string>
-  <string name="cloud_backup_auto_backup">Auto Backup</string>
-  <string name="cloud_backup_change_google_account">Change Google Account</string>
-  <string name="cloud_backup_backup_over">Use Wifi Only</string>
-  <string name="cloud_backup_create_file">Create Backup File</string>
-  <string name="cloud_progress_upload_message">Uploading to Cloud (%1$d %%)</string>
-  <string name="cloud_backup_message_1">Backup your entire mailbox to Google Drive so that you can restore your Criptext account to a new device if you lose this device. Note: Google Drive backups are not encrypted and Criptext is not responsible for your Google Drive data.</string>
-  <string name="cloud_backup_message_2"><b>Note:</b> Auto Backup works only with cloud backup</string>
-  <string name="cloud_backup_create_file_progress_message">Please wait a moment… %1$d%%</string>
-  <string name="cloud_backup_share_intent_title">Share your file</string>
-  <string name="cloud_backup_share_intent_message">Sharing your mailbox…</string>
-  <string name="cloud_backup_passphrase_title">Export Backup File</string>
-  <string name="cloud_backup_passphrase_switch">Encrypt Backup</string>
-  <string name="cloud_backup_passphrase_on_message">If you lose/forget this passphrase you won\'t be able to restore this backup in the future</string>
-  <string name="cloud_backup_passphrase_off_message"><b>Note:</b> for your security we suggest you chose to encrypt the backup file.</string>
+  <string name="separator_general">GÉNÉRAL</string>
+  <string name="devices_toolbar_title">DISPOSITIFS</string>
+  <string name="labels_toolbar_title">MARQUEURS</string>
+  <string name="pin_toolbar_title">VERROUILLAGE DU CODE PIN</string>
+  <string name="username_not_available">Nom d\'utilisateur non disponible</string>
+  <string name="drawer_add_account">Ajouter un compte existant</string>
+  <string name="drawer_create_account_account">Créer un compte</string>
+  <string name="snack_bar_active_account">Maintenant connecté en tant que %1$s</string>
+  <string name="title_devices">Périphériques</string>
+  <string name="title_labels">Marqueurs</string>
+  <string name="title_pin_lock">Verrouillage</string>
+  <string name="privacy_two_fa_message">Une validation secondaire pour protéger votre compte.</string>
+  <string name="privacy_read_receipts_message">Si cette option est désactivée, vous ne pourrez pas savoir quand d\'autres personnes liront vos e-mails.</string>
+  <string name="user_already_logged_in">Compte déjà ajouté!</string>
+  <string name="web_view_open_in_browser">Ouvrir dans le navigateur</string>
+  <string name="cloud_backup_toolbar_title">SAUVEGARDE</string>
+  <string name="title_cloud_backup">Sauvegarde de boîte aux lettres</string>
+  <string name="cloud_backup_switch">Sauvegarde sur Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Créer une sauvegarde</string>
+  <string name="cloud_backup_now">Sauvegarder maintenant</string>
+  <string name="cloud_backup_auto_backup">Sauvegarde automatique</string>
+  <string name="cloud_backup_change_google_account">Changer de compte Google</string>
+  <string name="cloud_backup_backup_over">Utiliser uniquement le Wifi</string>
+  <string name="cloud_backup_create_file">Créer un fichier de sauvegarde</string>
+  <string name="cloud_progress_upload_message">Téléchargement vers le cloud ( %1$d %% )</string>
+  <string name="cloud_backup_message_1">Sauvegardez l\'intégralité de votre boîte aux lettres sur Google Drive afin de pouvoir restaurer votre compte Criptext sur un nouvel appareil si vous perdez cet appareil. Remarque: les sauvegardes Google Drive ne sont pas cryptées et Criptext n\'est pas responsable de vos données Google Drive.</string>
+  <string name="cloud_backup_message_2"><b> Remarque: </b> Auto Backup fonctionne uniquement avec la sauvegarde sur le cloud.</string>
+  <string name="cloud_backup_create_file_progress_message">Veuillez patienter un instant… %1$d %%</string>
+  <string name="cloud_backup_share_intent_title">Partagez votre dossier</string>
+  <string name="cloud_backup_share_intent_message">Partage de votre boîte aux lettres…</string>
+  <string name="cloud_backup_passphrase_title">Exporter un fichier de sauvegarde</string>
+  <string name="cloud_backup_passphrase_switch">Chiffrer la sauvegarde</string>
+  <string name="cloud_backup_passphrase_on_message">Si vous perdez / oubliez cette phrase secrète, vous ne pourrez plus restaurer cette sauvegarde.</string>
+  <string name="cloud_backup_passphrase_off_message"><b> Remarque: </b> pour votre sécurité, nous vous conseillons de choisir de chiffrer le fichier de sauvegarde.</string>
   <string name="cloud_backup_size">
-    <b>Size: </b>
-  </string>
+ <b> Taille: </b> 
+</string>
   <string name="cloud_backup_last_modified">
-    <b>Last Backup: </b>
-  </string>
-  <string name="cloud_backup_backing_up">Backing up…</string>
-  <string name="cloud_backup_mb">(%1$d MB)</string>
-  <string name="restore_backup_dialog_title">Restore Backup</string>
-  <string name="restore_backup_dialog_message">Restore your emails from a local backup or Google Drive. This can be done later from Settings &gt; Mailbox Backup &gt; Restore Backup</string>
+ <b> Dernière sauvegarde: </b> 
+</string>
+  <string name="cloud_backup_backing_up">Sauvegarde…</string>
+  <string name="cloud_backup_mb">( %1$d Mo)</string>
+  <string name="restore_backup_dialog_title">Restaurer la sauvegarde</string>
+  <string name="restore_backup_dialog_message">Restaurez vos emails à partir d\'une sauvegarde locale ou de Google Drive. Cela peut être fait plus tard à partir de Paramètres &gt; Sauvegarde boîte aux lettres &gt; Restaurer la sauvegarde</string>
   <string name="restore_backup_dialog_skip_restore">
-    <u>Skip Restore</u>
-  </string>
-  <string name="restore_backup_dialog_button">Restore from Drive</string>
-  <string name="restore_backup_title">Backup found</string>
-  <string name="restore_backup_title_encrypted">Encrypted backup found</string>
-  <string name="restore_backup_last_modified">Last Backup: %1$s</string>
-  <string name="restore_backup_size">Size: %1$d MB</string>
-  <string name="restore_backup_button">Restore</string>
-  <string name="restore_backup_not_found_message">Are you sure you chose the correct drive account?, maybe you should try again</string>
-  <string name="restore_backup_not_found_title">Backup not found</string>
-  <string name="restore_backup_fail_message">Something has happened that is delaying this process.</string>
-  <string name="restore_backup_fail_question">Do your want to keep trying?</string>
-  <string name="restore_backup_retry">Retry</string>
-  <string name="restore_backup_no_account">No Google Account Found</string>
-  <string name="restore_backup_restoring_title">Restoring…</string>
+ <u> Ignorer la restauration </u> 
+</string>
+  <string name="restore_backup_dialog_button">Restaurer à partir du lecteur</string>
+  <string name="restore_backup_title">Sauvegarde trouvée</string>
+  <string name="restore_backup_title_encrypted">Sauvegarde cryptée trouvée</string>
+  <string name="restore_backup_last_modified">Dernière sauvegarde: %1$s</string>
+  <string name="restore_backup_size">Taille: %1$d MB</string>
+  <string name="restore_backup_button">Restaurer</string>
+  <string name="restore_backup_not_found_message">Êtes-vous sûr d\'avoir choisi le bon compte de lecteur?, Peut-être devriez-vous essayer à nouveau</string>
+  <string name="restore_backup_not_found_title">Sauvegarde non trouvée</string>
+  <string name="restore_backup_fail_message">Un problème survenu retarde ce processus. Voulez-vous continuer à patienter ?</string>
+  <string name="restore_backup_fail_question">Voulez-vous continuer d\'essayer?</string>
+  <string name="restore_backup_retry">Réessayer</string>
+  <string name="restore_backup_no_account">Aucun compte Google trouvé</string>
+  <string name="restore_backup_restoring_title">Restaurer…</string>
   <string name="titulo_mailbox_custom">%1$s</string>
-  <string name="me">me</string>
-  <string name="no_account_to_sync">No account to sync.</string>
-  <string name="title_external_encryption">Encrypt for Unsecured Addresses</string>
-  <string name="email_hint">Email or Username</string>
-  <string name="privacy_encrypt_external">Get asked if you want to encrypt the email before sending it to an address that is outside the Criptext network. (I.e. Gmail)</string>
-  <string name="change_password_login_btn">Change Password</string>
-  <string name="change_password_login_title">Change the password for:</string>
-  <string name="account_suspended_dialog_title">Account Suspended</string>
-  <string name="account_suspended_dialog_message"><![CDATA[The account <b>%1$s</b> has been temporarily suspended by your administrator. Please contact your company administrator for more information.]]></string>
-  <string name="account_suspended_dialog_button">Switch Account</string>
-  <string name="account_suspended_sign_in_error">This account is suspended.</string>
-  <string name="profile_danger_separator">DANGER ZONE</string>
-  <string name="email_sent_secure">🔒 Email Sent</string>
-  <string name="start_guide_secure">Lock icon means this\n email is encrypted.</string>
+  <string name="me">moi</string>
+  <string name="no_account_to_sync">Aucun compte à synchroniser.</string>
+  <string name="title_external_encryption">Crypter pour les adresses non sécurisées</string>
+  <string name="email_hint">E-mail ou nom d\'utilisateur</string>
+  <string name="privacy_encrypt_external">Demandez-lui si vous souhaitez chiffrer le courrier électronique avant de l\'envoyer à une adresse extérieure au réseau Criptext. (C\'est-à-dire Gmail)</string>
+  <string name="change_password_login_btn">Modifier le mot de passe</string>
+  <string name="change_password_login_title">Changer le mot de passe pour:</string>
+  <string name="account_suspended_dialog_title">Compte suspendu</string>
+  <string name="account_suspended_dialog_message"><![CDATA[Le compte <b> %1$s </b> a été temporairement suspendu par votre administrateur. Veuillez contacter l\'administrateur de votre entreprise pour plus d\'informations.]]></string>
+  <string name="account_suspended_dialog_button">Changer de compte</string>
+  <string name="account_suspended_sign_in_error">Ce compte est suspendu.</string>
+  <string name="profile_danger_separator">ZONE DANGEREUSE</string>
+  <string name="email_sent_secure">🔒 Email envoyé</string>
+  <string name="start_guide_secure">Icône de verrouillage signifie que ce \n email est crypté.</string>
   <string name="restore_backup_dialog_cancel_restore">
-    <u>Cancel Restore</u>
-  </string>
-  <string name="restore_backup_backed_up">Backed up: %1$s</string>
-  <string name="restore_backup_save_backup">Save</string>
-  <string name="export_backup_option">Export Backup File</string>
-  <string name="export_backup_option_explain">Generate a backup of your inbox that can be exported to external drives</string>
-  <string name="restore_backup_option">Restore Backup</string>
-  <string name="restore_backup_option_explain">Easily restore your mailbox from a local or cloud backup file</string>
-  <string name="restore_backup_local_title">Restore from Backup File</string>
-  <string name="restore_backup_local_dialog_button">Restore from local file</string>
-  <string name="restore_backup_change_button">Change File</string>
-  <string name="export_backup_file_ready">Backup File has been saved</string>
-  <string name="restore_backup_dialog_select_file">Select File</string>
-  <string name="restore_backup_version_incompatible">Your file version is incompatible</string>
-  <string name="restore_backup_account_incompatible">This file does not belong to this account</string>
-  <string name="restore_backup_fail">The selected file is either not a Criptext backup file or from an older version</string>
-  <string name="restore_backup_fail_title">Invalid File</string>
-  <string name="restore_backup_bad_file">The selected file is not a valid backup file.</string>
-  <string name="restore_backup_intent_title">Share backup or save it to files…</string>
-  <string name="sign_in_remove_message">You have reached the device limit (%1$d) on your account. Delete at least (%2$d) device in order to proceed. Once deleted, your active session on that device will be signed out.</string>
-  <string name="sign_in_remove_success_remaining">You must remove (%1$d) more devices before signing in.</string>
-  <string name="sign_in_remove_dialog_title">Remove Devices</string>
-  <string name="sign_in_remove_error_dialog_title">Session Expired</string>
-  <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
-  <string name="contact_support">Having trouble? <b>Contact Support</b></string>
-  <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
-  <string name="domain_validation_error">Failed to get Contacts Domain Validation (%1$d)</string>
-  <string name="contact_db_get_error">Failed to retrieve contacts from the local data base.</string>
-  <string name="from_db_get_error">Failed to get accounts from the local data base.</string>
-  <string name="general_network_error_exception">Network error. Please check your internet connection.</string>
-  <string name="copy_to_download_error">Error copying the file (%1$s) to downloads.</string>
-  <string name="unable_to_delete_draft">Error deleting draft. Ex: (%1$s)</string>
-  <string name="unable_to_move_email">Error moving email. Ex: (%1$s)</string>
-  <string name="local_error">Error making local changes. Ex: (%1$s)</string>
-  <string name="keybundle_get_error">Error getting key bundle. Ex: (%1$s)</string>
-  <string name="criptext_backup_not_found">Criptext backup not found.</string>
-  <string name="unknown_error">Unknown error. Ex: (%1$s)</string>
-  <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
-  <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
-  <string name="job_backup_notification">Background Backup Service Notification</string>
-  <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
-  <string name="upload_to_google_drive_success">Upload Successful!</string>
-  <string name="login_fail_try_again_error_with_exception">Failed to authenticate user. Error: %1$s.</string>
-  <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
-  <string name="rate_us_title">Enjoying Criptext?</string>
-  <string name="rate_us_message">If you do, please take a moment to rate it. Thanks for your support!</string>
-  <string name="rate_us">Rate\nUs</string>
-  <string name="rate_remind_later">Remind\nLater</string>
-  <string name="username_is_not_criptext">Not a valid Criptext address or username.</string>
-  <string name="rate_no_thanks">No\nThanks</string>
-  <string name="title_delete_label">Delete Label</string>
-  <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
-  <string name="error_deleting_label">Error deleting label. Please try again</string>
+ <u> Annuler la restauration </u> 
+</string>
+  <string name="restore_backup_backed_up">Sauvegardé: %1$s</string>
+  <string name="restore_backup_save_backup">Sauvegarder</string>
+  <string name="export_backup_option">Exporter un fichier de sauvegarde</string>
+  <string name="export_backup_option_explain">Générez une sauvegarde de votre boîte de réception pouvant être exportée vers des lecteurs externes</string>
+  <string name="restore_backup_option">Restaurer la sauvegarde</string>
+  <string name="restore_backup_option_explain">Restaurez facilement votre boîte aux lettres à partir d\'un fichier de sauvegarde local ou dans le cloud</string>
+  <string name="restore_backup_local_title">Restaurer à partir d\'un fichier de sauvegarde</string>
+  <string name="restore_backup_local_dialog_button">Restaurer à partir d\'un fichier local</string>
+  <string name="restore_backup_change_button">Changer de fichier</string>
+  <string name="export_backup_file_ready">Le fichier de sauvegarde a été sauvegardé</string>
+  <string name="restore_backup_dialog_select_file">Choisir le dossier</string>
+  <string name="restore_backup_version_incompatible">La version de votre fichier est incompatible</string>
+  <string name="restore_backup_account_incompatible">Ce fichier n\'appartient pas à ce compte</string>
+  <string name="restore_backup_fail">Le fichier sélectionné n\'est pas un fichier de sauvegarde Criptext ou provient d\'une version antérieure.</string>
+  <string name="restore_backup_fail_title">Fichier non valide</string>
+  <string name="restore_backup_bad_file">Le fichier sélectionné n\'est pas un fichier de sauvegarde valide.</string>
+  <string name="restore_backup_intent_title">Partager la sauvegarde ou l\'enregistrer dans des fichiers…</string>
+  <string name="sign_in_remove_message">Vous avez atteint la limite de périphériques ( %1$d ) de votre compte. Supprimez au moins le périphérique ( %2$d ) pour pouvoir continuer. Une fois supprimée, votre session active sur ce périphérique sera déconnectée.</string>
+  <string name="sign_in_remove_success_remaining">Vous devez supprimer ( %1$d ) davantage de périphériques avant de vous connecter.</string>
+  <string name="sign_in_remove_dialog_title">Supprimer des périphériques</string>
+  <string name="sign_in_remove_error_dialog_title">La session a expiré</string>
+  <string name="sign_in_remove_error_dialog_message">Vous avez atteint le temps d\'inactivité maximal autorisé. Veuillez vous connecter à nouveau.</string>
+  <string name="contact_support">Avoir des problèmes? <b> Contacter l\'assistance </b></string>
+  <string name="sync_screen_message">Ne quittez pas l\'application et n\'éteignez pas votre écran pendant ce processus</string>
+  <string name="domain_validation_error">Échec d\'obtention de la validation du domaine de contacts ( %1$d )</string>
+  <string name="contact_db_get_error">Impossible de récupérer les contacts de la base de données locale.</string>
+  <string name="from_db_get_error">Impossible d\'obtenir les comptes de la base de données locale.</string>
+  <string name="general_network_error_exception">Erreur réseau. S\'il vous plait, vérifiez votre connexion internet.</string>
+  <string name="copy_to_download_error">Erreur lors de la copie du fichier ( %1$s ) dans les téléchargements.</string>
+  <string name="unable_to_delete_draft">Erreur lors de la suppression du brouillon. Ex: ( %1$s )</string>
+  <string name="unable_to_move_email">Erreur lors du déplacement du courrier électronique. Ex: ( %1$s )</string>
+  <string name="local_error">Erreur lors de modifications locales. Ex: ( %1$s )</string>
+  <string name="keybundle_get_error">Erreur lors de l\'obtention du paquet de clés. Ex: ( %1$s )</string>
+  <string name="criptext_backup_not_found">Sauvegarde Criptext introuvable.</string>
+  <string name="unknown_error">Erreur inconnue. Ex: ( %1$s )</string>
+  <string name="invalid_temp_token">La session temporelle a expiré. Veuillez réessayer.</string>
+  <string name="profile_footer_option">Montrer \"Envoyé avec Criptext\"</string>
+  <string name="job_backup_notification">Notification de service de sauvegarde en arrière-plan</string>
+  <string name="uploading_to_google_drive">Chargement sur Google Drive…</string>
+  <string name="upload_to_google_drive_success">Téléchargement réussi!</string>
+  <string name="login_fail_try_again_error_with_exception">Échec de l\'authentification de l\'utilisateur. Erreur: %1$s .</string>
+  <string name="open_email_notification_text">Le courrier électronique \" %1$s \" a été ouvert.</string>
+  <string name="rate_us_title">Vous aimez Criptext?</string>
+  <string name="rate_us_message">Si vous le faites, prenez s\'il vous plaît un moment pour le noter. Merci pour votre aide!</string>
+  <string name="rate_us">Taux \n nous</string>
+  <string name="rate_remind_later">Rappelez \n plus tard</string>
+  <string name="username_is_not_criptext">Pas une adresse Criptext ou un nom d\'utilisateur valide.</string>
+  <string name="rate_no_thanks">Non \n Merci</string>
+  <string name="title_delete_label">Supprimer l\'étiquette</string>
+  <string name="message_delete_label">Êtes-vous sûr de vouloir supprimer le libellé: ( %1$s )?</string>
+  <string name="error_deleting_label">Erreur lors de la suppression de l\'étiquette. Veuillez réessayer</string>
   <string name="recovery_code">
-    <u>Send Recovery Code</u>
+<u>Envoyer le code de récupération</u>
   </string>
-  <string name="recovery_code_dialog_title">Recovery Code</string>
-  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
-  <string name="recovery_code_dialog_hint">Code</string>
-  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
-  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
-  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+  <string name="recovery_code_dialog_title">Code de récupération</string>
+  <string name="recovery_code_dialog_message">Veuillez consulter votre e-mail de récupération et entrer le code qui vous a été envoyé.</string>
+  <string name="recovery_code_dialog_hint">code</string>
+  <string name="recovery_code_dialog_error">Code de récupération incorrect</string>
+  <string name="recovery_code_validation_error">Le code de récupération dure au moins 6 caractères.</string>
+  <string name="recovery_code_validation_error_empty">Code de récupération ne peut pas être vide.</string>
+  <string name="recovery_code_dialog_message_with_email">Veuillez vérifier votre courrier électronique de récupération, %1$s , puis entrez le code qui vous a été envoyé.</string>
 </resources>
