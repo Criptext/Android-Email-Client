@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="auto_backup_options">
-    <item>Daily</item>
-    <item>Weekly</item>
-    <item>Monthly</item>
-    <item>Off</item>
+    <item>Повседневная</item>
+    <item>еженедельно</item>
+    <item>ежемесячно</item>
+    <item>Выкл.</item>
   </string-array>
   <string-array name="pin_lock_auto_options">
     <item>Немедленно</item>
@@ -15,8 +15,8 @@
     <item>24 часа</item>
   </string-array>
   <string-array name="wifi_backup_options">
-    <item>Wifi only</item>
-    <item>Wifi or cellular</item>
+    <item>Только WiFi</item>
+    <item>Wi-Fi или сотовый</item>
   </string-array>
   <string name="app_name">Criptext</string>
   <string name="tour_title1">Добро пожаловать в Criptext!</string>
@@ -468,166 +468,167 @@
   <string name="update_now_message">Нажмите здесь, чтобы установить последнюю версию Criptext и наслаждаться новыми функциями.</string>
   <string name="filter_unread">Показать непрочитанные</string>
   <string name="filter_none">Показать все</string>
-  <string name="title_change_reply_to">Reply-to Email</string>
-  <string name="reply_to_email_hint">Enter new reply to email</string>
-  <string name="reply_to_email_has_changed">Reply To email changed successfully</string>
-  <string name="email_source_toolbar_title">EMAIL SOURCE</string>
-  <string name="email_source">Show Source</string>
-  <string name="title_reply_to_cap">REPLY TO EMAIL</string>
-  <string name="reply_to_email_removed">Reply To email removed successfully</string>
-  <string name="retry">Retry Send</string>
-  <string name="view_image">View Image</string>
-  <string name="save_image">Save Image</string>
-  <string name="move_to_downloads_success">Inline image was saved to: %1$s</string>
-  <string name="move_to_downloads_exists">Inline image is already in downloads</string>
-  <string name="title_profile">Profile</string>
-  <string name="profile_toolbar_title">PROFILE</string>
-  <string name="remove_picture">Remove Picture</string>
-  <string name="profile_picture_updated">Profile picture updated successfully</string>
-  <string name="profile_picture_update_failed">Error on updating profile picture</string>
-  <string name="profile_picture_deleted">Profile picture deleted successfully</string>
-  <string name="profile_picture_delete_failed">Error on deleting profile picture</string>
-  <string name="change_name_btn_text">Edit Name</string>
-  <string name="error_email_max_files_title">Files Capacity</string>
-  <string name="username_not_available_error">Username not available</string>
-  <string name="title_account">Account</string>
+  <string name="title_change_reply_to">Ответить на электронную почту</string>
+  <string name="reply_to_email_hint">Введите новый ответ на электронную почту</string>
+  <string name="reply_to_email_has_changed">Ответить на письмо успешно изменено</string>
+  <string name="email_source_toolbar_title">Почтовый источник</string>
+  <string name="email_source">Показать источник</string>
+  <string name="title_reply_to_cap">ОТВЕТИТЬ НА ПОЧТУ</string>
+  <string name="reply_to_email_removed">Ответить на письмо успешно удалено</string>
+  <string name="retry">Повторить отправку</string>
+  <string name="view_image">Посмотреть изображение</string>
+  <string name="save_image">Сохранить изображение</string>
+  <string name="move_to_downloads_success">Встроенное изображение было сохранено в: %1$s</string>
+  <string name="move_to_downloads_exists">Встроенное изображение уже в загрузках</string>
+  <string name="title_profile">Профиль</string>
+  <string name="profile_toolbar_title">ПРОФИЛЬ</string>
+  <string name="remove_picture">Удалить картинку</string>
+  <string name="profile_picture_updated">Картинка профиля успешно обновлена</string>
+  <string name="profile_picture_update_failed">Ошибка при обновлении картинки профиля</string>
+  <string name="profile_picture_deleted">Картинка профиля успешно удалена</string>
+  <string name="profile_picture_delete_failed">Ошибка при удалении картинки профиля</string>
+  <string name="change_name_btn_text">Редактировать название</string>
+  <string name="error_email_max_files_title">Емкость файлов</string>
+  <string name="username_not_available_error">Имя пользователя недоступно</string>
+  <string name="title_account">учетная запись</string>
   <string name="title_faq">FAQ</string>
-  <string name="separator_general">GENERAL</string>
-  <string name="devices_toolbar_title">DEVICES</string>
-  <string name="labels_toolbar_title">LABELS</string>
-  <string name="pin_toolbar_title">PIN LOCK</string>
-  <string name="username_not_available">Username not available</string>
-  <string name="drawer_add_account">Add an Existing Account</string>
-  <string name="drawer_create_account_account">Create an Account</string>
-  <string name="snack_bar_active_account">Now logged in as %1$s</string>
-  <string name="title_devices">Devices</string>
-  <string name="title_labels">Labels</string>
+  <string name="separator_general">ОБЩАЯ</string>
+  <string name="devices_toolbar_title">УСТРОЙСТВА</string>
+  <string name="labels_toolbar_title">ЯРЛЫКИ</string>
+  <string name="pin_toolbar_title">БЛОКИРОВКА С ПОМОЩЬЮ ПИН-КОДА</string>
+  <string name="username_not_available">Имя пользователя недоступно</string>
+  <string name="drawer_add_account">Добавить существующий аккаунт</string>
+  <string name="drawer_create_account_account">Завести аккаунт</string>
+  <string name="snack_bar_active_account">Теперь вошли как %1$s</string>
+  <string name="title_devices">Устройства</string>
+  <string name="title_labels">Ярлыки</string>
   <string name="title_pin_lock">Pin Lock</string>
-  <string name="privacy_two_fa_message">A secondary validation to protect your account.</string>
-  <string name="privacy_read_receipts_message">Know when your emails are opened or read. If turned off, you won’t send or receive read receipts.</string>
-  <string name="user_already_logged_in">Account already added!</string>
-  <string name="web_view_open_in_browser">Open in browser</string>
+  <string name="privacy_two_fa_message">Вторичная проверка для защиты вашей учетной записи.</string>
+  <string name="privacy_read_receipts_message">Отключив этот параметр, вы не будете знать, прочитаны ли ваши письма.</string>
+  <string name="user_already_logged_in">Аккаунт уже добавлен!</string>
+  <string name="web_view_open_in_browser">Открыть в браузере</string>
   <string name="cloud_backup_toolbar_title">MAILBOX BACKUP</string>
-  <string name="title_cloud_backup">Mailbox Backup</string>
-  <string name="cloud_backup_switch">Backup to Google Drive</string>
-  <string name="cloud_backup_make_backup_button">Create Backup</string>
-  <string name="cloud_backup_now">Backup Now</string>
-  <string name="cloud_backup_auto_backup">Auto Backup</string>
-  <string name="cloud_backup_change_google_account">Change Google Account</string>
-  <string name="cloud_backup_backup_over">Use Wifi Only</string>
-  <string name="cloud_backup_create_file">Create Backup File</string>
-  <string name="cloud_progress_upload_message">Uploading to Cloud (%1$d %%)</string>
-  <string name="cloud_backup_message_1">Backup your entire mailbox to Google Drive so that you can restore your Criptext account to a new device if you lose this device. Note: Google Drive backups are not encrypted and Criptext is not responsible for your Google Drive data.</string>
-  <string name="cloud_backup_message_2"><b>Note:</b> Auto Backup works only with cloud backup</string>
-  <string name="cloud_backup_create_file_progress_message">Please wait a moment… %1$d%%</string>
-  <string name="cloud_backup_share_intent_title">Share your file</string>
-  <string name="cloud_backup_share_intent_message">Sharing your mailbox…</string>
-  <string name="cloud_backup_passphrase_title">Export Backup File</string>
-  <string name="cloud_backup_passphrase_switch">Encrypt Backup</string>
-  <string name="cloud_backup_passphrase_on_message">If you lose/forget this passphrase you won\'t be able to restore this backup in the future</string>
-  <string name="cloud_backup_passphrase_off_message"><b>Note:</b> for your security we suggest you chose to encrypt the backup file.</string>
+  <string name="title_cloud_backup">Резервное копирование почтового ящика</string>
+  <string name="cloud_backup_switch">Резервное копирование на Google Drive</string>
+  <string name="cloud_backup_make_backup_button">Создать резервную копию</string>
+  <string name="cloud_backup_now">Резервное копирование сейчас</string>
+  <string name="cloud_backup_auto_backup">Автоматическое резервное копирование</string>
+  <string name="cloud_backup_change_google_account">Изменить аккаунт Google</string>
+  <string name="cloud_backup_backup_over">Используйте только Wi-Fi</string>
+  <string name="cloud_backup_create_file">Создать файл резервной копии</string>
+  <string name="cloud_progress_upload_message">Загрузка в облако ( %1$d %% )</string>
+  <string name="cloud_backup_message_1">Создайте резервную копию всего своего почтового ящика на Google Диске, чтобы вы могли восстановить свою учетную запись Criptext на новом устройстве, если вы потеряете это устройство. Примечание. Резервные копии на Google Диске не зашифрованы, и Criptext не несет ответственности за данные на Google Диске.</string>
+  <string name="cloud_backup_message_2"><b> Примечание. </b> Автосохранение работает только с облачным резервным копированием</string>
+  <string name="cloud_backup_create_file_progress_message">Пожалуйста, подождите ... %1$d %%</string>
+  <string name="cloud_backup_share_intent_title">Поделитесь своим файлом</string>
+  <string name="cloud_backup_share_intent_message">Поделиться своим почтовым ящиком ...</string>
+  <string name="cloud_backup_passphrase_title">Экспорт резервного файла</string>
+  <string name="cloud_backup_passphrase_switch">Зашифровать резервную копию</string>
+  <string name="cloud_backup_passphrase_on_message">Если вы потеряете / забудете эту фразу-пароль, вы не сможете восстановить эту резервную копию в будущем</string>
+  <string name="cloud_backup_passphrase_off_message"><b> Примечание. </b> для вашей безопасности мы рекомендуем вам шифровать файл резервной копии.</string>
   <string name="cloud_backup_size">
-    <b>Size: </b>
-  </string>
+ <b> Размер: </b> 
+</string>
   <string name="cloud_backup_last_modified">
-    <b>Last Backup: </b>
-  </string>
-  <string name="cloud_backup_backing_up">Backing up…</string>
-  <string name="cloud_backup_mb">(%1$d MB)</string>
-  <string name="restore_backup_dialog_title">Restore Backup</string>
-  <string name="restore_backup_dialog_message">Restore your emails from a local backup or Google Drive. This can be done later from Settings &gt; Mailbox Backup &gt; Restore Backup</string>
+ <b> Последнее резервное копирование. </b> 
+</string>
+  <string name="cloud_backup_backing_up">Резервное копирование…</string>
+  <string name="cloud_backup_mb">( %1$d МБ)</string>
+  <string name="restore_backup_dialog_title">Восстановление резервной копии</string>
+  <string name="restore_backup_dialog_message">Восстановите ваши электронные письма из локальной резервной копии или Google Drive. Это можно сделать позже в &gt; Настройки» &gt; Резервное копирование почтового ящика» &gt; Восстановить резервную копию».</string>
   <string name="restore_backup_dialog_skip_restore">
-    <u>Skip Restore</u>
-  </string>
-  <string name="restore_backup_dialog_button">Restore from Drive</string>
-  <string name="restore_backup_title">Backup found</string>
-  <string name="restore_backup_title_encrypted">Encrypted backup found</string>
-  <string name="restore_backup_last_modified">Last Backup: %1$s</string>
-  <string name="restore_backup_size">Size: %1$d MB</string>
-  <string name="restore_backup_button">Restore</string>
-  <string name="restore_backup_not_found_message">Are you sure you chose the correct drive account?, maybe you should try again</string>
-  <string name="restore_backup_not_found_title">Backup not found</string>
-  <string name="restore_backup_fail_message">Something has happened that is delaying this process.</string>
-  <string name="restore_backup_fail_question">Do your want to keep trying?</string>
-  <string name="restore_backup_retry">Retry</string>
-  <string name="restore_backup_no_account">No Google Account Found</string>
-  <string name="restore_backup_restoring_title">Restoring…</string>
-  <string name="titulo_mailbox_custom">%1$s</string>
-  <string name="me">me</string>
-  <string name="no_account_to_sync">No account to sync.</string>
-  <string name="title_external_encryption">Encrypt for Unsecured Addresses</string>
-  <string name="email_hint">Email or Username</string>
-  <string name="privacy_encrypt_external">Get asked if you want to encrypt the email before sending it to an address that is outside the Criptext network. (I.e. Gmail)</string>
-  <string name="change_password_login_btn">Change Password</string>
-  <string name="change_password_login_title">Change the password for:</string>
-  <string name="account_suspended_dialog_title">Account Suspended</string>
-  <string name="account_suspended_dialog_message"><![CDATA[The account <b>%1$s</b> has been temporarily suspended by your administrator. Please contact your company administrator for more information.]]></string>
-  <string name="account_suspended_dialog_button">Switch Account</string>
-  <string name="account_suspended_sign_in_error">This account is suspended.</string>
-  <string name="profile_danger_separator">DANGER ZONE</string>
-  <string name="email_sent_secure">🔒 Email Sent</string>
-  <string name="start_guide_secure">Lock icon means this\n email is encrypted.</string>
+ <u> Пропустить восстановление </u> 
+</string>
+  <string name="restore_backup_dialog_button">Восстановить с диска</string>
+  <string name="restore_backup_title">Резервная копия найдена</string>
+  <string name="restore_backup_title_encrypted">Найдена зашифрованная резервная копия</string>
+  <string name="restore_backup_last_modified">Последнее резервное копирование: %1$s</string>
+  <string name="restore_backup_size">Размер: %1$d МБ</string>
+  <string name="restore_backup_button">Восстановить</string>
+  <string name="restore_backup_not_found_message">Вы уверены, что выбрали правильный аккаунт диска? Возможно, вам следует попробовать еще раз</string>
+  <string name="restore_backup_not_found_title">Резервная копия не найдена</string>
+  <string name="restore_backup_fail_message">Что-то задерживает этот процесс.</string>
+  <string name="restore_backup_fail_question">Вы хотите продолжать пытаться?</string>
+  <string name="restore_backup_retry">Повторить попытку</string>
+  <string name="restore_backup_no_account">Аккаунт Google не найден</string>
+  <string name="restore_backup_restoring_title">Восстановление ...</string>
+  <string name="titulo_mailbox_custom">%1$s </string>
+  <string name="me">меня</string>
+  <string name="no_account_to_sync">Нет аккаунта для синхронизации.</string>
+  <string name="title_external_encryption">Шифровать для необеспеченных адресов</string>
+  <string name="email_hint">Электронная почта или имя пользователя</string>
+  <string name="privacy_encrypt_external">Вас спросят, хотите ли вы зашифровать электронную почту перед отправкой по адресу, который находится за пределами сети Criptext. (Т.е. Gmail)</string>
+  <string name="change_password_login_btn">Изменить пароль</string>
+  <string name="change_password_login_title">Изменить пароль для:</string>
+  <string name="account_suspended_dialog_title">Аккаунт приостановлен</string>
+  <string name="account_suspended_dialog_message"><![CDATA[Аккаунт <b> %1$s </b> был временно заблокирован вашим администратором. Пожалуйста, свяжитесь с администратором вашей компании для получения дополнительной информации.]]></string>
+  <string name="account_suspended_dialog_button">Сменить аккаунт</string>
+  <string name="account_suspended_sign_in_error">Этот аккаунт заблокирован.</string>
+  <string name="profile_danger_separator">ОПАСНАЯ ЗОНА</string>
+  <string name="email_sent_secure">🔒 электронная почта отправлена</string>
+  <string name="start_guide_secure">Значок блокировки означает, что \n электронная почта зашифрована.</string>
   <string name="restore_backup_dialog_cancel_restore">
-    <u>Cancel Restore</u>
-  </string>
-  <string name="restore_backup_backed_up">Backed up: %1$s</string>
-  <string name="restore_backup_save_backup">Save</string>
-  <string name="export_backup_option">Export Backup File</string>
-  <string name="export_backup_option_explain">Generate a backup of your inbox that can be exported to external drives</string>
-  <string name="restore_backup_option">Restore Backup</string>
-  <string name="restore_backup_option_explain">Easily restore your mailbox from a local or cloud backup file</string>
-  <string name="restore_backup_local_title">Restore from Backup File</string>
-  <string name="restore_backup_local_dialog_button">Restore from local file</string>
-  <string name="restore_backup_change_button">Change File</string>
-  <string name="export_backup_file_ready">Backup File has been saved</string>
-  <string name="restore_backup_dialog_select_file">Select File</string>
-  <string name="restore_backup_version_incompatible">Your file version is incompatible</string>
-  <string name="restore_backup_account_incompatible">This file does not belong to this account</string>
-  <string name="restore_backup_fail">The selected file is either not a Criptext backup file or from an older version</string>
-  <string name="restore_backup_fail_title">Invalid File</string>
-  <string name="restore_backup_bad_file">The selected file is not a valid backup file.</string>
-  <string name="restore_backup_intent_title">Share backup or save it to files…</string>
-  <string name="sign_in_remove_message">You have reached the device limit (%1$d) on your account. Delete at least (%2$d) device in order to proceed. Once deleted, your active session on that device will be signed out.</string>
-  <string name="sign_in_remove_success_remaining">You must remove (%1$d) more devices before signing in.</string>
-  <string name="sign_in_remove_dialog_title">Remove Devices</string>
-  <string name="sign_in_remove_error_dialog_title">Session Expired</string>
-  <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
-  <string name="contact_support">Having trouble? <b>Contact Support</b></string>
-  <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
-  <string name="domain_validation_error">Failed to get Contacts Domain Validation (%1$d)</string>
-  <string name="contact_db_get_error">Failed to retrieve contacts from the local data base.</string>
-  <string name="from_db_get_error">Failed to get accounts from the local data base.</string>
-  <string name="general_network_error_exception">Network error. Please check your internet connection.</string>
-  <string name="copy_to_download_error">Error copying the file (%1$s) to downloads.</string>
-  <string name="unable_to_delete_draft">Error deleting draft. Ex: (%1$s)</string>
-  <string name="unable_to_move_email">Error moving email. Ex: (%1$s)</string>
-  <string name="local_error">Error making local changes. Ex: (%1$s)</string>
-  <string name="keybundle_get_error">Error getting key bundle. Ex: (%1$s)</string>
-  <string name="criptext_backup_not_found">Criptext backup not found.</string>
-  <string name="unknown_error">Unknown error. Ex: (%1$s)</string>
-  <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
-  <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
-  <string name="job_backup_notification">Background Backup Service Notification</string>
-  <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
-  <string name="upload_to_google_drive_success">Upload Successful!</string>
-  <string name="login_fail_try_again_error_with_exception">Failed to authenticate user. Error: %1$s.</string>
-  <string name="open_email_notification_text">📩 Email \"%1$s\" was opened</string>
-  <string name="rate_us_title">Enjoying Criptext?</string>
-  <string name="rate_us_message">If you do, please take a moment to rate it. Thanks for your support!</string>
-  <string name="rate_us">Rate\nUs</string>
-  <string name="rate_remind_later">Remind\nLater</string>
-  <string name="username_is_not_criptext">Not a valid Criptext address or username.</string>
-  <string name="rate_no_thanks">No\nThanks</string>
-  <string name="title_delete_label">Delete Label</string>
-  <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
-  <string name="error_deleting_label">Error deleting label. Please try again</string>
+ <u> Отмена восстановления </u> 
+</string>
+  <string name="restore_backup_backed_up">Резервное копирование: %1$s</string>
+  <string name="restore_backup_save_backup">Сохранить</string>
+  <string name="export_backup_option">Экспорт резервного файла</string>
+  <string name="export_backup_option_explain">Создайте резервную копию вашего почтового ящика, который можно экспортировать на внешние диски</string>
+  <string name="restore_backup_option">Восстановление резервной копии</string>
+  <string name="restore_backup_option_explain">Простое восстановление почтового ящика из локальной или облачной резервной копии</string>
+  <string name="restore_backup_local_title">Восстановить из резервного файла</string>
+  <string name="restore_backup_local_dialog_button">Восстановить из локального файла</string>
+  <string name="restore_backup_change_button">Изменить файл</string>
+  <string name="export_backup_file_ready">Файл резервной копии был сохранен</string>
+  <string name="restore_backup_dialog_select_file">Выбрать файл</string>
+  <string name="restore_backup_version_incompatible">Ваша версия файла несовместима</string>
+  <string name="restore_backup_account_incompatible">Этот файл не принадлежит этой учетной записи</string>
+  <string name="restore_backup_fail">Выбранный файл не является файлом резервной копии Criptext или более старой версией</string>
+  <string name="restore_backup_fail_title">Неверный файл</string>
+  <string name="restore_backup_bad_file">Выбранный файл не является допустимым файлом резервной копии.</string>
+  <string name="restore_backup_intent_title">Делитесь резервной копией или сохраняйте ее в файлы ...</string>
+  <string name="sign_in_remove_message">Вы достигли лимита устройства ( %1$d ) в своей учетной записи. Удалите как минимум ( %2$d ) устройство, чтобы продолжить. После удаления ваш активный сеанс на этом устройстве будет завершен.</string>
+  <string name="sign_in_remove_success_remaining">Вы должны удалить ( %1$d ) больше устройств перед входом.</string>
+  <string name="sign_in_remove_dialog_title">Удалить устройства</string>
+  <string name="sign_in_remove_error_dialog_title">Сессия истекла</string>
+  <string name="sign_in_remove_error_dialog_message">Вы достигли максимально допустимого времени бездействия. Пожалуйста, войдите снова.</string>
+  <string name="contact_support">Попасть в неприятности? <b> Обратитесь в службу поддержки </b></string>
+  <string name="sync_screen_message">Не покидайте приложение и не выключайте экран во время этого процесса</string>
+  <string name="domain_validation_error">Не удалось получить подтверждение домена контактов ( %1$d )</string>
+  <string name="contact_db_get_error">Не удалось получить контакты из локальной базы данных.</string>
+  <string name="from_db_get_error">Не удалось получить учетные записи из локальной базы данных.</string>
+  <string name="general_network_error_exception">Ошибка сети. Пожалуйста, проверьте ваше интернет-соединение.</string>
+  <string name="copy_to_download_error">Ошибка копирования файла ( %1$s ) в загрузки.</string>
+  <string name="unable_to_delete_draft">Ошибка удаления черновика. Пример: ( %1$s )</string>
+  <string name="unable_to_move_email">Ошибка при перемещении электронной почты. Пример: ( %1$s )</string>
+  <string name="local_error">Ошибка при внесении локальных изменений. Пример: ( %1$s )</string>
+  <string name="keybundle_get_error">Ошибка при получении пакета ключей. Пример: ( %1$s )</string>
+  <string name="criptext_backup_not_found">Резервная копия Criptext не найдена.</string>
+  <string name="unknown_error">Неизвестная ошибка. Пример: ( %1$s )</string>
+  <string name="invalid_temp_token">Временная сессия истекла. Пожалуйста, попробуйте еще раз.</string>
+  <string name="profile_footer_option">Шоу \"Отправлено с криптекстом\"</string>
+  <string name="job_backup_notification">Уведомление службы фонового резервного копирования</string>
+  <string name="uploading_to_google_drive">Загрузка в Google Drive ...</string>
+  <string name="upload_to_google_drive_success">Загрузка успешна!</string>
+  <string name="login_fail_try_again_error_with_exception">Не удалось аутентифицировать пользователя. Ошибка: %1$s .</string>
+  <string name="open_email_notification_text">📩 Электронная почта \" %1$s \" открыта</string>
+  <string name="rate_us_title">Наслаждаешься Criptext?</string>
+  <string name="rate_us_message">Если вы это сделаете, пожалуйста, найдите время, чтобы оценить его. Спасибо за поддержку!</string>
+  <string name="rate_us">Оцените \n нас</string>
+  <string name="rate_remind_later">Напомнить \n позже</string>
+  <string name="username_is_not_criptext">Не допустимый адрес Criptext или имя пользователя.</string>
+  <string name="rate_no_thanks">Нет \n спасибо</string>
+  <string name="title_delete_label">Удалить ярлык</string>
+  <string name="message_delete_label">Вы уверены, что хотите удалить метку: ( %1$s )?</string>
+  <string name="error_deleting_label">Ошибка удаления ярлыка. Пожалуйста, попробуйте еще раз</string>
   <string name="recovery_code">
-    <u>Send Recovery Code</u>
-  </string>
-  <string name="recovery_code_dialog_title">Recovery Code</string>
-  <string name="recovery_code_dialog_message">Please check your recovery email and enter the code that was sent to you.</string>
-  <string name="recovery_code_dialog_hint">Code</string>
-  <string name="recovery_code_dialog_error">Incorrect Recovery Code</string>
-  <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
-  <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
+ <u> Отправить код восстановления </u> 
+</string>
+  <string name="recovery_code_dialog_title">Код восстановления</string>
+  <string name="recovery_code_dialog_message">Пожалуйста, проверьте свою электронную почту восстановления и введите код, который был отправлен вам.</string>
+  <string name="recovery_code_dialog_hint">Код</string>
+  <string name="recovery_code_dialog_error">Неверный код восстановления</string>
+  <string name="recovery_code_validation_error">Код восстановления не менее 6 символов.</string>
+  <string name="recovery_code_validation_error_empty">Код восстановления не может быть пустым.</string>
+  <string name="recovery_code_dialog_message_with_email">Пожалуйста, проверьте адрес электронной почты для восстановления, %1$s , и введите отправленный вам код.</string>
 </resources>
