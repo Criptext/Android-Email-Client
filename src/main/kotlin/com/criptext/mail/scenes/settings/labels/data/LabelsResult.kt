@@ -23,4 +23,9 @@ sealed class LabelsResult{
         data class Success(val uuid: String): DeleteCustomLabel()
         class Failure: DeleteCustomLabel()
     }
+
+    sealed class EditCustomLabel: LabelsResult() {
+        data class Success(val uuid: String, val newName: String): EditCustomLabel()
+        class Failure: EditCustomLabel()
+    }
 }

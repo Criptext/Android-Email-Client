@@ -621,6 +621,7 @@
   <string name="title_delete_label">Удалить ярлык</string>
   <string name="message_delete_label">Вы уверены, что хотите удалить метку: ( %1$s )?</string>
   <string name="error_deleting_label">Ошибка удаления ярлыка. Пожалуйста, попробуйте еще раз</string>
+  <string name="error_editing_label">Ошибка редактирования ярлыка. Пожалуйста, попробуйте еще раз</string>
   <string name="recovery_code">
  <u> Отправить код восстановления </u> 
 </string>
@@ -631,4 +632,6 @@
   <string name="recovery_code_validation_error">Код восстановления не менее 6 символов.</string>
   <string name="recovery_code_validation_error_empty">Код восстановления не может быть пустым.</string>
   <string name="recovery_code_dialog_message_with_email">Пожалуйста, проверьте адрес электронной почты для восстановления, %1$s , и введите отправленный вам код.</string>
+  <string name="edit">редактировать</string>
+  <string name="title_edit_label">Изменить имя ярлыка</string>
 </resources>

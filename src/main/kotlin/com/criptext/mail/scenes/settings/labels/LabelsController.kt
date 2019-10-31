@@ -63,6 +63,7 @@ class LabelsController(
             is LabelsResult.GetCustomLabels -> onGetCustomLabels(result)
             is LabelsResult.CreateCustomLabel -> onCreateCustomLabels(result)
             is LabelsResult.DeleteCustomLabel -> onDeleteCustomLabel(result)
+            is LabelsResult.EditCustomLabel -> onEditCustomLabel(result)
         }
     }
 
@@ -73,6 +74,15 @@ class LabelsController(
                     title = UIMessage(R.string.title_delete_label),
                     message = listOf(UIMessage(R.string.message_delete_label, arrayOf(label.text))),
                     type = DialogType.DeleteLabel()
+            ))
+        }
+
+        override fun onEditLabelClicked(label: LabelWrapper) {
+            model.lastSelectedUUID = label.label.uuid
+            scene.showLabelEditDialog(DialogData.DialogDataForInput(
+                    title = UIMessage(R.string.title_edit_label),
+                    input = label.text,
+                    type = DialogType.EditLabel()
             ))
         }
 
@@ -115,6 +125,14 @@ class LabelsController(
                             host.goToScene(SignInParams(true), true)
                         is DialogType.DeleteLabel -> {
                             dataSource.submitRequest(LabelsRequest.DeleteCustomLabel(model.lastSelectedUUID))
+                        }
+                    }
+                }
+                is DialogResult.DialogWithInput -> {
+                    when(result.type){
+                        is DialogType.EditLabel -> {
+                            scene.labelEditDialogToggleLoad(true)
+                            dataSource.submitRequest(LabelsRequest.EditCustomLabel(model.lastSelectedUUID, result.textInput))
                         }
                     }
                 }
@@ -265,6 +283,22 @@ class LabelsController(
             }
             is LabelsResult.DeleteCustomLabel.Failure -> {
                 scene.showMessage(UIMessage(R.string.error_deleting_label))
+            }
+        }
+    }
+
+    private fun onEditCustomLabel(result: LabelsResult.EditCustomLabel){
+        model.lastSelectedUUID = ""
+        scene.labelEditDialogToggleLoad(false)
+        scene.labelEditDialogDismiss()
+        when(result) {
+            is LabelsResult.EditCustomLabel.Success -> {
+                val index = model.labels.indexOfFirst { it.label.uuid == result.uuid }
+                if(index >= 0)
+                    labelWrapperListController.updateName(result.newName, index)
+            }
+            is LabelsResult.EditCustomLabel.Failure -> {
+                scene.showMessage(UIMessage(R.string.error_editing_label))
             }
         }
     }

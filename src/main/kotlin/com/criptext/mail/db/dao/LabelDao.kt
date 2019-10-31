@@ -41,6 +41,11 @@ interface LabelDao {
             WHERE uuid=:uuid AND accountId = :accountId""")
     fun deleteByLabelUUID(uuid: String, accountId: Long)
 
+    @Query("""UPDATE label
+        SET text=:newName
+        WHERE uuid=:uuid AND accountId = :accountId""")
+    fun updateLabelName(newName: String, uuid: String, accountId: Long)
+
     @Query("""SELECT * FROM label
             WHERE text=:labelName AND (accountId IS NULL OR accountId = :accountId)
             LIMIT 1""")

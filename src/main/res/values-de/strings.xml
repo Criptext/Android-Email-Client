@@ -626,6 +626,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="title_delete_label">Label löschen</string>
   <string name="message_delete_label">Sind Sie sicher, dass Sie Label %1$s löschen möchten?</string>
   <string name="error_deleting_label">Fehler beim Löschen Label. Bitte versuchen Sie es erneut</string>
+  <string name="error_editing_label">Fehler beim Bearbeiten des Label. Bitte versuche es erneut</string>
   <string name="recovery_code">
  <u> Wiederherstellungscode senden </u> 
 </string>
@@ -636,4 +637,6 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="recovery_code_validation_error">Der Wiederherstellungscode ist mindestens 6 Zeichen lang.</string>
   <string name="recovery_code_validation_error_empty">Der Wiederherstellungscode darf nicht leer sein.</string>
   <string name="recovery_code_dialog_message_with_email">Bitte überprüfen Sie Ihre Wiederherstellungs-E-Mail, %1$s , und geben Sie den an Sie gesendeten Code ein.</string>
+  <string name="edit">Bearbeiten</string>
+  <string name="title_edit_label">Label Name Bearbeiten</string>
 </resources>

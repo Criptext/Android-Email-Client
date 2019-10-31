@@ -21,7 +21,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val nameView : TextView
     private val checkBoxView : CheckBox
     private val labelColor: ImageView
-    private val trashImage: ImageView
+    private val threeDots: ImageView
     private val viewSeparator: View
 
     init {
@@ -32,7 +32,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         nameView.text = labelThread.text
         checkBoxView.isChecked = labelThread.isSelected
         viewSeparator.visibility = View.GONE
-        trashImage.visibility = View.GONE
+        threeDots.visibility = View.GONE
         DrawableCompat.setTint(labelColor.drawable, Color.parseColor("#${labelThread.color}"))
     }
 
@@ -40,7 +40,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         nameView = view.findViewById(R.id.label_name) as TextView
         checkBoxView = view.findViewById(R.id.label_checkbox) as CheckBox
         labelColor = view.findViewById(R.id.label_color)
-        trashImage = view.findViewById(R.id.label_trash)
+        threeDots = view.findViewById(R.id.more)
         viewSeparator = view.findViewById(R.id.viewSeparator)
     }
 

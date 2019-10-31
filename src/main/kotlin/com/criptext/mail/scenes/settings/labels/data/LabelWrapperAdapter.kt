@@ -1,12 +1,13 @@
 package com.criptext.mail.scenes.settings.labels.data
 
 import android.content.Context
+import android.view.ContextThemeWrapper
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import com.criptext.mail.R
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
-import com.criptext.mail.scenes.settings.SettingsUIObserver
 import com.criptext.mail.scenes.settings.labels.LabelsUIObserver
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.virtuallist.VirtualListAdapter
@@ -35,9 +36,7 @@ class LabelWrapperAdapter(private val mContext : Context,
                     labelThread.isSelected = !labelThread.isSelected
                     labelsUIObserver?.onToggleLabelSelection(labelThread)
                 }
-                holder.setOnTrashClickedListener {
-                    labelsUIObserver?.onDeleteLabelClicked(labelThread)
-                }
+                holder.setOnMoreClickedListener(labelsUIObserver, labelThread)
             }
             is FooterLabelHolder -> {
                 holder.setOnCreateLabelClickedListener {

@@ -9,4 +9,5 @@ sealed class DialogType{
     class SignIn: DialogType()
     class Message: DialogType()
     class DeleteLabel: DialogType()
+    class EditLabel: DialogType()
 }

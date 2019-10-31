@@ -598,6 +598,7 @@
   <string name="title_delete_label">Borrar Etiqueta</string>
   <string name="message_delete_label">¿Estás seguro que quieres borrar la etiqueta: (%1$s)?</string>
   <string name="error_deleting_label">Error borrando etiqueta. Por favor intenta de nuevo.</string>
+  <string name="error_editing_label">Error editando etiqueta. Por favor intenta de nuevo.</string>
   <string name="recovery_code">
     <u>Enviar Código de Recuperqación</u>
   </string>
@@ -608,4 +609,6 @@
   <string name="recovery_code_validation_error">El código de recuperación no puede ser menor a 6 dígitos.</string>
   <string name="recovery_code_validation_error_empty">El código de recuperación no puede estar vacio.</string>
   <string name="recovery_code_dialog_message_with_email">Por favor revisa tu correo de recuperación, %1$s, e introduce el código que te hemos enviado.</string>
+  <string name="edit">Editar</string>
+  <string name="title_edit_label">Editar Nomnbre de Etiqueta</string>
 </resources>

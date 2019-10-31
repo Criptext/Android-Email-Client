@@ -19,7 +19,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
     private val nameView : TextView
     private val checkBoxView : CheckBox
     private val labelColor: ImageView
-    private val trashImage: ImageView
+    private val threeDots: ImageView
     private val rootView: View
     private val viewSeparator: View
 
@@ -32,11 +32,11 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
         nameView = view.findViewById(R.id.label_name) as TextView
         checkBoxView = view.findViewById(R.id.label_checkbox) as CheckBox
         labelColor = view.findViewById(R.id.label_color)
-        trashImage = view.findViewById(R.id.label_trash)
+        threeDots = view.findViewById(R.id.more)
         rootView = view.findViewById(R.id.rootView)
         viewSeparator = view.findViewById(R.id.viewSeparator)
         checkBoxView.visibility = View.INVISIBLE
-        trashImage.visibility = View.GONE
+        threeDots.visibility = View.GONE
         viewSeparator.visibility = View.GONE
     }
 

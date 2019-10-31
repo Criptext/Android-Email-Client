@@ -47,15 +47,15 @@
             android:layout_gravity="center"/>
 
         <ImageView
-            android:id="@+id/label_trash"
+            android:id="@+id/more"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_marginStart="5dp"
-            android:clickable="true"
-            android:src="@drawable/trash"
-            android:tint="#BBBBBB"
+            android:padding="7dp"
+            android:layout_marginEnd="-7dp"
+            android:src="@drawable/more_email"
             android:layout_gravity="center"
-            android:focusable="true"/>
+            android:clickable="true"
+            android:tint="#89909a" />
     </LinearLayout>
 
     <View
