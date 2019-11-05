@@ -235,4 +235,9 @@ sealed class GeneralResult {
         data class SyncError(val message: UIMessage) : RestoreMailbox()
         data class Failure(val message: UIMessage) : RestoreMailbox()
     }
+
+    sealed class ReportSpam: GeneralResult() {
+        class Success : ReportSpam()
+        data class Failure(val message: UIMessage) : ReportSpam()
+    }
 }
