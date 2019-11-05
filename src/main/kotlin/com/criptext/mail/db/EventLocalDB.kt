@@ -137,6 +137,14 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         ))
     }
 
+    fun updateEditLabel(uuid: String, newName: String, accountId: Long) {
+        db.labelDao().updateLabelName(
+                uuid = uuid,
+                newName = newName,
+                accountId = accountId
+        )
+    }
+
     fun updateDeleteLabel(uuid: String, accountId: Long) {
         db.labelDao().deleteByLabelUUID(
                 uuid = uuid,

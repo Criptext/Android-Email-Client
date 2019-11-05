@@ -108,7 +108,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
         return when(data.type){
             is DialogType.DeleteAccount,
             is DialogType.ReplyToChange,
-            is DialogType.RecoveryCode ->
+            is DialogType.RecoveryCode,
+            is DialogType.EditLabel ->
                 DialogResult.DialogWithInput(password.text.toString(), data.type)
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,

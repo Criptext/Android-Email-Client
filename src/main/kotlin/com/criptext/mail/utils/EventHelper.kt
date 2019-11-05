@@ -62,7 +62,8 @@ class EventHelper(private val db: EventLocalDB,
             val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
-                    .or(processLabelCreated(events.first)).or(processThreadLabelChanged(events.first)).or(processLabelDeleted(events.first))
+                    .or(processLabelCreated(events.first)).or(processLabelEdited(events.first))
+                    .or(processThreadLabelChanged(events.first)).or(processLabelDeleted(events.first))
                     .or(processEmailDeletedPermanently(events.first)).or(processThreadDeletedPermanently(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
                     .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
@@ -522,6 +523,34 @@ class EventHelper(private val db: EventLocalDB,
         return eventIdsToAcknowledge.isNotEmpty()
     }
 
+    private fun processLabelEdited(events: List<Event>): Boolean {
+        val isLabelDeletedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelEdited }
+        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelEditedStatusUpdate> =
+                { Pair( it.rowid, PeerLabelEditedStatusUpdate.fromJSON(it.params)) }
+        val labelEditedSuccessfully: (Pair<Long, PeerLabelEditedStatusUpdate>) -> Boolean =
+                { (_, metadata) ->
+                    try {
+                        updateLabelEditedStatus(metadata)
+                        true
+                    }catch (ex: Exception) {
+                        true
+                    }
+                }
+        val toEventId: (Pair<Long, PeerLabelEditedStatusUpdate>) -> Long =
+                { (eventId, _) -> eventId }
+
+        val eventIdsToAcknowledge = events
+                .filter(isLabelDeletedEvent)
+                .map(toIdAndMetadataPair)
+                .filter(labelEditedSuccessfully)
+                .map(toEventId)
+
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+
+        return eventIdsToAcknowledge.isNotEmpty()
+    }
+
     private fun processLabelDeleted(events: List<Event>): Boolean {
         val isLabelDeletedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelDeleted }
         val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelDeletedStatusUpdate> =
@@ -654,6 +683,8 @@ class EventHelper(private val db: EventLocalDB,
     private fun updateLabelDeletedStatus(metadata: PeerLabelDeletedStatusUpdate) =
             db.updateDeleteLabel(metadata.uuid, activeAccount.id)
 
+    private fun updateLabelEditedStatus(metadata: PeerLabelEditedStatusUpdate) =
+            db.updateEditLabel(metadata.uuid, metadata.name, activeAccount.id)
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
             db.updateExistingEmail(metadata, activeAccount)

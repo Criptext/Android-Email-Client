@@ -14,6 +14,11 @@ class LabelWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
+    fun updateName(newName: String, index: Int){
+        model.labels[index].text = newName
+        listView?.notifyItemChanged(index)
+    }
+
     fun remove(index: Int) {
         model.labels.removeAt(index)
         listView?.notifyItemRemoved(index)

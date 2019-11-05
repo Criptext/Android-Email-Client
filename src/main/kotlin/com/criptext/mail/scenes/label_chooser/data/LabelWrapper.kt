@@ -11,8 +11,9 @@ data class LabelWrapper(val label: Label) {
 
     val color : String
         get() = label.color
-    val text : String
+    var text : String
         get() = label.text
+        set(value) {label.text = value}
     val id : Long
         get() = label.id
     val type : LabelTypes

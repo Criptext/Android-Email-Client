@@ -1,11 +1,14 @@
 package com.criptext.mail.scenes.settings.labels
 
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.settings.SettingsCustomLabelDialog
 import com.criptext.mail.scenes.settings.labels.data.LabelWrapperAdapter
 import com.criptext.mail.scenes.settings.labels.data.VirtualLabelWrapperList
@@ -39,6 +42,9 @@ interface LabelsScene{
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
     fun showLabelDeleteDialog(dialogData: DialogData.DialogConfirmationData)
+    fun showLabelEditDialog(dialogData: DialogData.DialogDataForInput)
+    fun labelEditDialogToggleLoad(loading: Boolean)
+    fun labelEditDialogDismiss()
 
     class Default(val view: View): LabelsScene{
         private lateinit var labelsUIObserver: LabelsUIObserver
@@ -61,6 +67,7 @@ interface LabelsScene{
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
         private var generalDialogConfirmation: GeneralDialogConfirmation? = null
+        private var generalInputDialog: GeneralDialogWithInput? = null
 
         override fun attachView(labelsUIObserver: LabelsUIObserver,
                                 model: LabelsModel) {
@@ -131,6 +138,19 @@ interface LabelsScene{
         override fun showLabelDeleteDialog(dialogData: DialogData.DialogConfirmationData) {
             generalDialogConfirmation = GeneralDialogConfirmation(context, dialogData)
             generalDialogConfirmation?.showDialog(labelsUIObserver)
+        }
+
+        override fun showLabelEditDialog(dialogData: DialogData.DialogDataForInput) {
+            generalInputDialog = GeneralDialogWithInput(context, dialogData)
+            generalInputDialog?.showDialog(labelsUIObserver)
+        }
+
+        override fun labelEditDialogToggleLoad(loading: Boolean) {
+            generalInputDialog?.toggleLoad(loading)
+        }
+
+        override fun labelEditDialogDismiss() {
+            generalInputDialog?.dismiss()
         }
 
         override fun getLabelLocalizedName(name: String): String {

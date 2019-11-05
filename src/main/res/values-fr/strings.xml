@@ -619,6 +619,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="title_delete_label">Supprimer l\'étiquette</string>
   <string name="message_delete_label">Êtes-vous sûr de vouloir supprimer le libellé: ( %1$s )?</string>
   <string name="error_deleting_label">Erreur lors de la suppression de l\'étiquette. Veuillez réessayer</string>
+  <string name="error_editing_label">Erreur d\'édition du libellé. Veuillez réessayer</string>
   <string name="recovery_code">
 <u>Envoyer le code de récupération</u>
   </string>
@@ -629,4 +630,6 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="recovery_code_validation_error">Le code de récupération dure au moins 6 caractères.</string>
   <string name="recovery_code_validation_error_empty">Code de récupération ne peut pas être vide.</string>
   <string name="recovery_code_dialog_message_with_email">Veuillez vérifier votre courrier électronique de récupération, %1$s , puis entrez le code qui vous a été envoyé.</string>
+  <string name="edit">Modifier</string>
+  <string name="title_edit_label">Editer le nom de l\'étiquette</string>
 </resources>

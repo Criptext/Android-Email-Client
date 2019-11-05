@@ -600,6 +600,7 @@
   <string name="title_delete_label">Delete Label</string>
   <string name="message_delete_label">Are you sure you want to delete label: (%1$s)?</string>
   <string name="error_deleting_label">Error deleting label. Please try again</string>
+  <string name="error_editing_label">Error editing label. Please try again</string>
   <string name="recovery_code">
     <u>Send Recovery Code</u>
   </string>
@@ -610,4 +611,6 @@
   <string name="recovery_code_validation_error">Recovery Code is at least 6 characters long.</string>
   <string name="recovery_code_validation_error_empty">Recovery Code cannot be empty.</string>
   <string name="recovery_code_dialog_message_with_email">Please check your recovery email, %1$s, and enter the code that was sent to you.</string>
+  <string name="edit">Edit</string>
+  <string name="title_edit_label">Edit Label Name</string>
 </resources>

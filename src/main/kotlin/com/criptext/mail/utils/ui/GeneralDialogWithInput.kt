@@ -78,6 +78,11 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData) {
         } else if(data is DialogData.DialogDataForRecoveryCode){
             dialogView.findViewById<TextView>(R.id.message).visibility = View.VISIBLE
             dialogView.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message)
+        } else if (data is DialogData.DialogDataForInput){
+            if(data.input != null) {
+                editTextEmail.setText(data.input)
+                editTextEmail.setSelection(data.input.length)
+            }
         }
     }
 
@@ -160,6 +165,22 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData) {
                             setEmailError(userInput.message)
                         }
                     }
+                } else if(data is DialogData.DialogDataForInput){
+                    val userInput = text.toString().trim()
+                    when (userInput) {
+                        "" -> {
+                            disableSaveButton()
+                            setEmailError(UIMessage(R.string.fullname_empty_error))
+                        }
+                        else -> {
+                            if (!text.isNullOrEmpty()) {
+                                setEmailError(null)
+                                enableSaveButton()
+                            } else {
+                                disableSaveButton()
+                            }
+                        }
+                    }
                 }
             }
 
@@ -198,7 +219,8 @@ class GeneralDialogWithInput(val context: Context, val data: DialogData) {
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
             is DialogType.ReplyToChange,
-            is DialogType.RecoveryCode ->
+            is DialogType.RecoveryCode,
+            is DialogType.EditLabel ->
                 DialogResult.DialogWithInput(editTextEmail.text.toString(), data.type)
         }
     }

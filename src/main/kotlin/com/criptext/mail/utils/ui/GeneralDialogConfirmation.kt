@@ -86,7 +86,8 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
         return when(data.type){
             is DialogType.DeleteAccount,
             is DialogType.ReplyToChange,
-            is DialogType.RecoveryCode ->
+            is DialogType.RecoveryCode,
+            is DialogType.EditLabel ->
                 DialogResult.DialogWithInput("", data.type)
             is DialogType.DeleteLabel,
             is DialogType.ManualSyncConfirmation,
