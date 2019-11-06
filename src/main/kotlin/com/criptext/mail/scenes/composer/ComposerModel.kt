@@ -1,16 +1,13 @@
 package com.criptext.mail.scenes.composer
 
-import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
-import com.criptext.mail.validation.FormInputState
 import java.util.*
 
 /**
@@ -58,4 +55,5 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
     var selectedAddress: String = ""
     var shareActivityMessage: ActivityMessage.AddAttachments? = null
     var fromAddresses = mutableListOf<String>()
+    var groupId: String? = null
 }

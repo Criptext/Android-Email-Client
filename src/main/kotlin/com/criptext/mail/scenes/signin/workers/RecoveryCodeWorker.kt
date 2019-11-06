@@ -6,6 +6,7 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.toList
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
@@ -103,7 +104,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 identityKeyPairB64 = privateBundle.identityKeyPair, jwt = jwt,
                 signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                 autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
-                backupPassword = null)
+                backupPassword = null, type = AccountTypes.STANDARD)
         return Pair(registrationBundles, account)
     }
 

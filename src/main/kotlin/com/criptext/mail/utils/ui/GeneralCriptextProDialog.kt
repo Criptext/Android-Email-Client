@@ -80,11 +80,14 @@ class GeneralCriptextProDialog(val context: Context, val data: DialogData.Dialog
     private fun createResult(): DialogResult {
         return when(data.type){
             is DialogType.DeleteAccount,
-            is DialogType.ReplyToChange ->
+            is DialogType.ReplyToChange,
+            is DialogType.EditLabel,
+            is DialogType.RecoveryCode ->
                 DialogResult.DialogWithInput("", data.type)
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
             is DialogType.Message,
+            is DialogType.DeleteLabel,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
             is DialogType.CriptextPro ->

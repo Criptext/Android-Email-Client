@@ -684,13 +684,13 @@
   <string name="delete_criptext_alias_wait_title">Oops…</string>
   <string name="delete_criptext_alias_wait">Aliases que terminan en @criptext.com no pueden ser eliminados los primeros 15 días desde su creación.\n\n<b>Días restantes: %1$d</b></string>
   <string name="you_need_pro_title">Necesitas Ser Pro</string>
-  <string name="you_need_pro_button">Get Pro</string>
-  <string name="you_need_pro_no_thanks"><u>No thanks</u></string>
-  <string name="you_need_pro_message_fixed">Get this feature plus more when you upgrade to <b>Criptext Pro.</b></string>
-  <string name="you_need_pro_message_read_receipts">Use <b>Read Receipts</b> to know when your emails are read by recipients with blue check marks.</string>
-  <string name="you_need_pro_message_unsend">Use <b>Unsend</b> to correct a mistake and take back an email after you send it.</string>
-  <string name="you_need_pro_message_reminders">Use <b>Reminders</b> to get notified when it\'s time to follow-up a conversation.</string>
-  <string name="you_need_pro_message_cloud_backup">Use <b>Cloud Backup</b> to store your entire inbox on Drive so that data is always backed up.</string>
-  <string name="you_need_pro_message_send_later">Use <b>Send Later</b> to schedule an email to be sent at a later time.</string>
-  <string name="you_need_pro_message_footer">Remove <b>Sent with Criptext Footer</b> when emailing non-Criptext addresses.</string>
+  <string name="you_need_pro_button">Obtener Pro</string>
+  <string name="you_need_pro_no_thanks"><u>No Gracias</u></string>
+  <string name="you_need_pro_message_fixed">Obtén esta función y más cuando actualices a <b>Criptext Pro.</b></string>
+  <string name="you_need_pro_message_read_receipts">Usa <b>Confirmaciones de Lectura</b> para saber cuándo leen tus correos, los destinatarios tendrán marcas de verificación azules.</string>
+  <string name="you_need_pro_message_unsend">Usa <b>Retractar</b> para corregir algún error y recuperar un correo después de haberlo enviado.</string>
+  <string name="you_need_pro_message_reminders">Usa <b>Recordatorios</b> para recibir una notificación cuando sea el momento de seguir una conversación.</string>
+  <string name="you_need_pro_message_cloud_backup">Usa <b>Respaldo en la Nube</b> para almacenar toda tu bandeja de entrada en Drive para que los datos siempre estén respaldados.</string>
+  <string name="you_need_pro_message_send_later">Usa <b>Enviar Luego</b> para programar un correo electrónico que se enviará más adelante.</string>
+  <string name="you_need_pro_message_footer">Remueve <b>\"Enviado con Criptext\"</b> al enviar correos electrónicos a cuentas que no sean de Criptext.</string>
 </resources>

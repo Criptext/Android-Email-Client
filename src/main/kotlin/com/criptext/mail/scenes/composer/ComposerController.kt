@@ -298,6 +298,9 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Register -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
                 composerAttachment.filetoken = result.filetoken
+                if(model.groupId == null && result.groupId != null) {
+                    model.groupId = result.groupId
+                }
             }
             is ComposerResult.UploadFile.Progress -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
@@ -486,7 +489,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 filepath = filepath,
                 fileKey = fileKey,
                 filesSize = model.filesSize,
-                uuid = uuid
+                uuid = uuid,
+                groupId = model.groupId
         ))
     }
 

@@ -550,7 +550,7 @@ abstract class AppDatabase : RoomDatabase() {
                         database.execSQL("""UPDATE account SET type = 2 WHERE id == ${account.getLong(account.getColumnIndex("id"))}""")
                     }
                 }
-                
+
                 database.execSQL("""CREATE TABLE IF NOT EXISTS  customDomain (
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                         rowId INTEGER NOT NULL,
