@@ -6,6 +6,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.signal.PreKeyBundleShareData
+import com.criptext.mail.utils.ContactUtils
 
 sealed class GeneralRequest {
     data class DeviceRemoved(val letAPIKnow: Boolean): GeneralRequest()
@@ -44,4 +45,5 @@ sealed class GeneralRequest {
     data class LinkCancel(val recipientId: String, val domain: String, val jwt: String, val deviceId: Int?): GeneralRequest()
     class SyncCancel: GeneralRequest()
     data class RestoreMailbox(val filePath: String, val passphrase: String?, val isLocal: Boolean = false): GeneralRequest()
+    data class ReportSpam(val emails: List<String>, val type: ContactUtils.ContactReportTypes): GeneralRequest()
 }

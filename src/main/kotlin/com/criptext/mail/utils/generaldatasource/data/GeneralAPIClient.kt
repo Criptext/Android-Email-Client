@@ -1,10 +1,8 @@
 package com.criptext.mail.utils.generaldatasource.data
 
-import com.criptext.mail.api.CriptextAPIClient
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.api.HttpResponseData
+import com.criptext.mail.api.*
 import com.criptext.mail.api.models.Event
-import com.criptext.mail.api.toJSONLongArray
+import com.criptext.mail.utils.ContactUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -113,5 +111,12 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
 
     fun postSyncCancel(): HttpResponseData{
         return httpClient.post(path = "/sync/cancel", authToken = token, body = JSONObject())
+    }
+
+    fun postReportSpam(emails: List<String>, type: ContactUtils.ContactReportTypes): HttpResponseData{
+        val json = JSONObject()
+        json.put("emails", emails.toJSONStringArray())
+        json.put("type", type.name)
+        return httpClient.post(path = "/contact/report", authToken = token, body = json)
     }
 }

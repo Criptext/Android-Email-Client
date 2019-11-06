@@ -15,8 +15,10 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
+import com.criptext.mail.utils.ContactUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.batch
+import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.peerdata.PeerChangeEmailLabelData
 import com.github.kittinunf.result.Result
 
@@ -42,6 +44,7 @@ class UpdateEmailThreadLabelsWorker(
 
     private val peerEventHandler = PeerEventsApiHandler.Default(httpClient,
             activeAccount, pendingDao, storage, accountDao)
+    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override val canBeParallelized = false
 
@@ -82,7 +85,8 @@ class UpdateEmailThreadLabelsWorker(
                 if(trueCurrentLabel == Label.defaultItems.spam){
                     peerRemovedLabels.removeAll(peerRemovedLabels)
                     peerRemovedLabels.add(Label.LABEL_SPAM)
-                    db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                    val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                    apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam)
                 }else
                     peerRemovedLabels.add(trueCurrentLabel.text)
                     Result.of {

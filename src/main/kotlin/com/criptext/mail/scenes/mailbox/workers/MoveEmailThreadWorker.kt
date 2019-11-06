@@ -16,9 +16,11 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
+import com.criptext.mail.utils.ContactUtils
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.batch
+import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.peerdata.PeerChangeThreadLabelData
 import com.criptext.mail.utils.peerdata.PeerDeleteThreadData
 import com.github.kittinunf.result.Result
@@ -43,6 +45,8 @@ class MoveEmailThreadWorker(
 
     private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
             storage, accountDao)
+
+    private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     private val defaultItems = Label.DefaultItems()
     override val canBeParallelized = false
@@ -125,7 +129,8 @@ class MoveEmailThreadWorker(
                     val labelEmails = getLabelEmailRelationsFromEmailIds(emailIds, chosenLabel)
                     db.createLabelEmailRelations(labelEmails)
                     if(chosenLabel == Label.LABEL_SPAM){
-                        db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                        val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                        apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.spam)
                     }
                     if(chosenLabel == Label.LABEL_TRASH){
                         db.setTrashDate(emailIds, activeAccount.id)

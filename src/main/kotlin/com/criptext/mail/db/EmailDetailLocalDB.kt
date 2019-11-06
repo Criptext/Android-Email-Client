@@ -30,20 +30,22 @@ interface EmailDetailLocalDB {
     fun getCustomLabels(accountId: Long): List<Label>
     fun setTrashDate(emailIds: List<Long>, accountId: Long)
     fun getInternalFilesDir(): String
-    fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String)
-    fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String)
+    fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
 
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
-        override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String) {
+        override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
             db.contactDao().resetSpamCounter(fromContacts, accountId)
+            return fromContacts
         }
 
-        override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String) {
+        override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
             db.contactDao().uptickSpamCounter(fromContacts, accountId)
+            return fromContacts
         }
 
         override fun getEmailMetadataKeyById(emailId: Long, accountId: Long): Long {

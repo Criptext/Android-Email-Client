@@ -6,6 +6,10 @@ import com.criptext.mail.db.dao.EmailContactJoinDao
 import com.criptext.mail.db.models.Contact
 
 object ContactUtils {
+    enum class ContactReportTypes {
+        spam, notspam, phishing
+    }
+
     fun getFromContact(emailContactDao: EmailContactJoinDao, contactDao: ContactDao, accountId: Long,
                        emailId: Long, fromAddress: String): Contact {
         val dbContact = emailContactDao.getContactsFromEmail(emailId, ContactTypes.FROM)
