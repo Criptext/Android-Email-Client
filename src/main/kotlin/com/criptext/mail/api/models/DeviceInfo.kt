@@ -9,10 +9,10 @@ sealed class DeviceInfo{
     {
         companion object {
 
-            fun fromJSON(jsonString: String, recipientId: String): TrustedDeviceInfo {
+            fun fromJSON(jsonString: String, recipientId: String?): TrustedDeviceInfo {
                 val json = JSONObject(jsonString).getJSONObject("requestingDeviceInfo")
                 return TrustedDeviceInfo(
-                        recipientId = recipientId,
+                        recipientId = recipientId ?: json.getString("recipientId"),
                         domain = json.getString("domain"),
                         randomId = JSONObject(jsonString).getString("randomId"),
                         deviceId = json.getInt("deviceId"),

@@ -167,7 +167,7 @@ class EventHelper(private val db: EventLocalDB,
     private fun processSyncRequestEvents(events: List<Event>): Boolean {
         val isDeviceLinkRequest: (Event) -> Boolean = { it.cmd == Event.Cmd.syncBeginRequest }
         val toIdAndDeviceInfoPair: (Event) -> Pair<Long, DeviceInfo.TrustedDeviceInfo> =
-                { Pair( it.rowid, DeviceInfo.TrustedDeviceInfo.fromJSON(it.params, it.recipientId)) }
+                { Pair( it.rowid, DeviceInfo.TrustedDeviceInfo.fromJSON(it.params, null)) }
 
         val eventIdsToAcknowledge = events
                 .filter(isDeviceLinkRequest)
@@ -184,7 +184,6 @@ class EventHelper(private val db: EventLocalDB,
                     eventIdsToAcknowledge.map { it.second }.last()
                 }
         )
-
         return eventIdsToAcknowledge.isNotEmpty()
     }
 

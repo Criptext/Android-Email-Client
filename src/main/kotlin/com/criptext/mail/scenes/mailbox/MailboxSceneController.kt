@@ -1189,7 +1189,11 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun handleSuccessfulMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Success) {
         model.lastSync = System.currentTimeMillis()
         if (resultData.mailboxThreads != null) {
-            threadListController.populateThreads(resultData.mailboxThreads)
+            if(model.showOnlyUnread){
+                threadListController.populateThreads(resultData.mailboxThreads.filter { it.unread })
+            } else {
+                threadListController.populateThreads(resultData.mailboxThreads)
+            }
             generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
             scene.updateToolbarTitle(toolbarTitle)
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
