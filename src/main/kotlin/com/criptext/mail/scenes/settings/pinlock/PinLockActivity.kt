@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.settings.pinlock
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
@@ -25,7 +26,7 @@ class PinLockActivity: BaseActivity(){
     override val layoutId = R.layout.activity_pin
     override val toolbarId = R.id.mailbox_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as PinLockModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = PinLockScene.Default(view)

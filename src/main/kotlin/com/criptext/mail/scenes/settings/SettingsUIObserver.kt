@@ -25,4 +25,6 @@ interface SettingsUIObserver: UIObserver {
     fun onCloudBackupClicked()
     fun onSyncMailbox()
     fun onSyncMailboxCanceled()
+    fun onReportBugClicked()
+    fun onReportAbuseClicked()
 }

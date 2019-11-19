@@ -128,6 +128,7 @@ um fortzufahren</string>
   <string name="title_sounds">Geräusche</string>
   <string name="separator_account">KONTO</string>
   <string name="separator_about">ÜBER</string>
+  <string name="separator_support">SUPPORT</string>
   <string name="status_not_confirmed">(nicht verifiziert)</string>
   <string name="status_confirmed">(verifiziert)</string>
   <string name="criptext_version">Criptext Beta</string>
@@ -639,4 +640,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="recovery_code_dialog_message_with_email">Bitte überprüfen Sie Ihre Wiederherstellungs-E-Mail, %1$s , und geben Sie den an Sie gesendeten Code ein.</string>
   <string name="edit">Bearbeiten</string>
   <string name="title_edit_label">Label Name Bearbeiten</string>
+  <string name="report_phishing">Report Phishing</string>
+  <string name="title_report_bug">Report a Bug</string>
+  <string name="title_report_abuse">Report Abuse</string>
 </resources>

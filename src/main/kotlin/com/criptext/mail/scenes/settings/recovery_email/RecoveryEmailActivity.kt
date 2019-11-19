@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.recovery_email
 
+import android.os.Bundle
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
@@ -22,7 +23,7 @@ class RecoveryEmailActivity: BaseActivity(){
     override val layoutId = R.layout.activity_recovery_email
     override val toolbarId = R.id.mailbox_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as RecoveryEmailModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = RecoveryEmailScene.Default(view)

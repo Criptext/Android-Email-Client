@@ -101,6 +101,12 @@ interface SettingsScene{
         private val versionText: TextView by lazy {
             view.findViewById<TextView>(R.id.version_text)
         }
+        private val settingsReportBug: View by lazy {
+            view.findViewById<View>(R.id.settings_report_bug)
+        }
+        private val settingsReportAbuse: View by lazy {
+            view.findViewById<View>(R.id.settings_report_abuse)
+        }
 
 
         private val backButton: ImageView by lazy {
@@ -285,6 +291,12 @@ interface SettingsScene{
             }
             settingsLabels.setOnClickListener {
                 settingsUIObserver?.onLabelsOptionClicked()
+            }
+            settingsReportBug.setOnClickListener {
+                settingsUIObserver?.onReportBugClicked()
+            }
+            settingsReportAbuse.setOnClickListener {
+                settingsUIObserver?.onReportAbuseClicked()
             }
             setSwitchListener()
         }

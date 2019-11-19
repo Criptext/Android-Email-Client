@@ -6,14 +6,11 @@ import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.settings.data.UserSettingsData
-import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIMessage
-import java.io.File
 
 /**
  * Created by gabriel on 5/1/18.
@@ -236,8 +233,8 @@ sealed class GeneralResult {
         data class Failure(val message: UIMessage) : RestoreMailbox()
     }
 
-    sealed class ReportSpam: GeneralResult() {
-        class Success : ReportSpam()
-        data class Failure(val message: UIMessage) : ReportSpam()
+    sealed class Report: GeneralResult() {
+        class Success : Report()
+        data class Failure(val message: UIMessage) : Report()
     }
 }

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -34,9 +35,10 @@ class ComposerActivity : BaseActivity() {
     override val layoutId = R.layout.activity_composer
     override val toolbarId = R.id.toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val httpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val model = receivedModel as ComposerModel
+        model.firstTime = savedInstanceState == null
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         val appDB = AppDatabase.getAppDatabase(this)
         val activeAccount = ActiveAccount.loadFromStorage(this)!!

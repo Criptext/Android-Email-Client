@@ -19,13 +19,6 @@ import java.io.FileInputStream
 import java.io.OutputStream
 import java.io.InputStream
 
-
-
-
-
-
-
-
 class AESUtil(keyAndIV: String) {
     private lateinit var cipherENC: Cipher
     private lateinit var cipherDEC: Cipher
@@ -62,8 +55,8 @@ class AESUtil(keyAndIV: String) {
     companion object {
 
         fun generateAesKey():String{
-            val aesKey = AESUtil.generateSecureRandomBytesToString()
-            val aesIV = AESUtil.generateSecureRandomBytesToString()
+            val aesKey = generateSecureRandomBytesToString()
+            val aesIV = generateSecureRandomBytesToString()
 
             return aesKey.plus(":".plus(aesIV))
         }

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.Menu
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
@@ -72,7 +73,7 @@ class MailboxActivity : BaseActivity() {
 
     }
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as MailboxSceneModel
         val appDB = AppDatabase.getAppDatabase(this)
         val storage = KeyValueStorage.SharedPrefs(this)

@@ -125,6 +125,7 @@
   <string name="title_sounds">Sounds</string>
   <string name="separator_account">ACCOUNT</string>
   <string name="separator_about">ABOUT</string>
+  <string name="separator_support">SUPPORT</string>
   <string name="status_not_confirmed">(not verified)</string>
   <string name="status_confirmed">(verified)</string>
   <string name="criptext_version">Criptext Beta </string>
@@ -613,4 +614,7 @@
   <string name="recovery_code_dialog_message_with_email">Please check your recovery email, %1$s, and enter the code that was sent to you.</string>
   <string name="edit">Edit</string>
   <string name="title_edit_label">Edit Label Name</string>
+  <string name="report_phishing">Report Phishing</string>
+  <string name="title_report_bug">Report a Bug</string>
+  <string name="title_report_abuse">Report Abuse</string>
 </resources>

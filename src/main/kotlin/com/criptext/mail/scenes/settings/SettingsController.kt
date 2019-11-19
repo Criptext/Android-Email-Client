@@ -16,8 +16,10 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
+import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
@@ -32,6 +34,9 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.mailtemplates.ReportAbuseMailTemplate
+import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
@@ -75,6 +80,18 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onReportBugClicked() {
+            host.goToScene(ComposerParams(type = ComposerType.Support(
+                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = Label.defaultItems.inbox),
+                    true)
+        }
+
+        override fun onReportAbuseClicked() {
+            host.goToScene(ComposerParams(type = ComposerType.Report(
+                    host.getMailTemplate(CriptextMailTemplate.TemplateType.ABUSE) as ReportAbuseMailTemplate), currentLabel = Label.defaultItems.inbox),
+                    true)
+        }
+
         override fun onCloudBackupClicked() {
             host.goToScene(CloudBackupParams(), false)
         }

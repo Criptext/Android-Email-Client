@@ -138,6 +138,7 @@ class ComposerController(private val storage: KeyValueStorage,
         }
 
         override fun onRecipientAdded() {
+            if(!model.initialized) return
             val data = scene.getDataInputByUser()
             if(model.to.size < data.to.size || model.cc.size < data.cc.size || model.bcc.size < data.bcc.size) {
                 updateModelWithInputData(data)
@@ -151,6 +152,7 @@ class ComposerController(private val storage: KeyValueStorage,
         }
 
         override fun onRecipientListChanged() {
+            if(!model.initialized) return
             val data = scene.getDataInputByUser()
             if(data.to.size < model.to.size || data.cc.size < model.cc.size || data.bcc.size < model.bcc.size) {
                 updateModelWithInputData(data)
@@ -354,8 +356,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.SaveEmail.Success -> {
                 if(result.onlySave) {
                     host.exitToScene(MailboxParams(), ActivityMessage.DraftSaved(result.preview), false)
-                }
-                else {
+                } else {
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
@@ -618,6 +619,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerType.Forward -> ComposerRequest.LoadInitialData(type, type.originalId)
             is ComposerType.Draft -> ComposerRequest.LoadInitialData(type, type.draftId)
             is ComposerType.Support -> ComposerRequest.LoadInitialData(type, 0)
+            is ComposerType.Report -> ComposerRequest.LoadInitialData(type, 0)
             is ComposerType.MailTo -> ComposerRequest.LoadInitialData(type, 0)
             else -> null
         }

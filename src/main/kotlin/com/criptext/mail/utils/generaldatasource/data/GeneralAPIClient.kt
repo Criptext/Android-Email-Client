@@ -113,10 +113,11 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
         return httpClient.post(path = "/sync/cancel", authToken = token, body = JSONObject())
     }
 
-    fun postReportSpam(emails: List<String>, type: ContactUtils.ContactReportTypes): HttpResponseData{
+    fun postReportSpam(emails: List<String>, type: ContactUtils.ContactReportTypes, data: String?): HttpResponseData{
         val json = JSONObject()
         json.put("emails", emails.toJSONStringArray())
         json.put("type", type.name)
+        json.put("headers", data)
         return httpClient.post(path = "/contact/report", authToken = token, body = json)
     }
 }

@@ -45,5 +45,5 @@ sealed class GeneralRequest {
     data class LinkCancel(val recipientId: String, val domain: String, val jwt: String, val deviceId: Int?): GeneralRequest()
     class SyncCancel: GeneralRequest()
     data class RestoreMailbox(val filePath: String, val passphrase: String?, val isLocal: Boolean = false): GeneralRequest()
-    data class ReportSpam(val emails: List<String>, val type: ContactUtils.ContactReportTypes): GeneralRequest()
+    data class Report(val emails: List<String>, val type: ContactUtils.ContactReportTypes): GeneralRequest()
 }

@@ -39,6 +39,7 @@ class MoveEmailThreadWorker(
         storage: KeyValueStorage,
         httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
+        private val isPhishing: Boolean,
         override val publishFn: (
                 EmailDetailResult.MoveEmailThread) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmailThread> {
@@ -71,8 +72,9 @@ class MoveEmailThreadWorker(
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmailThread>): EmailDetailResult.MoveEmailThread? {
 
         val rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(currentLabel).map { it.id }
-        val emailIds = db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels,
-                account = activeAccount).map {
+        val emails =  db.getFullEmailsFromThreadId(threadId = threadId, rejectedLabels = rejectedLabels,
+                account = activeAccount)
+        val emailIds = emails.map {
             it.email.id
         }
 
@@ -111,7 +113,17 @@ class MoveEmailThreadWorker(
         val result = Result.of {
             if(chosenLabel == Label.LABEL_SPAM){
                 val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.spam)
+                val lastValidEmail = emails.findLast {
+                    it.email.fromAddress != activeAccount.userEmail
+                }
+                if(isPhishing)
+                    apiClient.postReportSpam(fromContacts,
+                            ContactUtils.ContactReportTypes.phishing,
+                            lastValidEmail?.headers ?: lastValidEmail?.email?.content)
+                else
+                    apiClient.postReportSpam(fromContacts,
+                            ContactUtils.ContactReportTypes.spam,
+                            null)
             }
             if(chosenLabel == Label.LABEL_TRASH){
                 db.setTrashDate(emailIds, activeAccount.id)

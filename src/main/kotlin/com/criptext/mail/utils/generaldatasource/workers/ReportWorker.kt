@@ -12,32 +12,30 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
-import org.json.JSONObject
 
 
-class ReportSpamWorker(val httpClient: HttpClient,
-                       val email: List<String>,
-                       val type: ContactUtils.ContactReportTypes,
-                       activeAccount: ActiveAccount,
-                       override val publishFn: (GeneralResult) -> Unit)
-    : BackgroundWorker<GeneralResult.ReportSpam> {
+class ReportWorker(val httpClient: HttpClient,
+                   val email: List<String>,
+                   val type: ContactUtils.ContactReportTypes,
+                   activeAccount: ActiveAccount,
+                   override val publishFn: (GeneralResult) -> Unit)
+    : BackgroundWorker<GeneralResult.Report> {
 
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override val canBeParallelized = true
 
-    override fun catchException(ex: Exception): GeneralResult.ReportSpam {
-        return GeneralResult.ReportSpam.Failure(createErrorMessage(ex))
+    override fun catchException(ex: Exception): GeneralResult.Report {
+        return GeneralResult.Report.Failure(createErrorMessage(ex))
     }
 
-    override fun work(reporter: ProgressReporter<GeneralResult.ReportSpam>): GeneralResult.ReportSpam? {
-        val result = Result.of { apiClient.postReportSpam(email, type) }
+    override fun work(reporter: ProgressReporter<GeneralResult.Report>): GeneralResult.Report? {
+        val result = Result.of { apiClient.postReportSpam(email, type, null) }
 
         return when (result) {
-            is Result.Success -> GeneralResult.ReportSpam.Success()
+            is Result.Success -> GeneralResult.Report.Success()
             is Result.Failure -> catchException(result.error)
         }
-
     }
 
     override fun cancel() {

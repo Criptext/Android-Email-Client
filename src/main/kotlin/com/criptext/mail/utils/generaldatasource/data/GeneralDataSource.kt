@@ -245,7 +245,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
-            is GeneralRequest.ReportSpam -> ReportSpamWorker(
+            is GeneralRequest.Report -> ReportWorker(
                     activeAccount = activeAccount!!,
                     httpClient = httpClient,
                     email = params.emails,

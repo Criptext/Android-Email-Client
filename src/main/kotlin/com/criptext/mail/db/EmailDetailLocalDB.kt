@@ -36,14 +36,18 @@ interface EmailDetailLocalDB {
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
         override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
+                    .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+                    .distinct()
             db.contactDao().resetSpamCounter(fromContacts, accountId)
             return fromContacts
         }
 
         override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
+                    .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
+                    .distinct()
             db.contactDao().uptickSpamCounter(fromContacts, accountId)
             return fromContacts
         }

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.restorebackup
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.criptext.mail.BaseActivity
@@ -40,7 +41,7 @@ class RestoreBackupActivity: BaseActivity(){
 
     private lateinit var googleSignInListener: GoogleSignInObserver
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as RestoreBackupModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = RestoreBackupScene.Default(view)

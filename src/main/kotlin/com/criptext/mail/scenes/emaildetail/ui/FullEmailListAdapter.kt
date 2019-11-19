@@ -238,6 +238,8 @@ class FullEmailListAdapter(private val mContext : Context,
                                markAsRead: Boolean)
         fun onDeleteOptionSelected(fullEmail: FullEmail,
                                    position: Int)
+        fun onReportOptionSelected(fullEmail: FullEmail,
+                                 position: Int)
         fun onSpamOptionSelected(fullEmail: FullEmail,
                                    position: Int)
         fun onPrintOptionSelected(fullEmail: FullEmail)

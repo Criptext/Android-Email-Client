@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.search
 
+import android.os.Bundle
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
@@ -20,7 +21,7 @@ class SearchActivity : BaseActivity() {
     override val layoutId = R.layout.search_layout
     override val toolbarId = R.id.mailbox_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val appDB = AppDatabase.getAppDatabase(this)
         val db : SearchLocalDB.Default = SearchLocalDB.Default(appDB, this.filesDir)
         val model = receivedModel as SearchSceneModel

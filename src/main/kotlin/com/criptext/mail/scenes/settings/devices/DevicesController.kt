@@ -144,6 +144,8 @@ class DevicesController(
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
+        dataSource.listener = dataSourceListener
+        generalDataSource.listener = generalDataSourceListener
         if(model.devices.isEmpty()) {
             model.devices.add(DeviceItem(
                     id = activeAccount.deviceId,
@@ -154,10 +156,8 @@ class DevicesController(
                     lastActivity = null))
             scene.attachView(devicesUIObserver, keyboardManager, model, onDevicesListItemListener)
             scene.showProgressBar(true)
+            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         }
-        dataSource.listener = dataSourceListener
-        generalDataSource.listener = generalDataSourceListener
-        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         return false
     }
 

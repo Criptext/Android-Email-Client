@@ -1189,10 +1189,23 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun handleSuccessfulMailboxUpdate(resultData: GeneralResult.UpdateMailbox.Success) {
         model.lastSync = System.currentTimeMillis()
         if (resultData.mailboxThreads != null) {
+            val isSelected = model.threads.filter { it.isSelected }
             if(model.showOnlyUnread){
                 threadListController.populateThreads(resultData.mailboxThreads.filter { it.unread })
             } else {
                 threadListController.populateThreads(resultData.mailboxThreads)
+            }
+            val selectedPositions = model.threads.filter {
+                modelThread -> modelThread.threadId in isSelected.map { it.threadId }
+            }.map { model.threads.indexOf(it) }
+            if(model.isInMultiSelect){
+                model.selectedThreads.clear()
+                selectedPositions.forEach {
+                    if(it > -1) {
+                        model.threads[it].isSelected = true
+                        threadListController.select(model.threads[it], it)
+                    }
+                }
             }
             generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
             scene.updateToolbarTitle(toolbarTitle)
@@ -1282,7 +1295,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 resultData.extraAccountsData.forEach {
                     if(it.second > 0) {
                         model.extraAccountHasUnreads = true
-                        scene.showExtraAccountsBadge(true)
+                        if(!model.isInMultiSelect)
+                            scene.showExtraAccountsBadge(true)
                     }
                 }
                 scene.updateBadges(resultData.extraAccountsData)
