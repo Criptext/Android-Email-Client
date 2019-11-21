@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.signature
 
+import android.os.Bundle
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
@@ -18,7 +19,7 @@ class SignatureActivity: BaseActivity(){
     override val layoutId = R.layout.activity_signature
     override val toolbarId = R.id.mailbox_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as SignatureModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val appDB = AppDatabase.getAppDatabase(this)

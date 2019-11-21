@@ -42,6 +42,7 @@ class MoveEmailWorker(
         private val currentLabel: Label,
         httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
+        private val isPhishing: Boolean,
         override val publishFn: (
                 EmailDetailResult.MoveEmail) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmail> {
@@ -112,7 +113,17 @@ class MoveEmailWorker(
 
             if(chosenLabel == Label.LABEL_SPAM){
                 val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.spam)
+                if(fromContacts.isNotEmpty()) {
+                    val lastValidEmail = emailDao.getEmailById(emailId, activeAccount.id)
+                    if (isPhishing)
+                        apiClient.postReportSpam(fromContacts,
+                                ContactUtils.ContactReportTypes.phishing,
+                                lastValidEmail?.headers ?: lastValidEmail?.content)
+                    else
+                        apiClient.postReportSpam(fromContacts,
+                                ContactUtils.ContactReportTypes.spam,
+                                null)
+                }
             }
 
             if(chosenLabel == Label.LABEL_TRASH){

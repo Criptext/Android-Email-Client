@@ -27,6 +27,10 @@
         app:showAsAction="collapseActionView"
         android:title="@string/mark_as_spam"/>
     <item
+        android:id="@+id/report_phishing"
+        app:showAsAction="collapseActionView"
+        android:title="@string/report_phishing"/>
+    <item
         android:id="@+id/print"
         app:showAsAction="collapseActionView"
         android:title="@string/print"/>

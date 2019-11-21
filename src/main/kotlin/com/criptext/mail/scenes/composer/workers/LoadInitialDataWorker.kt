@@ -150,6 +150,24 @@ class LoadInitialDataWorker(
         }
     }
 
+    private fun createReportInputData(): ComposerInputData {
+        val reportTemplate = (composerType as ComposerType.Report).template
+        val reportContact= db.contactDao.getContact(reportTemplate.contact, activeAccount.id)
+
+        return if(reportContact != null){
+            ComposerInputData(to = listOf(reportContact), cc = emptyList(), bcc = emptyList(),
+                    body = reportTemplate.body, subject = reportTemplate.subject,
+                    attachments = null, fileKey = null)
+        }else{
+            val newReportContact = Contact(id = 0, email = "abuse@${Contact.mainDomain}",
+                    name = "Criptext Report Abuse", isTrusted = true, score = 0, spamScore = 0)
+            db.contactDao.insertAll(listOf(newReportContact))
+            ComposerInputData(to = listOf(newReportContact), cc = emptyList(), bcc = emptyList(),
+                    body = reportTemplate.body, subject = reportTemplate.subject,
+                    attachments = null, fileKey = null)
+        }
+    }
+
     private fun createMailToInputData(to: String): ComposerInputData {
         val contact = db.contactDao.getContact(to, activeAccount.id)
 
@@ -194,6 +212,7 @@ class LoadInitialDataWorker(
         } else {
             when(composerType){
                 is ComposerType.Support -> ComposerResult.LoadInitialData.Success(createSupportInputData())
+                is ComposerType.Report -> ComposerResult.LoadInitialData.Success(createReportInputData())
                 is ComposerType.MailTo -> ComposerResult.LoadInitialData.Success(createMailToInputData(composerType.to))
                 else -> {
                     val message = UIMessage(R.string.composer_load_error)

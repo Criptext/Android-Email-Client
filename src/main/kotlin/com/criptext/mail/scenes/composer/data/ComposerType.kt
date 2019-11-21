@@ -5,10 +5,7 @@ import com.criptext.mail.api.toList
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
-import com.criptext.mail.utils.mailtemplates.FWMailTemplate
-import com.criptext.mail.utils.mailtemplates.REMailTemplate
-import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
+import com.criptext.mail.utils.mailtemplates.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -29,6 +26,7 @@ sealed class ComposerType {
     data class Forward(val originalId: Long, val currentLabel: Label,
                        val threadPreview: EmailPreview, val template: FWMailTemplate): ComposerType()
     data class Support(val template: SupportMailTemplate): ComposerType()
+    data class Report(val template: ReportAbuseMailTemplate): ComposerType()
     data class MailTo(val to: String): ComposerType()
     data class Send(val files: List<Pair<String, Long>>): ComposerType()
 
@@ -62,6 +60,9 @@ sealed class ComposerType {
                 }
                 Type.SUPPORT.ordinal -> {
                     Support(SupportMailTemplate(context))
+                }
+                Type.REPORT.ordinal -> {
+                    Report(ReportAbuseMailTemplate(context))
                 }
                 Type.MAILTO.ordinal -> {
                     MailTo(to = json.getString("to"))
@@ -99,6 +100,7 @@ sealed class ComposerType {
                     json.put("threadPreview", EmailPreview.emailPreviewToJSON(c.threadPreview))
                 }
                 is Support -> json.put("type", Type.SUPPORT.ordinal)
+                is Report -> json.put("type", Type.REPORT.ordinal)
                 is MailTo -> {
                     json.put("type", Type.MAILTO.ordinal)
                     json.put("to", c.to)
@@ -108,7 +110,7 @@ sealed class ComposerType {
         }
 
         private enum class Type {
-            EMPTY, DRAFT, REPLY, REPLYALL, FORWARD, SUPPORT, MAILTO, SEND;
+            EMPTY, DRAFT, REPLY, REPLYALL, FORWARD, SUPPORT, MAILTO, SEND, REPORT;
         }
     }
 }

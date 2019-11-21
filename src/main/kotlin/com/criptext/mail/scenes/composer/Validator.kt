@@ -60,7 +60,7 @@ object Validator {
 
         if ((data.hasAtLeastOneRecipient || subject.isNotEmpty())
                 && (type !is ComposerType.Reply && type !is ComposerType.ReplyAll
-                        && type !is ComposerType.Support)) {
+                        && type !is ComposerType.Support && type !is ComposerType.Report)) {
             return true
         }
 

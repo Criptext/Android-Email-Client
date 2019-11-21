@@ -38,13 +38,15 @@ sealed class EmailDetailRequest{
     data class MoveEmailThread(
             val chosenLabel: String?,
             val threadId: String,
-            val currentLabel: Label
+            val currentLabel: Label,
+            val isPhishing: Boolean
     ): EmailDetailRequest()
 
     data class MoveEmail(
             val chosenLabel: String?,
             val emailId: Long,
-            val currentLabel: Label
+            val currentLabel: Label,
+            val isPhishing: Boolean
     ): EmailDetailRequest()
 
     data class ReadEmails(

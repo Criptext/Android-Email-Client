@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin
 
+import android.os.Bundle
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -28,7 +29,7 @@ class SignInActivity : BaseActivity() {
     override val toolbarId: Int?
         get() = R.id.remove_device_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val appCtx = this.applicationContext
         val appDB = AppDatabase.getAppDatabase(appCtx)
         val db: SignInLocalDB.Default = SignInLocalDB.Default(appDB, appCtx.filesDir)

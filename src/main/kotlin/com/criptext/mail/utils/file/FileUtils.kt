@@ -2,8 +2,8 @@ package com.criptext.mail.utils.file
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.criptext.mail.aes.AESUtil
@@ -12,10 +12,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URLConnection
 import java.util.zip.GZIPOutputStream
-import android.content.Intent
-
 
 
 /**

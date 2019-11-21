@@ -63,7 +63,10 @@ class GetUserSettingsWorker(
                         isCurrent = true
                 ) else it }
                 GeneralResult.GetUserSettings.Success(settings.copy(
-                        devices = (devices.filter { it.isCurrent } + devices.filter { !it.isCurrent }).sorted()
+                        devices = (devices.filter { it.isCurrent }
+                                + devices.filter { !it.isCurrent }
+                                .filter { it.lastActivity != null }).sorted()
+                                + devices.filter { it.lastActivity == null }
                 ))
             }
             is Result.Failure -> {

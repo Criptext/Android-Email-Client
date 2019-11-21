@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.linking
 
+import android.os.Bundle
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.criptext.mail.BaseActivity
@@ -24,7 +25,7 @@ class LinkingActivity: BaseActivity(){
     override val layoutId = R.layout.activity_connection
     override val toolbarId = null
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as LinkingModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = LinkingScene.Default(view)

@@ -127,6 +127,7 @@ Voulez-vous activer les contacts du répertoire ?</string>
   <string name="title_sounds">Sons</string>
   <string name="separator_account">COMPTE</string>
   <string name="separator_about">À PROPOS</string>
+  <string name="separator_support">SUPPORT</string>
   <string name="status_not_confirmed">(non vérifié)</string>
   <string name="status_confirmed">(vérifié)</string>
   <string name="criptext_version">Criptext Beta</string>
@@ -632,4 +633,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="recovery_code_dialog_message_with_email">Veuillez vérifier votre courrier électronique de récupération, %1$s , puis entrez le code qui vous a été envoyé.</string>
   <string name="edit">Modifier</string>
   <string name="title_edit_label">Editer le nom de l\'étiquette</string>
+  <string name="report_phishing">Report Phishing</string>
+  <string name="title_report_bug">Report a Bug</string>
+  <string name="title_report_abuse">Report Abuse</string>
 </resources>

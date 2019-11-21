@@ -32,6 +32,10 @@
                 app:showAsAction="always"
                 android:id="@+id/mailbox_spam"
                 android:title="@string/mark_as_spam"/>
+            <item
+                android:id="@+id/report_phishing"
+                app:showAsAction="always"
+                android:title="@string/report_phishing"/>
         </menu>
     </item>
 </menu>

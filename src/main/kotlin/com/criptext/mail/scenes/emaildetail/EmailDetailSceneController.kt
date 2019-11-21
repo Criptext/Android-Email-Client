@@ -10,7 +10,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -20,7 +19,6 @@ import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailDataSource
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
-import com.criptext.mail.scenes.emaildetail.data.EmailInlineDownloadData
 import com.criptext.mail.scenes.emaildetail.ui.EmailDetailUIObserver
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -604,6 +602,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun onReportOptionSelected(fullEmail: FullEmail, position: Int) {
+            moveEmail(fullEmail, Label.LABEL_SPAM, true)
+        }
+
         override fun contextMenuRegister(view: View) {
             host.contextMenuRegister(view)
         }
@@ -937,6 +939,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             R.id.mailbox_not_spam -> removeCurrentLabelThread(true)
             R.id.mailbox_not_trash -> removeCurrentLabelThread(true)
             R.id.mailbox_spam -> moveEmailThread(Label.LABEL_SPAM)
+            R.id.report_phishing -> moveEmailThread(Label.LABEL_SPAM, true)
             R.id.mailbox_message_toggle_read -> updateUnreadStatusThread()
             R.id.mailbox_move_to -> {
                 scene.showDialogMoveTo(onMoveThreadsListener, model.currentLabel.text)
@@ -989,12 +992,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
-    fun moveEmail(fullEmail: FullEmail, chosenLabel: String?){
+    fun moveEmail(fullEmail: FullEmail, chosenLabel: String?, isPhishing: Boolean = false){
 
         val req = EmailDetailRequest.MoveEmail(
                 emailId = fullEmail.email.id,
                 chosenLabel = chosenLabel,
-                currentLabel = model.currentLabel)
+                currentLabel = model.currentLabel,
+                isPhishing = isPhishing)
 
         dataSource.submitRequest(req)
     }
@@ -1012,11 +1016,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     }
 
-    private fun moveEmailThread(chosenLabel: String?) {
+    private fun moveEmailThread(chosenLabel: String?, isPhishing: Boolean = false) {
         val req = EmailDetailRequest.MoveEmailThread(
                 threadId = model.threadId,
                 chosenLabel = chosenLabel,
-                currentLabel = model.currentLabel)
+                currentLabel = model.currentLabel,
+                isPhishing = isPhishing)
 
         dataSource.submitRequest(req)
     }

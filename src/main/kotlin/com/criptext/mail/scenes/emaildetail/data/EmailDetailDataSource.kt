@@ -107,6 +107,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     storage = storage,
                     accountDao = accountDao,
+                    isPhishing = params.isPhishing,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -122,6 +123,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     accountDao = accountDao,
                     storage = storage,
+                    isPhishing = params.isPhishing,
                     publishFn = { result ->
                         flushResults(result)
                     })

@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.settings.cloudbackup
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.ViewGroup
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
@@ -43,7 +44,7 @@ class CloudBackupActivity: BaseActivity(){
 
     private lateinit var googleSignInListener: GoogleSignInObserver
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val model = receivedModel as CloudBackupModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = CloudBackupScene.Default(view)

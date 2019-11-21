@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail
 
+import android.os.Bundle
 import android.view.ContextMenu
 import android.view.View
 import android.webkit.WebView
@@ -38,7 +39,7 @@ class  EmailDetailActivity: BaseActivity() {
     override val layoutId = R.layout.activity_emails_detail
     override val toolbarId = R.id.email_detail_toolbar
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
 
         val appDB = AppDatabase.getAppDatabase(this.applicationContext)
         val filesHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)

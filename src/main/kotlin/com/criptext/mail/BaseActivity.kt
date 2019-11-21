@@ -72,10 +72,7 @@ import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.IntentUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
-import com.criptext.mail.utils.mailtemplates.FWMailTemplate
-import com.criptext.mail.utils.mailtemplates.REMailTemplate
-import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
+import com.criptext.mail.utils.mailtemplates.*
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.validation.AccountDataValidator
@@ -135,7 +132,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
      * @param receivedModel The model that your controller should use. You should coerce this value
      * into the type that your controller expects.
      */
-    abstract fun initController(receivedModel: Any): SceneController
+    abstract fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController
     protected val photoUtil = PhotoUtil.Default()
 
     private fun getCachedModel(): Any? {
@@ -265,7 +262,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             model = cacheModel
         }
         try {
-            controller = initController(model)
+            controller = initController(model, savedInstanceState)
         } catch (ex: Exception) {
             restartApplication()
         }
@@ -810,6 +807,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     override fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate {
         return when (type) {
             CriptextMailTemplate.TemplateType.SUPPORT -> SupportMailTemplate(this)
+            CriptextMailTemplate.TemplateType.ABUSE -> ReportAbuseMailTemplate(this)
             CriptextMailTemplate.TemplateType.FW -> FWMailTemplate(this)
             CriptextMailTemplate.TemplateType.RE -> REMailTemplate(this)
         }

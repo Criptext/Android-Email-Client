@@ -207,8 +207,7 @@ interface ComposerScene {
             keyboard.showKeyboardWithDelay(bodyEditText.view)
         }
 
-        override fun
-                setFocusToSubject() {
+        override fun setFocusToSubject() {
             subjectEditText.requestFocus()
             keyboard.showKeyboardWithDelay(subjectEditText)
         }

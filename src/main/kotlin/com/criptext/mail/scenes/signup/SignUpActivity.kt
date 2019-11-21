@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signup
 
+import android.os.Bundle
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
@@ -25,7 +26,7 @@ class SignUpActivity: BaseActivity() {
     override val toolbarId: Int?
         get() = null
 
-    override fun initController(receivedModel: Any): SceneController {
+    override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val appDB = AppDatabase.getAppDatabase(this.applicationContext)
         val signalKeyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
         val signUpSceneView = SignUpScene.SignUpSceneView(findViewById(R.id.signup_layout_container))

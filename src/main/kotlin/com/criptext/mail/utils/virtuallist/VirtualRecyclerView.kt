@@ -43,4 +43,8 @@ class VirtualRecyclerView(private val recyclerView: RecyclerView)
         }
     }
 
+    override fun getViewHolder(pos: Int): RecyclerView.ViewHolder? {
+        return recyclerView.findViewHolderForAdapterPosition(pos)
+    }
+
 }
