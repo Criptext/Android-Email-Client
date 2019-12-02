@@ -15,6 +15,7 @@ interface EmailDetailLocalDB {
 
     fun getLabelsFromThreadId(threadId: String): List<Label>
     fun getFullEmailsFromThreadId(selectedLabel: String = "", threadId: String, rejectedLabels: List<Long>, account: ActiveAccount): List<FullEmail>
+    fun getFullEmailFromId(emailId: Long, account: ActiveAccount): FullEmail?
     fun unsendEmail(emailId: Long, account: ActiveAccount): Date
     fun getEmailMetadataKeyById(emailId: Long, accountId: Long): Long
     fun deleteRelationByEmailIds(emailIds: List<Long>)
@@ -124,6 +125,41 @@ interface EmailDetailLocalDB {
             fullEmails.lastOrNull()?.viewOpen = true
 
             return fullEmails
+        }
+
+        override fun getFullEmailFromId(emailId: Long, account: ActiveAccount): FullEmail? {
+            val email = db.emailDao().getEmailById(emailId, account.id) ?: return null
+            val emailContent = EmailUtils.getEmailContentFromFileSystem(filesDir,
+                    email.metadataKey, email.content,
+                    account.recipientId, account.domain)
+            val id = email.id
+            val labels = db.emailLabelDao().getLabelsFromEmail(id)
+            val contactsCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.CC)
+            val contactsBCC = db.emailContactDao().getContactsFromEmail(id, ContactTypes.BCC)
+            val contactsFROM = db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
+            val contactsTO = db.emailContactDao().getContactsFromEmail(id, ContactTypes.TO)
+            val files = db.fileDao().getAttachmentsFromEmail(id)
+            val fileKey = db.fileKeyDao().getAttachmentKeyFromEmail(id)
+
+            return FullEmail(
+                    email = email.copy(
+                            content = emailContent.first
+                    ),
+                    bcc = contactsBCC,
+                    cc = contactsCC,
+                    from = if(email.fromAddress.isEmpty()){
+                        contactsFROM[0]
+                    }else Contact(
+                            id = contactsFROM[0].id,
+                            email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
+                            name = EmailAddressUtils.extractName(email.fromAddress),
+                            isTrusted = contactsFROM[0].isTrusted,
+                            score = contactsFROM[0].score,
+                            spamScore = contactsFROM[0].spamScore
+                    ),
+                    files = files,
+                    labels = labels,
+                    to = contactsTO, fileKey = fileKey?.key, headers = emailContent.second)
         }
 
         override fun getLabelsFromThreadId(threadId: String): List<Label> {

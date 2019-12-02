@@ -120,4 +120,10 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
         json.put("headers", data)
         return httpClient.post(path = "/contact/report", authToken = token, body = json)
     }
+
+    fun postUserEvent(event: Int): HttpResponseData{
+        val json = JSONObject()
+        json.put("event", event)
+        return httpClient.post(path = "/user/event", authToken = token, body = json)
+    }
 }

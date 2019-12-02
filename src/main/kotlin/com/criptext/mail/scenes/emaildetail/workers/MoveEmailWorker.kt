@@ -114,11 +114,11 @@ class MoveEmailWorker(
             if(chosenLabel == Label.LABEL_SPAM){
                 val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
                 if(fromContacts.isNotEmpty()) {
-                    val lastValidEmail = emailDao.getEmailById(emailId, activeAccount.id)
+                    val lastValidEmail = db.getFullEmailFromId(emailId, activeAccount)
                     if (isPhishing)
                         apiClient.postReportSpam(fromContacts,
                                 ContactUtils.ContactReportTypes.phishing,
-                                lastValidEmail?.headers ?: lastValidEmail?.content)
+                                lastValidEmail?.headers ?: lastValidEmail?.email?.content)
                     else
                         apiClient.postReportSpam(fromContacts,
                                 ContactUtils.ContactReportTypes.spam,

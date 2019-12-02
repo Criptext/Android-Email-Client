@@ -237,4 +237,9 @@ sealed class GeneralResult {
         class Success : Report()
         data class Failure(val message: UIMessage) : Report()
     }
+
+    sealed class UserEvent: GeneralResult() {
+        class Success : UserEvent()
+        data class Failure(val message: UIMessage) : UserEvent()
+    }
 }
