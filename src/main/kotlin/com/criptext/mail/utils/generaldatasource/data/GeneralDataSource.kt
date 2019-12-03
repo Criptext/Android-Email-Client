@@ -254,6 +254,14 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.UserEvent -> UserEventWorker(
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    event = params.event,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }

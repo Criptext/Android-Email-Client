@@ -9,6 +9,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -652,10 +653,13 @@ class ComposerController(private val storage: KeyValueStorage,
               ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS.plus(ContactDomainCheckData(activeAccount.domain, true))
         )
 
-        if (model.initialized)
+        if (model.initialized) {
+            if(model.type is ComposerType.Empty && model.firstTime)
+                generalDataSource.submitRequest(GeneralRequest.UserEvent(UserEvent.newComposerOpen))
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
-        else
+        } else {
             loadInitialData()
+        }
 
         dataSourceController.getAllContacts()
         dataSourceController.getAllFromAddresses()
