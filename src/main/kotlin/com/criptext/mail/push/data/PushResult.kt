@@ -12,7 +12,6 @@ sealed class PushResult {
         abstract fun getDestinationMailbox(): Label
         data class Success(
                 val mailboxLabel: Label,
-                val mailboxThreads: List<EmailPreview>?,
                 val isManual: Boolean,
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,
@@ -25,7 +24,6 @@ sealed class PushResult {
 
         data class SuccessAndRepeat(
                 val mailboxLabel: Label,
-                val mailboxThreads: List<EmailPreview>?,
                 val isManual: Boolean,
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,

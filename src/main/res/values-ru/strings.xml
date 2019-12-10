@@ -638,4 +638,5 @@
   <string name="report_phishing">Report Phishing</string>
   <string name="title_report_bug">Report a Bug</string>
   <string name="title_report_abuse">Report Abuse</string>
+  <string name="forgot_password_time">Забыли пароль?(%1$d)</string>
 </resources>

@@ -42,15 +42,22 @@ class GeneralDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
-            is GeneralRequest.UpdateMailbox -> UpdateMailboxWorker(
+            is GeneralRequest.BackgroundAccountsUpdateMailbox -> BackgroundAccountsUpdateMailboxWorker(
                     db = db,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
-                    recipientId = params.recipientId,
-                    domain = params.domain,
+                    accounts = params.accounts,
                     label = params.label,
-                    isActiveAccount = params.isActiveAccount,
-                    loadedThreadsCount = params.loadedThreadsCount,
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    pendingEventDao = db.pendingEventDao(),
+                    publishFn = { res -> flushResults(res) })
+            is GeneralRequest.ActiveAccountUpdateMailbox -> ActiveAccountUpdateMailboxWorker(
+                    db = db,
+                    dbEvents = eventLocalDB,
+                    httpClient = httpClient,
+                    account = activeAccount!!,
+                    label = params.label,
                     storage = storage,
                     accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),

@@ -180,7 +180,7 @@ class SignUpFormHolder(val view: View) {
     }
 
     fun assignCheckTermsAndConditionsListener() {
-        checkboxTerms.setOnCheckedChangeListener { p0, state -> uiObserver?.onCheckedOptionChanged(state) }
+        checkboxTerms.setOnCheckedChangeListener { _, state -> uiObserver?.onCheckedOptionChanged(state) }
     }
 
     fun assignUsernameTextChangeListener() {

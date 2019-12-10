@@ -2,6 +2,7 @@ package com.criptext.mail.utils.generaldatasource.data
 
 import android.content.ContentResolver
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
@@ -12,12 +13,11 @@ sealed class GeneralRequest {
     data class DeviceRemoved(val letAPIKnow: Boolean): GeneralRequest()
     data class ConfirmPassword(val password: String): GeneralRequest()
     data class ResetPassword(val recipientId: String, val domain: String): GeneralRequest()
-    data class UpdateMailbox(
-            val isActiveAccount: Boolean,
-            val recipientId: String,
-            val domain: String,
-            val label: Label,
-            val loadedThreadsCount: Int): GeneralRequest()
+    data class BackgroundAccountsUpdateMailbox(
+            val accounts: List<Account>,
+            val label: Label): GeneralRequest()
+    data class ActiveAccountUpdateMailbox(
+            val label: Label): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     data class LinkDenied(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     class DataFileCreation(val recipientId: String, val domain: String): GeneralRequest()

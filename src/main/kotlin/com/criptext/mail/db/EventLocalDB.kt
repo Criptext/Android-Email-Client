@@ -5,6 +5,7 @@ import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.api.models.TrackingUpdate
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
+import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
@@ -56,12 +57,28 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         db.rawSignedPreKeyDao().deleteAll(accountId)
     }
 
+    fun getCustomLabels(accountId: Long): List<Label>{
+        return db.labelDao().getAllCustomLabels(accountId)
+    }
+
+    fun getLabels(names: List<String>, accountId: Long): List<Label>{
+        return db.labelDao().get(names, accountId)
+    }
+
     fun getFromContactByEmailId(id: Long): List<Contact> {
         return db.emailContactDao().getContactsFromEmail(id, ContactTypes.FROM)
     }
 
     fun getEmailByMetadataKey(metadataKey: Long, accountId: Long): Email?{
         return db.emailDao().findEmailByMetadataKey(metadataKey, accountId)
+    }
+
+    fun getEmailPreviewByMetadataKey(metadataKey: Long, selectedLabel: String, account: ActiveAccount): EmailPreview? {
+        val email = getEmailByMetadataKey(metadataKey, account.id) ?: return null
+
+        return EmailPreview.fromEmailThread(getEmailThreadFromEmail(email, selectedLabel,
+                    Label.defaultItems.rejectedLabelsByFolder(selectedLabel).map { it.id },
+                    account.userEmail, account))
     }
 
     fun getFullEmailById(emailId: Long, activeAccount: ActiveAccount): FullEmail? {
