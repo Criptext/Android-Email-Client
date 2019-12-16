@@ -53,6 +53,7 @@ interface KeyValueStorage {
         RateDontShowAgain("RateDontShowAgain"),
         RateLaunchCount("RateLaunchCount"),
         RateDateFirstLaunch("RateDateFirstLaunch"),
+        ResumeEventTimer("ResumeEventTimer")
     }
 
     class SharedPrefs(private val ctx: Context) : KeyValueStorage {

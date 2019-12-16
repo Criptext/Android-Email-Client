@@ -441,6 +441,7 @@ class SignInSceneController(
     }
 
     private fun onAcceptPasswordLogin(username: String, domain: String){
+        host.stopMessagesAndCallbacks()
         model.state = SignInLayoutState.InputPassword(
                 username = username,
                 password = "",
@@ -914,6 +915,10 @@ class SignInSceneController(
 
     override fun onStop() {
         cleanup(true)
+    }
+
+    override fun onNeedToSendEvent(event: Int) {
+        return
     }
 
     private fun cleanup(fullCleanup: Boolean){

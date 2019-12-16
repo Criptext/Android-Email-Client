@@ -350,6 +350,10 @@ class SignUpSceneController(
         scene.uiObserver = null
     }
 
+    override fun onNeedToSendEvent(event: Int) {
+        return
+    }
+
     override fun onBackPressed(): Boolean {
         host.exitToScene(
                 params = SignInParams(),

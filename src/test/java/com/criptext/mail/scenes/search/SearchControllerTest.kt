@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.search.data.SearchResult
 import com.criptext.mail.scenes.search.ui.SearchHistoryAdapter
 import com.criptext.mail.scenes.search.ui.SearchThreadAdapter
 import com.criptext.mail.scenes.search.ui.SearchUIObserver
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should be`
@@ -26,6 +27,7 @@ class SearchControllerTest{
     private lateinit var activeAccount: ActiveAccount
     private lateinit var storage: KeyValueStorage
     private lateinit var dataSource: SearchDataSource
+    private lateinit var generalDataSource: GeneralDataSource
     private lateinit var controller: SearchSceneController
     private lateinit var runner: MockedWorkRunner
     private lateinit var sentRequests: MutableList<SearchRequest>
@@ -45,6 +47,7 @@ class SearchControllerTest{
         model = SearchSceneModel()
         host = mockk(relaxed = true)
         dataSource = mockk(relaxed = true)
+        generalDataSource = mockk(relaxed = true)
         storage = mockk(relaxed = true)
         activeAccount = ActiveAccount.fromJSONString(
                 """ { "name":"Daniel","jwt":"_JWT_","recipientId":"daniel","deviceId":1
@@ -55,7 +58,9 @@ class SearchControllerTest{
                 host = host,
                 activeAccount = activeAccount,
                 storage = storage,
-                dataSource = dataSource)
+                dataSource = dataSource,
+                generalDataSource = generalDataSource
+                )
 
         listenerSlot = CapturingSlot()
 

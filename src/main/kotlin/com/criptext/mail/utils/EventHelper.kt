@@ -50,8 +50,8 @@ class EventHelper(private val db: EventLocalDB,
     private var shouldNotify = false
     private var newEmails = mutableListOf<EmailPreview>()
     private var customLabels = mutableListOf<Label>()
-    private var threadReads: Pair<List<String>, Boolean>? = null
-    private var emailReads: Pair<List<Long>, Boolean>? = null
+    private var threadReads = mutableListOf<Pair<List<String>, Boolean>>()
+    private var emailReads = mutableListOf<Pair<List<Long>, Boolean>>()
     private var movedThread = mutableListOf<Triple<List<String>, List<Label>?, List<Label>?>>()
     private var movedEmail = mutableListOf<Triple<List<Long>, List<Label>?, List<Label>?>>()
     private var nameChanged: String = ""
@@ -64,15 +64,31 @@ class EventHelper(private val db: EventLocalDB,
 
     val processEvents: (Pair<List<Event>, Boolean>) -> Result<EventHelperResultData, Exception> = { events ->
         Result.of {
+            val eventList = events.first
+            eventList.forEach {
+                when(it.cmd){
+                    Event.Cmd.profilePictureChanged -> processProfilePicChangePeer(it)
+                    Event.Cmd.lowOnPreKeys -> processLowPreKeys(it)
+                    Event.Cmd.deviceAuthRequest -> processLinkRequestEvents(it)
+                    Event.Cmd.syncBeginRequest -> processSyncRequestEvents(it)
+                    Event.Cmd.updateBannerEvent -> processUpdateBannerData(it)
+                    Event.Cmd.newEmail -> processNewEmails(it)
+                    Event.Cmd.peerEmailThreadReadStatusUpdate -> processThreadReadStatusChanged(it)
+                    Event.Cmd.peerEmailReadStatusUpdate -> processEmailReadStatusChanged(it)
+                    Event.Cmd.peerEmailUnsendStatusUpdate -> processUnsendEmailStatusChanged(it)
+                    Event.Cmd.peerUserChangeName -> processPeerUsernameChanged(it)
+                    Event.Cmd.peerEmailChangedLabels -> processEmailLabelChanged(it)
+                    Event.Cmd.peerThreadChangedLabels -> processThreadLabelChanged(it)
+                    Event.Cmd.peerEmailDeleted -> processEmailDeletedPermanently(it)
+                    Event.Cmd.peerThreadDeleted -> processThreadDeletedPermanently(it)
+                    Event.Cmd.peerLabelCreated -> processLabelCreated(it)
+                    Event.Cmd.peerLabelEdited -> processLabelEdited(it)
+                    Event.Cmd.peerLabelDeleted -> processLabelDeleted(it)
+                    Event.Cmd.trackingUpdate -> processTrackingUpdates(it)
+                    Event.Cmd.newError -> processOnError(it)
+                }
+            }
 
-            processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
-                    .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
-                    .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
-                    .or(processLabelCreated(events.first)).or(processLabelEdited(events.first))
-                    .or(processThreadLabelChanged(events.first)).or(processLabelDeleted(events.first))
-                    .or(processEmailDeletedPermanently(events.first)).or(processThreadDeletedPermanently(events.first))
-                    .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
-                    .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
             acknowledgeEventsIgnoringErrors(eventsToAcknowldege)
             EventHelperResultData(updateBannerData, linkDevicesEvents, shouldNotify,
                     newEmails, customLabels, threadReads, emailReads, movedThread, movedEmail,
@@ -80,570 +96,287 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
-    private fun processProfilePicChangePeer(events: List<Event>): Boolean {
-        val isLowOnPreKeysEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.profilePictureChanged }
-        val toEventIds: (Event) -> Long =
-                { it.rowid }
-
-        val eventIdsToAcknowledge = events
-                .filter(isLowOnPreKeysEvent)
-                .map(toEventIds)
-
-        if(eventIdsToAcknowledge.isNotEmpty()){
-
+    private fun processProfilePicChangePeer(event: Event) {
+        val operation = Result.of {
             UIUtils.checkForCacheCleaning(storage, db.getCacheDir(), activeAccount)
-
-            if (acknoledgeEvents)
-                eventsToAcknowldege.addAll(eventIdsToAcknowledge)
         }
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processLowPreKeys(events: List<Event>): Boolean {
-        val isLowOnPreKeysEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.lowOnPreKeys }
-        val toEventIds: (Event) -> Long =
-                { it.rowid }
-
-        val eventIdsToAcknowledge = events
-                .filter(isLowOnPreKeysEvent)
-                .map(toEventIds)
-
-        if(eventIdsToAcknowledge.isNotEmpty()){
-            val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
-            val remainingKeys = db.getAllPreKeys(activeAccount.id).map { it.preKeyId }
-            val recipientId = if(activeAccount.domain != Contact.mainDomain)
-                activeAccount.recipientId.plus("@${activeAccount.domain}")
-            else
-                activeAccount.recipientId
-            val registrationBundles = keyGenerator.register(recipientId,
-                    activeAccount.deviceId)
-
-            if(remainingKeys.size < SignalKeyGenerator.PRE_KEY_COUNT) {
-                val response = Result.of {
-                    mailboxAPIClient.insertPreKeys(
-                            preKeys = registrationBundles.uploadBundle.preKeys,
-                            excludedKeys = remainingKeys)
-                }
-                if (response is Result.Success) {
-                    val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
-                        CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = activeAccount.id)
-                    }.filter { it.preKeyId !in remainingKeys }
-                    db.insertPreKeys(preKeyList)
-
-                    if (acknoledgeEvents)
-                        acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it })
-                }
-            } else {
+        when(operation){
+            is Result.Success -> {
                 if (acknoledgeEvents)
-                    acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it })
+                    eventsToAcknowldege.add(event.rowid)
             }
         }
-
-        return eventIdsToAcknowledge.isNotEmpty()
     }
 
-    private fun processLinkRequestEvents(events: List<Event>): Boolean {
-        val isDeviceLinkRequest: (Event) -> Boolean = { it.cmd == Event.Cmd.deviceAuthRequest }
-        val toIdAndDeviceInfoPair: (Event) -> Pair<Long, DeviceInfo.UntrustedDeviceInfo> =
-                { Pair( it.rowid, DeviceInfo.UntrustedDeviceInfo.fromJSON(it.params)) }
+    private fun processLowPreKeys(event: Event) {
+        val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.getDeviceType())
+        val remainingKeys = db.getAllPreKeys(activeAccount.id).map { it.preKeyId }
+        val recipientId = if(activeAccount.domain != Contact.mainDomain)
+            activeAccount.recipientId.plus("@${activeAccount.domain}")
+        else
+            activeAccount.recipientId
+        val registrationBundles = keyGenerator.register(recipientId,
+                activeAccount.deviceId)
 
-        val eventIdsToAcknowledge = events
-                .filter(isDeviceLinkRequest)
-                .map(toIdAndDeviceInfoPair)
+        if(remainingKeys.size < SignalKeyGenerator.PRE_KEY_COUNT) {
+            val response = Result.of {
+                mailboxAPIClient.insertPreKeys(
+                        preKeys = registrationBundles.uploadBundle.preKeys,
+                        excludedKeys = remainingKeys)
+            }
+            if (response is Result.Success) {
+                val preKeyList = registrationBundles.privateBundle.preKeys.entries.map { (key, value) ->
+                    CRPreKey(id = 0, preKeyId = key, byteString = value, accountId = activeAccount.id)
+                }.filter { it.preKeyId !in remainingKeys }
+                db.insertPreKeys(preKeyList)
 
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it.first })
+                if (acknoledgeEvents)
+                    acknowledgeEventsIgnoringErrors(listOf(event.rowid))
+            }
+        } else {
+            if (acknoledgeEvents)
+                acknowledgeEventsIgnoringErrors(listOf(event.rowid))
+        }
+    }
 
-        val deviceInfo = eventIdsToAcknowledge.map { it.second }
-        linkDevicesEvents.add(if(deviceInfo.isEmpty())
-            null
-                else{
+    private fun processLinkRequestEvents(event: Event) {
+        if (acknoledgeEvents)
+            acknowledgeEventsIgnoringErrors(listOf(event.rowid))
+        linkDevicesEvents.add(DeviceInfo.UntrustedDeviceInfo.fromJSON(event.params))
+        shouldNotify = true
+    }
+
+    private fun processSyncRequestEvents(event: Event) {
+        if (acknoledgeEvents)
+            acknowledgeEventsIgnoringErrors(listOf(event.rowid))
+
+        linkDevicesEvents.add(DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, null))
+        shouldNotify = true
+    }
+
+    private fun processUpdateBannerData(event: Event) {
+        val bannerData = UpdateBannerEventData.fromJSON(event.params)
+        val operation = getImageFromCdn(bannerData)
+        when(operation){
+            is Result.Success ->{
                 shouldNotify = true
-                eventIdsToAcknowledge.map { it.second }.last()
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+                updateBannerData = operation.value
             }
-        )
-
-        return eventIdsToAcknowledge.isNotEmpty()
+            is Result.Failure -> updateBannerData = null
+        }
     }
 
-    private fun processSyncRequestEvents(events: List<Event>): Boolean {
-        val isDeviceLinkRequest: (Event) -> Boolean = { it.cmd == Event.Cmd.syncBeginRequest }
-        val toIdAndDeviceInfoPair: (Event) -> Pair<Long, DeviceInfo.TrustedDeviceInfo> =
-                { Pair( it.rowid, DeviceInfo.TrustedDeviceInfo.fromJSON(it.params, null)) }
-
-        val eventIdsToAcknowledge = events
-                .filter(isDeviceLinkRequest)
-                .map(toIdAndDeviceInfoPair)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge.map { it.first })
-
-        val deviceInfo = eventIdsToAcknowledge.map { it.second }
-        linkDevicesEvents.add(if(deviceInfo.isEmpty())
-            null
-                else {
-                    shouldNotify = true
-                    eventIdsToAcknowledge.map { it.second }.last()
-                }
-        )
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processUpdateBannerData(events: List<Event>): Boolean {
-        val isUpdateBannerEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.updateBannerEvent }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, UpdateBannerEventData> =
-                { Pair( it.rowid, UpdateBannerEventData.fromJSON(it.params)) }
-        val updateBannerDataList = mutableListOf<UpdateBannerData>()
-        val getBannerDataSuccessfully: (Pair<Long, UpdateBannerEventData>) -> Boolean =
-                { (_, updateEventData) ->
-                    val operation = getImageFromCdn(updateEventData)
-                    when(operation){
-                        is Result.Success ->{
-                            updateBannerDataList.add(operation.value)
-                            shouldNotify = true
-                            true
-                        }
-                        else -> false
-                    }
-                }
-        val toEventId: (Pair<Long, UpdateBannerEventData>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isUpdateBannerEvent)
-                .map(toIdAndMetadataPair)
-                .filter(getBannerDataSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        updateBannerData = if(updateBannerDataList.isEmpty()) null else updateBannerDataList.last()
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-
-    private fun processNewEmails(events: List<Event>): Boolean {
-        val isNewEmailEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.newEmail }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
-                { Pair( it.rowid, EmailMetadata.fromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        insertIncomingEmailTransaction(metadata)
-                        val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text, activeAccount)
-                        if(newPreview != null)
-                            newEmails.add(newPreview)
-                        shouldNotify = true
-                        // insertion success, try to acknowledge it
-                        true
-                    } catch (ex: DuplicateMessageException) {
-                        // duplicated, try to acknowledge it
-                        true
-                    }
-                    catch (ex: Exception) {
-                        // Unknown exception, probably network related, skip acknowledge
-                        if(ex is DuplicateMessageException){
-                            updateExistingEmailTransaction(metadata)
-                        }
-                        ex is DuplicateMessageException
-                    }
-                }
-        val toEventId: (Pair<Long, EmailMetadata>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isNewEmailEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailInsertedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processThreadReadStatusChanged(events: List<Event>): Boolean {
-        val isThreadReadStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailThreadReadStatusUpdate }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerReadThreadStatusUpdate> =
-                { Pair( it.rowid, PeerReadThreadStatusUpdate.fromJSON(it.params)) }
-        val threadReadStatusChangedSuccessfully: (Pair<Long, PeerReadThreadStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateThreadReadStatus(metadata)
-                        threadReads = Pair(metadata.threadIds, metadata.unread)
-                        // insertion success, try to acknowledge it
-                        true
-                    }
-                    catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerReadThreadStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isThreadReadStatusChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(threadReadStatusChangedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processEmailReadStatusChanged(events: List<Event>): Boolean {
-        val isEmailReadStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailReadStatusUpdate }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerReadEmailStatusUpdate> =
-                { Pair( it.rowid, PeerReadEmailStatusUpdate.fromJSON(it.params)) }
-        val emailReadSuccessfully: (Pair<Long, PeerReadEmailStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateEmailReadStatus(metadata)
-                        emailReads = Pair(metadata.metadataKeys, metadata.unread)
-                        // insertion success, try to acknowledge it
-                        true
-                    }
-                    catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerReadEmailStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isEmailReadStatusChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailReadSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processUnsendEmailStatusChanged(events: List<Event>): Boolean {
-        val isEmailUnsendStatusChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailUnsendStatusUpdate }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerUnsendEmailStatusUpdate> =
-                { Pair( it.rowid, PeerUnsendEmailStatusUpdate.fromJSON(it.params)) }
-        val emailUnsentSuccessfully: (Pair<Long, PeerUnsendEmailStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateUnsendEmailStatus(metadata)
-                        unsend = Pair(metadata.metadataKey, metadata.unsendDate)
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        false
-                    }
-                }
-        val toEventId: (Pair<Long, PeerUnsendEmailStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isEmailUnsendStatusChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailUnsentSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processPeerUsernameChanged(events: List<Event>): Boolean {
-        val isUsernameChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerUserChangeName }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerUsernameChangedStatusUpdate> =
-                { Pair( it.rowid, PeerUsernameChangedStatusUpdate.fromJSON(it.params)) }
-        val usernameChangedSuccessfully: (Pair<Long, PeerUsernameChangedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateUsernameStatus(metadata)
-                        nameChanged = metadata.name
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        false
-                    }
-                }
-        val toEventId: (Pair<Long, PeerUsernameChangedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isUsernameChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(usernameChangedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processEmailLabelChanged(events: List<Event>): Boolean {
-        val isEmailLabelChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailChangedLabels }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerEmailLabelsChangedStatusUpdate> =
-                { Pair( it.rowid, PeerEmailLabelsChangedStatusUpdate.fromJSON(it.params)) }
-        val emailLabelChangedSuccessfully: (Pair<Long, PeerEmailLabelsChangedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateEmailLabelChangedStatus(metadata)
-                        val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
-                        val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
-                        movedEmail.add(Triple(metadata.metadataKeys, added, deleted))
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerEmailLabelsChangedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isEmailLabelChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailLabelChangedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processThreadLabelChanged(events: List<Event>): Boolean {
-        val isThreadLabelChangedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerThreadChangedLabels }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerThreadLabelsChangedStatusUpdate> =
-                { Pair( it.rowid, PeerThreadLabelsChangedStatusUpdate.fromJSON(it.params)) }
-        val emailLabelChangedSuccessfully: (Pair<Long, PeerThreadLabelsChangedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateThreadLabelChangedStatus(metadata)
-                        val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
-                        val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
-                        movedThread.add(Triple(metadata.threadIds, added, deleted))
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerThreadLabelsChangedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isThreadLabelChangedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailLabelChangedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processEmailDeletedPermanently(events: List<Event>): Boolean {
-        val isEmailDeletedPermanentlyEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerEmailDeleted }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerEmailDeletedStatusUpdate> =
-                { Pair( it.rowid, PeerEmailDeletedStatusUpdate.fromJSON(it.params)) }
-        val emailDeletedSuccessfully: (Pair<Long, PeerEmailDeletedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateEmailDeletedPermanentlyStatus(metadata)
-                        movedEmail.add(Triple(metadata.metadataKeys, null, null))
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerEmailDeletedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isEmailDeletedPermanentlyEvent)
-                .map(toIdAndMetadataPair)
-                .filter(emailDeletedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processThreadDeletedPermanently(events: List<Event>): Boolean {
-        val isThreadDeletedPermanentlyEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerThreadDeleted }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerThreadDeletedStatusUpdate> =
-                { Pair( it.rowid, PeerThreadDeletedStatusUpdate.fromJSON(it.params)) }
-        val threadDeletedSuccessfully: (Pair<Long, PeerThreadDeletedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateThreadDeletedPermanentlyStatus(metadata)
-                        movedThread.add(Triple(metadata.threadIds, null, null))
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerThreadDeletedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isThreadDeletedPermanentlyEvent)
-                .map(toIdAndMetadataPair)
-                .filter(threadDeletedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processLabelCreated(events: List<Event>): Boolean {
-        val isLabelCreatedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelCreated }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelCreatedStatusUpdate> =
-                { Pair( it.rowid, PeerLabelCreatedStatusUpdate.fromJSON(it.params)) }
-        val labelCreatedSuccessfully: (Pair<Long, PeerLabelCreatedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateLabelCreatedStatus(metadata)
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerLabelCreatedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isLabelCreatedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(labelCreatedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents){
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-            customLabels.addAll(db.getCustomLabels(activeAccount.id))
+    private fun processNewEmails(event: Event) {
+        val metadata = EmailMetadata.fromJSON(event.params)
+        val operation = Result.of {
+            insertIncomingEmailTransaction(metadata)
         }
 
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processLabelEdited(events: List<Event>): Boolean {
-        val isLabelDeletedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelEdited }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelEditedStatusUpdate> =
-                { Pair( it.rowid, PeerLabelEditedStatusUpdate.fromJSON(it.params)) }
-        val labelEditedSuccessfully: (Pair<Long, PeerLabelEditedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateLabelEditedStatus(metadata)
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerLabelEditedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isLabelDeletedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(labelEditedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents) {
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-            customLabels.addAll(db.getCustomLabels(activeAccount.id))
-        }
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processLabelDeleted(events: List<Event>): Boolean {
-        val isLabelDeletedEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.peerLabelDeleted }
-        val toIdAndMetadataPair: (Event) -> Pair<Long, PeerLabelDeletedStatusUpdate> =
-                { Pair( it.rowid, PeerLabelDeletedStatusUpdate.fromJSON(it.params)) }
-        val labelDeletedSuccessfully: (Pair<Long, PeerLabelDeletedStatusUpdate>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        updateLabelDeletedStatus(metadata)
-                        // insertion success, try to acknowledge it
-                        true
-                    }catch (ex: Exception) {
-                        true
-                    }
-                }
-        val toEventId: (Pair<Long, PeerLabelDeletedStatusUpdate>) -> Long =
-                { (eventId, _) -> eventId }
-
-        val eventIdsToAcknowledge = events
-                .filter(isLabelDeletedEvent)
-                .map(toIdAndMetadataPair)
-                .filter(labelDeletedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents) {
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-            customLabels.addAll(db.getCustomLabels(activeAccount.id))
-        }
-
-        return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-    private fun processTrackingUpdates(events: List<Event>): Boolean {
-        val isTrackingUpdateEvent: (Event) -> Boolean = { it.cmd == Event.Cmd.trackingUpdate }
-        val toIdAndTrackingUpdatePair: (Event) -> Pair<Long, TrackingUpdate> = {
-            Pair(it.rowid, TrackingUpdate.fromJSON(it.params))
-        }
-
-        val trackingUpdatesPair = events.filter(isTrackingUpdateEvent)
-                .map(toIdAndTrackingUpdatePair)
-        var eventIdsToAcknowledge = trackingUpdatesPair.map { it.first }
-        val trackingUpdates = trackingUpdatesPair.map { it.second }
-
-        createFeedItems(trackingUpdates)
-        changeDeliveryTypes(trackingUpdates)
-        trackingUpdates.forEach {
-            if(it.type == DeliveryTypes.UNSEND) {
-                try {
-                    updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(it.metadataKey, it.date))
-                } catch(ex: Exception) {
-                    val index = trackingUpdates.indexOf(it)
-                    if(index > -1){
-                        eventIdsToAcknowledge = mutableListOf(eventIdsToAcknowledge).removeAt(index)
+        when(operation){
+            is Result.Success -> {
+                val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text, activeAccount)
+                if(newPreview != null)
+                    newEmails.add(newPreview)
+                shouldNotify = true
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+            is Result.Failure -> {
+                when(operation.error){
+                    is DuplicateMessageException -> {
+                        updateExistingEmailTransaction(metadata)
+                        if (acknoledgeEvents)
+                            eventsToAcknowldege.add(event.rowid)
                     }
                 }
             }
         }
-        if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
     }
 
-    private fun processOnError(events: List<Event>): Boolean {
+    private fun processThreadReadStatusChanged(event: Event) {
+        val metadata = PeerReadThreadStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateThreadReadStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                threadReads.add(Pair(metadata.threadIds, metadata.unread))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processEmailReadStatusChanged(event: Event) {
+        val metadata = PeerReadEmailStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateEmailReadStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                emailReads.add(Pair(metadata.metadataKeys, metadata.unread))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processUnsendEmailStatusChanged(event: Event) {
+        val metadata = PeerUnsendEmailStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateUnsendEmailStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                unsend = Pair(metadata.metadataKey, metadata.unsendDate)
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processPeerUsernameChanged(event: Event) {
+        val metadata = PeerUsernameChangedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateUsernameStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                nameChanged = metadata.name
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processEmailLabelChanged(event: Event) {
+        val metadata = PeerEmailLabelsChangedStatusUpdate.fromJSON(event.params)
+
+        val operation = Result.of {
+            updateEmailLabelChangedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
+                val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
+                movedEmail.add(Triple(metadata.metadataKeys, added, deleted))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processThreadLabelChanged(event: Event) {
+        val metadata = PeerThreadLabelsChangedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateThreadLabelChangedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
+                val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
+                movedThread.add(Triple(metadata.threadIds, added, deleted))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processEmailDeletedPermanently(event: Event) {
+        val metadata = PeerEmailDeletedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateEmailDeletedPermanentlyStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                movedEmail.add(Triple(metadata.metadataKeys, null, null))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processThreadDeletedPermanently(event: Event) {
+        val metadata = PeerThreadDeletedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateThreadDeletedPermanentlyStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                movedThread.add(Triple(metadata.threadIds, null, null))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processLabelCreated(event: Event) {
+        val metadata = PeerLabelCreatedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateLabelCreatedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processLabelEdited(event: Event) {
+        val metadata = PeerLabelEditedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateLabelEditedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processLabelDeleted(event: Event) {
+        val metadata = PeerLabelDeletedStatusUpdate.fromJSON(event.params)
+        val operation = Result.of {
+            updateLabelDeletedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processTrackingUpdates(event: Event) {
+        val operation = Result.of {
+            val metadata = TrackingUpdate.fromJSON(event.params)
+
+            createFeedItems(listOf(metadata))
+            changeDeliveryTypes(listOf(metadata))
+
+            if (metadata.type == DeliveryTypes.UNSEND) {
+                updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(metadata.metadataKey, metadata.date))
+            }
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
 
 
-        val eventIdsToAcknowledge = events.filter { it.cmd == Event.Cmd.newError }
-                .map { it.rowid }
+    }
 
-        if (eventIdsToAcknowledge.isNotEmpty())
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
+    private fun processOnError(event: Event) {
+        eventsToAcknowldege.add(event.rowid)
     }
 
     private fun getImageFromCdn(metadata: UpdateBannerEventData): Result<UpdateBannerData, java.lang.Exception> {

@@ -19,6 +19,8 @@ import com.criptext.mail.scenes.search.data.SearchResult
 import com.criptext.mail.scenes.search.ui.SearchHistoryAdapter
 import com.criptext.mail.scenes.search.ui.SearchThreadAdapter
 import com.criptext.mail.scenes.search.ui.SearchUIObserver
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 
 /**
  * Created by danieltigse on 2/2/18.
@@ -29,7 +31,8 @@ class SearchSceneController(private val scene: SearchScene,
                             private val host: IHostActivity,
                             private val activeAccount: ActiveAccount,
                             storage: KeyValueStorage,
-                            private val dataSource: SearchDataSource)
+                            private val dataSource: SearchDataSource,
+                            private val generalDataSource: GeneralDataSource)
     : SceneController(){
 
     private val searchHistoryManager = SearchHistoryManager(storage)
@@ -148,6 +151,10 @@ class SearchSceneController(private val scene: SearchScene,
 
     override fun onStop() {
 
+    }
+
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
     }
 
     override fun onBackPressed(): Boolean {

@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -121,6 +122,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     lateinit var controller: SceneController
     lateinit var model: Any
     var mFirebaseAnalytics: FirebaseAnalytics? = null
+    val shouldSendResumeEvent: Boolean
+        get() = System.currentTimeMillis() - storage.getLong(KeyValueStorage.StringKey.ResumeEventTimer, 0L) > RESUME_TIMER
 
     private val handler = Handler()
 
@@ -279,6 +282,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun onResume() {
         super.onResume()
+        if(shouldSendResumeEvent){
+            storage.putLong(KeyValueStorage.StringKey.ResumeEventTimer, System.currentTimeMillis())
+            controller.onNeedToSendEvent(UserEvent.onResumeApp)
+        }
         if (controller.onResume(activityMessage))
             activityMessage = null
     }
@@ -459,6 +466,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
         handler.postDelayed(runnable, delayMilliseconds)
+    }
+
+    override fun stopMessagesAndCallbacks() {
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
@@ -842,6 +853,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val REPLY_TO_MODEL = "ReplyToModel"
         private const val SIGNATURE_MODEL = "SignatureModel"
         private const val SIGN_UP_MODEL = "SignUpModel"
+
+        private const val RESUME_TIMER = 180000L
     }
 
     enum class RequestCode {

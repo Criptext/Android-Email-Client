@@ -64,4 +64,9 @@ abstract class SceneController {
      * Called during the host activity's onCreateOptionsMenu.
      */
     abstract fun onMenuChanged(menu: IHostActivity.IActivityMenu)
+
+    /**
+     * Called to tell the controller to send an specific event.
+     */
+    abstract fun onNeedToSendEvent(event: Int)
 }
