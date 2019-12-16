@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
+import com.criptext.mail.utils.EventHelperResultData
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import io.mockk.*
@@ -53,11 +54,9 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
                 loadParams = LoadParams.NewPage(loadedThreads.size, loadedThreads.lastOrNull()?.timestamp),
                 mailboxLabel = model.selectedLabel.text))
 
-        // verify UpdateMailbox request sent
+        // verify ActiveAccountUpdateMailbox request sent
         verify {
-            generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(label = model.selectedLabel,
-                loadedThreadsCount = loadedThreads.size, isActiveAccount = true, recipientId = activeAccount.recipientId,
-                    domain = activeAccount.domain))
+            generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(label = model.selectedLabel))
         }
     }
 
@@ -104,31 +103,6 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
     }
 
     @Test
-    fun `after updating mailbox, if loadedThreads is not null, should use them to replace existing threads`() {
-        controller.onStart(null)
-        clearMocks(virtualListView)
-
-        // set existing threads
-        model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
-
-        val threadsFromUpdate = MailboxTestUtils.createEmailPreviews(20)
-
-        // trigger load complete event
-        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(
-                mailboxThreads = threadsFromUpdate,
-                mailboxLabel = model.selectedLabel,
-                isManual = false,
-                updateBannerData = null,
-                syncEventsList = listOf(),
-                shouldNotify = false,
-                isActiveAccount = true))
-
-        model.threads.size `should be` 20
-        verify { virtualListView.notifyDataSetChanged() }
-
-    }
-
-    @Test
     fun `after updating mailbox, if loadedThreads is null, should NOT update anything`() {
         controller.onStart(null)
         clearMocks(virtualListView)
@@ -137,12 +111,10 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
-        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
+        generalListenerSlot.captured(GeneralResult.ActiveAccountUpdateMailbox.Success(
                 mailboxLabel = model.selectedLabel, isManual = false,
-                updateBannerData = null,
-                syncEventsList = listOf(),
-                shouldNotify = false,
-                isActiveAccount = true))
+                data = null,
+                shouldNotify = false))
 
         model.threads.size `should be` 40
         verify(inverse = true) { virtualListView.notifyDataSetChanged() }
@@ -158,12 +130,9 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
         model.threads.addAll(MailboxTestUtils.createEmailPreviews(40))
 
         // trigger load complete event
-        generalListenerSlot.captured(GeneralResult.UpdateMailbox.Success(mailboxThreads = null,
+        generalListenerSlot.captured(GeneralResult.ActiveAccountUpdateMailbox.Success(
                 mailboxLabel = model.selectedLabel, isManual = true,
-                updateBannerData = null,
-                syncEventsList = listOf(),
-                shouldNotify = false,
-                isActiveAccount = true))
+                shouldNotify = false, data = null))
 
         verify { scene.clearRefreshing() }
     }

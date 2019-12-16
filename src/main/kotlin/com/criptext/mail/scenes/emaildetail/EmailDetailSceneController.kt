@@ -67,7 +67,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
-            is GeneralResult.UpdateMailbox -> onMailboxUpdate(result)
+            is GeneralResult.ActiveAccountUpdateMailbox -> onActiveAccountMailboxUpdate(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ResendEmail -> onResendEmail(result)
@@ -270,30 +270,25 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
-    private fun onMailboxUpdate(result: GeneralResult.UpdateMailbox){
+    private fun onActiveAccountMailboxUpdate(result: GeneralResult.ActiveAccountUpdateMailbox){
         when (result) {
-            is GeneralResult.UpdateMailbox.Success -> {
-                if(result.isActiveAccount) {
-                    dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
+            is GeneralResult.ActiveAccountUpdateMailbox.Success -> {
+                dataSource.submitRequest(EmailDetailRequest.LoadFullEmailsFromThreadId(
                             model.threadId, model.currentLabel, null))
-                }
             }
-            is GeneralResult.UpdateMailbox.SuccessAndRepeat -> {
-                generalDataSource.submitRequest(GeneralRequest.UpdateMailbox(
-                        result.isActiveAccount, result.recipientId, result.domain, model.currentLabel, 1
+            is GeneralResult.ActiveAccountUpdateMailbox.SuccessAndRepeat -> {
+                generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(
+                        model.currentLabel
                 ))
             }
-            is GeneralResult.UpdateMailbox.Unauthorized -> {
-                if (result.isActiveAccount)
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
             }
-            is GeneralResult.UpdateMailbox.Forbidden -> {
-                if (result.isActiveAccount)
-                    scene.showConfirmPasswordDialog(emailDetailUIObserver)
+            is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
+                scene.showConfirmPasswordDialog(emailDetailUIObserver)
             }
-            is GeneralResult.UpdateMailbox.EnterpriseSuspended -> {
-                if (result.isActiveAccount)
-                    showSuspendedAccountDialog()
+            is GeneralResult.ActiveAccountUpdateMailbox.EnterpriseSuspended -> {
+                showSuspendedAccountDialog()
             }
         }
     }
@@ -1158,10 +1153,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         override fun onNewEvent(recipientId: String, domain: String) {
             generalDataSource.submitRequest(
-                    GeneralRequest.UpdateMailbox(
-                            (recipientId == activeAccount.recipientId && domain == activeAccount.domain),
-                            recipientId, domain,
-                            model.currentLabel, 1
+                    GeneralRequest.ActiveAccountUpdateMailbox(
+                            model.currentLabel
                     ))
         }
 

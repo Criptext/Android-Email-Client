@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.mailbox
 
+import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.virtuallist.VirtualListView
+import java.util.*
 
 /**
  * Created by sebas on 1/31/18.
@@ -129,6 +131,17 @@ class ThreadListController(private val model : MailboxSceneModel,
             }
         }
         newEmails.forEach { model.threads.add(0, it) }
+    }
+
+    fun changeUnsendStatus(threadId: String, date: Date) {
+        val position = model.threads.indexOfFirst { it.threadId == threadId }
+        if (position > -1) {
+            model.threads[position] = model.threads[position].copy(
+                    deliveryStatus = DeliveryTypes.UNSEND,
+                    latestEmailUnsentDate = date
+            )
+            virtualListView?.notifyItemChanged(position)
+        }
     }
 
     fun isOnTopOfList(): Boolean {

@@ -10,6 +10,7 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.EventHelperResultData
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -31,32 +32,14 @@ sealed class GeneralResult {
         data class Failure(val message: UIMessage): ResetPassword()
     }
 
-    sealed class UpdateMailbox : GeneralResult() {
+    sealed class BackgroundAccountsUpdateMailbox : GeneralResult() {
         abstract fun getDestinationMailbox(): Label
         data class Success(
-                val isActiveAccount: Boolean,
-                val shouldNotify: Boolean,
+                val shouldUpdateUI: Boolean,
                 val mailboxLabel: Label,
-                val mailboxThreads: List<EmailPreview>?,
                 val updateBannerData: UpdateBannerData?,
                 val syncEventsList: List<DeviceInfo?>,
-                val isManual: Boolean) : UpdateMailbox() {
-
-            override fun getDestinationMailbox(): Label {
-                return mailboxLabel
-            }
-        }
-
-        data class SuccessAndRepeat(
-                val isActiveAccount: Boolean,
-                val recipientId: String,
-                val domain: String,
-                val shouldNotify: Boolean,
-                val mailboxLabel: Label,
-                val mailboxThreads: List<EmailPreview>?,
-                val updateBannerData: UpdateBannerData?,
-                val syncEventsList: List<DeviceInfo?>,
-                val isManual: Boolean) : UpdateMailbox() {
+                val isManual: Boolean) : BackgroundAccountsUpdateMailbox() {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
@@ -64,37 +47,91 @@ sealed class GeneralResult {
         }
 
         data class Failure(
-                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?) : UpdateMailbox() {
+                val exception: Exception?) : BackgroundAccountsUpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }
 
         data class Unauthorized(
-                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?) : UpdateMailbox() {
+                val exception: Exception?) : BackgroundAccountsUpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }
 
         data class Forbidden(
-                val isActiveAccount: Boolean,
                 val mailboxLabel: Label,
                 val message: UIMessage,
-                val exception: Exception?) : UpdateMailbox() {
+                val exception: Exception?) : BackgroundAccountsUpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }
         }
 
-        data class EnterpriseSuspended(val isActiveAccount: Boolean,
-                                       val mailboxLabel: Label): UpdateMailbox() {
+        data class EnterpriseSuspended(val mailboxLabel: Label): BackgroundAccountsUpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+    }
+
+    sealed class ActiveAccountUpdateMailbox : GeneralResult() {
+        abstract fun getDestinationMailbox(): Label
+        data class Success(
+                val shouldNotify: Boolean,
+                val mailboxLabel: Label,
+                val data: EventHelperResultData?,
+                val isManual: Boolean) : ActiveAccountUpdateMailbox() {
+
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
+        data class SuccessAndRepeat(
+                val shouldNotify: Boolean,
+                val mailboxLabel: Label,
+                val data: EventHelperResultData?,
+                val isManual: Boolean) : ActiveAccountUpdateMailbox() {
+
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
+        data class Failure(
+                val mailboxLabel: Label,
+                val message: UIMessage,
+                val exception: Exception?) : ActiveAccountUpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
+        data class Unauthorized(
+                val mailboxLabel: Label,
+                val message: UIMessage,
+                val exception: Exception?) : ActiveAccountUpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
+        data class Forbidden(
+                val mailboxLabel: Label,
+                val message: UIMessage,
+                val exception: Exception?) : ActiveAccountUpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return mailboxLabel
+            }
+        }
+
+        data class EnterpriseSuspended(val mailboxLabel: Label): ActiveAccountUpdateMailbox() {
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
             }

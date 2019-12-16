@@ -643,4 +643,5 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="report_phishing">Report Phishing</string>
   <string name="title_report_bug">Report a Bug</string>
   <string name="title_report_abuse">Report Abuse</string>
+  <string name="forgot_password_time">Passwort vergessen?(%1$d)</string>
 </resources>

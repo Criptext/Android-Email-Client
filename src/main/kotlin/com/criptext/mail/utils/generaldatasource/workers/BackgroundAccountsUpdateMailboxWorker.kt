@@ -2,6 +2,7 @@ package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.*
+import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
@@ -9,39 +10,34 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
-import com.squareup.picasso.Picasso
 import org.whispersystems.libsignal.DuplicateMessageException
-import java.io.File
 
 
-class UpdateMailboxWorker(
-        private val isActiveAccount: Boolean,
+class BackgroundAccountsUpdateMailboxWorker(
         private val db: AppDatabase,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
-        private val recipientId: String,
-        private val domain: String,
-        private val loadedThreadsCount: Int,
+        private val accounts: List<Account>,
         private val label: Label,
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         override val publishFn: (
-                GeneralResult.UpdateMailbox) -> Unit)
-    : BackgroundWorker<GeneralResult.UpdateMailbox> {
+                GeneralResult.BackgroundAccountsUpdateMailbox) -> Unit)
+    : BackgroundWorker<GeneralResult.BackgroundAccountsUpdateMailbox> {
 
 
     override val canBeParallelized = false
@@ -57,37 +53,36 @@ class UpdateMailboxWorker(
 
     private var shouldCallAgain = false
 
-    override fun catchException(ex: Exception): GeneralResult.UpdateMailbox =
+    private var shouldUpdateUI = false
+
+    override fun catchException(ex: Exception): GeneralResult.BackgroundAccountsUpdateMailbox =
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    GeneralResult.UpdateMailbox.Unauthorized(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.BackgroundAccountsUpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.Forbidden ->
-                    GeneralResult.UpdateMailbox.Forbidden(isActiveAccount, label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.BackgroundAccountsUpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
-                    GeneralResult.UpdateMailbox.EnterpriseSuspended(isActiveAccount, label)
-                else -> GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
+                    GeneralResult.BackgroundAccountsUpdateMailbox.EnterpriseSuspended(label)
+                else -> GeneralResult.BackgroundAccountsUpdateMailbox.Failure(label, createErrorMessage(ex), ex)
             }
         }
-        else GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(ex), ex)
+        else GeneralResult.BackgroundAccountsUpdateMailbox.Failure(label, createErrorMessage(ex), ex)
 
 
-    private fun processFailure(failure: Result.Failure<EventHelperResultData, Exception>): GeneralResult.UpdateMailbox {
+    private fun processFailure(failure: Result.Failure<EventHelperResultData, Exception>): GeneralResult.BackgroundAccountsUpdateMailbox {
         return if (failure.error is EventHelper.NothingNewException)
-            GeneralResult.UpdateMailbox.Success(
+            GeneralResult.BackgroundAccountsUpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
-                    mailboxThreads = null,
                     updateBannerData = null,
                     syncEventsList = listOf(),
-                    shouldNotify = false,
-                    isActiveAccount = isActiveAccount)
+                    shouldUpdateUI = shouldUpdateUI)
         else
             catchException(failure.error)
     }
 
-    private fun setup(): Boolean {
-        val account = accountDao.getAccount(recipientId, domain) ?: return false
+    private fun setup(account: Account): Boolean {
         activeAccount = ActiveAccount.loadFromDB(account)?: return false
         signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
@@ -98,53 +93,58 @@ class UpdateMailboxWorker(
         return true
     }
 
-    override fun work(reporter: ProgressReporter<GeneralResult.UpdateMailbox>)
-            : GeneralResult.UpdateMailbox? {
-        if(!setup()) return  GeneralResult.UpdateMailbox.Failure(isActiveAccount, label, createErrorMessage(Exception()), Exception())
-        eventHelper.setupForMailbox(label, loadedThreadsCount)
-        val operationResult = workOperation()
+    override fun work(reporter: ProgressReporter<GeneralResult.BackgroundAccountsUpdateMailbox>)
+            : GeneralResult.BackgroundAccountsUpdateMailbox? {
 
-        checkTrashDates()
-        checkForCacheCleaning()
+        var index = 0
+        val deviceInfo = mutableListOf<DeviceInfo?>()
+        while(index < accounts.size){
+            if(setup(accounts[index])) {
+                eventHelper.setupForMailbox(label)
+                val operationResult = workOperation()
+                val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operationResult)
 
-
-        val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operationResult)
-
-        val finalResult = if(sessionExpired)
-            newRetryWithNewSessionOperation()
-        else
-            operationResult
-
-
-        return when(finalResult) {
-            is Result.Success -> {
-                return if(shouldCallAgain){
-                    GeneralResult.UpdateMailbox.SuccessAndRepeat(
-                            mailboxLabel = label,
-                            isManual = true,
-                            mailboxThreads = finalResult.value.emailPreviews,
-                            updateBannerData = finalResult.value.updateBannerData,
-                            syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify,
-                            isActiveAccount = isActiveAccount,
-                            recipientId = activeAccount.recipientId,
-                            domain = activeAccount.domain
-                    )
-                }else {
-                    GeneralResult.UpdateMailbox.Success(
-                            mailboxLabel = label,
-                            isManual = true,
-                            mailboxThreads = finalResult.value.emailPreviews,
-                            updateBannerData = finalResult.value.updateBannerData,
-                            syncEventsList = finalResult.value.deviceInfo,
-                            shouldNotify = finalResult.value.shouldNotify,
-                            isActiveAccount = isActiveAccount
-                    )
+                val finalResult = if (sessionExpired)
+                    newRetryWithNewSessionOperation()
+                else
+                    operationResult
+                when (finalResult) {
+                    is Result.Success -> {
+                        shouldUpdateUI = shouldUpdateUI || true
+                        if (!shouldCallAgain) {
+                            if(index == (accounts.size - 1)) {
+                                deviceInfo.addAll(finalResult.value.deviceInfo)
+                                return GeneralResult.BackgroundAccountsUpdateMailbox.Success(
+                                        mailboxLabel = label,
+                                        isManual = true,
+                                        updateBannerData = finalResult.value.updateBannerData,
+                                        syncEventsList = deviceInfo,
+                                        shouldUpdateUI = shouldUpdateUI
+                                )
+                            } else {
+                                deviceInfo.addAll(finalResult.value.deviceInfo)
+                                index++
+                            }
+                        }
+                    }
+                    is Result.Failure -> {
+                        shouldUpdateUI = shouldUpdateUI || false
+                        if(index == (accounts.size - 1))
+                            processFailure(finalResult)
+                        else {
+                            index++
+                        }
+                    }
                 }
             }
-
-            is Result.Failure -> processFailure(finalResult)
+            index++
         }
+        return GeneralResult.BackgroundAccountsUpdateMailbox.Success(
+                mailboxLabel = label,
+                isManual = true,
+                updateBannerData = null,
+                syncEventsList = listOf(),
+                shouldUpdateUI = false)
     }
 
     override fun cancel() {
@@ -161,7 +161,7 @@ class UpdateMailboxWorker(
     private fun newRetryWithNewSessionOperation()
             : Result<EventHelperResultData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
-                activeAccount, storage, accountDao, isActiveAccount)
+                activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
@@ -170,7 +170,7 @@ class UpdateMailboxWorker(
                 mailboxApiClient.token = account.jwt
 
                 eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
-                eventHelper.setupForMailbox(label, loadedThreadsCount)
+                eventHelper.setupForMailbox(label)
                 workOperation()
             }
             is Result.Failure -> {
@@ -187,25 +187,6 @@ class UpdateMailboxWorker(
                 peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
             }
         }
-    }
-
-    private fun checkForCacheCleaning() {
-        val currentMillis = System.currentTimeMillis()
-        val millisInADays = (24 * 60 * 60 * 1000).toLong()
-        val savedTime = storage.getLong(KeyValueStorage.StringKey.CacheResetTimestamp, 0L)
-        if(savedTime < currentMillis - millisInADays){
-            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
-            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
-            storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, currentMillis)
-            clearImageDiskCache()
-        }
-    }
-
-    private fun clearImageDiskCache(): Boolean {
-        val cache = File(dbEvents.getCacheDir(), "picasso-cache")
-        return if (cache.exists() && cache.isDirectory) {
-            FileUtils.deleteDir(cache)
-        } else false
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

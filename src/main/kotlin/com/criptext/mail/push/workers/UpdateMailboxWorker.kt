@@ -59,7 +59,6 @@ class UpdateMailboxWorker(
             PushResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
-                    mailboxThreads = null,
                     shouldPostNotification = shouldPostNotification,
                     pushData = pushData,
                     senderImage = null)
@@ -74,7 +73,7 @@ class UpdateMailboxWorker(
 
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
             : PushResult.UpdateMailbox? {
-        eventHelper.setupForMailbox(label, loadedThreadsCount)
+        eventHelper.setupForMailbox(label)
         val requestEvents = EventLoader.getEvents(apiClient)
         shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
         val operationResult = requestEvents
@@ -87,12 +86,11 @@ class UpdateMailboxWorker(
         return when(operationResult) {
             is Result.Success -> {
                 if(shouldCallAgain) {
-                    callAgainResult(operationResult.value.emailPreviews, newData, null)
+                    callAgainResult(newData, null)
                 }else{
                     PushResult.UpdateMailbox.Success(
                             mailboxLabel = label,
                             isManual = true,
-                            mailboxThreads = operationResult.value.emailPreviews,
                             pushData = newData,
                             shouldPostNotification = shouldPostNotification,
                             senderImage = null
@@ -104,12 +102,10 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun callAgainResult(emailPreviews: List<EmailPreview>,
-                                newData: Map<String, String>, bm: Bitmap?): PushResult.UpdateMailbox? {
+    private fun callAgainResult(newData: Map<String, String>, bm: Bitmap?): PushResult.UpdateMailbox? {
         return PushResult.UpdateMailbox.SuccessAndRepeat(
                 mailboxLabel = label,
                 isManual = true,
-                mailboxThreads = emailPreviews,
                 pushData = newData,
                 shouldPostNotification = shouldPostNotification,
                 senderImage = bm

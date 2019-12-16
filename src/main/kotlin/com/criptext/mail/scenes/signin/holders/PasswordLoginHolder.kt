@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin.holders
 
+import android.os.CountDownTimer
 import com.google.android.material.textfield.TextInputEditText
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -89,7 +90,26 @@ class PasswordLoginHolder(
     }
 
     fun toggleForgotPasswordClickable(isEnable: Boolean){
-        forgotPassword.isEnabled = isEnable
+        if(isEnable){
+            timerListener(forgotPassword)
+        } else {
+            forgotPassword.isEnabled = isEnable
+        }
+    }
+
+    private fun timerListener(textView: TextView, startTime: Long = 10000) {
+        object : CountDownTimer(startTime, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                val sec = ((millisUntilFinished / 1000) % 60).toInt()
+                textView.text = view.context.getString(R.string.forgot_password_time, sec)
+            }
+
+            override fun onFinish() {
+                textView.text = view.context.getString(R.string.forgot_password)
+                textView.isEnabled = true
+            }
+        }.start()
     }
 
     fun resetInput() {

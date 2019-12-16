@@ -10,27 +10,42 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.utils.file.FileUtils
 import com.squareup.picasso.Callback
-import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
-import java.io.IOException
-import java.io.FileNotFoundException
-import android.graphics.BitmapFactory
 import java.io.File
-import java.io.FileReader
-import java.io.BufferedReader
-import android.graphics.Bitmap
-import android.widget.ProgressBar
 
 
 object UIUtils{
+
+    fun checkForCacheCleaning(storage: KeyValueStorage, cacheDir: File, activeAccount: ActiveAccount) {
+        val currentMillis = System.currentTimeMillis()
+        val millisInADays = (24 * 60 * 60 * 1000).toLong()
+        val savedTime = storage.getLong(KeyValueStorage.StringKey.CacheResetTimestamp, 0L)
+        if(savedTime < currentMillis - millisInADays){
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
+            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+            storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, currentMillis)
+            clearImageDiskCache(cacheDir)
+        }
+    }
+
+    private fun clearImageDiskCache(cacheDir: File): Boolean {
+        val cache = File(cacheDir, "picasso-cache")
+        return if (cache.exists() && cache.isDirectory) {
+            FileUtils.deleteDir(cache)
+        } else false
+    }
 
     fun setProfilePicture(iv: ImageView, resources: Resources, domain: String, recipientId: String, name: String, runnable: Runnable?) {
         val url = Hosts.restApiBaseUrl.plus("/user/avatar/$domain/$recipientId")

@@ -18,13 +18,12 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.workers.UpdateMailboxWorker
+import com.criptext.mail.utils.generaldatasource.workers.ActiveAccountUpdateMailboxWorker
 import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -75,12 +74,11 @@ class UpdateMailboxWorkerTest {
     }
 
 
-    private fun newWorker(loadedThreadsCount: Int, label: Label): UpdateMailboxWorker =
-            UpdateMailboxWorker(label = label,
-                    recipientId = activeAccount.recipientId, loadedThreadsCount = loadedThreadsCount,
+    private fun newWorker(loadedThreadsCount: Int, label: Label): ActiveAccountUpdateMailboxWorker =
+            ActiveAccountUpdateMailboxWorker(label = label,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
-                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), isActiveAccount = true,
-                    db = db, domain = activeAccount.domain)
+                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(),
+                    db = db, account = activeAccount)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
@@ -122,7 +120,7 @@ class UpdateMailboxWorkerTest {
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
 
         // assert that emails got updated correctly in DB
         val updatedEmails = db.emailDao().getAll(activeAccount.id)
@@ -162,7 +160,7 @@ class UpdateMailboxWorkerTest {
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
 
         // assert that requests got sent correctly
         val expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt)
@@ -209,7 +207,7 @@ class UpdateMailboxWorkerTest {
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
 
         // assert that emails got inserted correctly in DB and in the File System
         val newLocalEmails = db.emailDao().getAll(activeAccount.id)
@@ -263,7 +261,7 @@ class UpdateMailboxWorkerTest {
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
 
         // assert that requests got sent correctly
         val expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt)
@@ -313,7 +311,7 @@ class UpdateMailboxWorkerTest {
 
         // run worker
         val worker = newWorker(2, Label.defaultItems.inbox)
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
 
         // assert that requests got sent correctly
         val expectedAuthScheme = ExpectedAuthScheme.Jwt(activeAccount.jwt)
@@ -371,11 +369,11 @@ class UpdateMailboxWorkerTest {
         val worker = newWorker(2, Label.defaultItems.inbox)
 
         // run worker 1st time
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
         val mailCountAfter1stRun = db.emailDao().getAll(activeAccount.id).size
 
         // run worker 2nd time
-        worker.work(mockk()) as GeneralResult.UpdateMailbox.Success
+        worker.work(mockk()) as GeneralResult.ActiveAccountUpdateMailbox.Success
         val mailCountAfter2ndRun = db.emailDao().getAll(activeAccount.id).size
 
         // no new mails should be added on second run

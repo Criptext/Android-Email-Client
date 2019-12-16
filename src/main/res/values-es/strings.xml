@@ -615,4 +615,5 @@
   <string name="report_phishing">Reportar como Phishing</string>
   <string name="title_report_bug">Report a Bug</string>
   <string name="title_report_abuse">Report Abuse</string>
+  <string name="forgot_password_time">¿Olvidaste tu contraseña?(%1$d)</string>
 </resources>

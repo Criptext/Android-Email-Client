@@ -45,21 +45,27 @@ class EventHelper(private val db: EventLocalDB,
     private val newsClient = MailboxAPIClient(newsHttpClient, activeAccount.jwt)
 
     private lateinit var label: Label
-    private var loadedThreadsCount: Int? = null
     private var updateBannerData: UpdateBannerData? = null
     private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
-    private var shouldCallAgain = false
     private var shouldNotify = false
+    private var newEmails = mutableListOf<EmailPreview>()
+    private var customLabels = mutableListOf<Label>()
+    private var threadReads: Pair<List<String>, Boolean>? = null
+    private var emailReads: Pair<List<Long>, Boolean>? = null
+    private var movedThread = mutableListOf<Triple<List<String>, List<Label>?, List<Label>?>>()
+    private var movedEmail = mutableListOf<Triple<List<Long>, List<Label>?, List<Label>?>>()
+    private var nameChanged: String = ""
+    private var unsend: Pair<Long, Date>? = null
 
-    fun setupForMailbox(label: Label, threadCount: Int?){
+
+    fun setupForMailbox(label: Label){
         this.label = label
-        loadedThreadsCount = threadCount
     }
 
     val processEvents: (Pair<List<Event>, Boolean>) -> Result<EventHelperResultData, Exception> = { events ->
         Result.of {
 
-            val shouldReload = processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
+            processLowPreKeys(events.first).or(processNewEmails(events.first)).or(processTrackingUpdates(events.first))
                     .or(processThreadReadStatusChanged(events.first)).or(processUnsendEmailStatusChanged(events.first))
                     .or(processPeerUsernameChanged(events.first)).or(processEmailLabelChanged(events.first))
                     .or(processLabelCreated(events.first)).or(processLabelEdited(events.first))
@@ -67,8 +73,10 @@ class EventHelper(private val db: EventLocalDB,
                     .or(processEmailDeletedPermanently(events.first)).or(processThreadDeletedPermanently(events.first))
                     .or(processOnError(events.first)).or(processEmailReadStatusChanged(events.first)).or(processUpdateBannerData(events.first))
                     .or(processLinkRequestEvents(events.first)).or(processSyncRequestEvents(events.first)).or(processProfilePicChangePeer(events.first))
-            EventHelperResultData(reloadMailbox(shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))),
-                    updateBannerData, linkDevicesEvents, shouldNotify)
+            acknowledgeEventsIgnoringErrors(eventsToAcknowldege)
+            EventHelperResultData(updateBannerData, linkDevicesEvents, shouldNotify,
+                    newEmails, customLabels, threadReads, emailReads, movedThread, movedEmail,
+                    nameChanged, unsend)
         }
     }
 
@@ -83,13 +91,8 @@ class EventHelper(private val db: EventLocalDB,
 
         if(eventIdsToAcknowledge.isNotEmpty()){
 
-            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
-            Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
+            UIUtils.checkForCacheCleaning(storage, db.getCacheDir(), activeAccount)
 
-            val cache = File(db.getCacheDir(), "picasso-cache")
-            if (cache.exists() && cache.isDirectory) {
-                FileUtils.deleteDir(cache)
-            }
             if (acknoledgeEvents)
                 eventsToAcknowldege.addAll(eventIdsToAcknowledge)
         }
@@ -229,6 +232,9 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         insertIncomingEmailTransaction(metadata)
+                        val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text, activeAccount)
+                        if(newPreview != null)
+                            newEmails.add(newPreview)
                         shouldNotify = true
                         // insertion success, try to acknowledge it
                         true
@@ -267,6 +273,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateThreadReadStatus(metadata)
+                        threadReads = Pair(metadata.threadIds, metadata.unread)
                         // insertion success, try to acknowledge it
                         true
                     }
@@ -297,6 +304,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateEmailReadStatus(metadata)
+                        emailReads = Pair(metadata.metadataKeys, metadata.unread)
                         // insertion success, try to acknowledge it
                         true
                     }
@@ -327,6 +335,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateUnsendEmailStatus(metadata)
+                        unsend = Pair(metadata.metadataKey, metadata.unsendDate)
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -356,6 +365,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateUsernameStatus(metadata)
+                        nameChanged = metadata.name
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -385,6 +395,9 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateEmailLabelChangedStatus(metadata)
+                        val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
+                        val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
+                        movedEmail.add(Triple(metadata.metadataKeys, added, deleted))
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -414,6 +427,9 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateThreadLabelChangedStatus(metadata)
+                        val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
+                        val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
+                        movedThread.add(Triple(metadata.threadIds, added, deleted))
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -443,6 +459,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateEmailDeletedPermanentlyStatus(metadata)
+                        movedEmail.add(Triple(metadata.metadataKeys, null, null))
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -472,6 +489,7 @@ class EventHelper(private val db: EventLocalDB,
                 { (_, metadata) ->
                     try {
                         updateThreadDeletedPermanentlyStatus(metadata)
+                        movedThread.add(Triple(metadata.threadIds, null, null))
                         // insertion success, try to acknowledge it
                         true
                     }catch (ex: Exception) {
@@ -516,8 +534,10 @@ class EventHelper(private val db: EventLocalDB,
                 .filter(labelCreatedSuccessfully)
                 .map(toEventId)
 
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents){
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+            customLabels.addAll(db.getCustomLabels(activeAccount.id))
+        }
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -544,8 +564,10 @@ class EventHelper(private val db: EventLocalDB,
                 .filter(labelEditedSuccessfully)
                 .map(toEventId)
 
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents) {
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+            customLabels.addAll(db.getCustomLabels(activeAccount.id))
+        }
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -573,8 +595,10 @@ class EventHelper(private val db: EventLocalDB,
                 .filter(labelDeletedSuccessfully)
                 .map(toEventId)
 
-        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+        if (eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents) {
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
+            customLabels.addAll(db.getCustomLabels(activeAccount.id))
+        }
 
         return eventIdsToAcknowledge.isNotEmpty()
     }
@@ -620,21 +644,6 @@ class EventHelper(private val db: EventLocalDB,
             eventsToAcknowldege.addAll(eventIdsToAcknowledge)
 
         return eventIdsToAcknowledge.isNotEmpty()
-    }
-
-
-
-    private fun reloadMailbox(shouldReload: Boolean): List<EmailPreview> {
-        return if (shouldReload)
-            db.getThreadsFromMailboxLabel(
-                    labelName = label.text,
-                    startDate = null,
-                    limit = Math.max(20, loadedThreadsCount?:30),
-                    rejectedLabels = Label.defaultItems.rejectedLabelsByMailbox(label),
-                    userEmail = activeAccount.userEmail,
-                    activeAccount = activeAccount)
-                    .map { EmailPreview.fromEmailThread(it) }
-        else throw EventHelper.NothingNewException()
     }
 
     private fun getImageFromCdn(metadata: UpdateBannerEventData): Result<UpdateBannerData, java.lang.Exception> {
@@ -698,7 +707,7 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>): Boolean {
         try {
-            if(eventIdsToAcknowledge.isNotEmpty())
+            if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
                 mailboxAPIClient.acknowledgeEvents(eventIdsToAcknowledge)
         } catch (ex: IOException) {
             // if this request fails, just ignore it, we can acknowledge again later
