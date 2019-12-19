@@ -625,6 +625,10 @@ class MailboxSceneController(private val scene: MailboxScene,
         return handleActivityMessage(activityMessage)
     }
 
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
+    }
+
     private fun handleIntentExtras(extras: IntentExtrasData, hasChangedAccount: Boolean = false){
         when(extras.action){
             Intent.ACTION_MAIN -> {
@@ -1175,13 +1179,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.lastSync = System.currentTimeMillis()
         if (resultData.data != null) {
             if(resultData.data.newEmails.isNotEmpty()){
-                resultData.data.newEmails.forEach {
-                    threadListController.replaceThread(it)
-                }
-                resultData.data.newEmails.forEach { preview ->
-                    if(preview.threadId !in model.threads.map { it.threadId })
-                        threadListController.addNew(preview)
-                }
+                threadListController.replaceAndAddThreads(resultData.data.newEmails)
                 if(resultData.shouldNotify){
                     scene.showNotification()
                 }
@@ -1196,16 +1194,11 @@ class MailboxSceneController(private val scene: MailboxScene,
             if(resultData.data.updateBannerData != null){
                 handleBanner(resultData.data.updateBannerData)
             }
-            if(resultData.data.threadReads != null){
-                threadListController.changeThreadReadStatus(resultData.data.threadReads.first,
-                        resultData.data.threadReads.second)
+            if(resultData.data.threadReads.isNotEmpty()){
+                threadListController.changeThreadsReadStatus(resultData.data.threadReads)
             }
-            if(resultData.data.emailReads != null){
-                model.threads.forEach {
-                    if(it.metadataKey in resultData.data.emailReads.first)
-                        threadListController.updateUnreadStatusAndNotifyItem(it.threadId,
-                                resultData.data.emailReads.second)
-                }
+            if(resultData.data.emailReads.isNotEmpty()){
+                threadListController.changeEmailsReadStatus(resultData.data.emailReads)
             }
             if(resultData.data.unsend != null){
                 val thread = model.threads.find { it.metadataKey == resultData.data.unsend.first }
@@ -1576,6 +1569,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
             }
             BaseActivity.RequestCode.writeAccess.ordinal -> {
+                val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
+                if (indexOfPermission < 0) return
+                if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+                    scene.showMessage(UIMessage(R.string.permission_filepicker_rationale))
+                    return
+                }
                 host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
             }
             else -> return

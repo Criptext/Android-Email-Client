@@ -588,6 +588,10 @@ class CloudBackupController(
         cleanup()
     }
 
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
+    }
+
     private fun cleanup(){
         websocketEvents.clearListener(webSocketEventListener)
     }

@@ -307,7 +307,11 @@ class RestoreBackupController(
     private fun onRestoreMailbox(result: GeneralResult.RestoreMailbox){
         when(result){
             is GeneralResult.RestoreMailbox.Success -> {
-                scene.localPercentageAnimation()
+                if(model.isLocal) {
+                    scene.localPercentageAnimation()
+                } else {
+                    host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)), true)
+                }
             }
             is GeneralResult.RestoreMailbox.Progress -> scene.setProgress(result.progress)
             is GeneralResult.RestoreMailbox.SyncError -> {
@@ -367,6 +371,10 @@ class RestoreBackupController(
 
     override fun onStop() {
         cleanup()
+    }
+
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
     }
 
     private fun cleanup(){

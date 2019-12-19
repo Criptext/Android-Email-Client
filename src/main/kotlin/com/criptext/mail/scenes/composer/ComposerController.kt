@@ -680,6 +680,10 @@ class ComposerController(private val storage: KeyValueStorage,
         cleanup(true)
     }
 
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
+    }
+
     private fun cleanup(fullCleanup: Boolean){
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)

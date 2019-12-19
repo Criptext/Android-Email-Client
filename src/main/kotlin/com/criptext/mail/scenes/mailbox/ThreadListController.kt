@@ -91,6 +91,18 @@ class ThreadListController(private val model : MailboxSceneModel,
         virtualListView?.notifyDataSetChanged()
     }
 
+    fun replaceAndAddThreads(threads: List<EmailPreview>) {
+        threads.forEach { thread ->
+            val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
+            if (position > -1) {
+                model.threads[position] = thread
+            } else {
+                model.threads.add(0, thread)
+            }
+        }
+        virtualListView?.notifyDataSetChanged()
+    }
+
     fun replaceThread(thread: EmailPreview) {
         val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
         if (position > -1) {
@@ -99,6 +111,29 @@ class ThreadListController(private val model : MailboxSceneModel,
         }
     }
 
+    fun changeThreadsReadStatus(metadata: List<Pair<List<String>, Boolean>>) {
+        metadata.forEach {
+            it.first.forEach { threadId ->
+                val position = model.threads.indexOfFirst { modelThread -> modelThread.threadId == threadId }
+                if (position > -1) {
+                    model.threads[position] = model.threads[position].copy(unread = it.second)
+                }
+            }
+        }
+        virtualListView?.notifyDataSetChanged()
+    }
+
+    fun changeEmailsReadStatus(metadata: List<Pair<List<Long>, Boolean>>) {
+        metadata.forEach {
+            it.first.forEach { metadataKey ->
+                val position = model.threads.indexOfFirst { modelThread -> modelThread.metadataKey == metadataKey }
+                if (position > -1) {
+                    model.threads[position] = model.threads[position].copy(unread = it.second)
+                }
+            }
+        }
+        virtualListView?.notifyDataSetChanged()
+    }
 
     fun changeThreadReadStatus(threadIds: List<String>, unread: Boolean) {
         model.threads.forEachIndexed { index, emailPreview ->

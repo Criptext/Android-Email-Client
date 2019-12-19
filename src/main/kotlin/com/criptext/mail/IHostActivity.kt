@@ -42,6 +42,7 @@ interface IHostActivity {
     fun dismissDialog()
     fun runOnUiThread(runnable: Runnable)
     fun postDelay(runnable: Runnable, delayMilliseconds: Long)
+    fun stopMessagesAndCallbacks()
     fun getContentResolver(): ContentResolver?
     fun getHandler(): Handler?
     fun setAppTheme(themeResource: Int)

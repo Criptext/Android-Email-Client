@@ -11,6 +11,8 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
+import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 
 class SignatureController(
         private val model: SignatureModel,
@@ -19,7 +21,8 @@ class SignatureController(
         private val keyboardManager: KeyboardManager,
         private val activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
-        private val dataSource: BackgroundWorkManager<SettingsRequest, SettingsResult>)
+        private val dataSource: BackgroundWorkManager<SettingsRequest, SettingsResult>,
+        private val generalDataSource: GeneralDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = R.menu.menu_signature
@@ -50,6 +53,10 @@ class SignatureController(
 
     override fun onStop() {
 
+    }
+
+    override fun onNeedToSendEvent(event: Int) {
+        generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
     }
 
     override fun onBackPressed(): Boolean {

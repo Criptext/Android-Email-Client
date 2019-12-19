@@ -16,6 +16,10 @@ import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun stopMessagesAndCallbacks() {
+
+    }
+
     override fun contextMenuRegister(view: View) {
         
     }
