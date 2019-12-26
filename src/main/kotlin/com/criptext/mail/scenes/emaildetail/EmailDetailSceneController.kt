@@ -72,6 +72,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ResendEmail -> onResendEmail(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.SetActiveAccountFromPush -> onSetActiveAccountFromPush(result)
+            is GeneralResult.GetEmailPreview -> onGetEmailPreview(result)
         }
     }
 
@@ -147,11 +149,20 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 model.threadPreview = model.threadPreview.copy(
                         unread = true)
             }
-            host.exitToScene(
-                    params = MailboxParams(),
-                    activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                    forceAnimation = false
-            )
+            if(model.exitToMailbox){
+                host.exitToScene(
+                        params = MailboxParams(),
+                        activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                        forceAnimation = true,
+                        deletePastIntents = true
+                )
+            } else {
+                host.exitToScene(
+                        params = MailboxParams(),
+                        activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                        forceAnimation = false
+                )
+            }
         }
 
         override fun showStartGuideEmailIsRead(view: View) {
@@ -243,6 +254,23 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 } else {
                     scene.showMessage(UIMessage(R.string.email_sent))
                 }
+            }
+        }
+    }
+
+    private fun onSetActiveAccountFromPush(resultData: GeneralResult.SetActiveAccountFromPush){
+        when(resultData){
+            is GeneralResult.SetActiveAccountFromPush.Success -> {
+                model.waitForAccountSwitch = false
+                activeAccount = resultData.activeAccount
+                generalDataSource.activeAccount = activeAccount
+                dataSource.activeAccount = activeAccount
+
+                IntentUtils.handleIntentExtras(resultData.extrasData, generalDataSource, activeAccount,
+                        host, model.currentLabel, true)
+
+                websocketEvents.setListener(webSocketEventListener)
+                scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
             }
         }
     }
@@ -790,6 +818,18 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
     }
 
+    private fun onGetEmailPreview(result: GeneralResult.GetEmailPreview){
+        when(result){
+            is GeneralResult.GetEmailPreview.Success -> {
+                model.emails.clear()
+                model.threadId = result.emailPreview.threadId
+                model.currentLabel = Label.defaultItems.inbox
+                model.threadPreview = result.emailPreview
+                loadEmails(null)
+            }
+        }
+    }
+
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
@@ -871,9 +911,21 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         generalDataSource.listener = remoteChangeDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
 
-        if (model.emails.isEmpty()) {
-            val message = (activityMessage as? ActivityMessage.ShowUIMessage)?.message
-            loadEmails(message)
+        val extras = host.getIntentExtras()
+
+        if(extras != null && extras.account.isNotEmpty()) {
+            model.exitToMailbox = true
+            if(extras.account == activeAccount.recipientId && extras.domain == activeAccount.domain)
+                IntentUtils.handleIntentExtras(extras, generalDataSource, activeAccount, host, model.currentLabel)
+            else {
+                model.waitForAccountSwitch = true
+                generalDataSource.submitRequest(GeneralRequest.SetActiveAccountFromPush(extras.account, extras.domain, extras))
+            }
+        } else {
+            if (!model.waitForAccountSwitch && model.emails.isEmpty()) {
+                val message = (activityMessage as? ActivityMessage.ShowUIMessage)?.message
+                loadEmails(message)
+            }
         }
 
         keyboard.hideKeyboard()

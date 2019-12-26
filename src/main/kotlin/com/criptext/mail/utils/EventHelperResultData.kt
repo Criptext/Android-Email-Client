@@ -1,6 +1,7 @@
 package com.criptext.mail.utils
 
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.api.models.TrackingUpdate
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
@@ -13,4 +14,5 @@ data class EventHelperResultData(val updateBannerData: UpdateBannerData?,
                                  val emailReads: MutableList<Pair<List<Long>, Boolean>>,
                                  val movedThread: List<Triple<List<String>, List<Label>?, List<Label>?>>,
                                  val movedEmail: List<Triple<List<Long>, List<Label>?, List<Label>?>>,
-                                 val nameChanged: String, val unsend: Pair<Long, Date>?)
+                                 val nameChanged: String, val unsend: Pair<Long, Date>?,
+                                 val trackingUpdates: List<TrackingUpdate>)

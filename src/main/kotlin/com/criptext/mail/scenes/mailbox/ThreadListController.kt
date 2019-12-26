@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox
 
+import com.criptext.mail.api.models.TrackingUpdate
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -130,6 +131,20 @@ class ThreadListController(private val model : MailboxSceneModel,
                 if (position > -1) {
                     model.threads[position] = model.threads[position].copy(unread = it.second)
                 }
+            }
+        }
+        virtualListView?.notifyDataSetChanged()
+    }
+
+    fun changeEmailsDeliveryStatus(metadata: List<TrackingUpdate>) {
+        metadata.forEach {trackingUpdate ->
+            val position = model.threads.indexOfFirst { modelThread -> modelThread.metadataKey == trackingUpdate.metadataKey }
+            if (position > -1) {
+                model.threads[position] = model.threads[position].copy(
+                        deliveryStatus = trackingUpdate.type,
+                        latestEmailUnsentDate = if(trackingUpdate.type == DeliveryTypes.UNSEND) trackingUpdate.date
+                            else model.threads[position].latestEmailUnsentDate
+                )
             }
         }
         virtualListView?.notifyDataSetChanged()

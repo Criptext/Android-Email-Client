@@ -72,6 +72,7 @@
         </activity>
         <activity
             android:name="com.criptext.mail.scenes.emaildetail.EmailDetailActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait">
         </activity>

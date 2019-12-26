@@ -82,24 +82,11 @@ sealed class MailboxResult {
         class Failure: SetActiveAccount()
     }
 
-    sealed class SetActiveAccountFromPush : MailboxResult() {
-        data class Success(val activeAccount: ActiveAccount, val extrasData: IntentExtrasData): SetActiveAccountFromPush()
-        class Failure: SetActiveAccountFromPush()
-    }
-
     sealed class UpdateUnreadStatus: MailboxResult(){
         data class Success(val threadId: List<String>, val unreadStatus: Boolean): UpdateUnreadStatus()
         class Failure(val message: UIMessage): UpdateUnreadStatus()
         class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
         class Forbidden: UpdateUnreadStatus()
-    }
-
-    sealed class GetEmailPreview: MailboxResult() {
-        data class Success(val emailPreview: EmailPreview,
-                           val isTrash: Boolean, val isSpam: Boolean,
-                           val doReply: Boolean = false,
-                           val activityMessage: ActivityMessage? = null): GetEmailPreview()
-        data class Failure(val message: UIMessage): GetEmailPreview()
     }
 
     sealed class EmptyTrash: MailboxResult() {

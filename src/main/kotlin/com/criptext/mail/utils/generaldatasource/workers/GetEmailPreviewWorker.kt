@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.mailbox.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import kotlinx.android.synthetic.main.restore_backup_dialog.view.*
 
@@ -25,16 +26,16 @@ class GetEmailPreviewWorker(private val threadId:String,
                             private val mailboxLocalDB: MailboxLocalDB,
                             private val doReply: Boolean = false,
                             private val userEmail: String,
-                            override val publishFn: (MailboxResult.GetEmailPreview) -> Unit)
-    : BackgroundWorker<MailboxResult.GetEmailPreview> {
+                            override val publishFn: (GeneralResult.GetEmailPreview) -> Unit)
+    : BackgroundWorker<GeneralResult.GetEmailPreview> {
 
-    override fun catchException(ex: Exception): MailboxResult.GetEmailPreview {
-        return MailboxResult.GetEmailPreview.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
+    override fun catchException(ex: Exception): GeneralResult.GetEmailPreview {
+        return GeneralResult.GetEmailPreview.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
     override val canBeParallelized = true
 
-    override fun work(reporter: ProgressReporter<MailboxResult.GetEmailPreview>): MailboxResult.GetEmailPreview {
+    override fun work(reporter: ProgressReporter<GeneralResult.GetEmailPreview>): GeneralResult.GetEmailPreview {
         val emailThreadResult = Result.of {mailboxLocalDB.getEmailThreadFromId(
                 threadId = threadId,
                 userEmail = userEmail,
@@ -44,7 +45,7 @@ class GetEmailPreviewWorker(private val threadId:String,
         return when(emailThreadResult) {
             is Result.Success -> {
                 val labels = mailboxLocalDB.getLabelsFromThreadIds(listOf(emailThreadResult.value.threadId))
-                MailboxResult.GetEmailPreview.Success(
+                GeneralResult.GetEmailPreview.Success(
                         emailPreview = EmailPreview.fromEmailThread(emailThreadResult.value),
                         isTrash = EmailThreadValidator.isLabelInList(labels, Label.LABEL_TRASH),
                         isSpam = EmailThreadValidator.isLabelInList(labels, Label.LABEL_SPAM),

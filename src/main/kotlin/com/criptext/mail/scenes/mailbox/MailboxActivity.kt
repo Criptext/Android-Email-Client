@@ -99,11 +99,6 @@ class MailboxActivity : BaseActivity() {
         return true
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-    }
-
     companion object {
 
         private fun initFeedController(appDB: AppDatabase, activity: Activity, mailboxLocalDB: MailboxLocalDB,

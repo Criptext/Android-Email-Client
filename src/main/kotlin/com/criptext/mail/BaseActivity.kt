@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -63,7 +62,6 @@ import com.criptext.mail.scenes.settings.signature.SignatureModel
 import com.criptext.mail.scenes.settings.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
-import com.criptext.mail.scenes.signup.SignUpActivity
 import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
@@ -71,15 +69,12 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.file.IntentUtils
+import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
 import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.StartGuideTapped
-import com.criptext.mail.validation.AccountDataValidator
-import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
-import com.criptext.mail.validation.TextInput
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -797,6 +792,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun getHandler(): Handler? {
         return handler
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // getIntent() should always return the most recent
+        setIntent(intent)
     }
 
     override fun setAppTheme(themeResource: Int) {

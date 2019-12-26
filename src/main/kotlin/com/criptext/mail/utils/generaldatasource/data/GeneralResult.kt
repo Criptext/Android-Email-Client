@@ -6,6 +6,8 @@ import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.signal.PreKeyBundleShareData
@@ -278,5 +280,18 @@ sealed class GeneralResult {
     sealed class UserEvent: GeneralResult() {
         class Success : UserEvent()
         data class Failure(val message: UIMessage) : UserEvent()
+    }
+
+    sealed class GetEmailPreview: GeneralResult() {
+        data class Success(val emailPreview: EmailPreview,
+                           val isTrash: Boolean, val isSpam: Boolean,
+                           val doReply: Boolean = false,
+                           val activityMessage: ActivityMessage? = null): GetEmailPreview()
+        data class Failure(val message: UIMessage): GetEmailPreview()
+    }
+
+    sealed class SetActiveAccountFromPush : GeneralResult() {
+        data class Success(val activeAccount: ActiveAccount, val extrasData: IntentExtrasData): SetActiveAccountFromPush()
+        class Failure: SetActiveAccountFromPush()
     }
 }

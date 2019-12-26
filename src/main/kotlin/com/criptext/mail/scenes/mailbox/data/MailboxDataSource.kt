@@ -15,6 +15,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.workers.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
+import com.criptext.mail.utils.generaldatasource.workers.SetActiveAccountFromPushWorker
 import java.io.File
 
 /**
@@ -132,16 +133,6 @@ class MailboxDataSource(
                         flushResults(result)
                     }
             )
-            is MailboxRequest.SetActiveAccountFromPush -> SetActiveAccountFromPushWorker(
-                    recipientId = params.recipientId,
-                    domain = params.domain,
-                    extras = params.extras,
-                    db = mailboxLocalDB,
-                    storage = storage,
-                    publishFn = { result ->
-                        flushResults(result)
-                    }
-            )
             is MailboxRequest.UpdateUnreadStatus -> UpdateUnreadStatusWorker(
                     db = mailboxLocalDB,
                     pendingDao = pendingDao,
@@ -156,17 +147,6 @@ class MailboxDataSource(
                         flushResults(result)
                     }
             )
-
-            is MailboxRequest.GetEmailPreview -> GetEmailPreviewWorker(
-                    activityMessage = params.activityMessage,
-                    threadId = params.threadId,
-                    mailboxLocalDB = mailboxLocalDB,
-                    userEmail = params.userEmail,
-                    doReply = params.doReply,
-                    activeAccount = activeAccount,
-                    publishFn = { result ->
-                        flushResults(result)
-                    })
             is MailboxRequest.EmptyTrash -> EmptyTrashWorker(
                     db = mailboxLocalDB,
                     pendingDao = pendingDao,

@@ -5,6 +5,8 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
+import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.ContactUtils
@@ -47,4 +49,7 @@ sealed class GeneralRequest {
     data class RestoreMailbox(val filePath: String, val passphrase: String?, val isLocal: Boolean = false): GeneralRequest()
     data class Report(val emails: List<String>, val type: ContactUtils.ContactReportTypes): GeneralRequest()
     data class UserEvent(val event: Int): GeneralRequest()
+    data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false,
+                               val activityMessage: ActivityMessage? = null): GeneralRequest()
+    data class SetActiveAccountFromPush(val recipientId: String, val domain: String, val extras: IntentExtrasData) : GeneralRequest()
 }

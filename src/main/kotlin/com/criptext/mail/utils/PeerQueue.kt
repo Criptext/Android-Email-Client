@@ -22,6 +22,9 @@ abstract class PeerQueue{
     class EventQueue(private val apiClient: PeerAPIClient,
                      private val pendingEventDao: PendingEventDao,
                      private val activeAccount: ActiveAccount): PeerQueue(){
+        private var isBusy = false
+        val isProcessing: Boolean get() = isBusy
+
 
         override fun enqueue(jsonObject: JSONObject) {
             val peerEvent = PendingEvent(0, jsonObject.toString(), activeAccount.id)
@@ -42,15 +45,18 @@ abstract class PeerQueue{
         }
 
         override fun dispatchAndDequeue(picks: List<PendingEvent>): Result<Unit, Exception> {
+            isBusy = true
             val array = JSONArray(picks.map { it.data })
             val jsonObj = JSONObject()
             jsonObj.put("peerEvents", array)
-            return Result.of {
+            val op =  Result.of {
                 if(picks.isEmpty())
                     throw EventHelper.NothingNewException()
                 apiClient.postPeerEvents(jsonObj)
             }
             .flatMap { _ -> Result.of { dequeue(picks.map { it.id }) } }
+            isBusy = false
+            return op
         }
     }
 }

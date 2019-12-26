@@ -12,14 +12,16 @@ import com.criptext.mail.utils.virtuallist.VirtualList
  * Created by sebas on 3/12/18.
  */
 
-class EmailDetailSceneModel(val threadId: String,
-                            val currentLabel: Label,
+class EmailDetailSceneModel(var threadId: String,
+                            var currentLabel: Label,
                             var threadPreview: EmailPreview,
                             val doReply: Boolean = false) : SceneModel {
     val emails = ArrayList<FullEmail>()
-    val fileDetails = HashMap<Long, List<FileDetail>>()
+    val fileDetails = hashMapOf<Long, List<FileDetail>>()
     val inlineImages = mutableListOf<CRFile>()
     var hasTriedToSaveImage = false
     var fileToDownload = Pair(-1, -1)
     var lastTouchedInlineSrc: String? = null
+    var waitForAccountSwitch = false
+    var exitToMailbox = false
 }

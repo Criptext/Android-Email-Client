@@ -1,6 +1,7 @@
 package com.criptext.mail.api
 
 import android.content.res.Resources
+import android.media.ResourceBusyException
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.PendingEventDao
@@ -33,6 +34,7 @@ interface PeerEventsApiHandler {
         }
 
         override fun dispatchEvents(): Result<Unit, Exception> {
+            if(queue.isProcessing) return Result.error(ResourceBusyException(""))
             val picks = queue.pick()
             val op = workOperation(picks)
 
