@@ -49,6 +49,7 @@ class EventHelper(private val db: EventLocalDB,
     private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
     private var shouldNotify = false
     private var newEmails = mutableListOf<EmailPreview>()
+    private var newTrackingUpdates = mutableListOf<TrackingUpdate>()
     private var customLabels = mutableListOf<Label>()
     private var threadReads = mutableListOf<Pair<List<String>, Boolean>>()
     private var emailReads = mutableListOf<Pair<List<Long>, Boolean>>()
@@ -92,7 +93,7 @@ class EventHelper(private val db: EventLocalDB,
             acknowledgeEventsIgnoringErrors(eventsToAcknowldege)
             EventHelperResultData(updateBannerData, linkDevicesEvents, shouldNotify,
                     newEmails, customLabels, threadReads, emailReads, movedThread, movedEmail,
-                    nameChanged, unsend)
+                    nameChanged, unsend, newTrackingUpdates)
         }
     }
 
@@ -364,6 +365,7 @@ class EventHelper(private val db: EventLocalDB,
             if (metadata.type == DeliveryTypes.UNSEND) {
                 updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(metadata.metadataKey, metadata.date))
             }
+            newTrackingUpdates.add(metadata)
         }
         when(operation){
             is Result.Success -> {

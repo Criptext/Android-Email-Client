@@ -49,14 +49,10 @@ sealed class MailboxRequest{
     class GetMenuInformation : MailboxRequest()
 
     data class SetActiveAccount(val account: Account) : MailboxRequest()
-    data class SetActiveAccountFromPush(val recipientId: String, val domain: String, val extras: IntentExtrasData) : MailboxRequest()
 
     data class UpdateUnreadStatus(val threadIds: List<String>,
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
-
-    data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false,
-                               val activityMessage: ActivityMessage? = null): MailboxRequest()
 
     class EmptyTrash: MailboxRequest()
 

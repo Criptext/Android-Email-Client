@@ -33,6 +33,7 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -77,6 +78,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
             is GeneralResult.ActiveAccountUpdateMailbox -> onActiveAccountUpdateMailbox(result)
+            is GeneralResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
+            is GeneralResult.SetActiveAccountFromPush -> dataSourceController.onSetActiveAccountFromPush(result)
         }
     }
 
@@ -89,11 +92,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.MoveEmailThread -> dataSourceController.onMoveEmailThread(result)
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
-            is MailboxResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
-            is MailboxResult.SetActiveAccountFromPush -> dataSourceController.onSetActiveAccountFromPush(result)
         }
     }
 
@@ -573,10 +574,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         if(extras != null) {
             if(extras.account == activeAccount.recipientId && extras.domain == activeAccount.domain)
-                handleIntentExtras(extras)
+                IntentUtils.handleIntentExtras(extras, generalDataSource, activeAccount, host, model.selectedLabel)
             else {
                 model.waitForAccountSwitch = true
-                dataSource.submitRequest(MailboxRequest.SetActiveAccountFromPush(extras.account, extras.domain, extras))
+                generalDataSource.submitRequest(GeneralRequest.SetActiveAccountFromPush(extras.account, extras.domain, extras))
             }
         }
 
@@ -585,6 +586,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             if (model.threads.isEmpty())
                 reloadMailboxThreads()
+            else
+                dataSourceController.updateMailbox(model.selectedLabel)
 
             toggleMultiModeBar()
             feedController.onStart()
@@ -627,60 +630,6 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onNeedToSendEvent(event: Int) {
         generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
-    }
-
-    private fun handleIntentExtras(extras: IntentExtrasData, hasChangedAccount: Boolean = false){
-        when(extras.action){
-            Intent.ACTION_MAIN -> {
-                val activityMessage = if(hasChangedAccount)
-                    ActivityMessage.ShowUIMessage(
-                            UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))
-                    )
-                else null
-                val extrasMail = extras as IntentExtrasData.IntentExtrasDataMail
-                dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
-                        userEmail = activeAccount.userEmail, activityMessage = activityMessage))
-            }
-            LinkDeviceActionService.APPROVE -> {
-                val extrasDevice = extras as IntentExtrasData.IntentExtrasDataDevice
-                val untrustedDeviceInfo = DeviceInfo.UntrustedDeviceInfo(extrasDevice.deviceId, activeAccount.recipientId, activeAccount.domain,
-                        "", "", extrasDevice.deviceType, extrasDevice.syncFileVersion)
-                if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                    generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-                else
-                    scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-            }
-            SyncDeviceActionService.APPROVE -> {
-                val extrasDevice = extras as IntentExtrasData.IntentExtrasSyncDevice
-                val trustedDeviceInfo = DeviceInfo.TrustedDeviceInfo(extrasDevice.account, activeAccount.domain, extrasDevice.deviceId, extrasDevice.deviceName,
-                        extrasDevice.deviceType, extrasDevice.randomId, extrasDevice.syncFileVersion)
-                if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                    generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-                else
-                    scene.showToastMessage(UIMessage(R.string.sync_version_incorrect))
-            }
-            NewMailActionService.REPLY -> {
-                val extrasMail = extras as IntentExtrasData.IntentExtrasReply
-                dataSource.submitRequest(MailboxRequest.GetEmailPreview(threadId = extrasMail.threadId,
-                        userEmail = activeAccount.userEmail, doReply = true))
-            }
-            Intent.ACTION_SENDTO,
-            Intent.ACTION_VIEW -> {
-                val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
-                host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo), currentLabel = model.selectedLabel), null, false, true)
-            }
-            Intent.ACTION_APP_ERROR -> {
-                val extrasMail = extras as IntentExtrasData.IntentErrorMessage
-                scene.showMessage(extrasMail.uiMessage)
-            }
-            Intent.ACTION_SEND_MULTIPLE,
-            Intent.ACTION_SEND -> {
-                val extrasMail = extras as IntentExtrasData.IntentExtrasSend
-                val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files, true)
-                else ActivityMessage.AddUrls(extrasMail.urls, true)
-                host.exitToScene(ComposerParams(type = ComposerType.Empty(), currentLabel = model.selectedLabel), composerMessage, false, true)
-            }
-        }
     }
 
     override fun onPause() {
@@ -738,7 +687,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             threadListController.reRenderAll()
             return false
         }
-        return scene.onBackPressed()
+        val exit = scene.onBackPressed()
+        if(exit) threadListController.clear()
+        return exit
     }
 
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {
@@ -935,14 +886,15 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        fun onSetActiveAccountFromPush(resultData: MailboxResult.SetActiveAccountFromPush){
+        fun onSetActiveAccountFromPush(resultData: GeneralResult.SetActiveAccountFromPush){
             when(resultData){
-                is MailboxResult.SetActiveAccountFromPush.Success -> {
+                is GeneralResult.SetActiveAccountFromPush.Success -> {
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
                     dataSource.activeAccount = activeAccount
 
-                    handleIntentExtras(resultData.extrasData, true)
+                    IntentUtils.handleIntentExtras(resultData.extrasData, generalDataSource, activeAccount,
+                            host, model.selectedLabel, true)
 
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     if (model.threads.isEmpty()) reloadMailboxThreads()
@@ -1131,16 +1083,16 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        fun onGetEmailPreview(result: MailboxResult){
+        fun onGetEmailPreview(result: GeneralResult){
             when (result) {
-                is MailboxResult.GetEmailPreview.Success -> {
+                is GeneralResult.GetEmailPreview.Success -> {
                     reloadMailboxThreads()
                     feedController.reloadFeeds()
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
                             currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
                             doReply = result.doReply), true, activityMessage = result.activityMessage)
                 }
-                is MailboxResult.GetEmailPreview.Failure -> {
+                is GeneralResult.GetEmailPreview.Failure -> {
                     dataSourceController.updateMailbox(model.selectedLabel)
                     updateBackgroundAccounts()
                 }
@@ -1204,6 +1156,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val thread = model.threads.find { it.metadataKey == resultData.data.unsend.first }
                 if(thread != null)
                     threadListController.changeUnsendStatus(thread.threadId, resultData.data.unsend.second)
+            }
+            if(resultData.data.trackingUpdates.isNotEmpty()){
+                threadListController.changeEmailsDeliveryStatus(resultData.data.trackingUpdates)
             }
             val isSelected = model.threads.filter { it.isSelected }
             val selectedPositions = model.threads.filter {

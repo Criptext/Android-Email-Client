@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.crashlytics.android.Crashlytics
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.scenes.emaildetail.EmailDetailActivity
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.github.omadahealth.lollipin.lib.managers.LockManager
@@ -70,6 +72,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
         finish()
 
         if(hasActiveAccount()){
+
             val mailBoxIntent = Intent(this, MailboxActivity::class.java)
             startActivity(mailBoxIntent)
             overridePendingTransition(0, 0)

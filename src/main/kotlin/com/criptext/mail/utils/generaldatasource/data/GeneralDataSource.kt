@@ -269,6 +269,26 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.GetEmailPreview -> GetEmailPreviewWorker(
+                    activityMessage = params.activityMessage,
+                    threadId = params.threadId,
+                    mailboxLocalDB = MailboxLocalDB.Default(db, filesDir),
+                    userEmail = params.userEmail,
+                    doReply = params.doReply,
+                    activeAccount = activeAccount!!,
+                    publishFn = { result ->
+                        flushResults(result)
+                    })
+            is GeneralRequest.SetActiveAccountFromPush -> SetActiveAccountFromPushWorker(
+                    recipientId = params.recipientId,
+                    domain = params.domain,
+                    extras = params.extras,
+                    db = MailboxLocalDB.Default(db, filesDir),
+                    storage = storage,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }
