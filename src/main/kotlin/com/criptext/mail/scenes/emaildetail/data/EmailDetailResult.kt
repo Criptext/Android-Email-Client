@@ -48,7 +48,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class MarkAsReadEmail: EmailDetailResult(){
-        data class Success(val metadataKey: Long, val unread: Boolean): MarkAsReadEmail()
+        data class Success(val metadataKeys: List<Long>, val unread: Boolean): MarkAsReadEmail()
         data class Failure(val message: UIMessage): MarkAsReadEmail()
     }
 

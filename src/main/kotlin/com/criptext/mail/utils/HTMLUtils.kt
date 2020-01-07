@@ -14,7 +14,7 @@ class HTMLUtils {
     companion object {
         private val whiteList = Whitelist.relaxed()
                 .addTags("style", "title", "head")
-                .addAttributes(":all", "class", "style")
+                .addAttributes(":all", "class", "style", "bgcolor")
                 .addProtocols("img", "src", "cid", "data")
 
         fun html2text(html: String): String {

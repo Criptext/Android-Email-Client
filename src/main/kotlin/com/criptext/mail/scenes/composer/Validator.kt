@@ -64,6 +64,9 @@ object Validator {
             return true
         }
 
+        if(data.attachments != null && data.attachments.isNotEmpty())
+            return true
+
         return false
     }
 }

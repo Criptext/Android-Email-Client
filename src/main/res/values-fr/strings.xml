@@ -637,4 +637,5 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="title_report_bug">Report a Bug</string>
   <string name="title_report_abuse">Report Abuse</string>
   <string name="forgot_password_time">Mot de passe oublié ?(%1$d)</string>
+  <string name="mark_as_unread_from_here">Marquer comme non lu à partir d\'ici</string>
 </resources>

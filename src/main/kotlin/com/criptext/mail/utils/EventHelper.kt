@@ -177,7 +177,8 @@ class EventHelper(private val db: EventLocalDB,
 
         when(operation){
             is Result.Success -> {
-                val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text, activeAccount)
+                val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
+                        label.id, activeAccount)
                 if(newPreview != null)
                     newEmails.add(newPreview)
                 shouldNotify = true

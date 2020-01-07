@@ -49,7 +49,6 @@ class SearchSceneController(private val scene: SearchScene,
 
     companion object {
         const val MAXIMUM_SEARCH_HISTORY = 10
-        const val SEPARATOR = "#Cr1p3tx2018#"
     }
 
     private val dataSourceListener = { result: SearchResult ->
