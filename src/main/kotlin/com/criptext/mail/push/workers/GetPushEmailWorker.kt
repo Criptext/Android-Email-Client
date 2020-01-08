@@ -181,8 +181,7 @@ class GetPushEmailWorker(
 
     val processEvent: (Event) -> Result<Boolean, Exception> = { event ->
         Result.of {
-            val shouldReload = processNewEmails(event)
-            shouldReload.or(acknowledgeEventsIgnoringErrors(eventsToAcknowldege))
+            processNewEmails(event)
         }
     }
 

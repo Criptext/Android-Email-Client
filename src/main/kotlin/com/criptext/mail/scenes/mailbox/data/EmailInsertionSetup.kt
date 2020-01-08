@@ -285,6 +285,11 @@ object EmailInsertionSetup {
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                        dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount,
                                        filesDir: File) {
+        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
+        val emailAlreadyExists =  foundEmail != null
+        if (emailAlreadyExists)
+            throw DuplicateMessageException("Email Already exists in database!")
+
         val meAsSender = (metadata.senderRecipientId == activeAccount.recipientId && metadata.senderDomain == activeAccount.domain)
                 && (metadata.from.contains(activeAccount.userEmail))
         val meAsRecipient = metadata.bcc.contains(activeAccount.userEmail)
@@ -303,12 +308,6 @@ object EmailInsertionSetup {
         }
 
         if(metadata.isSpam) labels.add(Label.defaultItems.spam)
-
-
-        val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
-        val emailAlreadyExists =  foundEmail != null
-        if (emailAlreadyExists)
-            throw DuplicateMessageException("Email Already exists in database!")
 
         val json = JSONObject(apiClient.getBodyFromEmail(metadata.metadataKey).body)
         val body = json.getString("body")

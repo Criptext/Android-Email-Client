@@ -33,7 +33,8 @@ class EventHelper(private val db: EventLocalDB,
                   private val storage: KeyValueStorage,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
-                  private val acknoledgeEvents: Boolean){
+                  private val acknoledgeEvents: Boolean,
+                  private val doNotParseEmails: Boolean = false){
 
     private val mailboxAPIClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
@@ -73,7 +74,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.deviceAuthRequest -> processLinkRequestEvents(it)
                     Event.Cmd.syncBeginRequest -> processSyncRequestEvents(it)
                     Event.Cmd.updateBannerEvent -> processUpdateBannerData(it)
-                    Event.Cmd.newEmail -> processNewEmails(it)
+                    Event.Cmd.newEmail -> if(!doNotParseEmails) processNewEmails(it)
                     Event.Cmd.peerEmailThreadReadStatusUpdate -> processThreadReadStatusChanged(it)
                     Event.Cmd.peerEmailReadStatusUpdate -> processEmailReadStatusChanged(it)
                     Event.Cmd.peerEmailUnsendStatusUpdate -> processUnsendEmailStatusChanged(it)
@@ -189,6 +190,10 @@ class EventHelper(private val db: EventLocalDB,
                 when(operation.error){
                     is DuplicateMessageException -> {
                         updateExistingEmailTransaction(metadata)
+                        val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
+                                label.id, activeAccount)
+                        if(newPreview != null)
+                            newEmails.add(newPreview)
                         if (acknoledgeEvents)
                             eventsToAcknowldege.add(event.rowid)
                     }
