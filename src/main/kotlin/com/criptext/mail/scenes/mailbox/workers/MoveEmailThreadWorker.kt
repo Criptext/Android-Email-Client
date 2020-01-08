@@ -130,9 +130,11 @@ class MoveEmailThreadWorker(
                     db.createLabelEmailRelations(labelEmails)
                     if(chosenLabel == Label.LABEL_SPAM){
                         val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                        apiClient.postReportSpam(fromContacts,
-                                ContactUtils.ContactReportTypes.spam,
-                                null)
+                        if(fromContacts.isNotEmpty()) {
+                            apiClient.postReportSpam(fromContacts,
+                                    ContactUtils.ContactReportTypes.spam,
+                                    null)
+                        }
                     }
                     if(chosenLabel == Label.LABEL_TRASH){
                         db.setTrashDate(emailIds, activeAccount.id)

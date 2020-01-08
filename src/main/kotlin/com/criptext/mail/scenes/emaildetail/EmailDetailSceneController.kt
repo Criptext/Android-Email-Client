@@ -519,14 +519,17 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onMarAsReadEmail(result: EmailDetailResult.MarkAsReadEmail){
         when(result){
             is EmailDetailResult.MarkAsReadEmail.Success -> {
-                val fullEmail = model.emails.find { it.email.metadataKey == result.metadataKey }
-                if(fullEmail != null) {
-                    val position = model.emails.indexOf(fullEmail)
-                    if(position >= 0) {
-                        model.emails[position] = model.emails[position].copy(
-                                email = model.emails[position].email.copy(unread = result.unread)
-                        )
+                result.metadataKeys.forEach { metadataKey ->
+                    val fullEmail = model.emails.find { it.email.metadataKey == metadataKey }
+                    if(fullEmail != null) {
+                        val position = model.emails.indexOf(fullEmail)
+                        if(position >= 0) {
+                            model.emails[position] = model.emails[position].copy(
+                                    email = model.emails[position].email.copy(unread = result.unread)
+                            )
+                        }
                     }
+                    emailDetailUIObserver.onBackButtonPressed()
                 }
             }
         }
@@ -756,8 +759,9 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
+            val emailKeys = model.emails.subList(position, model.emails.lastIndex).map { it.email.metadataKey }
             dataSource.submitRequest(EmailDetailRequest.MarkAsReadEmail(
-                    metadataKey = fullEmail.email.metadataKey,
+                    metadataKeys = emailKeys,
                     unread = !markAsRead
             ))
         }

@@ -83,14 +83,16 @@ interface MailboxLocalDB {
         override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
-            db.contactDao().resetSpamCounter(fromContacts, accountId)
+            if(fromContacts.isNotEmpty())
+                db.contactDao().resetSpamCounter(fromContacts, accountId)
             return fromContacts
         }
 
         override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
-            db.contactDao().uptickSpamCounter(fromContacts, accountId)
+            if(fromContacts.isNotEmpty())
+                db.contactDao().uptickSpamCounter(fromContacts, accountId)
             return fromContacts
         }
 

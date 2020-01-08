@@ -116,14 +116,16 @@ class MoveEmailThreadWorker(
                 val lastValidEmail = emails.findLast {
                     it.email.fromAddress != activeAccount.userEmail
                 }
-                if(isPhishing)
-                    apiClient.postReportSpam(fromContacts,
-                            ContactUtils.ContactReportTypes.phishing,
-                            lastValidEmail?.headers ?: lastValidEmail?.email?.content)
-                else
-                    apiClient.postReportSpam(fromContacts,
-                            ContactUtils.ContactReportTypes.spam,
-                            null)
+                if(fromContacts.isNotEmpty()) {
+                    if (isPhishing)
+                        apiClient.postReportSpam(fromContacts,
+                                ContactUtils.ContactReportTypes.phishing,
+                                lastValidEmail?.headers ?: lastValidEmail?.email?.content)
+                    else
+                        apiClient.postReportSpam(fromContacts,
+                                ContactUtils.ContactReportTypes.spam,
+                                null)
+                }
             }
             if(chosenLabel == Label.LABEL_TRASH){
                 db.setTrashDate(emailIds, activeAccount.id)

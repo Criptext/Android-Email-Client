@@ -25,7 +25,7 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
                             httpClient: HttpClient,
                             private val activeAccount: ActiveAccount,
                             override val publishFn: (EmailDetailResult.MarkAsReadEmail) -> Unit,
-                            private val metadataKey: Long,
+                            private val metadataKeys: List<Long>,
                             private val unread: Boolean
                        ) : BackgroundWorker<EmailDetailResult.MarkAsReadEmail> {
 
@@ -42,17 +42,18 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
     override fun work(reporter: ProgressReporter<EmailDetailResult.MarkAsReadEmail>)
             : EmailDetailResult.MarkAsReadEmail? {
         val result = Result.of {
-            val peerEmail = dao.getEmailByMetadataKey(metadataKey, activeAccount.id)
-            if(peerEmail.delivered in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING))
+            val peerEmail = dao.getAllEmailsByMetadataKey(metadataKeys, activeAccount.id)
+                    .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING)}
+            if(peerEmail.isEmpty())
                 throw Exception()
-            peerEventHandler.enqueueEvent(PeerReadEmailData(listOf(metadataKey), unread).toJSON())
-            dao.toggleReadByMetadataKey(metadataKeys = listOf(metadataKey),
+            peerEventHandler.enqueueEvent(PeerReadEmailData(metadataKeys, unread).toJSON())
+            dao.toggleReadByMetadataKey(metadataKeys = metadataKeys,
                     unread = unread, accountId = activeAccount.id)
         }
 
         return when (result) {
             is Result.Success -> {
-                EmailDetailResult.MarkAsReadEmail.Success(metadataKey, unread)
+                EmailDetailResult.MarkAsReadEmail.Success(metadataKeys, unread)
             }
             is Result.Failure -> {
                 catchException(result.error)

@@ -40,7 +40,8 @@ interface EmailDetailLocalDB {
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
                     .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
                     .distinct()
-            db.contactDao().resetSpamCounter(fromContacts, accountId)
+            if(fromContacts.isNotEmpty())
+                db.contactDao().resetSpamCounter(fromContacts, accountId)
             return fromContacts
         }
 
@@ -49,7 +50,8 @@ interface EmailDetailLocalDB {
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
                     .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
                     .distinct()
-            db.contactDao().uptickSpamCounter(fromContacts, accountId)
+            if(fromContacts.isNotEmpty())
+                db.contactDao().uptickSpamCounter(fromContacts, accountId)
             return fromContacts
         }
 

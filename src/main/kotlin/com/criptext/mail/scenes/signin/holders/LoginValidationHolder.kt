@@ -58,6 +58,11 @@ class LoginValidationHolder(
             recoveryCodeText.visibility = View.VISIBLE
         }
 
+        if(initialState.hasRemovedDevices) {
+            cantAccessDevice.visibility = View.GONE
+        }
+
+
         setListeners()
         startLoadingAnimation()
     }

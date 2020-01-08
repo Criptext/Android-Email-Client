@@ -258,13 +258,14 @@ class SignInSceneController(
                 model.activeAccount = result.activeAccount
                 stopTempWebSocket()
                 handleNewWebSocket()
-                host.postDelay(Runnable {
-                    if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
-                        if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
+                    if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
+                        host.postDelay(Runnable {
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
-                        model.retryTimeLinkDataReady++
+                        }, RETRY_TIME_DEFAULT)
                     }
-                }, RETRY_TIME_DEFAULT)
+                    model.retryTimeLinkDataReady++
+                }
             }
             is SignInResult.CreateSessionFromLink.Failure -> {
                 scene.showSyncRetryDialog(result)
@@ -285,13 +286,16 @@ class SignInSceneController(
                 }
             }
             is SignInResult.LinkDataReady.Failure -> {
-                host.postDelay(Runnable{
-                    if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
-                        if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload)
+                if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
+                    if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload){
+                        host.postDelay(Runnable{
                             dataSource.submitRequest(SignInRequest.LinkDataReady())
+                        }, RETRY_TIME_DATA_READY)
                         model.retryTimeLinkDataReady++
                     }
-                }, RETRY_TIME_DATA_READY)
+                } else {
+                    scene.showSyncRetryDialog(result)
+                }
             }
         }
     }
@@ -383,7 +387,8 @@ class SignInSceneController(
                     val state = model.state as SignInLayoutState.RemoveDevices
                     model.state = SignInLayoutState.LoginValidation(username = state.username,
                             domain = state.domain,
-                            hasTwoFA = model.hasTwoFA)
+                            hasTwoFA = model.hasTwoFA,
+                            hasRemovedDevices = true)
                     scene.initLayout(model, uiObserver, onDevicesListItemListener)
                     model.realSecurePassword = state.password.sha256()
                     dataSource.submitRequest(SignInRequest.LinkBegin(state.username, state.domain))
@@ -739,6 +744,7 @@ class SignInSceneController(
                             isMultiple = model.isMultiple))
                 }
                 is SignInResult.LinkData -> {
+                    scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
                     dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress, model.authorizerId))
                 }
             }

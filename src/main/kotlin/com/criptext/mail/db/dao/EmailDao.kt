@@ -165,10 +165,10 @@ import java.util.*
         inner join email_label on email.id = email_label.emailId
         left join email_contact on email.id = email_contact.emailId
         left join contact on email_contact.contactId = contact.id
-        and date < :starterDate
         where email.accountId = :accountId
         and not exists
         (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+        and date < :starterDate
         group by (CASE WHEN email.threadId = "" THEN email.id ELSE email.threadId END)
         having (group_concat(distinct(contact.name))) like :queryText
         or (group_concat(distinct(contact.email))) like :queryText
@@ -346,6 +346,13 @@ import java.util.*
             WHERE metadataKey=:key
             AND accountId = :accountId""")
     fun findEmailByMetadataKey(key: Long, accountId: Long): Email?
+
+    @Query("""SELECT email.* FROM email
+            LEFT JOIN email_label ON email.id = email_label.emailId
+            WHERE metadataKey=:key
+            AND accountId = :accountId
+            AND email_label.labelId = :labelId""")
+    fun findEmailByMetadataKeyByLabel(key: Long, labelId: Long, accountId: Long): Email?
 
     @Query("""SELECT *
             FROM email

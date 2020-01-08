@@ -20,7 +20,7 @@
     <item
         android:id="@+id/mark_unread"
         app:showAsAction="collapseActionView"
-        android:title="@string/mark_as_unread"/>
+        android:title="@string/mark_as_unread_from_here"/>
     <item
         android:id="@+id/print"
         app:showAsAction="collapseActionView"
