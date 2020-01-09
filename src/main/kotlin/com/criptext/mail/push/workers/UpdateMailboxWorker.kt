@@ -1,6 +1,5 @@
 package com.criptext.mail.push.workers
 
-import android.content.res.Resources
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
@@ -9,18 +8,18 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.whispersystems.libsignal.DuplicateMessageException
-import com.squareup.picasso.Picasso
 import android.graphics.Bitmap
-import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.eventhelper.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelperResultData
+import com.criptext.mail.utils.eventhelper.EventLoader
 
 
 /**

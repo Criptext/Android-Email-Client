@@ -17,6 +17,10 @@ import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.eventhelper.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelperResultData
+import com.criptext.mail.utils.eventhelper.EventLoader
+import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
@@ -112,17 +116,21 @@ class BackgroundAccountsUpdateMailboxWorker(
                     is Result.Success -> {
                         shouldUpdateUI = shouldUpdateUI || true
                         if (!shouldCallAgain) {
+                            val linkInfo = finalResult.value.parsedEvents.find { it is ParsedEvent.LinkDeviceInfo }
                             if(index == (accounts.size - 1)) {
-                                deviceInfo.addAll(finalResult.value.deviceInfo)
+                                if(linkInfo != null)
+                                    deviceInfo.add((linkInfo as ParsedEvent.LinkDeviceInfo).deviceInfo)
+                                val bannerData = finalResult.value.parsedEvents.find { it is ParsedEvent.BannerData }
                                 return GeneralResult.BackgroundAccountsUpdateMailbox.Success(
                                         mailboxLabel = label,
                                         isManual = true,
-                                        updateBannerData = finalResult.value.updateBannerData,
+                                        updateBannerData = (bannerData as? ParsedEvent.BannerData)?.updateBannerData,
                                         syncEventsList = deviceInfo,
                                         shouldUpdateUI = shouldUpdateUI
                                 )
                             } else {
-                                deviceInfo.addAll(finalResult.value.deviceInfo)
+                                if(linkInfo != null)
+                                    deviceInfo.add((linkInfo as ParsedEvent.LinkDeviceInfo).deviceInfo)
                                 index++
                             }
                         }

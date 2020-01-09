@@ -17,12 +17,12 @@ import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 import org.json.JSONObject
-import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.File
 
 class ResendEmailWorker(

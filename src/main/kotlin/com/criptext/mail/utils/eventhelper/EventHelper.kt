@@ -1,4 +1,4 @@
-package com.criptext.mail.utils
+package com.criptext.mail.utils.eventhelper
 
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
@@ -11,20 +11,16 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
-import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.peerdata.PeerDeleteLabelData
+import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.UIUtils
 import com.github.kittinunf.result.Result
-import com.squareup.picasso.Picasso
-import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
-import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -46,18 +42,8 @@ class EventHelper(private val db: EventLocalDB,
     private val newsClient = MailboxAPIClient(newsHttpClient, activeAccount.jwt)
 
     private lateinit var label: Label
-    private var updateBannerData: UpdateBannerData? = null
-    private val linkDevicesEvents: MutableList<DeviceInfo?> = mutableListOf()
     private var shouldNotify = false
-    private var newEmails = mutableListOf<EmailPreview>()
-    private var newTrackingUpdates = mutableListOf<TrackingUpdate>()
-    private var customLabels = mutableListOf<Label>()
-    private var threadReads = mutableListOf<Pair<List<String>, Boolean>>()
-    private var emailReads = mutableListOf<Pair<List<Long>, Boolean>>()
-    private var movedThread = mutableListOf<Triple<List<String>, List<Label>?, List<Label>?>>()
-    private var movedEmail = mutableListOf<Triple<List<Long>, List<Label>?, List<Label>?>>()
-    private var nameChanged: String = ""
-    private var unsend: Pair<Long, Date>? = null
+    private var parsedEvents = mutableListOf<ParsedEvent>()
 
 
     fun setupForMailbox(label: Label){
@@ -92,9 +78,7 @@ class EventHelper(private val db: EventLocalDB,
             }
 
             acknowledgeEventsIgnoringErrors(eventsToAcknowldege)
-            EventHelperResultData(updateBannerData, linkDevicesEvents, shouldNotify,
-                    newEmails, customLabels, threadReads, emailReads, movedThread, movedEmail,
-                    nameChanged, unsend, newTrackingUpdates)
+            EventHelperResultData(shouldNotify, parsedEvents)
         }
     }
 
@@ -144,15 +128,18 @@ class EventHelper(private val db: EventLocalDB,
     private fun processLinkRequestEvents(event: Event) {
         if (acknoledgeEvents)
             acknowledgeEventsIgnoringErrors(listOf(event.rowid))
-        linkDevicesEvents.add(DeviceInfo.UntrustedDeviceInfo.fromJSON(event.params))
+        val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+        if(existingInfo != null) parsedEvents.remove(existingInfo)
+        parsedEvents.add(ParsedEvent.LinkDeviceInfo(event.cmd, DeviceInfo.UntrustedDeviceInfo.fromJSON(event.params)))
         shouldNotify = true
     }
 
     private fun processSyncRequestEvents(event: Event) {
         if (acknoledgeEvents)
             acknowledgeEventsIgnoringErrors(listOf(event.rowid))
-
-        linkDevicesEvents.add(DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, null))
+        val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+        if(existingInfo != null) parsedEvents.remove(existingInfo)
+        parsedEvents.add(ParsedEvent.LinkDeviceInfo(event.cmd, DeviceInfo.TrustedDeviceInfo.fromJSON(event.params, null)))
         shouldNotify = true
     }
 
@@ -164,9 +151,8 @@ class EventHelper(private val db: EventLocalDB,
                 shouldNotify = true
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
-                updateBannerData = operation.value
+                parsedEvents.add(ParsedEvent.BannerData(event.cmd, operation.value))
             }
-            is Result.Failure -> updateBannerData = null
         }
     }
 
@@ -181,7 +167,7 @@ class EventHelper(private val db: EventLocalDB,
                 val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
                         label.id, activeAccount)
                 if(newPreview != null)
-                    newEmails.add(newPreview)
+                    parsedEvents.add(ParsedEvent.NewEmail(event.cmd, newPreview))
                 shouldNotify = true
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
@@ -193,7 +179,7 @@ class EventHelper(private val db: EventLocalDB,
                         val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
                                 label.id, activeAccount)
                         if(newPreview != null)
-                            newEmails.add(newPreview)
+                            parsedEvents.add(ParsedEvent.NewEmail(event.cmd, newPreview))
                         if (acknoledgeEvents)
                             eventsToAcknowldege.add(event.rowid)
                     }
@@ -209,7 +195,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                threadReads.add(Pair(metadata.threadIds, metadata.unread))
+                parsedEvents.add(ParsedEvent.ReadThreads(event.cmd, Pair(metadata.threadIds, metadata.unread)))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -223,7 +209,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                emailReads.add(Pair(metadata.metadataKeys, metadata.unread))
+                parsedEvents.add(ParsedEvent.ReadEmails(event.cmd, Pair(metadata.metadataKeys, metadata.unread)))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -237,7 +223,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                unsend = Pair(metadata.metadataKey, metadata.unsendDate)
+                parsedEvents.add(ParsedEvent.UnsendEmail(event.cmd, Pair(metadata.metadataKey, metadata.unsendDate)))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -251,7 +237,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                nameChanged = metadata.name
+                parsedEvents.add(ParsedEvent.NameChange(event.cmd, metadata.name))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -266,9 +252,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
-                val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
-                movedEmail.add(Triple(metadata.metadataKeys, added, deleted))
+                parsedEvents.add(ParsedEvent.MoveEmail(event.cmd))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -282,9 +266,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                val added = db.getLabels(metadata.labelsAdded, activeAccount.id)
-                val deleted = db.getLabels(metadata.labelsRemoved, activeAccount.id)
-                movedThread.add(Triple(metadata.threadIds, added, deleted))
+                parsedEvents.add(ParsedEvent.MoveThread(event.cmd, metadata.threadIds))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -298,7 +280,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                movedEmail.add(Triple(metadata.metadataKeys, null, null))
+                parsedEvents.add(ParsedEvent.MoveEmail(event.cmd))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -312,7 +294,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                movedThread.add(Triple(metadata.threadIds, null, null))
+                parsedEvents.add(ParsedEvent.MoveThread(event.cmd, metadata.threadIds))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -326,7 +308,9 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+                if(existingInfo != null) parsedEvents.remove(existingInfo)
+                parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -340,7 +324,9 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+                if(existingInfo != null) parsedEvents.remove(existingInfo)
+                parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -354,7 +340,9 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                customLabels = db.getCustomLabels(activeAccount.id).toMutableList()
+                val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+                if(existingInfo != null) parsedEvents.remove(existingInfo)
+                parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
@@ -371,7 +359,7 @@ class EventHelper(private val db: EventLocalDB,
             if (metadata.type == DeliveryTypes.UNSEND) {
                 updateUnsendEmailStatus(PeerUnsendEmailStatusUpdate(metadata.metadataKey, metadata.date))
             }
-            newTrackingUpdates.add(metadata)
+            parsedEvents.add(ParsedEvent.TrackingEvent(event.cmd, metadata))
         }
         when(operation){
             is Result.Success -> {

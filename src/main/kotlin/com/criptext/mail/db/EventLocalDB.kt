@@ -73,12 +73,14 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         return db.emailDao().findEmailByMetadataKey(metadataKey, accountId)
     }
 
-    fun getEmailByMetadataKeyByLabelId(metadataKey: Long, labelId: Long, accountId: Long): Email?{
-        return db.emailDao().findEmailByMetadataKeyByLabel(metadataKey, labelId, accountId)
+    fun getEmailByMetadataKeyByLabelId(metadataKey: Long, labelId: Long, selectedLabel: String, accountId: Long): Email?{
+        return db.emailDao().findEmailByMetadataKeyByLabel(metadataKey, labelId,
+                Label.defaultItems.rejectedLabelsByFolder(selectedLabel).map { it.id },
+                labelId in listOf(Label.defaultItems.trash.id, Label.defaultItems.spam.id), accountId)
     }
 
     fun getEmailPreviewByMetadataKey(metadataKey: Long, selectedLabel: String, labelId: Long, account: ActiveAccount): EmailPreview? {
-        val email = getEmailByMetadataKeyByLabelId(metadataKey, labelId, account.id) ?: return null
+        val email = getEmailByMetadataKeyByLabelId(metadataKey, labelId, selectedLabel, account.id) ?: return null
 
         return EmailPreview.fromEmailThread(getEmailThreadFromEmail(email, selectedLabel,
                     Label.defaultItems.rejectedLabelsByFolder(selectedLabel).map { it.id },

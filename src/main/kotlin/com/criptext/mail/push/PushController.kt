@@ -12,7 +12,7 @@ import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.UIMessage
 
 class PushController(private val dataSource: PushDataSource, private val host: MessagingService,

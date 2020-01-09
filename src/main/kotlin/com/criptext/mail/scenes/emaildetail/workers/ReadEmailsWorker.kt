@@ -12,15 +12,13 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.EmailDao
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.emaildetail.data.EmailDetailAPIClient
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
-import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerOpenEmailData
 import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
 
 /**
  * Created by gabriel on 6/27/18.

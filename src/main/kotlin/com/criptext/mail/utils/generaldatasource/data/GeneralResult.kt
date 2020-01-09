@@ -12,7 +12,7 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.settings.data.UserSettingsData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
-import com.criptext.mail.utils.EventHelperResultData
+import com.criptext.mail.utils.eventhelper.EventHelperResultData
 import com.criptext.mail.utils.UIMessage
 
 /**

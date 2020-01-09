@@ -47,6 +47,7 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import java.net.URLDecoder
 import java.util.*
+import kotlin.concurrent.thread
 
 /**
  * Created by sebas on 3/12/18.
@@ -519,19 +520,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onMarAsReadEmail(result: EmailDetailResult.MarkAsReadEmail){
         when(result){
             is EmailDetailResult.MarkAsReadEmail.Success -> {
-                result.metadataKeys.forEach { metadataKey ->
-                    val fullEmail = model.emails.find { it.email.metadataKey == metadataKey }
-                    if(fullEmail != null) {
-                        val position = model.emails.indexOf(fullEmail)
-                        if(position >= 0) {
-                            model.emails[position] = model.emails[position].copy(
-                                    email = model.emails[position].email.copy(unread = result.unread)
-                            )
-                        }
-                    }
-                    emailDetailUIObserver.onBackButtonPressed()
-                }
+                    val message = ActivityMessage.UpdateUnreadStatusThread(result.threadId, result.unread)
+                    host.exitToScene(
+                            params = MailboxParams(),
+                            activityMessage = message,
+                            forceAnimation = false)
             }
+            is EmailDetailResult.MarkAsReadEmail.Failure -> scene.showError(UIMessage(R.string.error_updating_status))
         }
     }
 
@@ -759,8 +754,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onToggleReadOption(fullEmail: FullEmail, position: Int, markAsRead: Boolean) {
-            val emailKeys = model.emails.subList(position, model.emails.lastIndex).map { it.email.metadataKey }
+            val emailKeys = if((model.emails.lastIndex - position) == 0) listOf(fullEmail.email.metadataKey)
+            else model.emails.subList(position, model.emails.lastIndex).map { it.email.metadataKey }
             dataSource.submitRequest(EmailDetailRequest.MarkAsReadEmail(
+                    threadId = fullEmail.email.threadId,
                     metadataKeys = emailKeys,
                     unread = !markAsRead
             ))

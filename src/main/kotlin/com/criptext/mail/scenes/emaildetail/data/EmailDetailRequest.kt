@@ -55,6 +55,7 @@ sealed class EmailDetailRequest{
     ): EmailDetailRequest()
 
     data class MarkAsReadEmail(
+            val threadId: String,
             val metadataKeys: List<Long>,
             val unread: Boolean
     ): EmailDetailRequest()
