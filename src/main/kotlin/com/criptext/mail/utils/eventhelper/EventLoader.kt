@@ -1,8 +1,9 @@
-package com.criptext.mail.utils
+package com.criptext.mail.utils.eventhelper
 
 import com.criptext.mail.api.HttpResponseData
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
+import com.criptext.mail.utils.ServerCodes
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.json.JSONArray

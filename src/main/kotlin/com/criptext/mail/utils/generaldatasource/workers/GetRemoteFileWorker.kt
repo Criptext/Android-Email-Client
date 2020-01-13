@@ -1,7 +1,6 @@
 package com.criptext.mail.utils.generaldatasource.workers
 
 import android.content.ContentResolver
-import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -9,7 +8,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.utils.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult

@@ -9,6 +9,7 @@ import android.provider.ContactsContract
 import android.view.View
 import com.criptext.mail.*
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
@@ -36,6 +37,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
+import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -928,12 +930,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         is LoadParams.NewPage ->
                             threadListController.appendAll(result.emailPreviews, hasReachedEnd)
                         is LoadParams.UpdatePage -> {
-                            val newEmails = model.threads.filter { (it !in result.emailPreviews)
-                                    && (it.timestamp.after(model.threads.first().timestamp)) }
-                            val oldEmails = model.threads.filter { it in result.emailPreviews }
-                            threadListController.updateThreadsAndAddNew(newEmails, oldEmails)
-                            if(newEmails.isNotEmpty() && !threadListController.isOnTopOfList())
-                                scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)), true)
+                            threadListController.replaceAndAddThreads(result.emailPreviews)
                         }
                     }
 
@@ -1130,35 +1127,71 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun handleActiveAccountSuccessfulMailboxUpdate(resultData: GeneralResult.ActiveAccountUpdateMailbox.Success) {
         model.lastSync = System.currentTimeMillis()
         if (resultData.data != null) {
-            if(resultData.data.newEmails.isNotEmpty()){
-                threadListController.replaceAndAddThreads(resultData.data.newEmails)
+            resultData.data.parsedEvents.forEach {
+                when(it.cmd){
+                    Event.Cmd.deviceAuthRequest,
+                    Event.Cmd.syncBeginRequest -> {
+                        val linkEvent = it as ParsedEvent.LinkDeviceInfo
+                        handleSyncEvents(listOf(linkEvent.deviceInfo))
+                    }
+                    Event.Cmd.updateBannerEvent -> {
+                        val bannerEvent = it as ParsedEvent.BannerData
+                        handleBanner(bannerEvent.updateBannerData)
+                    }
+                    Event.Cmd.newEmail -> {
+                        val newEmailEvent = it as ParsedEvent.NewEmail
+                        threadListController.replaceAndAddThreads(listOf(newEmailEvent.preview))
+                    }
+                    Event.Cmd.peerEmailThreadReadStatusUpdate -> {
+                        val threadReadEvent = it as ParsedEvent.ReadThreads
+                        threadListController.changeThreadsReadStatus(listOf(threadReadEvent.threadRead))
+                    }
+                    Event.Cmd.peerEmailReadStatusUpdate -> {
+                        val emailReadEvent = it as ParsedEvent.ReadEmails
+                        threadListController.changeEmailsReadStatus(listOf(emailReadEvent.emailRead))
+                    }
+                    Event.Cmd.peerEmailUnsendStatusUpdate -> {
+                        val unsendEvent = it as ParsedEvent.UnsendEmail
+                        val thread = model.threads.find {preview ->
+                            preview.metadataKey == unsendEvent.unsend.first
+                        }
+                        if(thread != null)
+                            threadListController.changeUnsendStatus(thread.threadId, unsendEvent.unsend.second)
+                    }
+                    Event.Cmd.peerEmailChangedLabels,
+                    Event.Cmd.peerThreadChangedLabels,
+                    Event.Cmd.peerEmailDeleted -> {
+                        reloadMailboxThreads(LoadParams.UpdatePage(size = model.threads.size,
+                                mostRecentDate = model.threads.firstOrNull()?.timestamp))
+                    }
+                    Event.Cmd.peerThreadDeleted -> {
+                        val deleteThread = it as ParsedEvent.MoveThread
+                        threadListController.removeThreadsById(deleteThread.threadIds)
+                    }
+                    Event.Cmd.peerLabelCreated,
+                    Event.Cmd.peerLabelEdited,
+                    Event.Cmd.peerLabelDeleted -> {
+                        val labelsEvent = it as ParsedEvent.ChangeToLabels
+                        scene.setMenuLabels(labelsEvent.customLabels.map { label ->  LabelWrapper(label) })
+                    }
+                    Event.Cmd.trackingUpdate -> {
+                        val trackingUpdate = it as ParsedEvent.TrackingEvent
+                        threadListController.changeEmailsDeliveryStatus(listOf(trackingUpdate.trackingUpdate))
+                    }
+                }
+            }
+            val newEmails = resultData.data.parsedEvents.filterIsInstance<ParsedEvent.NewEmail>()
+            if(newEmails.isNotEmpty()){
                 if(resultData.shouldNotify){
                     scene.showNotification()
+                    if(!threadListController.isOnTopOfList())
+                        scene.showMessage(UIMessage(R.string.new_email_snack, arrayOf(newEmails.size)), true)
                 }
                 generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
             }
-            if(resultData.data.customLabels.isNotEmpty()){
-                scene.setMenuLabels(resultData.data.customLabels.map { LabelWrapper(it) })
-            }
-            if(resultData.data.deviceInfo.isNotEmpty()){
-                handleSyncEvents(resultData.data.deviceInfo)
-            }
-            if(resultData.data.updateBannerData != null){
-                handleBanner(resultData.data.updateBannerData)
-            }
-            if(resultData.data.threadReads.isNotEmpty()){
-                threadListController.changeThreadsReadStatus(resultData.data.threadReads)
-            }
-            if(resultData.data.emailReads.isNotEmpty()){
-                threadListController.changeEmailsReadStatus(resultData.data.emailReads)
-            }
-            if(resultData.data.unsend != null){
-                val thread = model.threads.find { it.metadataKey == resultData.data.unsend.first }
-                if(thread != null)
-                    threadListController.changeUnsendStatus(thread.threadId, resultData.data.unsend.second)
-            }
-            if(resultData.data.trackingUpdates.isNotEmpty()){
-                threadListController.changeEmailsDeliveryStatus(resultData.data.trackingUpdates)
+            if(resultData.data.parsedEvents.find { it is ParsedEvent.MoveThread || it is ParsedEvent.MoveEmail } != null){
+                generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
+                dataSource.submitRequest(MailboxRequest.GetMenuInformation())
             }
             val isSelected = model.threads.filter { it.isSelected }
             val selectedPositions = model.threads.filter {

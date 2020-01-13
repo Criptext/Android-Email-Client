@@ -26,6 +26,7 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
                             private val activeAccount: ActiveAccount,
                             override val publishFn: (EmailDetailResult.MarkAsReadEmail) -> Unit,
                             private val metadataKeys: List<Long>,
+                            private val threadId: String,
                             private val unread: Boolean
                        ) : BackgroundWorker<EmailDetailResult.MarkAsReadEmail> {
 
@@ -53,7 +54,7 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
 
         return when (result) {
             is Result.Success -> {
-                EmailDetailResult.MarkAsReadEmail.Success(metadataKeys, unread)
+                EmailDetailResult.MarkAsReadEmail.Success(metadataKeys, threadId, unread)
             }
             is Result.Failure -> {
                 catchException(result.error)

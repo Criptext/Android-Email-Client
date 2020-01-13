@@ -22,8 +22,8 @@ import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.EventHelper
-import com.criptext.mail.utils.EventLoader
+import com.criptext.mail.utils.eventhelper.EventHelper
+import com.criptext.mail.utils.eventhelper.EventLoader
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap

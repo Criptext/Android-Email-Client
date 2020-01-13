@@ -349,10 +349,15 @@ import java.util.*
 
     @Query("""SELECT email.* FROM email
             LEFT JOIN email_label ON email.id = email_label.emailId
-            WHERE metadataKey=:key
+            where case when :isTrashOrSpam
+            then email_label.labelId = :labelId
+            else not exists
+            (select * from email_label where email_label.emailId = email.id and email_label.labelId in (:rejectedLabels))
+            end
+            AND metadataKey=:key
             AND accountId = :accountId
             AND email_label.labelId = :labelId""")
-    fun findEmailByMetadataKeyByLabel(key: Long, labelId: Long, accountId: Long): Email?
+    fun findEmailByMetadataKeyByLabel(key: Long, labelId: Long, rejectedLabels: List<Long>, isTrashOrSpam: Boolean, accountId: Long): Email?
 
     @Query("""SELECT *
             FROM email

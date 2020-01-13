@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.mailbox
 
 import com.criptext.mail.scenes.mailbox.data.LoadParams
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
-import com.criptext.mail.utils.EventHelperResultData
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import io.mockk.*

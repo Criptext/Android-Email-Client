@@ -4,6 +4,7 @@ import com.criptext.mail.api.PeerAPIClient
 import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.PendingEvent
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.json.JSONArray
