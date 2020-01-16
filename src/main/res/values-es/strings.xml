@@ -617,4 +617,5 @@
   <string name="title_report_abuse">Report Abuse</string>
   <string name="forgot_password_time">¿Olvidaste tu contraseña?(%1$d)</string>
   <string name="mark_as_unread_from_here">Marcar como no leído desde aquí</string>
+  <string name="signed_out_title">¡Sesión Cerrada!</string>
 </resources>

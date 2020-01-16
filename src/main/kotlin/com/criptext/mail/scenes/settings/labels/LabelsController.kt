@@ -3,10 +3,12 @@ package com.criptext.mail.scenes.settings.labels
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
@@ -21,6 +23,7 @@ import com.criptext.mail.scenes.settings.labels.data.LabelsResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -55,6 +58,7 @@ class LabelsController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.ActiveAccountUpdateMailbox -> onUpdateMailbox(result)
         }
     }
 
@@ -259,6 +263,24 @@ class LabelsController(
         }
     }
 
+    private fun onUpdateMailbox(result: GeneralResult.ActiveAccountUpdateMailbox){
+        when(result){
+            is GeneralResult.ActiveAccountUpdateMailbox.Success -> {
+                if (result.data != null) {
+                    result.data.parsedEvents.forEach {
+                        when(it.cmd){
+                            Event.Cmd.peerLabelEdited,
+                            Event.Cmd.peerLabelDeleted,
+                            Event.Cmd.peerLabelCreated -> {
+                                dataSource.submitRequest(LabelsRequest.GetCustomLabels())
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun onCreateCustomLabels(result: LabelsResult.CreateCustomLabel){
         when(result) {
             is LabelsResult.CreateCustomLabel.Success -> {
@@ -306,6 +328,7 @@ class LabelsController(
     private fun onGetCustomLabels(result: LabelsResult.GetCustomLabels){
         when(result) {
             is LabelsResult.GetCustomLabels.Success -> {
+                model.labels.clear()
                 model.labels.addAll(result.labels.map {
                     if(it.type == LabelTypes.SYSTEM) {
                         val label = it.copy(
@@ -400,7 +423,13 @@ class LabelsController(
         }
 
         override fun onNewEvent(recipientId: String, domain: String) {
-
+            if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
+                host.runOnUiThread(Runnable {
+                    generalDataSource.submitRequest(
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
+                    )
+                })
+            }
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {

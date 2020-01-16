@@ -50,6 +50,7 @@ interface ProfileScene{
     fun enableProfileSettings(enable: Boolean)
     fun updateCurrentEmailStatus(isEmailConfirmed: Boolean)
     fun hideFooterSwitch()
+    fun updateAvatarByPeerEvent(fullName: String, email: String)
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -214,6 +215,17 @@ interface ProfileScene{
             UIUtils.setProfilePicture(profilePicture, context.resources, domain, recipientId,
                     model.userData.name,
                     Runnable { hideProfilePictureProgress() })
+        }
+
+        override fun updateAvatarByPeerEvent(fullName: String, email: String) {
+            val domain = EmailAddressUtils.extractEmailAddressDomain(email)
+            UIUtils.setProfilePicture(
+                    iv = profilePicture,
+                    resources = context.resources,
+                    recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
+                    name = fullName,
+                    runnable = null,
+                    domain = domain)
         }
 
         override fun updateCurrentEmailStatus(isEmailConfirmed: Boolean){

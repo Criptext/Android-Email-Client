@@ -350,7 +350,9 @@ class SignInSceneController(
             is SignInResult.LinkStatus.Denied -> {
                 if(model.linkDeviceState !is LinkDeviceState.Denied) {
                     model.linkDeviceState = LinkDeviceState.Denied()
-                    scene.showLinkAuthError()
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    model.state = SignInLayoutState.DeniedValidation(currentState.username, currentState.domain)
+                    scene.initLayout(model, uiObserver)
                 }
             }
         }
@@ -594,7 +596,9 @@ class SignInSceneController(
             host.runOnUiThread(Runnable {
                 if(model.linkDeviceState !is LinkDeviceState.Denied) {
                     model.linkDeviceState = LinkDeviceState.Denied()
-                    scene.showLinkAuthError()
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    model.state = SignInLayoutState.DeniedValidation(currentState.username, currentState.domain)
+                    scene.initLayout(model, uiObserver)
                 }
             })
         }
@@ -904,7 +908,7 @@ class SignInSceneController(
         generalDataSource.listener = generalDataSourceListener
         scene.initLayout(model = model, signInUIObserver = uiObserver)
         if(activityMessage != null && activityMessage is ActivityMessage.ShowUIMessage){
-            scene.showError(activityMessage.message)
+            scene.showGenericOkAlert(activityMessage.message)
         }
 
         return false
@@ -945,6 +949,17 @@ class SignInSceneController(
                     true
             }
             is SignInLayoutState.LoginValidation -> {
+                val username = if(currentState.domain != Contact.mainDomain)
+                    currentState.username.plus("@${currentState.domain}")
+                else currentState.username
+                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
+                resetLayout()
+                generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
+                false
+            }
+            is SignInLayoutState.DeniedValidation -> {
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username

@@ -84,10 +84,11 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun processProfilePicChangePeer(event: Event) {
         val operation = Result.of {
-            UIUtils.checkForCacheCleaning(storage, db.getCacheDir(), activeAccount)
+            UIUtils.forceCacheClear(storage, db.getCacheDir(), activeAccount)
         }
         when(operation){
             is Result.Success -> {
+                parsedEvents.add(ParsedEvent.AvatarChange(event.cmd))
                 if (acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }

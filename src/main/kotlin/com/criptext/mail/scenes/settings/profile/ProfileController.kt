@@ -11,11 +11,13 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
@@ -24,6 +26,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -70,6 +73,7 @@ class ProfileController(
             is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.GetUserSettings -> onGetUserSettings(result)
+            is GeneralResult.ActiveAccountUpdateMailbox -> onUpdateMailbox(result)
         }
     }
 
@@ -343,6 +347,30 @@ class ProfileController(
         }
     }
 
+    private fun onUpdateMailbox(result: GeneralResult.ActiveAccountUpdateMailbox){
+        when(result){
+            is GeneralResult.ActiveAccountUpdateMailbox.Success -> {
+                handleActiveAccountSuccessfulMailboxUpdate(result)
+            }
+        }
+    }
+
+    private fun handleActiveAccountSuccessfulMailboxUpdate(resultData: GeneralResult.ActiveAccountUpdateMailbox.Success) {
+        if (resultData.data != null) {
+            resultData.data.parsedEvents.forEach {
+                when(it.cmd){
+                    Event.Cmd.peerUserChangeName -> {
+                        val newName = (it as ParsedEvent.NameChange).newName
+                        scene.updateProfileName(newName)
+                    }
+                    Event.Cmd.profilePictureChanged -> {
+                        scene.updateAvatarByPeerEvent(activeAccount.name, activeAccount.userEmail)
+                    }
+                }
+            }
+        }
+    }
+
     private fun onDeleteAccount(result: GeneralResult.DeleteAccount){
         scene.toggleGeneralDialogLoad(false)
         when(result) {
@@ -608,7 +636,13 @@ class ProfileController(
         }
 
         override fun onNewEvent(recipientId: String, domain: String) {
-
+            if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
+                host.runOnUiThread(Runnable {
+                    generalDataSource.submitRequest(
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
+                    )
+                })
+            }
         }
 
         override fun onRecoveryEmailChanged(newEmail: String) {
