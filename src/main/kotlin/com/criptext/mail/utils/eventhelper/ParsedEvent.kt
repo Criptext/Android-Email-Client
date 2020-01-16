@@ -17,6 +17,7 @@ sealed class ParsedEvent(open val cmd: Int){
     data class MoveThread(override val cmd: Int, val threadIds: List<String>) : ParsedEvent(cmd)
     data class MoveEmail(override val cmd: Int) : ParsedEvent(cmd)
     data class NameChange(override val cmd: Int, val newName: String) : ParsedEvent(cmd)
+    data class AvatarChange(override val cmd: Int) : ParsedEvent(cmd)
     data class UnsendEmail(override val cmd: Int, val unsend: Pair<Long, Date>) : ParsedEvent(cmd)
     data class TrackingEvent(override val cmd: Int, val trackingUpdate: TrackingUpdate) : ParsedEvent(cmd)
 }

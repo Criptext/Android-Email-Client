@@ -619,4 +619,5 @@
   <string name="title_report_abuse">Report Abuse</string>
   <string name="forgot_password_time">Forgot password?(%1$d)</string>
   <string name="mark_as_unread_from_here">Mark as Unread from here</string>
+  <string name="signed_out_title">Signed Out!</string>
 </resources>

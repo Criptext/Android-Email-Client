@@ -1178,6 +1178,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                         val trackingUpdate = it as ParsedEvent.TrackingEvent
                         threadListController.changeEmailsDeliveryStatus(listOf(trackingUpdate.trackingUpdate))
                     }
+                    Event.Cmd.peerUserChangeName -> {
+                        dataSource.submitRequest(MailboxRequest.GetMenuInformation())
+                    }
+                    Event.Cmd.profilePictureChanged -> {
+                        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
+                        scene.initNavHeader(activeAccount.name, activeAccount.userEmail)
+                    }
                 }
             }
             val newEmails = resultData.data.parsedEvents.filterIsInstance<ParsedEvent.NewEmail>()

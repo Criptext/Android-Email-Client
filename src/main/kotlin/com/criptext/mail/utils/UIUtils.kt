@@ -47,6 +47,14 @@ object UIUtils{
         } else false
     }
 
+    fun forceCacheClear(storage: KeyValueStorage, cacheDir: File, activeAccount: ActiveAccount) {
+        val currentMillis = System.currentTimeMillis()
+        Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
+        Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
+        storage.putLong(KeyValueStorage.StringKey.CacheResetTimestamp, currentMillis)
+        clearImageDiskCache(cacheDir)
+    }
+
     fun setProfilePicture(iv: ImageView, resources: Resources, domain: String, recipientId: String, name: String, runnable: Runnable?) {
         val url = Hosts.restApiBaseUrl.plus("/user/avatar/$domain/$recipientId")
         val bitmapFromText = Utility.getBitmapFromText(

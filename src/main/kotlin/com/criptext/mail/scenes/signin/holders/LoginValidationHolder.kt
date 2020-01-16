@@ -28,7 +28,6 @@ class LoginValidationHolder(
     private val recoveryCodeText: TextView
     private val textViewTitle: TextView
     private val textViewBody: TextView
-    private val textViewRejected: TextView
     private val textViewPrompt: TextView
     private val textViewNotApproved: TextView
     private val backButton: View
@@ -43,7 +42,6 @@ class LoginValidationHolder(
         cantAccessDevice = view.findViewById(R.id.cant_access_device)
         recoveryCodeText = view.findViewById(R.id.recovery_code)
         textViewTitle = view.findViewById(R.id.textViewTitle)
-        textViewRejected = view.findViewById(R.id.device_rejected)
         textViewBody = view.findViewById(R.id.textViewBody)
         buttonResend = view.findViewById(R.id.buttonResend)
         textViewNotApproved = view.findViewById(R.id.textViewNotAproved)

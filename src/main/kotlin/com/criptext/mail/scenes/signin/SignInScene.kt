@@ -34,7 +34,6 @@ interface SignInScene {
             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
     fun showKeyGenerationHolder()
-    fun showLinkAuthError()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
     fun startLinkSucceedAnimation()
@@ -50,6 +49,7 @@ interface SignInScene {
     fun showRecoveryDialogError(message: UIMessage?)
     fun toggleLoadRecoveryCode(load: Boolean)
     fun dismissRecoveryCodeDialog()
+    fun showGenericOkAlert(message: UIMessage)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -135,7 +135,12 @@ interface SignInScene {
                             R.layout.activity_login_validation, viewGroup)
                     LoginValidationHolder(newLayout, state)
                 }
-
+                is SignInLayoutState.DeniedValidation -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.activity_denied_validation, viewGroup)
+                    DeniedValidationHolder(newLayout)
+                }
                 is SignInLayoutState.Start -> {
                     val newLayout = View.inflate(
                             view.context,
@@ -185,13 +190,6 @@ interface SignInScene {
 
         override fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String) {
             signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserName, domain)
-        }
-
-        override fun showLinkAuthError() {
-            val currentHolder = holder
-            when (currentHolder) {
-                is LoginValidationHolder -> currentHolder.showFailedLogin()
-            }
         }
 
         override fun setSubmitButtonState(state: ProgressButtonState) {
@@ -284,6 +282,16 @@ interface SignInScene {
 
         override fun dismissRecoveryCodeDialog() {
             recoveryCodeDialog?.dismiss()
+        }
+
+        override fun showGenericOkAlert(message: UIMessage) {
+            GeneralMessageOkDialog(view.context,
+                    DialogData.DialogMessageData(
+                            title = UIMessage(R.string.signed_out_title),
+                            message = listOf(message),
+                            type = DialogType.Message()
+                    )
+            ).showDialog()
         }
 
         override fun showKeyGenerationHolder() {
