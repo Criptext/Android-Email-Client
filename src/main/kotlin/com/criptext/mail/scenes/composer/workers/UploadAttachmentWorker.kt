@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.composer.workers
 
 import android.accounts.NetworkErrorException
+import android.util.Log
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.CriptextAPIClient
@@ -112,7 +113,9 @@ class UploadAttachmentWorker(private val filesSize: Long,
 
 
         return when (finalResult) {
-            is Result.Success -> ComposerResult.UploadFile.Success(filepath, size, uuid)
+            is Result.Success -> {
+                ComposerResult.UploadFile.Success(filepath, size, uuid)
+            }
             is Result.Failure -> catchException(finalResult.error)
         }
     }

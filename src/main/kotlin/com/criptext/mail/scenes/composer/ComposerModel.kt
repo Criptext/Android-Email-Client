@@ -5,6 +5,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -55,4 +56,5 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
 
     var accounts = listOf<ActiveAccount>()
     var selectedAccount: ActiveAccount? = null
+    var shareActivityMessage: ActivityMessage.AddAttachments? = null
 }

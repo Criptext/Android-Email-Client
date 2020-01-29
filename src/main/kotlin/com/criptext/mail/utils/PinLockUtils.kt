@@ -1,5 +1,6 @@
 package com.criptext.mail.utils
 
+import com.criptext.mail.db.KeyValueStorage
 import com.github.omadahealth.lollipin.lib.managers.LockManager
 
 object PinLockUtils{
@@ -18,10 +19,12 @@ object PinLockUtils{
         }
     }
 
-    fun resetLastMillisPin(){
+    fun resetLastMillisPin(storage: KeyValueStorage){
         val lockManager = LockManager.getInstance()
-        if(lockManager.appLock != null)
+        if(lockManager.appLock != null) {
             lockManager.appLock.setLastActiveMillis()
+            setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+        }
     }
 
     fun setPinLockTimeout(time: Long){

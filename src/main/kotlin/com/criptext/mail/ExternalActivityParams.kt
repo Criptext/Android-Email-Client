@@ -1,5 +1,7 @@
 package com.criptext.mail
 
+import java.io.File
+
 
 sealed class ExternalActivityParams {
     class FilePicker: ExternalActivityParams()
@@ -15,6 +17,7 @@ sealed class ExternalActivityParams {
     class ChangeAccountGoogleDrive: ExternalActivityParams()
     class OpenGooglePlay: ExternalActivityParams()
     class FilePresent(val filepath: String, val mimeType: String): ExternalActivityParams()
+    class RefreshGalleryPath(val file: File): ExternalActivityParams()
 
     companion object {
         const val PIN_REQUEST_CODE = 2018

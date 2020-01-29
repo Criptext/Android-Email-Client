@@ -5,6 +5,7 @@ import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.utils.UIMessage
+import java.io.File
 import java.util.*
 
 /**
@@ -88,7 +89,7 @@ sealed class EmailDetailResult {
     }
 
     sealed class CopyToDownloads : EmailDetailResult() {
-        data class Success(val message: UIMessage): CopyToDownloads()
+        data class Success(val file: File, val message: UIMessage): CopyToDownloads()
         data class Failure(val message: UIMessage): CopyToDownloads()
     }
 

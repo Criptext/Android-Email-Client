@@ -47,4 +47,5 @@
     <attr name="criptextEmptySearchImage" format="reference"/>
     <attr name="criptextSearchImage" format="reference"/>
     <attr name="criptextSelectableItemBackground" format="reference|color"/>
+    <attr name="criptextPinGradient" format="reference"/>
 </resources>

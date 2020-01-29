@@ -13,6 +13,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.zip.GZIPOutputStream
+import kotlin.math.ln
+import kotlin.math.pow
 
 
 /**
@@ -245,9 +247,9 @@ class FileUtils {
 
         fun readableFileSize(size: Long, unit: Int): String{
             if (size < unit) return "$size B"
-            val exp = (Math.log(size.toDouble()) / Math.log(unit.toDouble())).toInt()
+            val exp = (ln(size.toDouble()) / ln(unit.toDouble())).toInt()
             val pre = ("KMGTPE")[exp - 1]
-            return String.format("%.2f %sB", size / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+            return String.format("%.2f %sB", size / unit.toDouble().pow(exp.toDouble()), pre)
         }
 
         fun getPathAndSizeFromUri(uri: Uri, contentResolver: ContentResolver?,
