@@ -27,6 +27,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+
+
 
 /**
  * Created by gabriel on 6/28/18.
@@ -71,6 +75,7 @@ class UpdateMailboxWorkerTest {
         storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
+        Fabric.with(mActivityRule.activity, Crashlytics())
     }
 
 

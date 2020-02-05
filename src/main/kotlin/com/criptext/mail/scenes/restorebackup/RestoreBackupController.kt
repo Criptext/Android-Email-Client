@@ -143,8 +143,7 @@ class RestoreBackupController(
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
-        PinLockUtils.resetLastMillisPin()
-        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+        PinLockUtils.resetLastMillisPin(storage)
         if (activityMessage is ActivityMessage.AddAttachments) {
             if(activityMessage.filesMetadata.isNotEmpty()){
                 handleRestoreFile(activityMessage.filesMetadata)

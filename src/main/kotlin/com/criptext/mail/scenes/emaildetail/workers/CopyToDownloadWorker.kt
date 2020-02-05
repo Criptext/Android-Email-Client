@@ -44,7 +44,7 @@ class CopyToDownloadWorker(private val internalPath: String,
         val file = File(internalPath)
 
         if(AndroidFs.fileExistsInDownloadsDir(file.name))
-            return EmailDetailResult.CopyToDownloads.Success(UIMessage(R.string.move_to_downloads_exists))
+            return EmailDetailResult.CopyToDownloads.Success(file, UIMessage(R.string.move_to_downloads_exists))
 
         val result = Result.of {
             moveFileToDownloads(file)
@@ -52,7 +52,7 @@ class CopyToDownloadWorker(private val internalPath: String,
 
 
         return when (result) {
-            is Result.Success -> EmailDetailResult.CopyToDownloads.Success(UIMessage(R.string.move_to_downloads_success, arrayOf(filepath)))
+            is Result.Success -> EmailDetailResult.CopyToDownloads.Success(file, UIMessage(R.string.move_to_downloads_success, arrayOf(filepath)))
             is Result.Failure -> catchException(result.error)
         }
     }

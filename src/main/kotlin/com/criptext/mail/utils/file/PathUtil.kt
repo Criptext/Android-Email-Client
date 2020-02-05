@@ -1,5 +1,6 @@
 package com.criptext.mail.utils.file
 
+import android.content.ContentProvider
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -111,6 +112,15 @@ object PathUtil {
 
         } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
             return uri.path
+        }
+        val tempPath = uri.path ?: return null
+        if(tempPath.contains("/external_files/")){
+            var file = File(context.filesDir.absolutePath + "/" + tempPath.removePrefix("/external_files/"))
+            if(file.exists())
+                return file.absolutePath
+            file = File(Environment.getExternalStorageDirectory().absolutePath + "/" + tempPath.removePrefix("/external_files/"))
+            if(file.exists())
+                return file.absolutePath
         }
         return null
     }

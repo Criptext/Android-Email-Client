@@ -533,6 +533,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onCopyToDownloads(result: EmailDetailResult.CopyToDownloads){
         when(result){
             is EmailDetailResult.CopyToDownloads.Success -> {
+                host.launchExternalActivityForResult(ExternalActivityParams.RefreshGalleryPath(result.file))
                 scene.showError(result.message)
             }
         }

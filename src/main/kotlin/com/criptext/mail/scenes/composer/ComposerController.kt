@@ -580,18 +580,22 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         if (activityMessage is ActivityMessage.AddAttachments) {
             if(!activityMessage.isShare){
-                PinLockUtils.resetLastMillisPin()
-                PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+                PinLockUtils.resetLastMillisPin(storage)
+            } else {
+                model.shareActivityMessage = activityMessage
             }
-            if(activityMessage.filesMetadata.isNotEmpty()){
-                generateEmailFileKey()
-                addNewAttachments(activityMessage.filesMetadata)
+            if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                model.shareActivityMessage = null
+                if (activityMessage.filesMetadata.isNotEmpty()) {
+                    generateEmailFileKey()
+                    addNewAttachments(activityMessage.filesMetadata)
+                }
             }
             return true
         } else if (activityMessage is ActivityMessage.AddUrls){
             if(!activityMessage.isShare){
-                PinLockUtils.resetLastMillisPin()
-                PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+                PinLockUtils.resetLastMillisPin(storage)
             }
             if(activityMessage.urls.isNotEmpty()){
                 activityMessage.urls.forEach {
@@ -770,10 +774,18 @@ class ComposerController(private val storage: KeyValueStorage,
         val indexOfPermission = permissions.indexOfFirst { it == Manifest.permission.WRITE_EXTERNAL_STORAGE }
         if (indexOfPermission < 0) return
         if (grantResults[indexOfPermission] != PackageManager.PERMISSION_GRANTED) {
+            if(model.shareActivityMessage != null){
+                model.shareActivityMessage = null
+                model.attachments.clear()
+            }
             scene.showError(UIMessage(R.string.permission_filepicker_rationale))
             return
         }
-        scene.showAttachmentsBottomDialog(observer)
+        if(model.shareActivityMessage != null){
+            handleActivityMessage(model.shareActivityMessage)
+        } else {
+            scene.showAttachmentsBottomDialog(observer)
+        }
 
     }
 

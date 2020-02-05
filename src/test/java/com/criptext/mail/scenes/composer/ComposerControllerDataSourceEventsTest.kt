@@ -1,5 +1,7 @@
 package com.criptext.mail.scenes.composer
 
+import android.Manifest
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
@@ -98,6 +100,8 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
     @Test
     fun `after receiving ack of registered file, should update token value of ComposerAttachment`() {
         val mockedFiletoken = "rbesfgfgdsfdgbs"
+        every { host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) } returns true
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Register(filepath = "/test.pdf",
@@ -110,6 +114,8 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
     @Test
     fun `after receiving ack of success file, the file should be at 100% progress`() {
+        every { host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) } returns true
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Success(filepath = "/test.pdf", filesSize = 0L, uuid = model.attachments[0].uuid))
@@ -121,6 +127,8 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
     @Test
     fun `after receiving ack of failed file, should remove the file and show error message`() {
+        every { host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) } returns true
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Failure(filepath = "/test.pdf",

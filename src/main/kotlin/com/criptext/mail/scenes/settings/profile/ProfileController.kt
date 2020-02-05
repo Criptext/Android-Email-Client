@@ -543,8 +543,7 @@ class ProfileController(
     }
 
     private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
-        PinLockUtils.resetLastMillisPin()
-        PinLockUtils.setPinLockTimeoutPosition(storage.getInt(KeyValueStorage.StringKey.PINTimeout, 1))
+        PinLockUtils.resetLastMillisPin(storage)
         return when (activityMessage) {
             is ActivityMessage.ProfilePictureFile -> {
                 if (activityMessage.filesMetadata.second != -1L) {

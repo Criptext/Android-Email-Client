@@ -5,10 +5,9 @@ import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -287,6 +286,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun onPause() {
         super.onPause()
+        PinLockUtils.resetLastMillisPin(storage)
         controller.onPause()
     }
 
@@ -617,7 +617,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {
-        when(params){
+        when(params) {
             is ExternalActivityParams.ProfileImagePicker -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -645,7 +645,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.Camera -> {
                 val file = photoUtil.createImageFile()
-                if(file != null) {
+                if (file != null) {
                     val photoIntent = IntentUtils.createIntentToOpenCamera(this, file)
                     if (photoIntent.resolveActivity(this.packageManager) != null)
                         startActivityForResult(photoIntent, PhotoUtil.REQUEST_CODE_CAMERA)
@@ -657,11 +657,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 startActivity(newIntent)
             }
             is ExternalActivityParams.PinScreen -> {
-                if(params.isFirstTime) {
+                if (params.isFirstTime) {
                     val intent = Intent(this, LockScreenActivity::class.java)
                     intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK)
                     startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
-                }else{
+                } else {
                     val intent = Intent(this, LockScreenActivity::class.java)
                     intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN)
                     startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
@@ -686,7 +686,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.ExportBackupFile -> {
                 val file = File(params.filePath)
-                if(file.exists()){
+                if (file.exists()) {
                     val fileUri: Uri? = try {
                         FileProvider.getUriForFile(
                                 this,
@@ -697,7 +697,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                                 "The selected file can't be shared: ${file.name}")
                         null
                     }
-                    val extension = if(params.isEncrypted) ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}"
+                    val extension = if (params.isEncrypted) ".${UserDataWriter.FILE_ENCRYPTED_EXTENSION}"
                     else ".${UserDataWriter.FILE_UNENCRYPTED_EXTENSION}"
                     val saveIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                     saveIntent.putExtra(Intent.EXTRA_TITLE, "Backup-${DateAndTimeUtils
@@ -707,11 +707,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 }
             }
             is ExternalActivityParams.SignInGoogleDrive -> {
-               val signInOptions =
-                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestEmail()
-                        .requestScopes(Scope(DriveScopes.DRIVE_FILE))
-                        .build()
+                val signInOptions =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestEmail()
+                                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                                .build()
                 val client = GoogleSignIn.getClient(this, signInOptions)
 
                 // The result of the sign-in Intent is handled in onActivityResult.
@@ -782,6 +782,16 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             Uri.parse("https://play.google.com/store/apps/details?id=$appId"))
                     startActivity(webIntent)
                 }
+            }
+            is ExternalActivityParams.RefreshGalleryPath -> {
+                MediaScannerConnection.scanFile(this,
+            arrayOf(params.file.absolutePath), null,
+                object: MediaScannerConnection.OnScanCompletedListener {
+                    override fun onScanCompleted(path: String?, uri: Uri?) {
+                        Log.i("ExternalStorage", "Scanned $path:")
+                        Log.i("ExternalStorage", "-> uri = $uri")
+                    }
+                })
             }
         }
     }

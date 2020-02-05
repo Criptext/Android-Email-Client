@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.settings.pinlock.pinscreen
 
 import android.content.Intent
+import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.core.content.ContextCompat
 import android.widget.TextView
 import com.criptext.mail.R
@@ -26,6 +28,16 @@ class LockScreenActivity: AppLockActivity(){
 
     private val warningText: TextView by lazy {
         this.findViewById<TextView>(R.id.warning_text)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+        val storage = KeyValueStorage.SharedPrefs(this)
+        this.findViewById<TextView>(R.id.rootView).background =
+                if(storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) ContextCompat.getDrawable(
+                this, R.drawable.pin_background_dark)
+                else ContextCompat.getDrawable(
+                this, R.drawable.login_background)
     }
 
 

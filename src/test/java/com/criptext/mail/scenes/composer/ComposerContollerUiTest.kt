@@ -1,5 +1,7 @@
 package com.criptext.mail.scenes.composer
 
+import android.Manifest
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.composer.data.*
@@ -52,6 +54,8 @@ class ComposerContollerUiTest: ComposerControllerTest() {
 
     @Test
     fun `On start if there is an AttachmentActivityMessage, attachment should be added to composer`(){
+        every { host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) } returns true
         val activityMessage = ActivityMessage.AddAttachments(filesMetadata = listOf(Pair("/test.pdf", 46332L)), isShare = false)
 
 

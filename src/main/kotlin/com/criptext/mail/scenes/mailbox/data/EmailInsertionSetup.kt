@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
+import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
@@ -213,6 +214,7 @@ object EmailInsertionSetup {
                     encryptedData = encryptedData)
         } catch (ex: Exception) {
             if (ex is DuplicateMessageException) throw ex
+            Crashlytics.logException(ex)
             "Unable to decrypt message."
         }
     }
