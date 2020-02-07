@@ -146,7 +146,7 @@ class ActiveAccountUpdateMailboxWorker(
     private fun newRetryWithNewSessionOperation()
             : Result<EventHelperResultData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
-                activeAccount, storage, accountDao, true)
+                activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {

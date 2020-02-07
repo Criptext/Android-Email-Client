@@ -117,9 +117,8 @@ class PostUserWorker(private val keyBundle: PreKeyBundleShareData.DownloadBundle
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
-                apiClient.token = account.jwt
-                fileApiClient.token = account.jwt
+                apiClient.token = refreshOperation.value
+                fileApiClient.token = refreshOperation.value
                 workOperation()
             }
             is Result.Failure -> {

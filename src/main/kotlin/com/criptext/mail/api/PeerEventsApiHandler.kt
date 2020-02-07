@@ -66,13 +66,8 @@ interface PeerEventsApiHandler {
                     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             return when(refreshOperation){
                 is Result.Success -> {
-                    val account = ActiveAccount.loadFromStorage(storage)
-                    if(account != null) {
-                        apiClient.token = account.jwt
-                        workOperation(picks)
-                    }else{
-                        Result.of { throw Resources.NotFoundException() }
-                    }
+                    apiClient.token = refreshOperation.value
+                    workOperation(picks)
                 }
                 is Result.Failure -> {
                     Result.of { throw refreshOperation.error }

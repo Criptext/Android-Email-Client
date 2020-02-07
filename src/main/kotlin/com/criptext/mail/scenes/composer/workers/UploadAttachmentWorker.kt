@@ -134,8 +134,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
-                fileServiceAPIClient.authToken = account.jwt
+                fileServiceAPIClient.authToken = refreshOperation.value
                 workOperation(file, reporter)
             }
             is Result.Failure -> {

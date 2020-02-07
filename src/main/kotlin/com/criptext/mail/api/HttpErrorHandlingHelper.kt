@@ -47,30 +47,36 @@ object HttpErrorHandlingHelper {
     }
 
     fun newRefreshSessionOperation(apiClient: CriptextAPIClient, account: ActiveAccount, storage: KeyValueStorage,
-                                   accountDao: AccountDao, isActiveAccount: Boolean = false)
-            : Result<Unit, Exception> {
+                                   accountDao: AccountDao)
+            : Result<String, Exception> {
         return Result.of {
             val accountInDB = accountDao.getAccountById(account.id)
-            if(accountInDB != null){
+            val storageAccount = ActiveAccount.loadFromStorage(storage)
+            if(accountInDB != null && storageAccount != null){
                 if(accountInDB.refreshToken.isEmpty()){
                     val refreshAndSession = apiClient.getRefreshToken(account.jwt).body
-                    if (isActiveAccount)
+                    if (account.userEmail == storageAccount.userEmail)
                         account.updateUserWithTokensData(storage, refreshAndSession)
                     accountDao.updateJwt(account.recipientId, account.domain, JSONObject(refreshAndSession).getString("token"))
                     accountDao.updateRefreshToken(account.recipientId, account.domain, JSONObject(refreshAndSession).getString("refreshToken"))
+                    JSONObject(refreshAndSession).getString("token")
                 }else{
                     val session = apiClient.refreshSession(account.refreshToken)
                     if (session.code == ServerCodes.SuccessAndRepeat){
-                        if (isActiveAccount)
+                        if (account.userEmail == storageAccount.userEmail)
                             account.updateUserWithTokensData(storage, session.body)
                         accountDao.updateJwt(account.recipientId, account.domain, JSONObject(session.body).getString("token"))
                         accountDao.updateRefreshToken(account.recipientId, account.domain, JSONObject(session.body).getString("refreshToken"))
+                        JSONObject(session.body).getString("token")
                     } else {
-                        if (isActiveAccount)
+                        if (account.userEmail == storageAccount.userEmail)
                             account.updateUserWithSessionData(storage, session.body)
                         accountDao.updateJwt(account.recipientId, account.domain, session.body)
+                        session.body
                     }
                 }
+            } else {
+                throw Exception()
             }
         }
     }
