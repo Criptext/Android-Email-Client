@@ -160,7 +160,8 @@ class LinkDataWorker(private val authorizerId: Int,
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
+                val dbAccount = db.accountDao().getAccountById(activeAccount.id) ?: throw Exception()
+                val account = ActiveAccount.loadFromDB(dbAccount) ?: throw Exception()
                 activeAccount = account
                 workOperation(reporter)
             }

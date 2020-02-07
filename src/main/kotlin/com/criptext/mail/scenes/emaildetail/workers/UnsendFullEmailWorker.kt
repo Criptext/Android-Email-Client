@@ -102,8 +102,7 @@ class UnsendFullEmailWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
-                apiClient.authToken = account.jwt
+                apiClient.authToken = refreshOperation.value
                 workOperation(unsentEmail)
             }
             is Result.Failure -> {

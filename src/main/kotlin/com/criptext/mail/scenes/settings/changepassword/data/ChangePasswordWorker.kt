@@ -76,8 +76,7 @@ class ChangePasswordWorker(
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
-                apiClient.token = account.jwt
+                apiClient.token = refreshOperation.value
                 workOperation()
             }
             is Result.Failure -> {

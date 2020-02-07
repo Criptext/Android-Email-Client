@@ -357,9 +357,8 @@ class SendMailWorker(private val signalClient: SignalClient,
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){
             is Result.Success -> {
-                val account = ActiveAccount.loadFromStorage(storage)!!
-                fileApiClient.token = account.jwt
-                apiClient.token = account.jwt
+                fileApiClient.token = refreshOperation.value
+                apiClient.token = refreshOperation.value
                 workOperation(mailRecipients)
             }
             is Result.Failure -> {
