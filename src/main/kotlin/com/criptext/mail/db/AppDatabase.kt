@@ -34,7 +34,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class, AccountContact::class, AntiPushMap::class],
-        version = 16,
+        version = 17,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -75,7 +75,7 @@ abstract class AppDatabase : RoomDatabase() {
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
                                 MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
-                                MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
+                                MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -468,6 +468,72 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_15_16: Migration = object: Migration(15, 16) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE contact ADD COLUMN spamScore INTEGER NOT NULL DEFAULT 0""")
+            }
+        }
+
+        val MIGRATION_16_17: Migration = object: Migration(16, 17) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  new_email (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                            messageId TEXT NOT NULL,
+                                            threadId TEXT NOT NULL,
+                                            fromAddress TEXT NOT NULL,
+                                            replyTo TEXT,
+                                            boundary TEXT,
+                                            unread INTEGER NOT NULL,
+                                            secure INTEGER NOT NULL,
+                                            content TEXT NOT NULL,
+                                            bodyPreview TEXT NOT NULL,
+                                            subject TEXT NOT NULL,
+                                            delivered INTEGER NOT NULL,
+                                            unsentDate INTEGER,
+                                            date INTEGER NOT NULL,
+                                            metadataKey INTEGER NOT NULL,
+                                            trashDate INTEGER,
+                                            accountId INTEGER NOT NULL,
+                                            FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
+
+                database.execSQL(
+                        """INSERT INTO new_email (id, messageId, threadId, fromAddress, replyTo, boundary, unread,
+                                secure, content, bodyPreview, subject, delivered, unsentDate, date, metadataKey, trashDate,
+                                accountId)
+                                SELECT id, messageId, threadId, fromAddress, replyTo, boundary, unread,
+                                secure, content, bodyPreview, subject, delivered, unsentDate, date, metadataKey, trashDate,
+                                accountId
+                                FROM email""")
+
+                database.execSQL("DROP TABLE email")
+                database.execSQL("ALTER TABLE new_email RENAME TO email")
+
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_metadataKey_index ON email (metadataKey, accountId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS email_messageId_index ON email (messageId, accountId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS email_accountId_index ON email (accountId)")
+
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  new_file (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                            token TEXT NOT NULL,
+                                            name TEXT NOT NULL,
+                                            size INTEGER NOT NULL,
+                                            status INTEGER NOT NULL,
+                                            date INTEGER NOT NULL,
+                                            cid TEXT,
+                                            shouldDuplicate INTEGER NOT NULL,
+                                            fileKey TEXT NOT NULL,
+                                            emailId INTEGER NOT NULL,
+                                            FOREIGN KEY(emailId) REFERENCES email(id) ON DELETE CASCADE)""")
+
+                database.execSQL(
+                        """INSERT INTO new_file (id, token, name, size, status, date,
+                                cid, shouldDuplicate, fileKey, emailId)
+                                SELECT id, token, name, size, status, date,
+                                cid, shouldDuplicate, fileKey, emailId
+                                FROM file""")
+
+                database.execSQL("DROP TABLE file")
+                database.execSQL("ALTER TABLE new_file RENAME TO file")
+
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_file_name ON file (name)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_file_emailId ON file (emailId)")
             }
         }
     }

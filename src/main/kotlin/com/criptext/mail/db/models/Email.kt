@@ -68,9 +68,6 @@ data class Email(
         @ColumnInfo(name = "metadataKey")
         var metadataKey : Long,
 
-        @ColumnInfo(name = "isMuted")
-        var isMuted: Boolean,
-
         @ColumnInfo(name = "trashDate")
         @Nullable
         var trashDate: Date?,
@@ -101,7 +98,6 @@ data class Email(
                         date = com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("date"), null),
                         metadataKey = json.getLong("key"),
-                        isMuted = json.getBoolean("isMuted"),
                         unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("unsentDate"), null) else null,
                         trashDate = if(json.has("trashDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(

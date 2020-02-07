@@ -148,7 +148,6 @@ class PushRequestHandlerTest {
                             threadId = mockedThreadId,
                             metadataKey = it + 100L,
                             unread = false,
-                            isMuted = false,
                             unsentDate = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
@@ -168,7 +167,6 @@ class PushRequestHandlerTest {
                             date = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
-                            readOnly = false,
                             emailId = it.toLong(),
                             shouldDuplicate = false,
                             fileKey = "__FILE_KEY__",

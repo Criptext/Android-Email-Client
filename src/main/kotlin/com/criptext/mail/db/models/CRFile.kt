@@ -41,9 +41,6 @@ class CRFile(
         @ColumnInfo(name = "date")
         var date : Date,
 
-        @ColumnInfo(name = "readOnly")
-        var readOnly : Boolean,
-
         @ColumnInfo(name = "emailId")
         @NonNull
         var emailId : Long,
@@ -67,7 +64,6 @@ class CRFile(
                 "size='$size', " +
                 "status='$status', " +
                 "date='$date', " +
-                "readonly: '$readOnly' " +
                 "emailId: '$emailId' "
     }
 
@@ -92,7 +88,6 @@ class CRFile(
                         file.getLong("size"),
                         1,
                         Date(),
-                        false,
                         0,
                         if(file.has("cid")) file.getString("cid") else null,
                         false,
@@ -118,7 +113,6 @@ class CRFile(
                     date = DateAndTimeUtils.getDateFromString(json.getString("date"), null),
                     cid = if(json.has("cid")) json.getString("cid") else null,
                     emailId = json.getLong("emailId"),
-                    readOnly = json.getBoolean("readOnly"),
                     shouldDuplicate = false,
                     fileKey = when {
                         json.has("key") ->

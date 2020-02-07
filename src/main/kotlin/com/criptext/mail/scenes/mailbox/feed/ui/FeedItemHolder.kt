@@ -26,12 +26,9 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
     private val containerView: LinearLayout
     private val imageViewTypeFeed: ImageView
     private val imageViewMute: ImageView
-    private val imageViewMuteButton: ImageView
-    private val textViewMute: TextView
     private val textViewTitle: TextView
     private val textViewDetail: TextView
     private val textViewDate: TextView
-    private val viewMute: View
     private val viewDelete: View
     private val viewDate: View
 
@@ -40,13 +37,10 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
         swipeView = view.findViewById(R.id.swipeView)
         containerView = view.findViewById(R.id.containerView)
         viewDelete = view.findViewById(R.id.viewDelete)
-        viewMute = view.findViewById(R.id.viewMute)
         viewDate = view.findViewById(R.id.viewDate)
         imageViewTypeFeed = view.findViewById(R.id.imageViewTypeFeed)
         imageViewMute = view.findViewById(R.id.imageViewMute)
         textViewTitle = view.findViewById(R.id.textViewTitle)
-        imageViewMuteButton = view.findViewById(R.id.imageViewMuteButton)
-        textViewMute = view.findViewById(R.id.textViewMute)
         textViewDetail = view.findViewById(R.id.textViewDetail)
         textViewDate = view.findViewById(R.id.textViewDate)
 
@@ -61,7 +55,6 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
 
         checkIsNew(lastTimeFeedOpened, activityFeedItem)
         checkFeedType(activityFeedItem)
-        checkIsMuted(activityFeedItem)
         setListeners(activityFeedItem, position, listener)
 
     }
@@ -116,26 +109,7 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
         }
     }
 
-    private fun checkIsMuted(activityFeedItem: ActivityFeedItem){
-
-        if(activityFeedItem.isMuted) {
-            imageViewMute.visibility = View.VISIBLE
-            Picasso.get().load(R.drawable.activity_feed).into(imageViewMuteButton)
-            textViewMute.text = textViewMute.resources.getText(R.string.unmute)
-        }
-        else{
-            imageViewMute.visibility = View.INVISIBLE
-            Picasso.get().load(R.drawable.mute).into(imageViewMuteButton)
-            textViewMute.text = textViewMute.resources.getText(R.string.mute)
-        }
-    }
-
     private fun setListeners(activityFeedItem: ActivityFeedItem, position: Int, listener: FeedEventListener?){
-
-        viewMute.setOnClickListener {
-            listener?.onMuteFeedItemClicked(activityFeedItem.id, position, !activityFeedItem.isMuted)
-            swipeView.close(true)
-        }
 
         viewDelete.setOnClickListener {
             listener?.onDeleteFeedItemClicked(activityFeedItem.id, position)
@@ -171,7 +145,6 @@ class FeedItemHolder(private val view: View) : RecyclerView.ViewHolder(view), Sw
 
     interface FeedEventListener{
         fun onFeedItemClicked(email: Email)
-        fun onMuteFeedItemClicked(feedId: Long, position: Int, isMuted: Boolean)
         fun onDeleteFeedItemClicked(feedId: Long, position: Int)
         fun onApproachingEnd()
         fun showStartGuideNotification(view: View)

@@ -47,21 +47,21 @@ class UserDataWriterTest {
             visible = true, uuid = "uuid2", accountId = activeAccount.id)
 
     private val emailOne = Email(id = 1, content = "contents 1", date = nowDate,
-            delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_1", metadataKey = 123,
+            delivered = DeliveryTypes.DELIVERED, messageId = "id_1", metadataKey = 123,
             preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
             fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
     private val emailTwo = Email(id = 2, content = "contents 2", date = nowDate,
-            delivered = DeliveryTypes.DELIVERED, isMuted = false, messageId = "id_2", metadataKey = 456,
+            delivered = DeliveryTypes.DELIVERED, messageId = "id_2", metadataKey = 456,
             preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
             fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
 
     private val fileOne = CRFile(id = 1, date = nowDate, emailId = 1, name = "this.txt",
-            readOnly = true, size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
+            size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
             cid = null)
     private val fileTwo = CRFile(id = 2, date = nowDate, emailId = 2, name = "that.txt",
-            readOnly = true, size = 14, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
+            size = 14, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
             cid = null)
 
     private val emailLabel1 = EmailLabel(emailId = 1, labelId = 1)
@@ -79,10 +79,10 @@ class UserDataWriterTest {
     "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false,\"spamScore\":0}}",
     "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"uuid\":\"uuid1\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"uuid\":\"uuid2\",\"visible\":true}}",
-    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"$strDate\",\"key\":123,\"isMuted\":false,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
-    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"$strDate\",\"key\":456,\"isMuted\":false,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
-    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"$strDate\",\"readOnly\":true,\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
-    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"$strDate\",\"readOnly\":true,\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"$strDate\",\"key\":123,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
+    "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"$strDate\",\"key\":456,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"$strDate\",\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
+    "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"$strDate\",\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"to\"}}",

@@ -31,13 +31,6 @@ class FeedListController(private val model: FeedModel,
         }
     }
 
-    fun toggleMutedFeedItem(id: Long, lastPosition: Int) {
-        val index = model.feedItems.findFromPosition(lastPosition, { feedItem -> feedItem.id == id  })
-        if (index > -1) {
-            virtualListView?.notifyItemChanged(index)
-        }
-    }
-
     fun insertFeedItem(newItem: ActivityFeedItem) {
         val pos = model.feedItems.addWhere(newItem, { existingItem ->
             newItem.date > existingItem.date
