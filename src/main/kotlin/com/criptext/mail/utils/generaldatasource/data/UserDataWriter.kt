@@ -187,7 +187,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("size", file.size)
                 jsonObject.put("status", file.status)
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(file.date))
-                jsonObject.put("readOnly", file.readOnly)
                 if(file.cid != null && file.cid != "")
                     jsonObject.put("cid", file.cid)
                 jsonObject.put("emailId", file.emailId)
@@ -239,7 +238,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("status", DeliveryTypes.getTrueOrdinal(mail.delivered))
                 jsonObject.put("date", DateAndTimeUtils.printDateWithServerFormat(mail.date))
                 jsonObject.put("key", mail.metadataKey)
-                jsonObject.put("isMuted", mail.isMuted)
                 if (mail.replyTo != null)
                     jsonObject.put("replyTo", mail.replyTo)
                 if (mail.unsentDate != null)
@@ -312,7 +310,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 5
+        const val FILE_SYNC_VERSION = 6
 
         const val FILE_ENCRYPTED_EXTENSION = "enc"
         const val FILE_UNENCRYPTED_EXTENSION = "db"

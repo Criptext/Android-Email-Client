@@ -34,7 +34,6 @@ class FileSeeder {
                         status = 1,
                         date = sdf.parse("1992-05-23 20:12:58"),
                         emailId = 1,
-                        readOnly = false,
                         shouldDuplicate = false,
                         fileKey = "__FILE_KEY__",
                         cid = null
@@ -46,7 +45,6 @@ class FileSeeder {
                         status = 1,
                         date = sdf.parse("1993-05-23 20:12:58"),
                         emailId = 1,
-                        readOnly = true,
                         shouldDuplicate = false,
                         fileKey = "__FILE_KEY__",
                         cid = null

@@ -118,7 +118,6 @@ open class EmailDetailControllerTest {
                         threadId = mockedThreadId,
                         metadataKey = it + 100L,
                         unread = false,
-                        isMuted = false,
                         trashDate = null,
                         unsentDate = DateAndTimeUtils.getDateFromString(
                                 "1992-05-23 20:12:58",
@@ -133,7 +132,6 @@ open class EmailDetailControllerTest {
                             date = DateAndTimeUtils.getDateFromString(
                                     "1992-05-23 20:12:58",
                                     null),
-                            readOnly = false,
                             emailId = it.toLong(),
                             shouldDuplicate = false,
                             fileKey = "__FILE_KEY__",

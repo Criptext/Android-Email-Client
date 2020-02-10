@@ -51,14 +51,6 @@ open class FeedController(private val model: FeedModel,
 
         }
 
-        override fun onMuteFeedItemClicked(feedId: Long, position: Int, isMuted: Boolean) {
-            feedListController.toggleMutedFeedItem(id = feedId,
-                    lastPosition = position)
-            feedDataSource.submitRequest(FeedRequest.MuteFeedItem(id = feedId,
-                    position = position,
-                    isMuted = isMuted))
-        }
-
         override fun onDeleteFeedItemClicked(feedId: Long, position: Int) {
             val deleted = feedListController.deleteFeedItem(id = feedId, lastPosition = position)
             if (deleted != null) {
@@ -80,7 +72,6 @@ open class FeedController(private val model: FeedModel,
         when (result) {
             is FeedResult.LoadFeed -> onFeedItemsLoaded(result)
             is FeedResult.DeleteFeedItem -> onFeedItemDeleted(result)
-            is FeedResult.MuteFeedItem -> onFeedItemMuted(result)
             is FeedResult.GetEmailPreview -> onGetEmailPreview(result)
         }
     }
@@ -132,17 +123,6 @@ open class FeedController(private val model: FeedModel,
             }
             is FeedResult.DeleteFeedItem.Failure -> {
                 feedListController.insertFeedItem(result.item)
-                scene.showError(result.message)
-            }
-        }
-    }
-
-    private fun onFeedItemMuted(result: FeedResult.MuteFeedItem) {
-        when (result) {
-            is FeedResult.MuteFeedItem.Success -> {/* NoOp */}
-            is FeedResult.MuteFeedItem.Failure -> {
-                feedListController.toggleMutedFeedItem(id = result.id,
-                        lastPosition = result.lastKnownPosition)
                 scene.showError(result.message)
             }
         }

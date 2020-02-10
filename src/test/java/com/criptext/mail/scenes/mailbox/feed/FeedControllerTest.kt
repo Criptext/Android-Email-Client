@@ -75,7 +75,7 @@ class FeedControllerTest {
     }
 
     private val testEmail = Email(
-            id = 1, isMuted = false, date = Date(), subject = "This is a subject",
+            id = 1, date = Date(), subject = "This is a subject",
             unread = false, threadId = "__THREAD_ID__", content = "Bla",
             delivered = DeliveryTypes.NONE, messageId = "__THREAD_ID__",
             metadataKey = 1, preview = "__PREVIEW__", secure = false, unsentDate = Date(), trashDate = null,

@@ -132,7 +132,6 @@ class SaveEmailWorker(
                     size = it.size,
                     status = 1,
                     date = Date(),
-                    readOnly = false,
                     emailId = 0,
                     shouldDuplicate = shouldDuplicateFile(it.filetoken),
                     fileKey = it.fileKey,

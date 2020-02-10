@@ -18,7 +18,6 @@ class ActivityFeedItem(feedItem: FeedItem,
     val type = feedItem.feedType
     val date = feedItem.date
     val seen = feedItem.seen
-    val isMuted = email.isMuted
     val contactName = contact.name
     val fileName = file?.name ?: ""
     val emailSubject = email.subject

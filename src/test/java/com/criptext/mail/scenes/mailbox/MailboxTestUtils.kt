@@ -20,7 +20,7 @@ object MailboxTestUtils {
                             content = "this is message #$number", preview = "message #$number",
                             subject = "message #$number", delivered = DeliveryTypes.DELIVERED,
                             date = Date(dateMilis + number), metadataKey = number + 100L,
-                            isMuted = false, unsentDate = Date(dateMilis + number), trashDate = null,
+                            unsentDate = Date(dateMilis + number), trashDate = null,
                             fromAddress = "Mayer Mizrachi <mayer@jigl.com>", replyTo = null,
                             boundary = null, accountId = 1)
 
