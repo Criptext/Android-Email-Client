@@ -469,7 +469,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+    private fun handleActivityMessage(activityMessage: ActivityMessage?, isResume: Boolean = false): Boolean {
         return when (activityMessage) {
             is ActivityMessage.SendMail -> {
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
@@ -556,6 +556,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             else -> {
                 dataSource.submitRequest(MailboxRequest.ResendEmails())
+                if(isResume)
+                    reloadMailboxThreads()
                 false
             }
         }
@@ -627,7 +629,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        return handleActivityMessage(activityMessage)
+        return handleActivityMessage(activityMessage, true)
     }
 
     override fun onNeedToSendEvent(event: Int) {

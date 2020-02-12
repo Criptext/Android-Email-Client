@@ -21,11 +21,6 @@ import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.eventhelper.EventHelperResultData
 import com.criptext.mail.utils.eventhelper.EventLoader
 
-
-/**
- * Created by sebas on 3/22/18.
- */
-
 class UpdateMailboxWorker(
         signalClient: SignalClient,
         private val dbEvents: EventLocalDB,

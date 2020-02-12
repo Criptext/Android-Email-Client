@@ -8,8 +8,6 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.push.workers.GetPushEmailWorker
-import com.criptext.mail.push.workers.RemoveNotificationWorker
 import com.criptext.mail.push.workers.UpdateMailboxWorker
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -22,25 +20,16 @@ class PushDataSource(
         override val runner: WorkRunner,
         private val db: AppDatabase,
         private val activeAccount: ActiveAccount,
-        private val storage: KeyValueStorage)
+        private val storage: KeyValueStorage,
+        private val signalClient: SignalClient)
     : BackgroundWorkManager<PushRequest, PushResult>() {
     override fun createWorkerFromParams(
             params: PushRequest,
             flushResults: (PushResult) -> Unit)
             : BackgroundWorker<*> {
         return when (params) {
-            is PushRequest.NewEmail -> GetPushEmailWorker(
-                    db = db,
-                    dbEvents = EventLocalDB(db, filesDir, cacheDir),
-                    httpClient = httpClient,
-                    label = params.label,
-                    pushData = params.pushData,
-                    shouldPostNotification = params.shouldPostNotification,
-                    publishFn = { result ->
-                        flushResults(result)
-                    })
             is PushRequest.UpdateMailbox -> UpdateMailboxWorker(
-                    signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount)),
+                    signalClient = signalClient,
                     dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     httpClient = httpClient,
                     storage = storage,
@@ -52,24 +41,6 @@ class PushDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
-            is PushRequest.LinkAccept -> LinkAuthAcceptWorker(
-                    activeAccount = activeAccount, httpClient = httpClient,
-                    deviceId = params.randomId,
-                    notificationId = params.notificationId,
-                    publishFn = { res -> flushResults(res)}
-            )
-            is PushRequest.LinkDenied -> LinkAuthDenyWorker(
-                    activeAccount = activeAccount, httpClient = httpClient,
-                    deviceId = params.randomId,
-                    notificationId = params.notificationId,
-                    publishFn = { res -> flushResults(res)}
-            )
-            is PushRequest.RemoveNotification -> RemoveNotificationWorker(
-                    db = db,
-                    notificationValue = params.value,
-                    pushData = params.pushData,
-                    publishFn = { res -> flushResults(res)}
-            )
         }
     }
 

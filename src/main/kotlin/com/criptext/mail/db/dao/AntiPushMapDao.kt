@@ -18,7 +18,7 @@ interface AntiPushMapDao {
     fun insert(antiPushMap: AntiPushMap): Long
 
     @Query("SELECT id FROM antiPushMap WHERE value=:value AND accountId=:accountId")
-    fun getByValue(value: String, accountId: Long): Int
+    fun getByValue(value: String, accountId: Long): Int?
 
     @Query("DELETE FROM antiPushMap WHERE id=:notificationId")
     fun deleteById(notificationId: Int)
