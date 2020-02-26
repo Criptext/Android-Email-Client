@@ -27,4 +27,5 @@ interface SettingsUIObserver: UIObserver {
     fun onSyncMailboxCanceled()
     fun onReportBugClicked()
     fun onReportAbuseClicked()
+    fun onCustomDomainClicked()
 }

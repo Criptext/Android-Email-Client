@@ -43,6 +43,12 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
+            is SettingsRequest.CheckCustomDomain -> CheckCustomDomainWorker(
+                    activeAccount = activeAccount,
+                    httpClient = httpClient,
+                    customDomainDao = settingsLocalDB.customDomainDao,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 }

@@ -5,8 +5,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
-import android.database.DatabaseUtils
-import android.util.Log
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawPreKeyDao
@@ -33,8 +31,8 @@ import java.util.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
-                     , PendingEvent::class, AccountContact::class, AntiPushMap::class],
-        version = 17,
+                     , PendingEvent::class, AccountContact::class, AntiPushMap::class, CustomDomain::class, Alias::class],
+        version = 18,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -64,6 +62,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emailExternalSessionDao(): EmailExternalSessionDao
     abstract fun pendingEventDao(): PendingEventDao
     abstract fun antiPushMapDao(): AntiPushMapDao
+    abstract fun customDomainDao(): CustomDomainDao
+    abstract fun aliasDao(): AliasDao
     companion object {
         private var INSTANCE : AppDatabase? = null
 
@@ -75,7 +75,8 @@ abstract class AppDatabase : RoomDatabase() {
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
                                 MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
-                                MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
+                                MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17,
+                                MIGRATION_17_18)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -534,6 +535,28 @@ abstract class AppDatabase : RoomDatabase() {
 
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_file_name ON file (name)")
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_file_emailId ON file (emailId)")
+            }
+        }
+
+        val MIGRATION_17_18: Migration = object : Migration(17, 18) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  customDomain (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        rowId INTEGER NOT NULL,
+                                        name TEXT NOT NULL,
+                                        validated INTEGER NOT NULL,
+                                        accountId INTEGER NOT NULL,
+                                        FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
+                database.execSQL("CREATE INDEX account_id_custom_domain_index ON customDomain (accountId)")
+
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  alias (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        rowId INTEGER NOT NULL,
+                                        name TEXT NOT NULL,
+                                        domain TEXT,
+                                        accountId INTEGER NOT NULL,
+                                        FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
+                database.execSQL("CREATE INDEX account_id_alias_index ON alias (accountId)")
             }
         }
     }
