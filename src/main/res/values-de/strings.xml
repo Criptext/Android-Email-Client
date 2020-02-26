@@ -118,6 +118,7 @@ um fortzufahren</string>
   <string name="title_recovery_email">Wiederherstellungs-E-Mail</string>
   <string name="title_signature">Unterschrift</string>
   <string name="title_signature_cap">UNTERSCHRIFT</string>
+  <string name="title_custom_domain_cap">CUSTOM DOMAIN</string>
   <string name="title_recovery_email_cap">WIEDERHERSTELLUNGS-E-MAIL</string>
   <string name="title_change_password_cap">PASSWORT ÄNDERN</string>
   <string name="title_allow_notifications">Benachrichtigungen zulassen</string>
@@ -229,6 +230,7 @@ Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
   <string name="username_invalid_error">Ungültiger Benutzername.</string>
   <string name="username_length_error">Der Benutzername muss aus mindestens 3 Zeichen bestehen.</string>
   <string name="email_invalid_error">Ungültige E-Mail-Adresse.</string>
+  <string name="domain_invalid_error">Invalid domain.</string>
   <string name="fullname_length_error">Der Name ist zu lang.</string>
   <string name="fullname_empty_error">Der Name darf nicht leer sein.</string>
   <string name="fullname_hint">Vollständiger Name</string>
@@ -500,6 +502,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="title_account">Konto</string>
   <string name="title_faq">FAQ</string>
   <string name="separator_general">ALLGEMEIN</string>
+  <string name="separator_addresses">ADDRESSES</string>
   <string name="devices_toolbar_title">GERÄTE</string>
   <string name="labels_toolbar_title">LABELS</string>
   <string name="pin_toolbar_title">PIN-SPERRE</string>
@@ -516,6 +519,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="web_view_open_in_browser">Im Browser öffnen</string>
   <string name="cloud_backup_toolbar_title">CLOUD-SICHERUNG</string>
   <string name="title_cloud_backup">Cloud-Sicherung</string>
+  <string name="title_custom_domain">Custom Domain</string>
   <string name="cloud_backup_switch">Sicherung auf Google Drive</string>
   <string name="cloud_backup_make_backup_button">Sicherung erstellen</string>
   <string name="cloud_backup_now">Jetzt sichern</string>
@@ -650,4 +654,43 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="unauthorized_upload">Unable to upload file: %1$s. Contact Support. Error: %1$s</string>
   <string name="unauthorized_download">Unable to download file: %1$s. Contact Support. Error: %1$s</string>
   <string name="expired_session">Session has expired. Please log back in.</string>
+  <string name="custom_domain_entry_title">Let\'s setup your domain</string>
+  <string name="custom_domain_entry_sub_title">Enter the custom domain you wish to add</string>
+  <string name="custom_domain_entry_hint">example.com</string>
+  <string name="btn_next">Next</string>
+  <string name="custom_domain_entry_error">This domain is already in use</string>
+  <string name="custom_domain_help">By adding a custom domain you will be able to add a custom alias allowing you to send and receive emails from your custom domain.</string>
+  <string name="domain_configuration_step_1">STEP 1 OF 3</string>
+  <string name="domain_configuration_step_2">STEP 2 OF 3</string>
+  <string name="domain_configuration_step_3">STEP 3 OF 3</string>
+  <string name="domain_configuration_title_step_1">Visit your DNS Manager</string>
+  <string name="domain_configuration_message_step_1"><b>1.</b> Go to <a href="https://www.godaddy.com/">Go Daddy</a> or whomever your domain provider is and access the <b>DNS Manager</b> where you can add MX and text records.</string>
+  <string name="domain_configuration_message_2_step_1"><b>2.</b> Delete any existing MX records before proceeding.</string>
+  <string name="domain_configuration_title_step_2">Add Records for Criptext</string>
+  <string name="domain_configuration_message_step_2">Add the following records in your DNS Manager. This will verify your domain ownership and configure Criptext email settings. Need help?</string>
+  <string name="domain_configuration_dialog_help_step_2_title">TTL Field?</string>
+  <string name="domain_configuration_dialog_help_step_2_message">If you see the field <b>Time To Live</b>, enter 3600 seconds (1hour). Your host may not include a field called \"Name\", \"Host\", or \"Alias\". </string>
+  <string name="domain_configuration_title_step_3">Verifying Domain Ownership</string>
+  <string name="domain_configuration_message_step_3">Do not close the app or put in the background until this process ends.</string>
+  <string name="domain_configuration_slide_type">Type</string>
+  <string name="domain_configuration_slide_priority">Priority</string>
+  <string name="domain_configuration_slide_at">Name/Host/Alias</string>
+  <string name="domain_configuration_slide_value">Value/Destination</string>
+  <string name="copy">Copy</string>
+  <string name="delete_custom_domain_dialog_title">Delete Domain</string>
+  <string name="delete_custom_domain_dialog_message">Are you sure you want to delete your domain? Your mails will not disapear, but aliases with this domain will be deleted.</string>
+  <string name="delete_custom_domain_successful">Are you sure you want to delete your domain? Your mails will not disapear, but aliases with this domain will be deleted.</string>
+  <string name="mx_records_not_found">MX Records for domain: %1$s not found.</string>
+  <string name="mx_records_copy_clipboard">Value/Destination copied to clipboard.</string>
+  <string name="domain_verification_title">Verifying Domain\nOwnership</string>
+  <string name="domain_verification_warning_message">Do not close the app or put in background until this process ends.</string>
+  <string name="domain_verification_mx_records_dont_match_title">MX Records\nDon\'t Match</string>
+  <string name="domain_verification_mx_records_dont_match_message">Go back and verify that you\'ve added the right information into your <b>DNS records.</b></string>
+  <string name="domain_verification_mx_records_not_found_title">DNS Records For This\nDomain Were Not Found</string>
+  <string name="domain_verification_mx_records_not_found_message">%1$s is listed as your domain, make sure this is right; otherwise correct the domain on your Company Profile. Need help?\n\nAlso check that the DNS records on your domain are not empty; otherwise go back and add them from the previous steps. </string>
+  <string name="domain_verification_mx_records_error_title">Something Went Wrong</string>
+  <string name="domain_verification_mx_records_error_message">Try again in a couple of minutes. Need help?</string>
+  <string name="btn_back">Back</string>
+  <string name="domain_setup_complete">Domain setup complete 🥳</string>
+  <string name="domain_delete_complete">Domain deleted successfully! 🗑</string>
 </resources>

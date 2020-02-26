@@ -48,6 +48,9 @@ import com.criptext.mail.scenes.settings.SettingsModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.cloudbackup.CloudBackupModel
+import com.criptext.mail.scenes.settings.custom_domain.CustomDomainModel
+import com.criptext.mail.scenes.settings.custom_domain_entry.CustomDomainEntryModel
+import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.DomainConfigurationModel
 import com.criptext.mail.scenes.settings.devices.DevicesModel
 import com.criptext.mail.scenes.settings.labels.LabelsModel
 import com.criptext.mail.scenes.settings.pinlock.PinLockModel
@@ -427,6 +430,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
+            is CustomDomainEntryParams -> CustomDomainEntryModel()
+            is DomainConfigurationParams -> DomainConfigurationModel(params.domain)
+            is CustomDomainParams -> CustomDomainModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }

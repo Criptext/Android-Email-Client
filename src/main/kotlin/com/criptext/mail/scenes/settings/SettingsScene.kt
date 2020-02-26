@@ -71,6 +71,9 @@ interface SettingsScene{
         private val settingsMailboxSync: View by lazy {
             view.findViewById<View>(R.id.settings_sync_mailbox)
         }
+        private val settingsCustomDomains: View by lazy {
+            view.findViewById<View>(R.id.settings_custom_domain)
+        }
         private val settingsDarkTheme: Switch by lazy {
             view.findViewById<Switch>(R.id.switch_dark_theme)
         }
@@ -297,6 +300,9 @@ interface SettingsScene{
             }
             settingsReportAbuse.setOnClickListener {
                 settingsUIObserver?.onReportAbuseClicked()
+            }
+            settingsCustomDomains.setOnClickListener {
+                settingsUIObserver?.onCustomDomainClicked()
             }
             setSwitchListener()
         }
