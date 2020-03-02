@@ -13,8 +13,8 @@ class DomainWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
-    fun addAll(devices: List<DomainItem>) {
-        model.domains.addAll(devices)
+    fun addAll(domains: List<DomainItem>) {
+        model.domains.addAll(domains)
         listView?.notifyDataSetChanged()
     }
 

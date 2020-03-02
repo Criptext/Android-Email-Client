@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.custom_domain.workers
+package com.criptext.mail.scenes.settings.aliases.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -11,6 +11,11 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.AliasDao
 import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Alias
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.CustomDomain
+import com.criptext.mail.scenes.settings.aliases.data.AliasesAPIClient
+import com.criptext.mail.scenes.settings.aliases.data.AliasesResult
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainAPIClient
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainResult
 import com.criptext.mail.utils.DateAndTimeUtils
@@ -19,37 +24,39 @@ import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import org.json.JSONObject
 
-class DeleteDomainWorker(
+class AddAliasWorker(
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
-        private val domain: String,
-        private val position: Int,
-        private val domainDao: CustomDomainDao,
+        private val alias: String,
+        private val domain: String?,
         private val aliasDao: AliasDao,
         override val publishFn: (
-                CustomDomainResult.DeleteDomain) -> Unit)
-    : BackgroundWorker<CustomDomainResult.DeleteDomain> {
+                AliasesResult.AddAlias) -> Unit)
+    : BackgroundWorker<AliasesResult.AddAlias> {
 
     override val canBeParallelized = true
-    private val apiClient = CustomDomainAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = AliasesAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): CustomDomainResult.DeleteDomain {
-        return when(ex){
+    override fun catchException(ex: Exception): AliasesResult.AddAlias {
+        when(ex){
             is ServerErrorException -> {
-                when(ex.errorCode) {
+                when(ex.errorCode){
                     ServerCodes.BadRequest ->
-                        CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.custom_domain_not_found_error))
-                    else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_error, arrayOf(ex.toString())))
+                    ServerCodes.TooManyDevices ->
+                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_max_error, arrayOf(ex.headers!!.getInt("Max-Addresses"))))
+                    else -> AliasesResult.AddAlias.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
                 }
             }
-            else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
         }
+        return AliasesResult.AddAlias.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
     }
 
-    override fun work(reporter: ProgressReporter<CustomDomainResult.DeleteDomain>): CustomDomainResult.DeleteDomain? {
+    override fun work(reporter: ProgressReporter<AliasesResult.AddAlias>): AliasesResult.AddAlias? {
         val operation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
@@ -61,7 +68,11 @@ class DeleteDomainWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                CustomDomainResult.DeleteDomain.Success(domain, position)
+                val alias = aliasDao.getAliasByName(alias, domain, activeAccount.id)
+                if(alias != null)
+                    AliasesResult.AddAlias.Success(alias)
+                else
+                    catchException(NullPointerException())
             }
             is Result.Failure -> {
                 catchException(finalResult.error)
@@ -73,11 +84,21 @@ class DeleteDomainWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Unit, Exception> = Result.of { apiClient.deleteDomain(domain).body }
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    private fun workOperation() : Result<Unit, Exception> = Result.of {
+        apiClient.postAddAlias(alias, domain ?: Contact.mainDomain).body
+    }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             .flatMap { Result.of {
-                domainDao.nukeTable()
-                aliasDao.deleteByDomain(domain)
+                val jsonResponse = JSONObject(it)
+                jsonResponse.getLong("addressId")
+            } }
+            .flatMap { Result.of { aliasDao.insert(Alias(
+                    accountId = activeAccount.id,
+                    id = 0,
+                    name = alias,
+                    rowId = it,
+                    active = true,
+                    domain = domain
+            ))
             } }
 
 

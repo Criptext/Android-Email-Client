@@ -2,23 +2,25 @@ package com.criptext.mail.scenes.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.google.android.material.textfield.TextInputLayout
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
-import com.criptext.mail.scenes.settings.devices.DevicesUIObserver
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.scenes.settings.aliases.AliasesUIObserver
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.google.android.material.textfield.TextInputLayout
 
-class SettingsRemoveDeviceDialog(val context: Context) {
+
+class SettingsAddAliasDialog(val context: Context) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
@@ -29,24 +31,24 @@ class SettingsRemoveDeviceDialog(val context: Context) {
 
     private lateinit var password: AppCompatEditText
     private lateinit var passwordInput: TextInputLayout
-    private lateinit var passwordSuccessImage: ImageView
-    private lateinit var passwordErrorImage: ImageView
 
     private lateinit var view: View
 
-    fun showRemoveDeviceDialog(observer: DevicesUIObserver?, deviceId: Int, position: Int) {
+    private var aliasDomain = "@${Contact.mainDomain}"
+
+    fun showAddAliasDialog(observer: AliasesUIObserver?, domains: List<String>) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        view = inflater.inflate(R.layout.settings_remove_device_dialog, null)
+        view = inflater.inflate(R.layout.settings_add_alias_dialog, null)
 
         dialogBuilder.setView(view)
         dialogBuilder.setCancelable(false)
 
-        dialog = createDialog(view, dialogBuilder, observer, deviceId, position)
+        dialog = createDialog(view, dialogBuilder, observer, domains)
     }
 
     private fun createDialog(dialogView: View, dialogBuilder: AlertDialog.Builder,
-                             observer: DevicesUIObserver?, deviceId: Int, position: Int): AlertDialog {
+                             observer: AliasesUIObserver?, domains: List<String>): AlertDialog {
 
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newRemoveDeviceDialog = dialogBuilder.create()
@@ -62,51 +64,73 @@ class SettingsRemoveDeviceDialog(val context: Context) {
 
         password = dialogView.findViewById(R.id.input) as AppCompatEditText
         passwordInput = dialogView.findViewById(R.id.input_layout)
-        passwordSuccessImage = dialogView.findViewById(R.id.success)
-        passwordErrorImage = dialogView.findViewById(R.id.error)
-        passwordInput.isPasswordVisibilityToggleEnabled = true
-        passwordInput.setPasswordVisibilityToggleTintList(
-                AppCompatResources.getColorStateList(context, R.color.non_criptext_email_send_eye))
 
-        assignPasswordTextListener()
-        assignButtonEvents(dialogView, newRemoveDeviceDialog, observer, deviceId, position)
+        password.addTextChangedListener( object : TextWatcher {
+            override fun onTextChanged(text: CharSequence?, p1: Int, ap2: Int, p3: Int) {
+                observer?.onAddAliasTextChanged(text.toString())
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+        })
+
+        if(domains.isNotEmpty()){
+            dialogView.findViewById<TextView>(R.id.criptext_domain_text).visibility = View.GONE
+            val spinner = dialogView.findViewById<Spinner>(R.id.domain_spiner)
+            spinner.visibility = View.VISIBLE
+            val dataAdapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, domains)
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = dataAdapter
+            spinner.setSelection(0)
+            spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    val item = p0?.getItemAtPosition(p2)?.toString() ?: return
+                    aliasDomain = item
+                    observer?.onAddAliasSpinnerChangeSelection(aliasDomain)
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+            }
+        }
+
+        assignButtonEvents(dialogView, newRemoveDeviceDialog, observer)
 
 
         return newRemoveDeviceDialog
     }
 
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
-                                   observer: DevicesUIObserver?, deviceId: Int, position: Int) {
+                                   observer: AliasesUIObserver?) {
 
         btnYes = view.findViewById(R.id.settings_remove_yes) as Button
         btnCancel = view.findViewById(R.id.settings_remove_cancel) as Button
         progressBar = view.findViewById(R.id.check_password_progress) as ProgressBar
 
         btnYes.setOnClickListener {
-            observer?.onRemoveDeviceConfirmed(deviceId, position, password.text.toString())
+            observer?.onAddAliasOkPressed(password.text.toString(), aliasDomain)
         }
 
         btnCancel.setOnClickListener {
-            observer?.onRemoveDeviceCancel()
+            observer?.onRemoveAliasCancel()
             dialog.dismiss()
         }
     }
 
     @SuppressLint("RestrictedApi")
     private fun hidePasswordError() {
-        passwordErrorImage.visibility = View.GONE
-
         passwordInput.error = ""
     }
 
     @SuppressLint("RestrictedApi")
     private fun showPasswordError(message: UIMessage) {
-        passwordErrorImage.visibility = View.VISIBLE
-
         passwordInput.error = view.context.getLocalizedUIMessage(message)
     }
 
-    fun setPasswordError(message: UIMessage?) {
+    fun setError(message: UIMessage?) {
         if (message == null) {
             hidePasswordError()
             enableSaveButton()
@@ -122,19 +146,6 @@ class SettingsRemoveDeviceDialog(val context: Context) {
 
     fun enableSaveButton() {
         btnYes.isEnabled = true
-    }
-
-    private fun assignPasswordTextListener() {
-        password.addTextChangedListener( object : TextWatcher {
-            override fun onTextChanged(text: CharSequence?, p1: Int, ap2: Int, p3: Int) {
-                setPasswordError(null)
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-        })
     }
 
     fun toggleLoad(loading: Boolean){

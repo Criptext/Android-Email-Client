@@ -554,6 +554,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         rowId INTEGER NOT NULL,
                                         name TEXT NOT NULL,
                                         domain TEXT,
+                                        active INTEGER NOT NULL,
                                         accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX account_id_alias_index ON alias (accountId)")

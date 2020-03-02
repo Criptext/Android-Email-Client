@@ -17,14 +17,20 @@ interface AliasDao {
     @Insert
     fun insert(alias :Alias)
 
-    @Query("SELECT * FROM alias")
-    fun getAll() : List<Alias>
+    @Query("SELECT * FROM alias WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")
+    fun getAliasByName(aliasName: String, domain: String?, accountId: Long) : Alias?
 
     @Query("SELECT * FROM alias WHERE accountId=:accountId")
-    fun getAliasByAccountId(accountId: Long) : Alias?
+    fun getAll(accountId: Long) : List<Alias>
+
+    @Query("UPDATE alias SET active=:enable WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")
+    fun updateActive(aliasName: String, domain: String?, enable: Boolean, accountId: Long)
 
     @Query("DELETE FROM alias where domain=:domain")
     fun deleteByDomain(domain: String)
+
+    @Query("DELETE FROM alias WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")
+    fun deleteByName(aliasName: String, domain: String?, accountId: Long)
 
     @Query("DELETE FROM alias")
     fun nukeTable()

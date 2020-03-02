@@ -36,7 +36,7 @@
                 android:layout_height="40dp"
                 android:layout_marginEnd="7dp"
                 android:src="@drawable/trash"
-                android:tint="#BBBBBB" />
+                android:tint="@color/trash_can_grey" />
         </LinearLayout>
 
 

@@ -35,6 +35,7 @@ class CustomDomainDataSource(
                     domain = params.domain,
                     domainDao = db.customDomainDao(),
                     position = params.position,
+                    aliasDao = db.aliasDao(),
                     publishFn = flushResults
             )
             is CustomDomainRequest.LoadDomain-> LoadDomainWorker(

@@ -515,6 +515,7 @@
   <string name="cloud_backup_toolbar_title">MAILBOX BACKUP</string>
   <string name="title_cloud_backup">Резервное копирование почтового ящика</string>
   <string name="title_custom_domain">Custom Domain</string>
+  <string name="title_aliases">Aliases</string>
   <string name="cloud_backup_switch">Резервное копирование на Google Drive</string>
   <string name="cloud_backup_make_backup_button">Создать резервную копию</string>
   <string name="cloud_backup_now">Резервное копирование сейчас</string>
@@ -525,9 +526,9 @@
   <string name="cloud_progress_upload_message">Загрузка в облако ( %1$d %% )</string>
   <string name="cloud_backup_message_1">Создайте резервную копию всего своего почтового ящика на Google Диске, чтобы вы могли восстановить свою учетную запись Criptext на новом устройстве, если вы потеряете это устройство. Примечание. Резервные копии на Google Диске не зашифрованы, и Criptext не несет ответственности за данные на Google Диске.</string>
   <string name="cloud_backup_message_2"><b> Примечание. </b> Автосохранение работает только с облачным резервным копированием</string>
-  <string name="cloud_backup_create_file_progress_message">Пожалуйста, подождите ... %1$d %%</string>
+  <string name="cloud_backup_create_file_progress_message">Пожалуйста, подождите … %1$d %%</string>
   <string name="cloud_backup_share_intent_title">Поделитесь своим файлом</string>
-  <string name="cloud_backup_share_intent_message">Поделиться своим почтовым ящиком ...</string>
+  <string name="cloud_backup_share_intent_message">Поделиться своим почтовым ящиком …</string>
   <string name="cloud_backup_passphrase_title">Экспорт резервного файла</string>
   <string name="cloud_backup_passphrase_switch">Зашифровать резервную копию</string>
   <string name="cloud_backup_passphrase_on_message">Если вы потеряете / забудете эту фразу-пароль, вы не сможете восстановить эту резервную копию в будущем</string>
@@ -665,8 +666,6 @@
   <string name="domain_configuration_message_step_2">Add the following records in your DNS Manager. This will verify your domain ownership and configure Criptext email settings. Need help?</string>
   <string name="domain_configuration_dialog_help_step_2_title">TTL Field?</string>
   <string name="domain_configuration_dialog_help_step_2_message">If you see the field <b>Time To Live</b>, enter 3600 seconds (1hour). Your host may not include a field called \"Name\", \"Host\", or \"Alias\". </string>
-  <string name="domain_configuration_title_step_3">Verifying Domain Ownership</string>
-  <string name="domain_configuration_message_step_3">Do not close the app or put in the background until this process ends.</string>
   <string name="domain_configuration_slide_type">Type</string>
   <string name="domain_configuration_slide_priority">Priority</string>
   <string name="domain_configuration_slide_at">Name/Host/Alias</string>
@@ -674,11 +673,9 @@
   <string name="copy">Copy</string>
   <string name="delete_custom_domain_dialog_title">Delete Domain</string>
   <string name="delete_custom_domain_dialog_message">Are you sure you want to delete your domain? Your mails will not disapear, but aliases with this domain will be deleted.</string>
-  <string name="delete_custom_domain_successful">Are you sure you want to delete your domain? Your mails will not disapear, but aliases with this domain will be deleted.</string>
   <string name="mx_records_not_found">MX Records for domain: %1$s not found.</string>
   <string name="mx_records_copy_clipboard">Value/Destination copied to clipboard.</string>
   <string name="domain_verification_title">Verifying Domain\nOwnership</string>
-  <string name="domain_verification_warning_message">Do not close the app or put in background until this process ends.</string>
   <string name="domain_verification_mx_records_dont_match_title">MX Records\nDon\'t Match</string>
   <string name="domain_verification_mx_records_dont_match_message">Go back and verify that you\'ve added the right information into your <b>DNS records.</b></string>
   <string name="domain_verification_mx_records_not_found_title">DNS Records For This\nDomain Were Not Found</string>
@@ -686,6 +683,22 @@
   <string name="domain_verification_mx_records_error_title">Something Went Wrong</string>
   <string name="domain_verification_mx_records_error_message">Try again in a couple of minutes. Need help?</string>
   <string name="btn_back">Back</string>
+  <string name="btn_delete">Delete</string>
   <string name="domain_setup_complete">Domain setup complete 🥳</string>
   <string name="domain_delete_complete">Domain deleted successfully! 🗑</string>
+  <string name="aliases_dialog_title">Aliases</string>
+  <string name="aliases_dialog_message">Create a secondary address for your existing inbox. You can add up to 3 aliases per domain.</string>
+  <string name="aliases_top_title">ALIASES</string>
+  <string name="aliases_create_button">Create new alias</string>
+  <string name="aliases_create_button_add">Add Alias</string>
+  <string name="aliases_create_dialog_title">New Alias</string>
+  <string name="aliases_create_dialog_message">You will be able to send and receive emails from this new address.</string>
+  <string name="aliases_create_dialog_error">This address is already in use.</string>
+  <string name="aliases_create_added">A new alias was added 🎉</string>
+  <string name="aliases_delete_dialog_title">Delete Alias</string>
+  <string name="aliases_delete_dialog_message">If you delete this Alias your emails will remain intact, but you will no longer be able to send or receive emails under that address. Are you sure you want to delete %1$s?</string>
+  <string name="aliases_delete_success">Alias %1$s was deleted 🗑</string>
+  <string name="aliases_create_dialog_text_hint">Alias</string>
+  <string name="aliases_create_dialog_max_error">You have reached the max aliases you can create (%1$s) for this domain.</string>
+  <string name="custom_domain_not_found_error">Custom domain not found.</string>
 </resources>

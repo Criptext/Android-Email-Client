@@ -42,7 +42,7 @@ class DomainAdapter(private val mContext : Context,
     }
 
     override fun getActualItemId(position: Int): Long {
-        return domainList[position].id.toLong()
+        return domainList[position].id
     }
 
 }

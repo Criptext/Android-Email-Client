@@ -94,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="@string/domain_verification_warning_message"
+            android:text="@string/sync_screen_message"
             android:textColor="?attr/criptextSecondaryTextColor"
             android:textSize="16sp"/>
 
