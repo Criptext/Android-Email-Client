@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.custom_domain
+package com.criptext.mail.scenes.settings.aliases
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
@@ -6,13 +6,13 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
-import com.criptext.mail.scenes.settings.DomainListItemListener
+import com.criptext.mail.scenes.settings.AliasListItemListener
+import com.criptext.mail.scenes.settings.aliases.data.*
 import com.criptext.mail.scenes.settings.custom_domain.data.*
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryRequest
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -22,25 +22,27 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 
-class CustomDomainController(
-        private val model: CustomDomainModel,
-        private val scene: CustomDomainScene,
+class AliasesController(
+        private val model: AliasesModel,
+        private val scene: AliasesScene,
         private val host: IHostActivity,
         private val keyboardManager: KeyboardManager,
         private var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
-        private val dataSource: CustomDomainDataSource)
+        private val dataSource: AliasesDataSource)
     : SceneController(){
 
     override val menuResourceId: Int? = null
-
-    private val domainWrapperListController = DomainWrapperListController(model, scene.getDomainListView())
+    private val criptextAliasWrapperListController = CriptextAliasWrapperListController(model, scene.getCriptextAliasesListView())
+    private val customAliasWrapperListController = CustomDomainAliasWrapperListController(model, scene.getCriptextAliasesListView())
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
@@ -52,17 +54,51 @@ class CustomDomainController(
         }
     }
 
-    private val uiObserver = object: CustomDomainUIObserver{
-        override fun onRemoveDomainConfirmed(domainName: String, position: Int) {
-            dataSource.submitRequest(CustomDomainRequest.DeleteDomain(domainName, position))
-        }
-
-        override fun onRemoveDeviceCancel() {
+    private val uiObserver = object: AliasesUIObserver{
+        override fun onAddAliasSpinnerChangeSelection(domain: String) {
 
         }
 
-        override fun onRemoveDomain(domainName: String, position: Int) {
-            scene.showRemoveDomainDialog(domainName, position)
+        override fun onAddAliasTextChanged(newAlias: String) {
+            if(newAlias.isNotEmpty()) {
+                val input = AccountDataValidator.validateUsernameOnly(newAlias)
+                when(input){
+                    is FormData.Valid -> {
+                        scene.setAddAliasDialogError(null)
+                    }
+                    is FormData.Error -> {
+                        scene.setAddAliasDialogError(input.message)
+                    }
+                }
+            }
+        }
+
+        override fun onAddAliasOkPressed(newAlias: String, domain: String) {
+            scene.addAliasDialogToggleLoad(true)
+            val trueDomain = if(domain.removePrefix("@") == Contact.mainDomain) null
+            else domain.removePrefix("@")
+            dataSource.submitRequest(AliasesRequest.AddAlias(newAlias, trueDomain))
+        }
+
+        override fun onAddAliasButtonPressed() {
+            val domainList = mutableListOf<String>()
+            if(model.domains.map { it.name }.isNotEmpty()) {
+                domainList.add("@${Contact.mainDomain}")
+                domainList.addAll(model.domains.map { "@${it.name}" })
+            }
+            scene.showAddAliasDialog(domainList)
+        }
+
+        override fun onRemoveAliasConfirmed(aliasName: String, domainName: String?, position: Int) {
+            dataSource.submitRequest(AliasesRequest.DeleteAlias(aliasName, domainName, position))
+        }
+
+        override fun onRemoveAliasCancel() {
+
+        }
+
+        override fun onRemoveAlias(aliasName: String, domainName: String?, position: Int) {
+            scene.showRemoveAliasDialog(aliasName, domainName, position)
         }
 
         override fun onSnackbarClicked() {
@@ -119,31 +155,32 @@ class CustomDomainController(
         }
     }
 
-    private val dataSourceListener = { result: CustomDomainResult ->
+    private val dataSourceListener = { result: AliasesResult ->
         when(result) {
-            is CustomDomainResult.DeleteDomain -> onDomainDeleted(result)
-            is CustomDomainResult.LoadDomain -> onDomainsLoaded(result)
+            is AliasesResult.AddAlias -> onAliasAdded(result)
+            is AliasesResult.DeleteAlias -> onAliasDeleted(result)
+            is AliasesResult.LoadAliases -> onAliasesLoaded(result)
+            is AliasesResult.EnableAlias -> onAliasEnabled(result)
         }
     }
 
-    private val onDevicesListItemListener: DomainListItemListener = object: DomainListItemListener {
-        override fun onCustomDomainTrashClicked(domain: DomainItem, position: Int): Boolean {
-            uiObserver.onRemoveDomain(domain.name, position)
+    private val onAliasesListItemListener: AliasListItemListener = object: AliasListItemListener {
+        override fun onAliasActiveSwitched(alias: AliasItem, position: Int, enabled: Boolean) {
+            dataSource.submitRequest(AliasesRequest.EnableAlias(alias.name, alias.domain, enabled, position))
+        }
+
+        override fun onAliasTrashClicked(alias: AliasItem, position: Int): Boolean {
+            uiObserver.onRemoveAlias(alias.name, alias.domain, position)
             return true
         }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        scene.attachView(uiObserver, keyboardManager, model, onDevicesListItemListener)
-        if(activityMessage != null && activityMessage is ActivityMessage.DomainRegistered){
-            domainWrapperListController.addAll(listOf(DomainItem(activityMessage.customDomain, listOf())))
-            scene.showMessage(UIMessage(R.string.domain_setup_complete))
-        } else {
-            dataSource.submitRequest(CustomDomainRequest.LoadDomain())
-        }
+        scene.attachView(uiObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        dataSource.submitRequest(AliasesRequest.LoadAliases())
         return false
     }
 
@@ -152,26 +189,88 @@ class CustomDomainController(
         return false
     }
 
-    private fun onDomainDeleted(result: CustomDomainResult.DeleteDomain){
+    private fun checkAddButtonAvailability(){
+        if(model.criptextAliases.size == MAX_ALIAS_COUNT
+                && (model.domains.isNotEmpty() && model.domains.first().aliases.size == MAX_ALIAS_COUNT)){
+            scene.addButtonEnable(false)
+        } else {
+            scene.addButtonEnable(true)
+        }
+    }
+
+    private fun onAliasAdded(result: AliasesResult.AddAlias){
+        scene.addAliasDialogToggleLoad(false)
         when(result){
-            is CustomDomainResult.DeleteDomain.Success -> {
-                domainWrapperListController.remove(result.position)
-                host.exitToScene(CustomDomainEntryParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.domain_delete_complete)), false)
+            is AliasesResult.AddAlias.Success -> {
+                scene.addAliasDialogDismiss()
+                val domain = result.alias.domain
+                if(domain == null){
+                    criptextAliasWrapperListController.add(AliasItem(result.alias))
+                } else {
+                    customAliasWrapperListController.add(domain, AliasItem(result.alias))
+                }
+                scene.showMessage(UIMessage(R.string.aliases_create_added))
+                checkAddButtonAvailability()
             }
-            is CustomDomainResult.DeleteDomain.Failure -> {
+            is AliasesResult.AddAlias.Failure -> {
+                scene.setAddAliasDialogError(result.message)
+            }
+        }
+    }
+
+    private fun onAliasDeleted(result: AliasesResult.DeleteAlias){
+        when(result){
+            is AliasesResult.DeleteAlias.Success -> {
+                if(result.domain != null){
+                    customAliasWrapperListController.remove(result.position, result.domain)
+                    scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${result.domain}")))
+                } else {
+                    criptextAliasWrapperListController.remove(result.position)
+                    scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${Contact.mainDomain}")))
+                }
+            }
+            is AliasesResult.DeleteAlias.Failure -> {
                 scene.showMessage(result.message)
             }
         }
     }
 
-    private fun onDomainsLoaded(result: CustomDomainResult.LoadDomain){
+    private fun onAliasesLoaded(result: AliasesResult.LoadAliases){
         when(result){
-            is CustomDomainResult.LoadDomain.Success -> {
-                domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
+            is AliasesResult.LoadAliases.Success -> {
+                val criptextAliases = result.aliases.filter { it.domain == null }
+                val customAliases = result.aliases.filter { it.domain != null }
+                model.domains = ArrayList(result.domains.map { domain ->
+                    DomainItem(domain, customAliases.filter { it.domain == domain.name })
+                })
+                model.criptextAliases = ArrayList(criptextAliases.map { AliasItem(it) })
+                if(result.aliases.isNotEmpty()) {
+                    scene.setupAliasesFromModel(model, onAliasesListItemListener)
+                    checkAddButtonAvailability()
+                }
             }
-            is CustomDomainResult.LoadDomain.Failure -> {
+            is AliasesResult.LoadAliases.Failure -> {
                 scene.showMessage(result.message)
-                host.finishScene()
+            }
+        }
+    }
+
+    private fun onAliasEnabled(result: AliasesResult.EnableAlias){
+        when(result){
+            is AliasesResult.EnableAlias.Success -> {
+                if(result.domain != null){
+                    customAliasWrapperListController.updateActive(result.position, result.domain, result.enable)
+                } else {
+                    criptextAliasWrapperListController.updateActive(result.position, result.enable)
+                }
+            }
+            is AliasesResult.EnableAlias.Failure -> {
+                if(result.domain != null){
+                    customAliasWrapperListController.updateActive(result.position, result.domain, !result.enable)
+                } else {
+                    criptextAliasWrapperListController.updateActive(result.position, !result.enable)
+                }
+                scene.showMessage(result.message)
             }
         }
     }
@@ -379,5 +478,9 @@ class CustomDomainController(
 
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
+    }
+
+    companion object {
+        const val MAX_ALIAS_COUNT = 3
     }
 }

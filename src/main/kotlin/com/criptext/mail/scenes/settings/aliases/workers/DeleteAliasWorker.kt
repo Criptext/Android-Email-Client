@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.custom_domain.workers
+package com.criptext.mail.scenes.settings.aliases.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -11,6 +11,11 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.AliasDao
 import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Alias
+import com.criptext.mail.db.models.Contact
+import com.criptext.mail.db.models.CustomDomain
+import com.criptext.mail.scenes.settings.aliases.data.AliasesAPIClient
+import com.criptext.mail.scenes.settings.aliases.data.AliasesResult
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainAPIClient
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainResult
 import com.criptext.mail.utils.DateAndTimeUtils
@@ -19,37 +24,29 @@ import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import org.json.JSONObject
 
-class DeleteDomainWorker(
+class DeleteAliasWorker(
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
-        private val domain: String,
+        private val alias: String,
+        private val domain: String?,
         private val position: Int,
-        private val domainDao: CustomDomainDao,
         private val aliasDao: AliasDao,
         override val publishFn: (
-                CustomDomainResult.DeleteDomain) -> Unit)
-    : BackgroundWorker<CustomDomainResult.DeleteDomain> {
+                AliasesResult.DeleteAlias) -> Unit)
+    : BackgroundWorker<AliasesResult.DeleteAlias> {
 
     override val canBeParallelized = true
-    private val apiClient = CustomDomainAPIClient(httpClient, activeAccount.jwt)
+    private val apiClient = AliasesAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): CustomDomainResult.DeleteDomain {
-        return when(ex){
-            is ServerErrorException -> {
-                when(ex.errorCode) {
-                    ServerCodes.BadRequest ->
-                        CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.custom_domain_not_found_error))
-                    else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
-                }
-            }
-            else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
-        }
+    override fun catchException(ex: Exception): AliasesResult.DeleteAlias {
+        return AliasesResult.DeleteAlias.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
     }
 
-    override fun work(reporter: ProgressReporter<CustomDomainResult.DeleteDomain>): CustomDomainResult.DeleteDomain? {
+    override fun work(reporter: ProgressReporter<AliasesResult.DeleteAlias>): AliasesResult.DeleteAlias? {
         val operation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
@@ -61,7 +58,7 @@ class DeleteDomainWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                CustomDomainResult.DeleteDomain.Success(domain, position)
+                AliasesResult.DeleteAlias.Success(alias, domain, position)
             }
             is Result.Failure -> {
                 catchException(finalResult.error)
@@ -73,12 +70,13 @@ class DeleteDomainWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Unit, Exception> = Result.of { apiClient.deleteDomain(domain).body }
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-            .flatMap { Result.of {
-                domainDao.nukeTable()
-                aliasDao.deleteByDomain(domain)
-            } }
+    private fun workOperation() : Result<Unit, Exception> = Result.of {
+        aliasDao.getAliasByName(alias, domain, activeAccount.id) ?: throw Exception()
+    }.flatMap {  Result.of { apiClient.deleteAlias(it.rowId) }
+    }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+    .flatMap { Result.of {
+        aliasDao.deleteByName(alias, domain, activeAccount.id)
+    } }
 
 
     private fun newRetryWithNewSessionOperation()

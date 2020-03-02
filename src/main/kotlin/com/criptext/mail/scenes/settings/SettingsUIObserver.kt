@@ -28,4 +28,5 @@ interface SettingsUIObserver: UIObserver {
     fun onReportBugClicked()
     fun onReportAbuseClicked()
     fun onCustomDomainClicked()
+    fun onAliasesClicked()
 }

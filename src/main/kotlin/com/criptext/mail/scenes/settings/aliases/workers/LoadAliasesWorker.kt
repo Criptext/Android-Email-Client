@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.custom_domain.workers
+package com.criptext.mail.scenes.settings.aliases.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -11,6 +11,9 @@ import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.AliasDao
 import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Alias
+import com.criptext.mail.db.models.CustomDomain
+import com.criptext.mail.scenes.settings.aliases.data.AliasesResult
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainAPIClient
 import com.criptext.mail.scenes.settings.custom_domain.data.CustomDomainResult
 import com.criptext.mail.utils.DateAndTimeUtils
@@ -20,36 +23,25 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
-class DeleteDomainWorker(
+class LoadAliasesWorker(
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
-        private val domain: String,
-        private val position: Int,
-        private val domainDao: CustomDomainDao,
         private val aliasDao: AliasDao,
+        private val customDomainDao: CustomDomainDao,
         override val publishFn: (
-                CustomDomainResult.DeleteDomain) -> Unit)
-    : BackgroundWorker<CustomDomainResult.DeleteDomain> {
+                AliasesResult.LoadAliases) -> Unit)
+    : BackgroundWorker<AliasesResult.LoadAliases> {
 
     override val canBeParallelized = true
     private val apiClient = CustomDomainAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): CustomDomainResult.DeleteDomain {
-        return when(ex){
-            is ServerErrorException -> {
-                when(ex.errorCode) {
-                    ServerCodes.BadRequest ->
-                        CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.custom_domain_not_found_error))
-                    else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
-                }
-            }
-            else -> CustomDomainResult.DeleteDomain.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
-        }
+    override fun catchException(ex: Exception): AliasesResult.LoadAliases {
+        return AliasesResult.LoadAliases.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
     }
 
-    override fun work(reporter: ProgressReporter<CustomDomainResult.DeleteDomain>): CustomDomainResult.DeleteDomain? {
+    override fun work(reporter: ProgressReporter<AliasesResult.LoadAliases>): AliasesResult.LoadAliases? {
         val operation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
@@ -61,7 +53,8 @@ class DeleteDomainWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                CustomDomainResult.DeleteDomain.Success(domain, position)
+                val nonCriptextDomains = customDomainDao.getAll(activeAccount.id)
+                AliasesResult.LoadAliases.Success(finalResult.value, nonCriptextDomains)
             }
             is Result.Failure -> {
                 catchException(finalResult.error)
@@ -73,16 +66,11 @@ class DeleteDomainWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Unit, Exception> = Result.of { apiClient.deleteDomain(domain).body }
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-            .flatMap { Result.of {
-                domainDao.nukeTable()
-                aliasDao.deleteByDomain(domain)
-            } }
+    private fun workOperation() : Result<List<Alias>, Exception> = Result.of { aliasDao.getAll(activeAccount.id) }
 
 
     private fun newRetryWithNewSessionOperation()
-            : Result<Unit, Exception> {
+            : Result<List<Alias>, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient, activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){

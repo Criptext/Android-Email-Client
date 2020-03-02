@@ -82,6 +82,10 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onAliasesClicked() {
+            host.goToScene(AliasesParams(), false)
+        }
+
         override fun onCustomDomainClicked() {
             dataSource.submitRequest(SettingsRequest.CheckCustomDomain())
         }

@@ -26,6 +26,9 @@ class Alias(
         @ColumnInfo(name = "domain")
         var domain : String?,
 
+        @ColumnInfo(name = "active")
+        var active : Boolean,
+
         @ColumnInfo(name = "accountId")
         var accountId : Long
 

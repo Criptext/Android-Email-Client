@@ -20,6 +20,12 @@ interface CustomDomainDao {
     fun getAll() : List<CustomDomain>
 
     @Query("SELECT * FROM customDomain WHERE accountId=:accountId")
+    fun getAll(accountId: Long) : List<CustomDomain>
+
+    @Query("SELECT * FROM customDomain WHERE accountId=:accountId AND name IN (:names)")
+    fun getAllByNames(names: List<String>, accountId: Long) : List<CustomDomain>
+
+    @Query("SELECT * FROM customDomain WHERE accountId=:accountId")
     fun getCustomDomainByAccountId(accountId: Long) : CustomDomain?
 
     @Query("SELECT * FROM customDomain WHERE name=:name")

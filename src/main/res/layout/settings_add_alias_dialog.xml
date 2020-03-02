@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/delete_custom_domain_dialog_title"
+        android:text="@string/aliases_create_dialog_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
@@ -20,8 +20,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/delete_custom_domain_dialog_message"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:text="@string/aliases_create_dialog_message"
         android:gravity="center_horizontal"
         android:paddingBottom="15dp"
         android:paddingEnd="15dp"
@@ -29,10 +29,49 @@
         android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="15sp"/>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        app:errorEnabled="true"
+        app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+        app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/aliases_create_dialog_text_hint"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textAllCaps="false"
+            android:textAppearance="@style/textinputlayout_non_criptext_email_send"
+            android:textSize="15sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/criptext_domain_text"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:text="@string/criptext_com"
+        android:layout_gravity="center_horizontal"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <Spinner
+        android:id="@+id/domain_spiner"
+        android:layout_width="175dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:paddingTop="15dp"
+        android:paddingTop="60dp"
         android:layout_gravity="center"
         android:backgroundTint="@color/label_buttons"
         android:layout_height="wrap_content">
@@ -61,7 +100,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/btn_delete" />
+            android:text="@string/yes" />
 
         <ProgressBar
             android:id="@+id/check_password_progress"

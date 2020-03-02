@@ -9,10 +9,8 @@ import org.json.JSONObject
 class CustomDomainAPIClient(private val httpClient: HttpClient, var token: String): CriptextAPIClient(httpClient) {
 
     fun deleteDomain(domain: String): HttpResponseData {
-        val json = JSONObject()
         val dom = JSONObject()
-        json.put("name", domain)
-        dom.put("domain", json)
+        dom.put("customDomain", domain)
         return httpClient.delete(path = "/domain", authToken = token, body = dom)
     }
 }
