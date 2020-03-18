@@ -27,6 +27,7 @@
   <string name="attachment_limit_reached">Solo se permite %1$d archivos por correo.</string>
   <string name="attachment_history_opened">abierto:</string>
   <string name="title_sync">Sincronización de Buzón</string>
+  <string name="settings_title_sync">Solicitar Sincronización de Buzón</string>
   <string name="link_auth_title">Autenticación de Dispositivo</string>
   <string name="link_auth_sub_title">¿Quieres aprobar?</string>
   <string name="link_auth_message">%1$s</string>

@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
 import com.criptext.mail.db.AppDatabase
@@ -15,6 +16,7 @@ import com.criptext.mail.push.data.PushDataSource
 import com.github.kittinunf.result.Result
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import io.fabric.sdk.android.Fabric
 
 
 class MessagingService : FirebaseMessagingService(){
@@ -24,7 +26,10 @@ class MessagingService : FirebaseMessagingService(){
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if(pushController == null){
-            val db = Result.of { AppDatabase.getAppDatabase(this) }
+            val db = Result.of {
+                Fabric.with(this, Crashlytics())
+                AppDatabase.getAppDatabase(this)
+            }
             if(db is Result.Success) {
                 val storage = KeyValueStorage.SharedPrefs(this)
                 val account = ActiveAccount.loadFromStorage(this) ?: return

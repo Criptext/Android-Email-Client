@@ -4,6 +4,7 @@ import android.text.Html
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.WebViewUtils.Companion.replaceCIDScript
+import com.criptext.mail.utils.WebViewUtils.Companion.resizeImages
 import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -38,7 +39,7 @@ class HTMLUtils {
             else "<style type=\"text/css\">body{color:#000;background-color:#fff;} </style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
-            return head + htmlText + replaceCIDScript() + collapseScript(isForward) + closedTag
+            return head + htmlText + replaceCIDScript() + resizeImages() + collapseScript(isForward) + closedTag
         }
 
         fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String,

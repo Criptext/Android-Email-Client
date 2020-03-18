@@ -64,6 +64,7 @@ class AuthenticateUserWorker(
     }
 
     private fun getSignInSession(): SignInSession {
+        val authenticatedUser = authenticateUser()
         var storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
         val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
         if(lastLoggedUsers.isNotEmpty()) {
@@ -82,7 +83,7 @@ class AuthenticateUserWorker(
             lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
             keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.distinct().joinToString())
         }
-        val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticateUser() else storedValue
+        val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticatedUser else storedValue
         val jsonObject = JSONObject(jsonString)
         return SignInSession.fromJSON(jsonObject)
 
@@ -148,6 +149,7 @@ class AuthenticateUserWorker(
                 SignInResult.AuthenticateUser.Success()
             }
             is Result.Failure -> {
+                keyValueStorage.remove(listOf(KeyValueStorage.StringKey.SignInSession))
                 SignInResult.AuthenticateUser.Failure(
                         message = createErrorMessage(result.error),
                         exception = result.error)

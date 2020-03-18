@@ -27,6 +27,7 @@
   <string name="attachment_limit_reached">Only %1$d attachments per email allowed.</string>
   <string name="attachment_history_opened">opened:</string>
   <string name="title_sync">Mailbox Sync</string>
+  <string name="settings_title_sync">Request Mailbox Sync</string>
   <string name="link_auth_title">Device Authentication</string>
   <string name="link_auth_sub_title">Do you want to approve?</string>
   <string name="link_auth_message">%1$s</string>

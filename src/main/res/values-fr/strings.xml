@@ -27,6 +27,7 @@
   <string name="attachment_limit_reached">Seules %1$d pièces jointes par e-mail sont autorisées.</string>
   <string name="attachment_history_opened">ouverts :</string>
   <string name="title_sync">Synchronisation de la boîte de réception</string>
+  <string name="settings_title_sync">Request Mailbox Sync</string>
   <string name="link_auth_title">Authentification de l\'appareil</string>
   <string name="link_auth_sub_title">Voulez-vous approuver ?</string>
   <string name="link_auth_message">%1$s</string>
