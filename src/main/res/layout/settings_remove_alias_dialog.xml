@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/aliases_delete_dialog_title"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/message_text"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/button_text_color"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/settings_remove_cancel"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_left_bg"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel" />
+
+        <Button
+            android:textColor="@color/button_text_color"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/settings_remove_yes"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_right_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_delete" />
+
+        <ProgressBar
+            android:id="@+id/check_password_progress"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_progress_bar_bg"/>
+
+    </LinearLayout>
+</LinearLayout>

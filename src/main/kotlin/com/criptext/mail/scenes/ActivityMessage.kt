@@ -3,6 +3,7 @@ package com.criptext.mail.scenes
 import android.graphics.Bitmap
 import android.net.Uri
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
@@ -42,4 +43,6 @@ sealed class ActivityMessage {
     class ComesFromMailbox: ActivityMessage()
     class LoadDataAtStart: ActivityMessage()
     data class SaveFileToLocalStorage(val uri: Uri): ActivityMessage()
+    data class NonValidatedDomainFound(val customDomain: CustomDomain): ActivityMessage()
+    data class DomainRegistered(val customDomain: CustomDomain): ActivityMessage()
 }

@@ -16,6 +16,7 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.WebViewActivity
@@ -76,10 +77,19 @@ class SettingsController(
         when (result) {
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
+            is SettingsResult.CheckCustomDomain -> onCheckCustomDomain(result)
         }
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onAliasesClicked() {
+            host.goToScene(AliasesParams(), false)
+        }
+
+        override fun onCustomDomainClicked() {
+            dataSource.submitRequest(SettingsRequest.CheckCustomDomain())
+        }
+
         override fun onReportBugClicked() {
             host.goToScene(ComposerParams(type = ComposerType.Support(
                     host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = Label.defaultItems.inbox),
@@ -385,6 +395,20 @@ class SettingsController(
             }
             is SettingsResult.SyncBegin.Failure -> {
                 scene.showMessage(result.message)
+            }
+        }
+    }
+
+    private fun onCheckCustomDomain(result: SettingsResult.CheckCustomDomain){
+        when(result){
+            is SettingsResult.CheckCustomDomain.Success -> {
+                if(!result.customDomain.validated)
+                    host.goToScene(DomainConfigurationParams(result.customDomain), activityMessage = ActivityMessage.NonValidatedDomainFound(result.customDomain), keep = true)
+                else
+                    host.goToScene(CustomDomainParams(), true)
+            }
+            is SettingsResult.CheckCustomDomain.Failure -> {
+                host.goToScene(CustomDomainEntryParams(), true)
             }
         }
     }

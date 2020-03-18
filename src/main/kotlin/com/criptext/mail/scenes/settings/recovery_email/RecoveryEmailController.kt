@@ -169,7 +169,6 @@ class RecoveryEmailController(
         } else {
             scene.disableChangeButton()
         }
-
     }
 
     private val dataSourceListener = { result: RecoveryEmailResult ->

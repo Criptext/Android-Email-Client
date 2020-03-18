@@ -13,6 +13,7 @@ object AccountDataValidator {
     // matches "99.99% of all email addresses in actual use today"
     // https://stackoverflow.com/a/1373724/5207721
     private val validEmailAddressPattern = Pattern.compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+    private val validDomainPattern = Pattern.compile("(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
     // for the criptext server the only allowed non-alphanumeric characters are: ._-
     // dots cant be at the beginning.
     private val validCriptextUserPattern = Pattern.compile("(?=^([a-z0-9]([._-]{0,2}[a-z0-9])+)\$)(?:^.{3,64}\$)\$")
@@ -33,6 +34,15 @@ object AccountDataValidator {
         return if (sanitizedValue.isNotEmpty()
                 && ! validEmailAddressPattern.matcher(emailAddress).matches())
             FormData.Error(UIMessage(R.string.email_invalid_error))
+        else
+            FormData.Valid(sanitizedValue)
+    }
+
+    fun validateDomain(domain: String): FormData<String> {
+        val sanitizedValue = domain.trim()
+        return if (sanitizedValue.isNotEmpty()
+                && ! validDomainPattern.matcher(domain).matches())
+            FormData.Error(UIMessage(R.string.domain_invalid_error))
         else
             FormData.Valid(sanitizedValue)
     }
