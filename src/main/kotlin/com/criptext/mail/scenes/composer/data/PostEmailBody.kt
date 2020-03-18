@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.JSONData
+import com.criptext.mail.db.models.Alias
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.EmailAddressUtils
@@ -15,7 +16,8 @@ import org.json.JSONObject
 
 class PostEmailBody(val threadId: String?, val subject: String,
                     val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?,
-                    val attachments: List<CriptextAttachment>): JSONData {
+                    val attachments: List<CriptextAttachment>,
+                    val alias: Alias?): JSONData {
 
     enum class RecipientTypes { to, cc, bcc, peer }
 
@@ -30,6 +32,9 @@ class PostEmailBody(val threadId: String?, val subject: String,
         if(attachments.isNotEmpty()){
             val attachmentsArray = attachments.toJSONArray()
             json.put("files", attachmentsArray)
+        }
+        if(alias != null){
+            json.put("fromAddressId", alias.rowId)
         }
 
         return json

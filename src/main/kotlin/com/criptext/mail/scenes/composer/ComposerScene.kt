@@ -247,7 +247,7 @@ interface ComposerScene {
             fromAddresses.adapter = adapter
             fromAddresses.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    observer?.onSenderSelectedItem(list[p2])
+                    observer?.onSenderSelectedItem(p2)
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {

@@ -36,15 +36,16 @@ class ComposerDataSource(
                 flushResults(res)
             }
             is ComposerRequest.GetAllFromAddresses -> LoadFromAddressesWorker(
-                    composerLocalDB
+                    composerLocalDB,
+                    activeAccount
             ) { res ->
                 flushResults(res)
             }
             is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
-                    account = params.senderAccount ?: activeAccount, dao = emailInsertionDao,
-                    filesDir = filesDir,
+                    senderAddress = params.senderEmail, dao = emailInsertionDao,
+                    filesDir = filesDir, activeAccount = activeAccount,
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
                     originalId = params.originalId,

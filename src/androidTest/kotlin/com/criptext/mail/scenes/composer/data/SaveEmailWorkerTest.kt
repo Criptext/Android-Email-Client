@@ -44,15 +44,15 @@ class SaveEmailWorkerTest {
                 true, true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
         emailInsertionDao = db.emailInsertionDao()
     }
 
     private fun newWorker(emailId: Long?, threadId: String?, onlySave: Boolean,
                           inputData: ComposerInputData, fileKey: String?): SaveEmailWorker =
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
-                    onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
-                    publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null,
+                    onlySave = onlySave, senderAddress = activeAccount.userEmail, dao = emailInsertionDao,
+                    publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null, activeAccount = activeAccount,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox, db = composerLocalDB)
 
 

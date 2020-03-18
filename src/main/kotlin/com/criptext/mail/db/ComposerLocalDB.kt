@@ -15,7 +15,8 @@ import java.io.File
 
 class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fileDao: FileDao,
                       val fileKeyDao: FileKeyDao, val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
-                      val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val filesDir: File) {
+                      val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val aliasDao: AliasDao,
+                      val filesDir: File) {
 
     fun loadFullEmail(id: Long, account: ActiveAccount): FullEmail? {
         val email = emailDao.findEmailById(id, account.id) ?: return null

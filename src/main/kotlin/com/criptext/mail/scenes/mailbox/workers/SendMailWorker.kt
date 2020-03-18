@@ -42,6 +42,7 @@ class SendMailWorker(private val signalClient: SignalClient,
                      private val filesDir: File,
                      private val httpClient: HttpClient,
                      private val activeAccount: ActiveAccount,
+                     private val senderAddress: String?,
                      private val emailId: Long,
                      private val threadId: String?,
                      private val composerInputData: ComposerInputData,
@@ -62,9 +63,14 @@ class SendMailWorker(private val signalClient: SignalClient,
     private var guestEmails: PostEmailBody.GuestEmail? = null
     private var isSecure = true
 
-    private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(activeAccount.userEmail)
-            || composerInputData.cc.map { it.email }.contains(activeAccount.userEmail)
-            || composerInputData.to.map { it.email }.contains(activeAccount.userEmail)
+    private fun meAsRecipient(): Boolean {
+        return composerInputData.bcc.map { it.email }.contains(activeAccount.userEmail)
+                || composerInputData.cc.map { it.email }.contains(activeAccount.userEmail)
+                || composerInputData.to.map { it.email }.contains(activeAccount.userEmail)
+                || (senderAddress != null && composerInputData.to.map { it.email }.contains(senderAddress))
+                || (senderAddress != null && composerInputData.cc.map { it.email }.contains(senderAddress))
+                || (senderAddress != null && composerInputData.bcc.map { it.email }.contains(senderAddress))
+    }
 
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
@@ -119,7 +125,7 @@ class SendMailWorker(private val signalClient: SignalClient,
     }
 
     private fun getDeliveryType(): DeliveryTypes{
-        return if(meAsRecipient)
+        return if(meAsRecipient())
             DeliveryTypes.DELIVERED
         else
             DeliveryTypes.SENT
@@ -278,12 +284,18 @@ class SendMailWorker(private val signalClient: SignalClient,
             : (List<PostEmailBody.CriptextEmail>) -> Result<String, Exception> =
             { criptextEmails ->
                 Result.of {
+                    val alias = if(senderAddress != null){
+                        db.getAlias(senderAddress)
+                    } else {
+                        null
+                    }
                     val requestBody = PostEmailBody(
                             threadId = EmailUtils.getThreadIdForSending(db, threadId, emailId, activeAccount.id),
                             subject = composerInputData.subject,
                             criptextEmails = criptextEmails,
                             guestEmail = guestEmails,
-                            attachments = createCriptextAttachment(this.attachments))
+                            attachments = createCriptextAttachment(this.attachments),
+                            alias = alias)
                     apiClient.postEmail(requestBody).body
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }

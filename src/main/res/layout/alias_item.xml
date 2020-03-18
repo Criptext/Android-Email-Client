@@ -45,7 +45,6 @@
                 android:id="@+id/switch_alias_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="false"
                 android:checked="true"
                 android:layout_marginEnd="5dp"/>
 

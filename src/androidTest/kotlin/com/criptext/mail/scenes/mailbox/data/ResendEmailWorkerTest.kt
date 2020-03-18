@@ -64,7 +64,7 @@ class ResendEmailWorkerTest {
         db.contactDao().insertIgnoringConflicts(bobContact)
 
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
         storage = mockk(relaxed = true)
@@ -92,14 +92,15 @@ class ResendEmailWorkerTest {
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao(),
-                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox)
+                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
+                    senderAddress = activeAccount.userEmail)
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
-                    attachments = emptyList(), onlySave = false, account = activeAccount,
+                    attachments = emptyList(), onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB)
+                    db = composerLocalDB, activeAccount = activeAccount)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
