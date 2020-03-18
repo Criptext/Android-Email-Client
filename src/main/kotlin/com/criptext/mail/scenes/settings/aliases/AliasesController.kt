@@ -51,6 +51,8 @@ class AliasesController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
+            is GeneralResult.UpdateLocalDomainAndAliasData -> onUpdateLocalDomainAndAliasData(result)
         }
     }
 
@@ -180,7 +182,7 @@ class AliasesController(
         scene.attachView(uiObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
-        dataSource.submitRequest(AliasesRequest.LoadAliases())
+        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         return false
     }
 
@@ -348,6 +350,33 @@ class AliasesController(
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                generalDataSource.submitRequest(
+                        GeneralRequest.UpdateLocalDomainAndAliasData(
+                                result.userSettings.customDomains,
+                                result.userSettings.aliases
+                        )
+                )
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                dataSource.submitRequest(AliasesRequest.LoadAliases())
+            }
+        }
+    }
+
+    private fun onUpdateLocalDomainAndAliasData(result: GeneralResult.UpdateLocalDomainAndAliasData){
+        when(result) {
+            is GeneralResult.UpdateLocalDomainAndAliasData.Success -> {
+                dataSource.submitRequest(AliasesRequest.LoadAliases())
+            }
+            is GeneralResult.UpdateLocalDomainAndAliasData.Failure -> {
+                dataSource.submitRequest(AliasesRequest.LoadAliases())
             }
         }
     }

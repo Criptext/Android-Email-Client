@@ -53,6 +53,7 @@ class ResendEmailWorker(
 
     private var meAsRecipient: Boolean = false
     private var currentFullEmail: FullEmail? = null
+    private var alias: Alias? = null
     private var guests: List<String> = listOf()
     private var isSecure = true
 
@@ -129,8 +130,11 @@ class ResendEmailWorker(
         val pendingEmail = db.getFullEmailById(emailId, activeAccount)
         if(pendingEmail != null && (pendingEmail.email.delivered in listOf(DeliveryTypes.FAIL,
                         DeliveryTypes.SENDING))) {
-            meAsRecipient = setMeAsRecipient(pendingEmail)
             currentFullEmail = pendingEmail
+            if(currentFullEmail!!.from.email != activeAccount.userEmail){
+                alias = db.getAlias(currentFullEmail?.from?.email)
+            }
+            meAsRecipient = setMeAsRecipient(pendingEmail)
             val operationResult = processSend()
 
             val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operationResult)
@@ -156,6 +160,9 @@ class ResendEmailWorker(
         return fullEmail.bcc.map { it.email }.contains(activeAccount.userEmail)
                 || fullEmail.cc.map { it.email }.contains(activeAccount.userEmail)
                 || fullEmail.to.map { it.email }.contains(activeAccount.userEmail)
+                || (alias != null && fullEmail.to.map { it.email }.contains(alias!!.name.plus("@${alias!!.domain ?: Contact.mainDomain}")))
+                || (alias != null && fullEmail.cc.map { it.email }.contains(alias!!.name.plus("@${alias!!.domain ?: Contact.mainDomain}")))
+                || (alias != null && fullEmail.bcc.map { it.email }.contains(alias!!.name.plus("@${alias!!.domain ?: Contact.mainDomain}")))
     }
 
     private fun processSend(): Result<Unit, Exception>{
@@ -307,7 +314,8 @@ class ResendEmailWorker(
                                             currentFullEmail!!.bcc.filter { EmailAddressUtils.extractEmailAddressDomain(it.email) in guests },
                                             activeAccount.recipientId
                                     )),
-                            attachments = createCriptextAttachment(currentFullEmail!!.files))
+                            attachments = createCriptextAttachment(currentFullEmail!!.files),
+                            alias = alias)
                     apiClient.postEmail(requestBody).body
                 }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             }

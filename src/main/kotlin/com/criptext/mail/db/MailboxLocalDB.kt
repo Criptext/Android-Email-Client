@@ -76,9 +76,21 @@ interface MailboxLocalDB {
     fun getAccountById(accountId: Long): Account?
     fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun getAlias(aliasEmail: String?): Alias?
 
 
     class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
+
+        override fun getAlias(aliasEmail: String?): Alias? {
+            aliasEmail ?: return null
+            val domain = EmailAddressUtils.extractEmailAddressDomain(aliasEmail)
+            val recipientId = EmailAddressUtils.extractRecipientIdFromAddress(aliasEmail, domain)
+            return if(domain == Contact.mainDomain){
+                db.aliasDao().getCriptextAliasByName(recipientId)
+            } else {
+                db.aliasDao().getAliasByName(recipientId, domain)
+            }
+        }
 
         override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
