@@ -27,6 +27,7 @@
   <string name="attachment_limit_reached">Разрешено только %1$d приложений в одном электронном письме.</string>
   <string name="attachment_history_opened">открыто:</string>
   <string name="title_sync">Синхронизация почтового ящика</string>
+  <string name="settings_title_sync">Request Mailbox Sync</string>
   <string name="link_auth_title">Аутентификация устройства</string>
   <string name="link_auth_sub_title">Хотите одобрить?</string>
   <string name="link_auth_message">%1$s </string>
