@@ -65,11 +65,17 @@ class EnableAliasWorker(
     }
 
     private fun workOperation() : Result<Unit, Exception> = Result.of {
-        val alias = aliasDao.getAliasByName(alias, domain, activeAccount.id) ?: throw Exception()
+        val alias = (if(domain == null) aliasDao.getCriptextAliasByName(alias, activeAccount.id)
+        else aliasDao.getAliasByName(alias, domain, activeAccount.id))
+                ?: throw Exception()
         apiClient.putAliasActive(alias.rowId, enable)
     }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     .flatMap { Result.of {
-        aliasDao.updateActive(alias, domain, enable, activeAccount.id)
+        if(domain != null) {
+            aliasDao.updateActive(alias, domain, enable, activeAccount.id)
+        } else {
+            aliasDao.updateCriptextActive(alias, enable, activeAccount.id)
+        }
     } }
 
 

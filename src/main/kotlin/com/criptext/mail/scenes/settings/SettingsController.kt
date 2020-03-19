@@ -83,7 +83,7 @@ class SettingsController(
 
     private val settingsUIObserver = object: SettingsUIObserver{
         override fun onAliasesClicked() {
-            host.goToScene(AliasesParams(), false)
+            host.goToScene(AliasesParams(), true)
         }
 
         override fun onCustomDomainClicked() {

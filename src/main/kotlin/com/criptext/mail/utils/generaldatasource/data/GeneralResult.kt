@@ -294,4 +294,9 @@ sealed class GeneralResult {
         data class Success(val activeAccount: ActiveAccount, val extrasData: IntentExtrasData): SetActiveAccountFromPush()
         class Failure: SetActiveAccountFromPush()
     }
+
+    sealed class UpdateLocalDomainAndAliasData: GeneralResult() {
+        class Success : UpdateLocalDomainAndAliasData()
+        data class Failure(val message: UIMessage) : UpdateLocalDomainAndAliasData()
+    }
 }

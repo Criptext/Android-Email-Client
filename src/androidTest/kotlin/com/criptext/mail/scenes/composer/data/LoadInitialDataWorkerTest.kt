@@ -67,7 +67,7 @@ class LoadInitialDataWorkerTest {
         composerLocalDB = ComposerLocalDB(contactDao = db.contactDao(), emailDao = db.emailDao(),
                 emailContactDao = db.emailContactDao(), emailLabelDao = db.emailLabelDao(),
                 labelDao = db.labelDao(), fileDao = db.fileDao(), accountDao = db.accountDao(),
-                fileKeyDao = db.fileKeyDao(), filesDir = mActivityRule.activity.filesDir)
+                fileKeyDao = db.fileKeyDao(), aliasDao = db.aliasDao(), filesDir = mActivityRule.activity.filesDir)
 
     }
 

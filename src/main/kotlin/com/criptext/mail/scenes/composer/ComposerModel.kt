@@ -55,6 +55,7 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
     var filesSize: Long = 0L
 
     var accounts = listOf<ActiveAccount>()
-    var selectedAccount: ActiveAccount? = null
+    var selectedAddress: String = ""
     var shareActivityMessage: ActivityMessage.AddAttachments? = null
+    var fromAddresses = mutableListOf<String>()
 }

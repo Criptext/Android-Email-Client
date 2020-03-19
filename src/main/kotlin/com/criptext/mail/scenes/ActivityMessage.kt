@@ -21,7 +21,8 @@ sealed class ActivityMessage {
                         val threadId: String?,
                         val composerInputData: ComposerInputData,
                         val attachments: List<ComposerAttachment>, val fileKey: String?,
-                        val senderAccount: ActiveAccount? = null): ActivityMessage()
+                        val senderAddress: String?,
+                        val senderAccount: ActiveAccount): ActivityMessage()
     data class SendMailFromExtraAccount(val emailId: Long,
                         val threadId: String?,
                         val composerInputData: ComposerInputData,

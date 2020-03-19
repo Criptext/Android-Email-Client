@@ -23,7 +23,7 @@ class AliasesAPIClient(private val httpClient: HttpClient, var token: String): C
 
     fun putAliasActive(aliasKey: Long, enable: Boolean): HttpResponseData {
         val dom = JSONObject()
-        dom.put("addressKey", aliasKey)
+        dom.put("addressId", aliasKey)
         dom.put("activate", enable)
         return httpClient.put(path = "/user/address/activate", authToken = token, body = dom)
     }

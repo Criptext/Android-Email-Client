@@ -124,7 +124,8 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:id="@+id/add_alias_button_layout"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:layout_marginStart="15dp">
 
         <ImageView
             android:layout_width="10dp"
