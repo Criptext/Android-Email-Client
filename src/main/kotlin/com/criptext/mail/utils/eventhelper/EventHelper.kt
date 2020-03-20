@@ -160,7 +160,8 @@ class EventHelper(private val db: EventLocalDB,
     private fun processNewEmails(event: Event) {
         val metadata = EmailMetadata.fromJSON(event.params)
         val operation = Result.of {
-            insertIncomingEmailTransaction(metadata)
+            val aliases = db.getAliases(activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
+            insertIncomingEmailTransaction(metadata, aliases)
         }
 
         when(operation){
@@ -385,8 +386,8 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
-            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>) =
+            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases)
 
     private fun updateThreadReadStatus(metadata: PeerReadThreadStatusUpdate) =
             db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread, activeAccount.id)
