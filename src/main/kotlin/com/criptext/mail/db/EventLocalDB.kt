@@ -18,6 +18,10 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun getAliases(accountId: Long): List<Alias> {
+        return db.aliasDao().getAll(accountId)
+    }
+
     fun getAccount(recipientId: String?, domain: String?): Account? {
         if(recipientId == null || domain == null) return null
         return db.accountDao().getAccount(recipientId, domain)
@@ -343,10 +347,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                     metadata: EmailMetadata, activeAccount: ActiveAccount) {
+                                     metadata: EmailMetadata, activeAccount: ActiveAccount, aliases: List<String>) {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                 dao = db.emailInsertionDao(), apiClient = apiClient, metadata = metadata,
-                activeAccount = activeAccount, filesDir = filesDir)
+                activeAccount = activeAccount, filesDir = filesDir, aliases = aliases)
     }
 
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,

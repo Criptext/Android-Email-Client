@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.*
+import com.criptext.mail.api.models.KeybundleAliasData
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.DeliveryTypes
@@ -53,6 +54,8 @@ class ResendEmailsWorker(
     private var alias: Alias? = null
     private var guests: List<String> = listOf()
     private var isSecure = true
+
+    private val aliasMap = mutableMapOf<String, String>()
 
     private fun getDeliveryType(): DeliveryTypes{
         return if(meAsRecipient)
@@ -202,6 +205,8 @@ class ResendEmailsWorker(
         val bundlesJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("keyBundles")
         val blackListedJSONArray = JSONObject(findKeyBundlesResponse.body).getJSONArray("blacklistedKnownDevices")
         guests = JSONObject(findKeyBundlesResponse.body).getJSONArray("guestDomains").toList()
+        val aliases = JSONObject(findKeyBundlesResponse.body).getJSONArray("addresses")
+        aliasMap.putAll(KeybundleAliasData.fromJSONArray(aliases))
         if (bundlesJSONArray.length() > 0) {
             val downloadedBundles =
                     PreKeyBundleShareData.DownloadBundle.fromJSONArray(bundlesJSONArray, activeAccount.id)
@@ -219,10 +224,11 @@ class ResendEmailsWorker(
     private fun findKnownAddresses(criptextRecipients: List<String>): Map<String, List<Int>> {
         val knownAddresses = HashMap<String, List<Int>>()
         val existingSessions = (rawSessionDao.getKnownAddresses(criptextRecipients.map {
-            if (EmailAddressUtils.isFromCriptextDomain(it))
+            val recipientId = if (EmailAddressUtils.isFromCriptextDomain(it))
                 EmailAddressUtils.extractRecipientIdFromCriptextAddress(it)
             else
                 it
+            aliasMap[recipientId] ?: recipientId
         }, activeAccount.id))
         existingSessions.forEach { knownAddress: KnownAddress ->
             if(!knownAddress.recipientId.contains("@"))
@@ -253,21 +259,30 @@ class ResendEmailsWorker(
             : List<PostEmailBody.CriptextEmail> {
         return criptextRecipients
                 .filter { EmailAddressUtils.extractEmailAddressDomain(it) !in guests }
-                .map { emailAddress ->
+                .map { intendedEmailAddress ->
             val domain: String
-            val recipientId = if(EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
+            val intendedRecipientId = if(EmailAddressUtils.isFromCriptextDomain(intendedEmailAddress)) {
                 domain = Contact.mainDomain
-                EmailAddressUtils.extractRecipientIdFromCriptextAddress(emailAddress)
+                EmailAddressUtils.extractRecipientIdFromCriptextAddress(intendedEmailAddress)
             }else {
-                domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
-                emailAddress
+                domain = EmailAddressUtils.extractEmailAddressDomain(intendedEmailAddress)
+                intendedEmailAddress
+            }
+            val recipientId = aliasMap[intendedRecipientId] ?: intendedRecipientId
+            val emailAddress = recipientId.plus("@$domain")
+            val alias = if(intendedRecipientId == recipientId) null
+            else {
+                if(domain != Contact.mainDomain)
+                    EmailAddressUtils.extractRecipientIdFromAddress(intendedRecipientId, domain)
+                else
+                    intendedRecipientId
             }
             val devices = availableAddresses[emailAddress]
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain))
-                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain))
+                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias))
+                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
@@ -288,11 +303,11 @@ class ResendEmailsWorker(
                             signalClient.encryptMessage(recipientId, deviceId, getFileKey(fullEmail.fileKey, fullEmail.files)!!).encryptedB64
                         else null, fileKeys = getEncryptedFileKeys(fullEmail, recipientId, deviceId),
                                 preview = encryptOperation.value.second.encryptedB64, previewMessageType = encryptOperation.value.second.type,
-                                domain = domain)
+                                domain = domain, alias = alias)
                     }
                     is Result.Failure -> {
-                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain)
-                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain)
+                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias)
+                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias)
                     }
                 }
             }
