@@ -4,6 +4,8 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.dao.AliasDao
+import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
@@ -15,6 +17,7 @@ import com.criptext.mail.utils.EmailAddressUtils
 import com.karumi.kotlinsnapshot.matchWithSnapshot
 import io.mockk.*
 import org.amshove.kluent.`should be instance of`
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
@@ -30,6 +33,8 @@ class AuthenticateUserWorkerTest {
     private lateinit var signUpDao: SignUpDao
     private lateinit var storage: KeyValueStorage
     private lateinit var accountDao: AccountDao
+    private lateinit var aliasDao: AliasDao
+    private lateinit var customDomainDao: CustomDomainDao
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: SignInLocalDB
     private lateinit var account: Account
@@ -43,6 +48,8 @@ class AuthenticateUserWorkerTest {
         signUpDao = mockk()
         storage = mockk(relaxed = true)
         accountDao = mockk()
+        aliasDao = mockk()
+        customDomainDao = mockk()
         account = mockk()
         messagingInstance = mockk()
         db = mockk()
@@ -55,7 +62,7 @@ class AuthenticateUserWorkerTest {
             AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                     keyGenerator = keyGenerator, userData = UserData(username, Contact.mainDomain, password, oldPassword),
                     publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
-                    isMultiple = false)
+                    isMultiple = false, aliasDao = aliasDao, customDomainDao = customDomainDao)
 
 
     @Test
@@ -68,7 +75,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
-                    .toJSON().toString()
+                    .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
         jsonObject.put("refreshToken", "__REFRESH__")
@@ -103,6 +110,8 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null)
+        every { aliasDao.insertAll(listOf()) } just Runs
+        every { customDomainDao.insertAll(listOf()) } just Runs
 
         val result = worker.work(mockk())
 
@@ -134,7 +143,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester")
-                .toJSON().toString()
+                .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
         jsonObject.put("refreshToken", "__REFRESH__")
@@ -169,6 +178,8 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null)
+        every { aliasDao.insertAll(listOf()) } just Runs
+        every { customDomainDao.insertAll(listOf()) } just Runs
 
         val result = worker.work(mockk())
 

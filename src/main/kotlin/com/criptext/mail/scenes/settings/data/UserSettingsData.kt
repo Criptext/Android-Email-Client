@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.settings.data
 
+import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.scenes.settings.aliases.data.AliasData
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.utils.DateAndTimeUtils
@@ -7,7 +8,7 @@ import org.json.JSONObject
 
 data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: String,
                             val recoveryEmailConfirmationState: Boolean, val hasTwoFA: Boolean,
-                            val hasReadReceipts: Boolean, val replyTo: String?, val customDomains: List<String>,
+                            val hasReadReceipts: Boolean, val replyTo: String?, val customDomains: List<CustomDomain>,
                             val aliases: List<AliasData>){
     companion object {
         fun fromJSON(metadataString: String, accountId: Long): UserSettingsData {

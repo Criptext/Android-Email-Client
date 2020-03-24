@@ -6,6 +6,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
@@ -49,10 +50,24 @@ class CustomDomainController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.GetUserSettings -> onGetUserSettings(result)
+            is GeneralResult.UpdateLocalDomainAndAliasData -> onUpdateLocalDomainAndAliasData(result)
         }
     }
 
     private val uiObserver = object: CustomDomainUIObserver{
+        override fun onValidateDomainPressed(domainName: String, position: Int) {
+            val domainItem = model.domains.getOrNull(position) ?: return
+            val customDomain = CustomDomain(
+                    id = domainItem.id,
+                    rowId = domainItem.rowId,
+                    name = domainItem.name,
+                    validated = domainItem.validated,
+                    accountId = domainItem.accountId
+            )
+            host.goToScene(DomainConfigurationParams(customDomain), activityMessage = ActivityMessage.NonValidatedDomainFound(customDomain), keep = true)
+        }
+
         override fun onRemoveDomainConfirmed(domainName: String, position: Int) {
             dataSource.submitRequest(CustomDomainRequest.DeleteDomain(domainName, position))
         }
@@ -131,6 +146,10 @@ class CustomDomainController(
             uiObserver.onRemoveDomain(domain.name, position)
             return true
         }
+
+        override fun onCustomDomainValidateClicked(domain: DomainItem, position: Int) {
+            uiObserver.onRemoveDomain(domain.name, position)
+        }
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
@@ -140,7 +159,8 @@ class CustomDomainController(
             domainWrapperListController.addAll(listOf(DomainItem(activityMessage.customDomain, listOf())))
             scene.showMessage(UIMessage(R.string.domain_setup_complete))
         } else {
-            dataSource.submitRequest(CustomDomainRequest.LoadDomain())
+            scene.showProgressBar(true)
+            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         }
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
@@ -165,13 +185,14 @@ class CustomDomainController(
     }
 
     private fun onDomainsLoaded(result: CustomDomainResult.LoadDomain){
+        scene.showProgressBar(false)
         when(result){
             is CustomDomainResult.LoadDomain.Success -> {
-                domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
+                if (result.domains.isNotEmpty())
+                    domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
             }
             is CustomDomainResult.LoadDomain.Failure -> {
-                scene.showMessage(result.message)
-                host.finishScene()
+                host.exitToScene(CustomDomainEntryParams(), null, true)
             }
         }
     }
@@ -249,6 +270,33 @@ class CustomDomainController(
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
                 host.exitToScene(MailboxParams(), null, false, true)
+            }
+        }
+    }
+
+    private fun onGetUserSettings(result: GeneralResult.GetUserSettings){
+        when(result) {
+            is GeneralResult.GetUserSettings.Success -> {
+                generalDataSource.submitRequest(
+                        GeneralRequest.UpdateLocalDomainAndAliasData(
+                                result.userSettings.customDomains,
+                                result.userSettings.aliases
+                        )
+                )
+            }
+            is GeneralResult.GetUserSettings.Failure -> {
+                dataSource.submitRequest(CustomDomainRequest.LoadDomain())
+            }
+        }
+    }
+
+    private fun onUpdateLocalDomainAndAliasData(result: GeneralResult.UpdateLocalDomainAndAliasData){
+        when(result) {
+            is GeneralResult.UpdateLocalDomainAndAliasData.Success -> {
+                dataSource.submitRequest(CustomDomainRequest.LoadDomain())
+            }
+            is GeneralResult.UpdateLocalDomainAndAliasData.Failure -> {
+                dataSource.submitRequest(CustomDomainRequest.LoadDomain())
             }
         }
     }

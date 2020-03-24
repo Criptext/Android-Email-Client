@@ -4,9 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Alias
-import com.criptext.mail.db.models.CustomDomain
 
 @Dao
 interface AliasDao {
@@ -55,4 +53,12 @@ interface AliasDao {
 
     @Delete
     fun deleteAll(addresses: List<Alias>)
+
+    @Query("""SELECT * FROM alias
+        WHERE id > :lastId
+        AND accountId =:accountId
+        ORDER BY id
+        LIMIT :limit
+    """)
+    fun getAllForLinkFile(limit: Int, lastId: Long, accountId:Long) : List<Alias>
 }

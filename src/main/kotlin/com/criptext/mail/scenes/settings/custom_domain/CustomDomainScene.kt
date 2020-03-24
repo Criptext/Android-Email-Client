@@ -45,6 +45,7 @@ interface CustomDomainScene{
     fun dismissAccountSuspendedDialog()
     fun getDomainListView(): VirtualListView
     fun showRemoveDomainDialog(domainName: String, position: Int)
+    fun showProgressBar(show: Boolean)
 
     class Default(val view: View): CustomDomainScene{
         private lateinit var uiObserver: CustomDomainUIObserver
@@ -61,6 +62,10 @@ interface CustomDomainScene{
 
         private val recyclerViewDomains: RecyclerView by lazy {
             view.findViewById<RecyclerView>(R.id.recyclerViewDomains)
+        }
+
+        private val customDomainLoadProgress: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.customDomainsLoadProgress)
         }
 
         private val confirmPassword = ConfirmPasswordDialog(context)
@@ -142,6 +147,10 @@ interface CustomDomainScene{
 
         override fun setConfirmPasswordError(message: UIMessage) {
             confirmPassword.setPasswordError(message)
+        }
+
+        override fun showProgressBar(show: Boolean) {
+            customDomainLoadProgress.visibility = if(show) View.VISIBLE else View.GONE
         }
 
         override fun showMessage(message: UIMessage) {

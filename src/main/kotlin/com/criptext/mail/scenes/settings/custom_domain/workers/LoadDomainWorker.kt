@@ -30,7 +30,7 @@ class LoadDomainWorker(
                 CustomDomainResult.LoadDomain) -> Unit)
     : BackgroundWorker<CustomDomainResult.LoadDomain> {
 
-    override val canBeParallelized = true
+    override val canBeParallelized = false
     private val apiClient = CustomDomainAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): CustomDomainResult.LoadDomain {
@@ -61,7 +61,7 @@ class LoadDomainWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<List<CustomDomain>, Exception> = Result.of { domainDao.getAll() }
+    private fun workOperation() : Result<List<CustomDomain>, Exception> = Result.of { domainDao.getAll(activeAccount.id) }
 
 
     private fun newRetryWithNewSessionOperation()

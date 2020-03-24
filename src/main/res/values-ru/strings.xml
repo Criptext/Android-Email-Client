@@ -697,4 +697,7 @@
   <string name="aliases_create_dialog_text_hint">Alias</string>
   <string name="aliases_create_dialog_max_error">You have reached the max aliases you can create (%1$s) for this domain.</string>
   <string name="custom_domain_not_found_error">Custom domain not found.</string>
+  <string name="btn_verify">Verify</string>
+  <string name="domain_not_verified">Not Verified</string>
+  <string name="domain_verified">Verified</string>
 </resources>

@@ -182,6 +182,7 @@ class AliasesController(
         scene.attachView(uiObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        scene.showProgressBar(true)
         generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
         return false
     }
@@ -189,15 +190,6 @@ class AliasesController(
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
         return false
-    }
-
-    private fun checkAddButtonAvailability(){
-        if(model.criptextAliases.size == MAX_ALIAS_COUNT
-                && (model.domains.isNotEmpty() && model.domains.first().aliases.size == MAX_ALIAS_COUNT)){
-            scene.addButtonEnable(false)
-        } else {
-            scene.addButtonEnable(true)
-        }
     }
 
     private fun onAliasAdded(result: AliasesResult.AddAlias){
@@ -211,8 +203,8 @@ class AliasesController(
                 } else {
                     customAliasWrapperListController.add(domain, AliasItem(result.alias))
                 }
+                scene.setupAliasesFromModel(model, onAliasesListItemListener)
                 scene.showMessage(UIMessage(R.string.aliases_create_added))
-                checkAddButtonAvailability()
             }
             is AliasesResult.AddAlias.Failure -> {
                 scene.setAddAliasDialogError(result.message)
@@ -225,6 +217,7 @@ class AliasesController(
             is AliasesResult.DeleteAlias.Success -> {
                 if(result.domain != null){
                     customAliasWrapperListController.remove(result.position, result.domain)
+                    scene.setupAliasesFromModel(model, onAliasesListItemListener)
                     scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${result.domain}")))
                 } else {
                     criptextAliasWrapperListController.remove(result.position)
@@ -238,6 +231,7 @@ class AliasesController(
     }
 
     private fun onAliasesLoaded(result: AliasesResult.LoadAliases){
+        scene.showProgressBar(false)
         when(result){
             is AliasesResult.LoadAliases.Success -> {
                 val criptextAliases = result.aliases.filter { it.domain == null }
@@ -248,7 +242,6 @@ class AliasesController(
                 model.criptextAliases = ArrayList(criptextAliases.map { AliasItem(it) })
                 if(result.aliases.isNotEmpty()) {
                     scene.setupAliasesFromModel(model, onAliasesListItemListener)
-                    checkAddButtonAvailability()
                 }
             }
             is AliasesResult.LoadAliases.Failure -> {

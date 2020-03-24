@@ -29,6 +29,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
             addLabelsToFile(db.labelDao(), tmpFileLinkData, account.id)
             addMailsToFile(db.emailDao(), tmpFileLinkData, account.id)
             addFilesToFile(db.fileDao(), tmpFileLinkData, account.id)
+            addAliasToFile(db.aliasDao(), tmpFileLinkData, account.id)
+            addCustomDomainsToFile(db.customDomainDao(), tmpFileLinkData, account.id)
             addMailsAndLabelsRelationToFile(db.emailLabelDao(), tmpFileLinkData, account.id)
             addMailsAndContactsRelationToFile(db.emailContactDao(), tmpFileLinkData, account.id)
 
@@ -45,6 +47,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 dataMapper = contactDataMapper)
         val labelDataMapper = DataMapper(mutableMapOf())
         val labelWriter = LabelDataWriter(db.labelDao(), activeAccount = account, dataMapper = labelDataMapper)
+        val aliasWriter = AliasDataWriter(db.aliasDao(), activeAccount = account)
+        val customDomainWriter = CustomDomainDataWriter(db.customDomainDao(), activeAccount = account)
         val emaillDataMapper = DataMapper(mutableMapOf())
         val emailWriter = EmailDataWriter(
                 emailDao = db.emailDao(),
@@ -90,6 +94,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 "file" ->  {
                     fileWriter.insert(json.get("object").toString())
                 }
+                "alias" -> aliasWriter.insert(json.get("object").toString())
+                "customDomain" -> customDomainWriter.insert(json.get("object").toString())
                 "email_label" -> emailLabelWriter.insert(json.get("object").toString())
                 "email_contact" -> emailContactWriter.insert(json.get("object").toString())
             }
@@ -99,6 +105,8 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         labelWriter.flush()
         emailWriter.flush()
         fileWriter.flush()
+        aliasWriter.flush()
+        customDomainWriter.flush()
         emailLabelWriter.flush()
         emailContactWriter.flush()
 
@@ -258,6 +266,62 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }while (emails.isNotEmpty())
     }
 
+    private fun addAliasToFile(aliasDao: AliasDao, tmpFile: File, accountId: Long)
+    {
+        fun flushAliases(allAliases: List<Alias>): Long {
+            var lastId = 0L
+            val jsonArrayAllContacts = mutableListOf<String>()
+            for (alias in allAliases){
+                if(alias == allAliases.last())
+                    lastId = alias.id
+                val jsonObject = JSONObject()
+                jsonObject.put("id", alias.id)
+                jsonObject.put("name", alias.name)
+                jsonObject.put("rowId", alias.rowId)
+                if(alias.domain != null)
+                    jsonObject.put("domain", alias.domain)
+                jsonObject.put("active", alias.active)
+                jsonArrayAllContacts.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: alias, object: $jsonObject}")}\n")
+            }
+            return lastId
+        }
+        var lastId = 0L
+        do {
+            val aliases = aliasDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
+            if(aliases.isNotEmpty()) {
+                lastId = flushAliases(aliases)
+            }
+        }while (aliases.isNotEmpty())
+    }
+
+    private fun addCustomDomainsToFile(customDomainDao: CustomDomainDao, tmpFile: File, accountId: Long)
+    {
+        fun flushCustomDomains(allCustomDomains: List<CustomDomain>): Long {
+            var lastId = 0L
+            val jsonArrayAllContacts = mutableListOf<String>()
+            for (customDomain in allCustomDomains){
+                if(customDomain == allCustomDomains.last())
+                    lastId = customDomain.id
+                val jsonObject = JSONObject()
+                jsonObject.put("id", customDomain.id)
+                jsonObject.put("name", customDomain.name)
+                jsonObject.put("rowId", customDomain.rowId)
+                jsonObject.put("validated", customDomain.validated)
+                jsonArrayAllContacts.add(jsonObject.toString())
+                tmpFile.appendText("${JSONObject("{table: customDomain, object: $jsonObject}")}\n")
+            }
+            return lastId
+        }
+        var lastId = 0L
+        do {
+            val customDomains = customDomainDao.getAllForLinkFile(DB_READING_LIMIT, lastId, accountId)
+            if(customDomains.isNotEmpty()) {
+                lastId = flushCustomDomains(customDomains)
+            }
+        }while (customDomains.isNotEmpty())
+    }
+
     private fun addMailsAndLabelsRelationToFile(emailLabelDao: EmailLabelDao, tmpFile: File,
                                                 accountId: Long)
     {
@@ -310,7 +374,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 6
+        const val FILE_SYNC_VERSION = 7
 
         const val FILE_ENCRYPTED_EXTENSION = "enc"
         const val FILE_UNENCRYPTED_EXTENSION = "db"

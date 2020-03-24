@@ -77,7 +77,6 @@ class SettingsController(
         when (result) {
             is SettingsResult.ResetPassword -> onResetPassword(result)
             is SettingsResult.SyncBegin -> onSyncBegin(result)
-            is SettingsResult.CheckCustomDomain -> onCheckCustomDomain(result)
         }
     }
 
@@ -87,7 +86,7 @@ class SettingsController(
         }
 
         override fun onCustomDomainClicked() {
-            dataSource.submitRequest(SettingsRequest.CheckCustomDomain())
+            host.goToScene(CustomDomainParams(), true)
         }
 
         override fun onReportBugClicked() {
@@ -395,20 +394,6 @@ class SettingsController(
             }
             is SettingsResult.SyncBegin.Failure -> {
                 scene.showMessage(result.message)
-            }
-        }
-    }
-
-    private fun onCheckCustomDomain(result: SettingsResult.CheckCustomDomain){
-        when(result){
-            is SettingsResult.CheckCustomDomain.Success -> {
-                if(!result.customDomain.validated)
-                    host.goToScene(DomainConfigurationParams(result.customDomain), activityMessage = ActivityMessage.NonValidatedDomainFound(result.customDomain), keep = true)
-                else
-                    host.goToScene(CustomDomainParams(), true)
-            }
-            is SettingsResult.CheckCustomDomain.Failure -> {
-                host.goToScene(CustomDomainEntryParams(), true)
             }
         }
     }
