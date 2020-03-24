@@ -678,4 +678,7 @@
   <string name="aliases_create_dialog_text_hint">Alias</string>
   <string name="aliases_create_dialog_max_error">Has llegado al máximo numero de Aliases que puedes crear (%1$s) bajo este dominio.</string>
   <string name="custom_domain_not_found_error">Dominio personalizado no encontrado.</string>
+  <string name="btn_verify">Verificar</string>
+  <string name="domain_not_verified">No Verificado</string>
+  <string name="domain_verified">Verificado</string>
 </resources>

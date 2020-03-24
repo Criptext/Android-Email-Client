@@ -4,6 +4,8 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.dao.AliasDao
+import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.scenes.signup.IncompleteAccount
 import com.criptext.mail.services.MessagingInstance
@@ -26,6 +28,8 @@ class RegisterUserWorkerTest {
     private lateinit var httpClient: HttpClient
     private lateinit var signUpDao: SignUpDao
     private lateinit var accountDao: AccountDao
+    private lateinit var aliasDao: AliasDao
+    private lateinit var customDomainDao: CustomDomainDao
     private lateinit var storage: KeyValueStorage
     private lateinit var messagingInstance: MessagingInstance
     private lateinit var db: AppDatabase
@@ -39,6 +43,8 @@ class RegisterUserWorkerTest {
         httpClient = mockk()
         signUpDao = mockk()
         accountDao = mockk()
+        aliasDao = mockk()
+        customDomainDao = mockk()
         storage = mockk()
         messagingInstance = mockk()
         db = mockk()
@@ -71,6 +77,8 @@ class RegisterUserWorkerTest {
         } returns "OK"
         every { db.clearAllTables() } just Runs
         every { storage.clearAll() } just Runs
+        every { db.aliasDao() } returns aliasDao
+        every { db.customDomainDao() } returns customDomainDao
 
         val newAccount = IncompleteAccount(username ="tester", name = "A Tester", deviceId = 1,
                 password = "secretPassword", recoveryEmail = "tester@gmail.com")

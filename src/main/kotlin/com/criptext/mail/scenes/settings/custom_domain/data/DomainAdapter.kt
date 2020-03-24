@@ -18,10 +18,13 @@ class DomainAdapter(private val mContext : Context,
         when(holder){
             is DomainHolder -> {
                 val device = domainList[position]
-                holder.bindDevice(device)
+                holder.bindDomain(device)
                 if(domainListItemListener != null) {
-                    holder.setOnClickListener {
+                    holder.setTrashClickListener {
                         domainListItemListener.onCustomDomainTrashClicked(device, position)
+                    }
+                    holder.setValidateClickListener {
+                        domainListItemListener.onCustomDomainValidateClicked(device, position)
                     }
                 }
             }

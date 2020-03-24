@@ -3,6 +3,7 @@ package com.criptext.mail.scenes.signin.workers
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.toList
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
@@ -22,6 +23,8 @@ import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
+import com.google.gson.JsonArray
+import org.json.JSONArray
 import org.json.JSONObject
 
 
@@ -42,7 +45,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
 
     private val apiClient = SignUpAPIClient(httpClient)
     private val isValidate = code != null
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao, db.aliasDao(), db.customDomainDao())
     private var emailAddress: String? = null
 
     override val canBeParallelized = true
@@ -69,12 +72,13 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 val json = JSONObject(apiClient.postValidateTwoFACode(recipientId, domain, jwt, code!!).body)
                 val deviceId = json.getInt("deviceId")
                 val name = json.getString("name")
+                val addresses = json.optJSONArray("addresses")
                 if(!isMultiple){
                     db.clearAllTables()
                     keyValueStorage.clearAll()
                 }
                 val signalPair = signalRegistrationOperation(deviceId, name)
-                storeAccountOperation(signalPair.first, signalPair.second)
+                storeAccountOperation(signalPair.first, signalPair.second, if(addresses.toString().isEmpty()) null else addresses)
             }
         }
 
@@ -103,7 +107,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
         return Pair(registrationBundles, account)
     }
 
-    private fun storeAccountOperation(registrationBundles: SignalKeyGenerator.RegistrationBundles, account: Account) {
+    private fun storeAccountOperation(registrationBundles: SignalKeyGenerator.RegistrationBundles, account: Account, addressesJsonArray: JSONArray?) {
         val postKeyBundleStep = Runnable {
             val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
                     jwt = account.jwt)
@@ -119,7 +123,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
         storeAccountTransaction.run(account = account,
                 keyBundle = registrationBundles.privateBundle,
                 extraSteps = postKeyBundleStep, keepData = shouldKeepData,
-                isMultiple = isMultiple)
+                isMultiple = isMultiple, addressesJsonArray = addressesJsonArray)
     }
 
     override fun cancel() {

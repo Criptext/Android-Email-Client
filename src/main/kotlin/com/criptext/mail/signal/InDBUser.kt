@@ -31,7 +31,7 @@ class InDBUser(private val db: AppDatabase, storage: KeyValueStorage, signUpDao:
         val persistedUser = incompleteAccount.complete(privateBundle, "__MOCKED_JWT__",
                 "__MOCKED_REFRESH__")
 
-        val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage, db.accountDao())
+        val storeAccountTransaction = StoreAccountTransaction(signUpDao, storage, db.accountDao(), db.aliasDao(), db.customDomainDao())
         storeAccountTransaction.run(persistedUser, privateBundle)
 
     }

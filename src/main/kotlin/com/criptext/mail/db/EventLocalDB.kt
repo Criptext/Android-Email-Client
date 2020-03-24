@@ -18,6 +18,38 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun createCustomDomain(customDomain: CustomDomain){
+        db.customDomainDao().insert(customDomain)
+    }
+
+    fun deleteCustomDomain(customDomain: CustomDomain){
+        db.customDomainDao().delete(customDomain)
+    }
+
+    fun createAlias(alias: Alias){
+        db.aliasDao().insert(alias)
+    }
+
+    fun deleteAlias(alias: Alias){
+        db.aliasDao().delete(alias)
+    }
+
+    fun deleteAliasesByDomain(domain: String){
+        db.aliasDao().deleteByDomain(domain)
+    }
+
+    fun updateAliasStatus(alias: Alias){
+        if(alias.domain == null){
+            db.aliasDao().updateCriptextActive(alias.name, alias.active, alias.accountId)
+        } else {
+            db.aliasDao().updateActive(alias.name, alias.domain, alias.active, alias.accountId)
+        }
+    }
+
+    fun getCustomDomains(accountId: Long): List<CustomDomain> {
+        return db.customDomainDao().getAll(accountId)
+    }
+
     fun getAliases(accountId: Long): List<Alias> {
         return db.aliasDao().getAll(accountId)
     }

@@ -1,10 +1,7 @@
 package com.criptext.mail.scenes.settings.aliases
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
@@ -49,6 +46,7 @@ interface AliasesScene{
     fun addAliasDialogToggleLoad(isLoading: Boolean)
     fun addAliasDialogDismiss()
     fun addButtonEnable(enabled: Boolean)
+    fun showProgressBar(show: Boolean)
 
     class Default(val view: View): AliasesScene{
         private lateinit var uiObserver: AliasesUIObserver
@@ -89,6 +87,10 @@ interface AliasesScene{
 
         private val addAliasButon: TextView by lazy {
             view.findViewById<TextView>(R.id.add_alias_button)
+        }
+
+        private val aliasLoadProgress: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.aliasLoadProgress)
         }
 
         private val confirmPassword = ConfirmPasswordDialog(context)
@@ -220,6 +222,10 @@ interface AliasesScene{
 
         override fun setConfirmPasswordError(message: UIMessage) {
             confirmPassword.setPasswordError(message)
+        }
+
+        override fun showProgressBar(show: Boolean) {
+            aliasLoadProgress.visibility = if(show) View.VISIBLE else View.GONE
         }
 
         override fun showMessage(message: UIMessage) {
