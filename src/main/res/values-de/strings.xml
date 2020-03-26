@@ -647,4 +647,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="forgot_password_time">Passwort vergessen?(%1$d)</string>
   <string name="mark_as_unread_from_here">Von hier aus als ungelesen markieren</string>
   <string name="signed_out_title">Signed Out!</string>
+  <string name="unauthorized_upload">Unable to upload file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="unauthorized_download">Unable to download file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="expired_session">Session has expired. Please log back in.</string>
 </resources>

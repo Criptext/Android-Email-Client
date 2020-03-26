@@ -44,7 +44,7 @@ class UpdateMailboxWorker(
     override val canBeParallelized = false
 
     private val eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
-            true, true)
+            true)
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private var shouldCallAgain = false
 

@@ -19,6 +19,7 @@ import com.criptext.mail.scenes.settings.devices.data.*
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerCodes
@@ -52,6 +53,7 @@ class DevicesController(
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
@@ -199,6 +201,24 @@ class DevicesController(
         }
     }
 
+    private fun onLogout(result: GeneralResult.Logout){
+        when (result) {
+            is GeneralResult.Logout.Success -> {
+                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
+
+            }
+        }
+    }
+
     private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
@@ -270,7 +290,7 @@ class DevicesController(
                 scene.showMessage(result.message)
             }
             is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(devicesUIObserver)

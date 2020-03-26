@@ -173,6 +173,7 @@ class WebViewActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
+        webViewCriptext.restoreState(savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

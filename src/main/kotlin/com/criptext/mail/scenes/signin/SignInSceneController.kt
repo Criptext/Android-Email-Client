@@ -129,12 +129,14 @@ class SignInSceneController(
     }
 
     private fun onForgotPassword(result: GeneralResult.ResetPassword){
-        scene.toggleForgotPasswordClickable(true)
-        when(result){
-            is GeneralResult.ResetPassword.Success -> {
-                scene.showResetPasswordDialog(result.email)
+        if(model.state is SignInLayoutState.InputPassword) {
+            scene.toggleForgotPasswordClickable(true)
+            when (result) {
+                is GeneralResult.ResetPassword.Success -> {
+                    scene.showResetPasswordDialog(result.email)
+                }
+                is GeneralResult.ResetPassword.Failure -> scene.showError(result.message)
             }
-            is GeneralResult.ResetPassword.Failure -> scene.showError(result.message)
         }
     }
 

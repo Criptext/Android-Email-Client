@@ -28,7 +28,7 @@ class NewMailActionService : IntentService("New Mail Action Service") {
 
     public override fun onHandleIntent(intent: Intent?) {
         val storage = KeyValueStorage.SharedPrefs(this)
-        var activeAccount = ActiveAccount.loadFromStorage(storage)!!
+        var activeAccount = ActiveAccount.loadFromStorage(storage) ?: return
         val data = getIntentData(intent, activeAccount.recipientId)
         val manager = this.applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

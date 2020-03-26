@@ -642,4 +642,7 @@
   <string name="forgot_password_time">Забыли пароль?(%1$d)</string>
   <string name="mark_as_unread_from_here">Отметить как непрочитанное отсюда</string>
   <string name="signed_out_title">Signed Out!</string>
+  <string name="unauthorized_upload">Unable to upload file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="unauthorized_download">Unable to download file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="expired_session">Session has expired. Please log back in.</string>
 </resources>
