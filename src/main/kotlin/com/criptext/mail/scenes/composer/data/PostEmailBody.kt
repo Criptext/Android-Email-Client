@@ -92,7 +92,7 @@ class PostEmailBody(val threadId: String?, val subject: String,
             val jsonOuter = JSONObject()
             jsonOuter.put("username", recipientId)
             if(alias != null) {
-                jsonOuter.put("alias", alias)
+                jsonOuter.put("aliasUsername", alias)
                 jsonOuter.put("aliasDomain", aliasDomain)
             }
             jsonOuter.put("domain", domain)
