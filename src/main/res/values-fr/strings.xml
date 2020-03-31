@@ -640,4 +640,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="forgot_password_time">Mot de passe oublié ?(%1$d)</string>
   <string name="mark_as_unread_from_here">Marquer comme non lu à partir d\'ici</string>
   <string name="signed_out_title">Signed Out!</string>
+  <string name="unauthorized_upload">Unable to upload file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="unauthorized_download">Unable to download file: %1$s. Contact Support. Error: %1$s</string>
+  <string name="expired_session">Session has expired. Please log back in.</string>
 </resources>

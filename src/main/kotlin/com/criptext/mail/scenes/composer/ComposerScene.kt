@@ -49,7 +49,7 @@ interface ComposerScene {
     fun showError(message: UIMessage)
     fun setContactSuggestionList(contacts: List<Contact>)
     fun toggleExtraFieldsVisibility(visible: Boolean)
-    fun showAttachmentErrorDialog(filename: String)
+    fun showAttachmentErrorDialog(message: UIMessage)
     fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
     fun showMaxFilesExceedsDialog()
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
@@ -301,9 +301,9 @@ interface ComposerScene {
             linkAuthDialog.showLinkDeviceAuthDialog(observer, untrustedDeviceInfo)
         }
 
-        override fun showAttachmentErrorDialog(filename: String){
+        override fun showAttachmentErrorDialog(message: UIMessage){
             val builder = AlertDialog.Builder(ctx)
-            builder.setMessage(ctx.resources.getString(R.string.unable_to_upload, filename))
+            builder.setMessage(ctx.getLocalizedUIMessage(message))
                     .show()
         }
 

@@ -55,12 +55,12 @@ class SaveEmailWorker(
         val attachmentsSaved = dao.findFilesByEmailId(newEmailId).map {
             ComposerAttachment(
                     id = it.id, uuid = UUID.randomUUID().toString(), fileKey = it.fileKey, size = it.size,
-                    filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
+                    filepath = attachments.find { file -> it.token == file.filetoken }?.filepath ?: "",
                     filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
                     uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress,
                     cid = it.cid
             )
-        }
+        }.filter { it.filepath.isNotEmpty() }
         return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
                 onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
                 fileKey = fileKey, preview = if(threadId != null) EmailPreview.fromEmailThread(getEmailPreview(newEmailId)) else null)

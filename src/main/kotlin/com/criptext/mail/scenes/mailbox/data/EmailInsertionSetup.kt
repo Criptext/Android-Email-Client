@@ -24,7 +24,7 @@ import java.io.File
  * database.
  * Created by gabriel on 4/26/18.
  */
-object EmailInsertionSetup {
+object  EmailInsertionSetup {
     private const val SPAM_COUNTER = 2
 
     private fun createEmailRow(metadata: EmailMetadata.DBColumns, preview: String, accountId: Long): Email {
@@ -302,13 +302,15 @@ object EmailInsertionSetup {
             else -> mutableListOf(Label.defaultItems.inbox)
         }
 
-        val fromContact = dao.findContactsByEmail(listOf(metadata.fromContact.email)).firstOrNull()
-        if(fromContact != null){
-            if(fromContact.spamScore >= SPAM_COUNTER)
-                labels.add(Label.defaultItems.spam)
-        }
+        if(!meAsSender) {
+            val fromContact = dao.findContactsByEmail(listOf(metadata.fromContact.email)).firstOrNull()
+            if (fromContact != null) {
+                if (fromContact.spamScore >= SPAM_COUNTER)
+                    labels.add(Label.defaultItems.spam)
+            }
 
-        if(metadata.isSpam) labels.add(Label.defaultItems.spam)
+            if (metadata.isSpam) labels.add(Label.defaultItems.spam)
+        }
 
         val json = JSONObject(apiClient.getBodyFromEmail(metadata.metadataKey).body)
         val body = json.getString("body")

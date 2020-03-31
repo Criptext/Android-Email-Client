@@ -619,4 +619,7 @@
   <string name="forgot_password_time">¿Olvidaste tu contraseña?(%1$d)</string>
   <string name="mark_as_unread_from_here">Marcar como no leído desde aquí</string>
   <string name="signed_out_title">¡Sesión Cerrada!</string>
+  <string name="unauthorized_upload">No se pudo subir el archivo: %1$s. Contactanos a soporte. Error: %1$s</string>
+  <string name="unauthorized_download">No se pudo descargar el archivo: %1$s. Contactanos a soporte. Error: %1$s</string>
+  <string name="expired_session">Sesión expirada. Ingresa nuevamente.</string>
 </resources>

@@ -52,7 +52,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    EmailDetailResult.DownloadFile.Unauthorized(UIMessage(R.string.unauthorized_download, arrayOf(filepath, ex.toString())))
                 ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.DownloadFile.Forbidden()
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->

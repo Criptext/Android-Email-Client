@@ -336,7 +336,7 @@ class ProfileController(
                 scene.showMessage(result.message)
             }
             is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(uiObserver)

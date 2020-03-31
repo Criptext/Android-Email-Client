@@ -45,7 +45,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
             if(ex is ServerErrorException) {
                 when {
                     ex.errorCode == ServerCodes.Unauthorized ->
-                        ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                        ComposerResult.UploadFile.Unauthorized(UIMessage(R.string.unauthorized_upload, arrayOf(filepath, ex.toString())), uuid)
                     ex.errorCode == ServerCodes.Forbidden ->
                         ComposerResult.UploadFile.Forbidden()
                     ex.errorCode == ServerCodes.PayloadTooLarge ->

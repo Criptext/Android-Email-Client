@@ -30,6 +30,7 @@ import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.PathUtil
@@ -47,7 +48,6 @@ import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import java.net.URLDecoder
 import java.util.*
-import kotlin.concurrent.thread
 
 /**
  * Created by sebas on 3/12/18.
@@ -64,9 +64,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                  private val keyboard: KeyboardManager) : SceneController() {
 
 
-    private val remoteChangeDataSourceListener: (GeneralResult) -> Unit = { result ->
+    private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.ActiveAccountUpdateMailbox -> onActiveAccountMailboxUpdate(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
@@ -199,6 +200,24 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onLogout(result: GeneralResult.Logout){
+        when (result) {
+            is GeneralResult.Logout.Success -> {
+                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
+
+            }
+        }
+    }
+
     private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
@@ -311,7 +330,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -366,7 +385,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -387,7 +406,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -419,7 +438,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmail.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is EmailDetailResult.MoveEmail.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -446,7 +465,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -496,7 +515,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 updateAttachmentProgress(result.emailId, result.filetoken, result.progress)
             }
             is EmailDetailResult.DownloadFile.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                scene.showError(result.message)
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -910,7 +929,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         PinLockUtils.enablePinLock()
 
         dataSource.listener = dataSourceListener
-        generalDataSource.listener = remoteChangeDataSourceListener
+        generalDataSource.listener = generalDataSourceListener
         websocketEvents.setListener(webSocketEventListener)
 
         val extras = host.getIntentExtras()

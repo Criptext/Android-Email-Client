@@ -131,11 +131,12 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) } returns true
         runAfterSelectingAnAttachment {
             clearMocks(host)
+            val errorMessage = UIMessage(R.string.unable_to_upload, arrayOf("/test.pdf"))
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Failure(filepath = "/test.pdf",
-                    message = UIMessage(R.string.network_error_exception), uuid = model.attachments[0].uuid))
+                    message = errorMessage, uuid = model.attachments[0].uuid))
 
             model.attachments.size `should be` 0
-            verify { scene.showAttachmentErrorDialog("/test.pdf") }
+            verify { scene.showAttachmentErrorDialog(errorMessage) }
         }
     }
 }

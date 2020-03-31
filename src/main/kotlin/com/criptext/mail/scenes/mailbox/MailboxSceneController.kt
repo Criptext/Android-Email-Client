@@ -34,6 +34,7 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -71,6 +72,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
         when(result) {
             is GeneralResult.DeviceRemoved -> onDeviceRemovedRemotely(result)
+            is GeneralResult.Logout -> onLogout(result)
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.BackgroundAccountsUpdateMailbox -> onBackgroundAccountsMailboxUpdated(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
@@ -838,7 +840,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.EmptyTrash.Failure ->
                     scene.showMessage(resultData.message)
                 is MailboxResult.EmptyTrash.Unauthorized ->
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.Logout(false))
                 is MailboxResult.EmptyTrash.Forbidden ->
                     scene.showConfirmPasswordDialog(observer)
             }
@@ -958,7 +960,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.Logout(false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -986,7 +988,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
                 is MailboxResult.MoveEmailThread.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.Logout(false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1013,7 +1015,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(result.message)
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.Logout(false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1072,7 +1074,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
                 is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                    generalDataSource.submitRequest(GeneralRequest.Logout(false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1396,7 +1398,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
@@ -1413,6 +1415,24 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
                     host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            true, true)
+                else {
+                    activeAccount = result.activeAccount
+                    host.exitToScene(MailboxParams(),
+                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            false, true)
+                }
+
+            }
+        }
+    }
+
+    private fun onLogout(result: GeneralResult.Logout){
+        when (result) {
+            is GeneralResult.Logout.Success -> {
+                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
+                if(result.activeAccount == null)
+                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
                             true, true)
                 else {
                     activeAccount = result.activeAccount

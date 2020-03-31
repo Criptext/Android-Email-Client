@@ -45,7 +45,7 @@ sealed class ComposerResult {
         data class MaxFilesExceeds(val filepath: String, val uuid: String): UploadFile()
         data class PayloadTooLarge(val filepath: String, val headers: ResultHeaders, val uuid: String): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage, val uuid: String): UploadFile()
-        data class Unauthorized(val message: UIMessage): UploadFile()
+        data class Unauthorized(val message: UIMessage, val uuid: String): UploadFile()
         class Forbidden: UploadFile()
         class EnterpriseSuspended(): UploadFile()
     }

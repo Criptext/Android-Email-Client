@@ -311,11 +311,12 @@ class ComposerController(private val storage: KeyValueStorage,
             }
             is ComposerResult.UploadFile.Failure -> {
                 removeAttachmentByUUID(result.uuid)
-                scene.showAttachmentErrorDialog(result.filepath)
+                scene.showAttachmentErrorDialog(result.message)
                 handleNextUpload()
             }
             is ComposerResult.UploadFile.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+                removeAttachmentByUUID(result.uuid, true)
+                scene.showAttachmentErrorDialog(result.message)
             }
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
@@ -693,6 +694,7 @@ class ComposerController(private val storage: KeyValueStorage,
         updateModelWithInputData(data)
         if(fullCleanup) {
             scene.observer = null
+            dataSource.listener = null
         }
     }
 
