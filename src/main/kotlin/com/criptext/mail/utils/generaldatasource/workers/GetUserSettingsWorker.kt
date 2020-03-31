@@ -28,7 +28,7 @@ class GetUserSettingsWorker(
                 GeneralResult.GetUserSettings) -> Unit)
     : BackgroundWorker<GeneralResult.GetUserSettings> {
 
-    override val canBeParallelized = true
+    override val canBeParallelized = false
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.GetUserSettings {

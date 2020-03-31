@@ -1,6 +1,7 @@
 package com.criptext.mail.db.models
 
 import androidx.room.*
+import org.json.JSONObject
 
 
 @Entity(tableName = "customDomain", indices = [Index(value = ["accountId"], name = "account_id_custom_domain_index")],
@@ -29,4 +30,18 @@ class CustomDomain(
         @ColumnInfo(name = "accountId")
         var accountId : Long
 
-)
+){
+    companion object{
+        fun fromJSON(jsonString: String, accountId: Long): CustomDomain {
+            val json = JSONObject(jsonString)
+            return CustomDomain(
+                    id = 0,
+                    name = json.getString("name"),
+                    rowId = json.getLong("rowId"),
+                    validated = json.getBoolean("validated"),
+                    accountId = accountId
+
+            )
+        }
+    }
+}

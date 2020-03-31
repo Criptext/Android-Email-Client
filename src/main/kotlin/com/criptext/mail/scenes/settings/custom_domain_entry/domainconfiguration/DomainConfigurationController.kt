@@ -197,6 +197,7 @@ class DomainConfigurationController(
                 scene.setProgress(100)
                 scene.enableNextButton(true)
                 model.validationSuccess = true
+                model.domain.validated = true
             }
             is DomainConfigurationResult.ValidateDomain.Failure -> {
                 if(model.retryTimeValidateRecords < RETRY_TIMES_DEFAULT) {

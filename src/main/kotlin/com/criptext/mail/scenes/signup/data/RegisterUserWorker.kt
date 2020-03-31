@@ -47,7 +47,7 @@ class RegisterUserWorker(
 
     override val canBeParallelized = false
     private val apiClient = SignUpAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao, db.aliasDao(), db.customDomainDao())
 
 
     override fun catchException(ex: Exception): RegisterUser {

@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.CustomDomain
 
 @Dao
@@ -42,4 +41,12 @@ interface CustomDomainDao {
 
     @Delete
     fun deleteAll(customDomain: List<CustomDomain>)
+
+    @Query("""SELECT * FROM customDomain
+        WHERE id > :lastId
+        AND accountId =:accountId
+        ORDER BY id
+        LIMIT :limit
+    """)
+    fun getAllForLinkFile(limit: Int, lastId: Long, accountId:Long) : List<CustomDomain>
 }

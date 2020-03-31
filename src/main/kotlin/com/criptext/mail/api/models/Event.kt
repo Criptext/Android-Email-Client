@@ -73,6 +73,13 @@ data class Event(val rowid: Long, val recipientId: String, val domain: String, v
             const val suspendEnterepriseAccount = 600
             const val unsuspendEnterepriseAccount = 601
 
+            //User Account Events
+            const val addressCreated = 701
+            const val addressStatusUpdated = 702
+            const val addressDeleted = 703
+            const val customDomainCreated = 704
+            const val customDomainDeleted = 705
+
         }
     }
 }

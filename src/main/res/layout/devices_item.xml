@@ -89,7 +89,7 @@
                 android:layout_row="0"
                 android:visibility="gone"
                 android:textAlignment="textEnd"
-                android:textColor="#61b900"
+                android:textColor="@color/current_device"
                 android:textSize="14sp" />
             <ImageView
                 android:id="@+id/imageViewTrashDevice"

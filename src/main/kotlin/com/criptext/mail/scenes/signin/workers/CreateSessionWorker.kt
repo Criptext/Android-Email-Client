@@ -8,6 +8,8 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.dao.AliasDao
+import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
@@ -32,6 +34,8 @@ class CreateSessionWorker(val httpClient: HttpClient,
                           private val username: String,
                           private val domain: String,
                           private val accountDao: AccountDao,
+                          private val aliasDao: AliasDao,
+                          private val customDomainDao: CustomDomainDao,
                           private val keyValueStorage: KeyValueStorage,
                           private val keyGenerator: SignalKeyGenerator,
                           private val messagingInstance: MessagingInstance,
@@ -41,7 +45,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
     : BackgroundWorker<SignInResult.CreateSessionFromLink> {
 
     private val apiClient = SignInAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao, aliasDao, customDomainDao)
 
     override val canBeParallelized = false
 

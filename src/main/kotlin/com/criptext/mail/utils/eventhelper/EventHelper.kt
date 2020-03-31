@@ -7,9 +7,7 @@ import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
@@ -74,6 +72,11 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.peerLabelDeleted -> processLabelDeleted(it)
                     Event.Cmd.trackingUpdate -> processTrackingUpdates(it)
                     Event.Cmd.newError -> processOnError(it)
+                    Event.Cmd.addressCreated -> processOnAddressCreated(it)
+                    Event.Cmd.addressStatusUpdated -> processOnAddressStatusUpdated(it)
+                    Event.Cmd.addressDeleted -> processOnAddressDeleted(it)
+                    Event.Cmd.customDomainCreated -> processOnCustomDomainCreated(it)
+                    Event.Cmd.customDomainDeleted -> processOnCustomDomainDeleted(it)
                 }
             }
 
@@ -375,6 +378,96 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun processOnError(event: Event) {
         eventsToAcknowldege.add(event.rowid)
+    }
+
+    private fun processOnAddressCreated(event: Event){
+        val operation = Result.of {
+            val metadata = PeerAddressCreated.fromJSON(event.params)
+
+            val alias = Alias(
+                    id = 0,
+                    name = metadata.addressName,
+                    domain = if(metadata.addressDomain == Contact.mainDomain) null else metadata.addressDomain,
+                    active = true,
+                    rowId = metadata.addressId,
+                    accountId = activeAccount.id
+            )
+            db.createAlias(alias)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnAddressStatusUpdated(event: Event){
+        val operation = Result.of {
+            val metadata = PeerAddressStatusUpdated.fromJSON(event.params)
+
+            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId } ?: throw Exception()
+            alias.active = metadata.isActive
+            db.updateAliasStatus(alias)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnAddressDeleted(event: Event){
+        val operation = Result.of {
+            val metadata = PeerAddressDeleted.fromJSON(event.params)
+
+            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId } ?: throw Exception()
+            db.deleteAlias(alias)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnCustomDomainCreated(event: Event){
+        val operation = Result.of {
+            val metadata = PeerCustomDomainCreated.fromJSON(event.params)
+
+            val customDomain = CustomDomain(
+                    id = 0,
+                    rowId = 0,
+                    name = metadata.domainName,
+                    validated = true,
+                    accountId = activeAccount.id
+            )
+            db.createCustomDomain(customDomain)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnCustomDomainDeleted(event: Event){
+        val operation = Result.of {
+            val metadata = PeerCustomDomainDeleted.fromJSON(event.params)
+
+            val customDomain = db.getCustomDomains(activeAccount.id).find { it.name == metadata.domainName } ?: throw Exception()
+            db.deleteCustomDomain(customDomain)
+            db.deleteAliasesByDomain(customDomain.name)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
     }
 
     private fun getImageFromCdn(metadata: UpdateBannerEventData): Result<UpdateBannerData, java.lang.Exception> {

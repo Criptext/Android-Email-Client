@@ -6,5 +6,6 @@ interface CustomDomainUIObserver: UIObserver {
     fun onBackButtonPressed()
     fun onRemoveDomain(domainName: String, position: Int)
     fun onRemoveDomainConfirmed(domainName: String, position: Int)
+    fun onValidateDomainPressed(domainName: String, position: Int)
     fun onRemoveDeviceCancel()
 }

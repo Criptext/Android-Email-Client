@@ -146,29 +146,30 @@ class SendMailWorker(private val signalClient: SignalClient,
                 .filter { it !in guestEmails?.cc ?: listOf() }
                 .filter { it !in guestEmails?.bcc ?: listOf() }
                 .map { intendedEmailAddress ->
-            val domain: String
+            val intendedDomain: String
             val intendedRecipientId = if(EmailAddressUtils.isFromCriptextDomain(intendedEmailAddress)) {
-                domain = Contact.mainDomain
+                intendedDomain = Contact.mainDomain
                 EmailAddressUtils.extractRecipientIdFromCriptextAddress(intendedEmailAddress)
             }else {
-                domain = EmailAddressUtils.extractEmailAddressDomain(intendedEmailAddress)
+                intendedDomain = EmailAddressUtils.extractEmailAddressDomain(intendedEmailAddress)
                 intendedEmailAddress
             }
             val recipientId = aliasMap[intendedRecipientId] ?: intendedRecipientId
+            val domain = if(intendedRecipientId == recipientId) intendedDomain else Contact.mainDomain
             val emailAddress = recipientId.plus("@$domain")
-            val alias = if(intendedRecipientId == recipientId) null
+            val (alias, aliasDomain) = if(intendedRecipientId == recipientId) Pair(null, null)
             else {
-                if(domain != Contact.mainDomain)
-                    EmailAddressUtils.extractRecipientIdFromAddress(intendedRecipientId, domain)
+                if(intendedDomain != Contact.mainDomain)
+                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(intendedRecipientId, intendedDomain), intendedDomain)
                 else
-                    intendedRecipientId
+                    Pair(intendedRecipientId, intendedDomain)
             }
             val devices = availableAddresses[emailAddress]
             if (devices == null || devices.isEmpty()) {
                 if (type == PostEmailBody.RecipientTypes.peer)
                     return emptyList()
-                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias))
-                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias))
+                return if(domain == Contact.mainDomain) listOf(PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias, aliasDomain))
+                else listOf(PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias, aliasDomain))
             }
             devices.filter { deviceId ->
                 type != PostEmailBody.RecipientTypes.peer || deviceId != activeAccount.deviceId
@@ -192,11 +193,12 @@ class SendMailWorker(private val signalClient: SignalClient,
                                 preview = encryptOperation.value.second.encryptedB64,
                                 previewMessageType = encryptOperation.value.second.type,
                                 domain = domain,
-                                alias = alias)
+                                alias = alias,
+                                aliasDomain = aliasDomain)
                     }
                     is Result.Failure -> {
-                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias)
-                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias)
+                        if(domain == Contact.mainDomain) PostEmailBody.EmptyCriptextEmail(recipientId, domain, alias, aliasDomain)
+                        else PostEmailBody.EmptyCriptextEmail(EmailAddressUtils.extractRecipientIdFromAddress(recipientId, domain), domain, alias, aliasDomain)
                     }
                 }
             }

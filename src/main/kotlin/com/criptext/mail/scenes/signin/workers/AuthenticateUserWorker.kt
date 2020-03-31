@@ -10,6 +10,8 @@ import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.dao.AliasDao
+import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Contact
@@ -24,6 +26,7 @@ import com.criptext.mail.utils.*
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -36,6 +39,8 @@ class AuthenticateUserWorker(
         httpClient: HttpClient,
         private val isMultiple: Boolean,
         private val accountDao: AccountDao,
+        private val aliasDao: AliasDao,
+        private val customDomainDao: CustomDomainDao,
         private val keyValueStorage: KeyValueStorage,
         private val keyGenerator: SignalKeyGenerator,
         private val userData: UserData,
@@ -44,7 +49,8 @@ class AuthenticateUserWorker(
     : BackgroundWorker<SignInResult.AuthenticateUser> {
 
     private val apiClient = SignInAPIClient(httpClient)
-    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao)
+    private val storeAccountTransaction = StoreAccountTransaction(signUpDao, keyValueStorage, accountDao, aliasDao, customDomainDao)
+    private lateinit var addressesJsonArray: JSONArray
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SignInResult.AuthenticateUser {
@@ -60,6 +66,7 @@ class AuthenticateUserWorker(
     private fun authenticateUser(): String {
         val responseString = apiClient.authenticateUser(userData).body
         keyValueStorage.putString(KeyValueStorage.StringKey.SignInSession, responseString)
+        addressesJsonArray = JSONObject(responseString).getJSONArray("addresses")
         return responseString
     }
 
@@ -132,7 +139,7 @@ class AuthenticateUserWorker(
             storeAccountTransaction.run(account = account,
                                         keyBundle = registrationBundles.privateBundle,
                                         extraSteps = postKeyBundleStep, keepData = shouldKeepData,
-                                        isMultiple = isMultiple)
+                                        isMultiple = isMultiple, addressesJsonArray = addressesJsonArray)
         }
 
     }

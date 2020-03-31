@@ -58,7 +58,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
                                      val messageType: SignalEncryptedData.Type,
                                      val type: RecipientTypes, val body: String, val fileKey: String?,
                                      val fileKeys: List<String>?, val preview: String,
-                                     val previewMessageType: SignalEncryptedData.Type, val alias: String?): CriptextEmail() {
+                                     val previewMessageType: SignalEncryptedData.Type, val alias: String?,
+                                     val aliasDomain: String?): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
@@ -73,8 +74,10 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("fileKeys", JSONArray(fileKeys))
             jsonOuter.put("type", type.toString())
             jsonOuter.put("username", recipientId)
-            if(alias != null)
-                jsonOuter.put("alias", alias)
+            if(alias != null) {
+                jsonOuter.put("aliasUsername", alias)
+                jsonOuter.put("aliasDomain", aliasDomain)
+            }
             jsonOuter.put("domain", domain)
             jsonOuter.put("type", type.toString())
             jsonOuter.put("emails", JSONArray().put(json))
@@ -82,12 +85,16 @@ class PostEmailBody(val threadId: String?, val subject: String,
         }
     }
 
-    data class EmptyCriptextEmail(val recipientId: String, val domain: String, val alias: String?): CriptextEmail() {
+    data class EmptyCriptextEmail(val recipientId: String, val domain: String, val alias: String?,
+                                  val aliasDomain: String?): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val jsonOuter = JSONObject()
             jsonOuter.put("username", recipientId)
-            if(alias != null) jsonOuter.put("alias", alias)
+            if(alias != null) {
+                jsonOuter.put("aliasUsername", alias)
+                jsonOuter.put("aliasDomain", aliasDomain)
+            }
             jsonOuter.put("domain", domain)
             jsonOuter.put("emails", JSONArray())
             return jsonOuter
