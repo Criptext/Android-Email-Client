@@ -47,6 +47,7 @@ class SignUpSceneController(
         return model.username.value.isNotEmpty()
                 && model.username.state !is FormInputState.Error
                 &&  model.passwordState is FormInputState.Valid
+                && model.recoveryEmail.value.isNotEmpty()
                 && model.recoveryEmail.state !is FormInputState.Error
                 && isCheckedTermsAndConditions
     }
@@ -192,14 +193,8 @@ class SignUpSceneController(
 
         override fun onCreateAccountClick() {
             if(shouldCreateButtonBeEnabled()) {
-                if (!isSetRecoveryEmail) {
-                    scene.showRecoveryEmailWarningDialog(
-                            onRecoveryEmailWarningListener
-                    )
-                } else {
-                    keyboardManager.hideKeyboard()
-                    this@SignUpSceneController.submitCreateUser()
-                }
+                keyboardManager.hideKeyboard()
+                this@SignUpSceneController.submitCreateUser()
             }
         }
 

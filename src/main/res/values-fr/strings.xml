@@ -230,7 +230,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="fullname_length_error">Le nom est trop long.</string>
   <string name="fullname_empty_error">Le nom ne peut pas être vide.</string>
   <string name="fullname_hint">Nom complet</string>
-  <string name="recovery_optional_hint">Email de récupération (facultatif)</string>
+  <string name="recovery_optional_hint">Email de récupération</string>
   <string name="username_hint">Nom d\'utilisateur</string>
   <string name="login">Connexion</string>
   <string name="login_body">Vérifiez et approuvez sur votre appareil Criptext existant pour continuer.</string>

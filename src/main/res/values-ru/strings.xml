@@ -230,7 +230,7 @@
   <string name="fullname_length_error">Название слишком длинное.</string>
   <string name="fullname_empty_error">Название не может быть пустым.</string>
   <string name="fullname_hint">ФИО</string>
-  <string name="recovery_optional_hint">Электронная почта для восстановления (необязательно)</string>
+  <string name="recovery_optional_hint">Электронная почта для восстановления</string>
   <string name="username_hint">Имя пользователя</string>
   <string name="login">Вход</string>
   <string name="login_body">Проверьте и разрешите на своем существующем устройстве Criptext для продолжения.</string>
