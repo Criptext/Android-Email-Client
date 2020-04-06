@@ -23,10 +23,6 @@ class AliasHolder(val view: View) : RecyclerView.ViewHolder(view) {
     fun bindAlias(aliasItem: AliasItem){
         textViewDomainName.text = aliasItem.name
         switchActiveAlias.isChecked = aliasItem.isActive
-        if(aliasItem.domain == null) {
-            imageTrashDomain.visibility = View.INVISIBLE
-        }
-
     }
 
     fun setOnClickListener(onClick: () -> Boolean){

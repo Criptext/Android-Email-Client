@@ -213,6 +213,7 @@ class AliasesController(
     }
 
     private fun onAliasDeleted(result: AliasesResult.DeleteAlias){
+        scene.deleteAliasDialogDismiss()
         when(result){
             is AliasesResult.DeleteAlias.Success -> {
                 if(result.domain != null){
@@ -223,6 +224,9 @@ class AliasesController(
                     criptextAliasWrapperListController.remove(result.position)
                     scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${Contact.mainDomain}")))
                 }
+            }
+            is AliasesResult.DeleteAlias.WaitToDelete -> {
+                scene.showCriptextAliasDeleteRestrictionDialog(result.message)
             }
             is AliasesResult.DeleteAlias.Failure -> {
                 scene.showMessage(result.message)

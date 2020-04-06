@@ -45,6 +45,8 @@ interface AliasesScene{
     fun showAddAliasDialog(domains: List<String>)
     fun addAliasDialogToggleLoad(isLoading: Boolean)
     fun addAliasDialogDismiss()
+    fun deleteAliasDialogDismiss()
+    fun showCriptextAliasDeleteRestrictionDialog(message: UIMessage)
     fun addButtonEnable(enabled: Boolean)
     fun showProgressBar(show: Boolean)
 
@@ -177,6 +179,10 @@ interface AliasesScene{
             settingAddedAliasDialog.dismissDialog()
         }
 
+        override fun deleteAliasDialogDismiss() {
+            settingRemoveAliasDialog.dismissDialog()
+        }
+
         override fun addButtonEnable(enabled: Boolean) {
             addAliasButon.isEnabled = enabled
             addAliasButon.isClickable = enabled
@@ -226,6 +232,17 @@ interface AliasesScene{
 
         override fun showProgressBar(show: Boolean) {
             aliasLoadProgress.visibility = if(show) View.VISIBLE else View.GONE
+        }
+
+        override fun showCriptextAliasDeleteRestrictionDialog(message: UIMessage) {
+            GeneralMessageOkDialog(context,
+                    DialogData.DialogMessageData(
+                            title = UIMessage(R.string.delete_criptext_alias_wait_title),
+                            message = listOf(message),
+                            onOkPress = {},
+                            type = DialogType.Message()
+                    )
+            ).showDialog()
         }
 
         override fun showMessage(message: UIMessage) {

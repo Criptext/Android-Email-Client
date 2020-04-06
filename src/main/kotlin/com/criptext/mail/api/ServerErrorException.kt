@@ -6,5 +6,6 @@ package com.criptext.mail.api
  */
 class ServerErrorException(
         val errorCode: Int,
-        val headers: ResultHeaders? = null
+        val headers: ResultHeaders? = null,
+        val body: String? = null
 ): Exception("Server error code: $errorCode")

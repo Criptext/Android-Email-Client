@@ -698,4 +698,6 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="btn_verify">Verify</string>
   <string name="domain_not_verified">Not Verified</string>
   <string name="domain_verified">Verified</string>
+  <string name="delete_criptext_alias_wait_title">Oops…</string>
+  <string name="delete_criptext_alias_wait">Aliases ending in @criptext.com cannot be deleted within 15 days from the day they were created.\n\n<b>Days remaining: %1$d</b></string>
 </resources>
