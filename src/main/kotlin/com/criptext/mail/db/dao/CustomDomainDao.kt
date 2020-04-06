@@ -42,6 +42,9 @@ interface CustomDomainDao {
     @Delete
     fun deleteAll(customDomain: List<CustomDomain>)
 
+    @Query("DELETE FROM customDomain WHERE accountId=:accountId")
+    fun deleteByAccountId(accountId: Long)
+
     @Query("""SELECT * FROM customDomain
         WHERE id > :lastId
         AND accountId =:accountId

@@ -681,4 +681,6 @@
   <string name="btn_verify">Verificar</string>
   <string name="domain_not_verified">No Verificado</string>
   <string name="domain_verified">Verificado</string>
+  <string name="delete_criptext_alias_wait_title">Oops…</string>
+  <string name="delete_criptext_alias_wait">Aliases que terminan en @criptext.com no pueden ser eliminados los primeros 15 días desde su creación.\n\n<b>Días restantes: %1$d</b></string>
 </resources>

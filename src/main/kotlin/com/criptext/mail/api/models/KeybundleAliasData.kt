@@ -13,8 +13,13 @@ class KeybundleAliasData {
                 val users = jsonObject.getJSONArray("users")
                 for(j in 0 until users.length()){
                     val user = users.getJSONObject(j)
-                    if(domain == Contact.mainDomain){
-                        map[user.getString("alias")] = user.getString("username")
+                    val originalDomain = jsonObject["originalDomain"]
+                    if(originalDomain == Contact.mainDomain){
+                        if(originalDomain != domain) {
+                            map[user.getString("alias").plus("@$domain")] = user.getString("username")
+                        } else {
+                            map[user.getString("alias")] = user.getString("username")
+                        }
                     } else {
                         map[user.getString("alias").plus("@$domain")] = user.getString("username").plus("@$domain")
                     }

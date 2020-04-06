@@ -13,6 +13,7 @@ sealed class AliasesResult{
 
     sealed class DeleteAlias: AliasesResult() {
         data class Success(val aliasName: String, val domain: String?, val position: Int): DeleteAlias()
+        data class WaitToDelete(val message: UIMessage): DeleteAlias()
         data class Failure(val message: UIMessage): DeleteAlias()
     }
 
