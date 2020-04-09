@@ -780,7 +780,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact?version=${BuildConfig.VERSION_NAME}&device=${DeviceUtils.getDeviceName()}&os=${DeviceUtils.getDeviceOS()}"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
         }
 
         override fun onSubmitButtonClicked() {

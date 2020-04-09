@@ -1,8 +1,6 @@
 package com.criptext.mail.scenes
 
-import android.Manifest
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,16 +12,15 @@ import android.view.MenuItem
 import android.webkit.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.utils.DownloadHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.WebViewUtils
-import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.file.DownloadBlobInterface
 import com.criptext.mail.utils.getLocalizedUIMessage
 import droidninja.filepicker.FilePickerConst
+
+
 
 
 class WebViewActivity : AppCompatActivity() {
@@ -37,20 +34,25 @@ class WebViewActivity : AppCompatActivity() {
     private val client = object : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             mUrl = url
-            view.loadUrl(url)
-            return true
+            return loadUrlOnView(mUrl!!)
         }
 
         @TargetApi(Build.VERSION_CODES.N)
         override fun shouldOverrideUrlLoading(
                 view: WebView, request: WebResourceRequest): Boolean {
             mUrl = request.url.toString()
-            view.loadUrl(request.url.toString())
-            return true
+            return loadUrlOnView(request.url.toString())
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             supportActionBar?.title = view.title
+        }
+
+        private fun loadUrlOnView(url: String): Boolean {
+            if (URLUtil.isNetworkUrl(url)) {
+                return false
+            }
+            return true
         }
     }
 
