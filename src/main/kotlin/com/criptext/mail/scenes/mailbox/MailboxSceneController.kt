@@ -230,9 +230,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Support(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = model.selectedLabel),
-                    true)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {

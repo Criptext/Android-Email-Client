@@ -6,11 +6,7 @@ import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.DisplayMetrics
-import android.view.ContextThemeWrapper
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -427,6 +423,18 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 }
             }
         }
+
+        bodyWebView.setOnTouchListener(object: View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent): Boolean {
+                if(event.pointerCount >= 2){
+                    zoomLayout.parent.requestDisallowInterceptTouchEvent(true)
+
+                }else
+                    zoomLayout.parent.requestDisallowInterceptTouchEvent(false)
+
+                return false
+            }
+        })
         val javascriptInterface = WebviewJavascriptInterface(context, zoomLayout, bodyWebView)
         bodyWebView.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
     }
@@ -450,7 +458,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     private fun setupZoomLayout(){
-        zoomLayout.mListener = object : MyZoomLayout.ZoomUpdateListener{
+        zoomLayout.mListener = object : MyZoomLayout.ZoomUpdateListener {
             override fun onUpdate(helper: ZoomEngine?, matrix: Matrix?) {
                 val values = FloatArray(9)
                 matrix?.getValues(values)

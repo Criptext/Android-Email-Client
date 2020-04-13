@@ -150,7 +150,7 @@ class SignUpSceneController(
         }
 
         override fun onContactSupportClick() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("contact?version=${BuildConfig.VERSION_NAME}&device=${DeviceUtils.getDeviceName()}&os=${DeviceUtils.getDeviceOS()}"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {
