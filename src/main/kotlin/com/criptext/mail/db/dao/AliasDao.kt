@@ -45,6 +45,9 @@ interface AliasDao {
     @Query("DELETE FROM alias WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")
     fun deleteByName(aliasName: String, domain: String?, accountId: Long)
 
+    @Query("DELETE FROM alias WHERE accountId=:accountId")
+    fun deleteByAccountId(accountId: Long)
+
     @Query("DELETE FROM alias")
     fun nukeTable()
 

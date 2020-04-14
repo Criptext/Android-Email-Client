@@ -87,6 +87,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     fun logout(accountId: Long){
         db.accountDao().logoutAccount(accountId)
+        db.aliasDao().deleteByAccountId(accountId)
+        db.customDomainDao().deleteByAccountId(accountId)
         db.rawIdentityKeyDao().deleteAll(accountId)
         db.rawPreKeyDao().deleteAll(accountId)
         db.rawSessionDao().deleteAll(accountId)

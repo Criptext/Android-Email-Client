@@ -48,7 +48,7 @@ class AddAliasWorker(
                     ServerCodes.BadRequest ->
                         AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_error, arrayOf(ex.toString())))
                     ServerCodes.TooManyDevices ->
-                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_max_error, arrayOf(ex.headers!!.getInt("Max-Addresses"))))
+                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_max_error, arrayOf(ex.headers!!.getInt("maxAliases"))))
                     else -> AliasesResult.AddAlias.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
                 }
             }
@@ -68,11 +68,7 @@ class AddAliasWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                val alias = aliasDao.getAliasByName(alias, domain, activeAccount.id)
-                if(alias != null)
-                    AliasesResult.AddAlias.Success(alias)
-                else
-                    catchException(NullPointerException())
+                AliasesResult.AddAlias.Success(finalResult.value)
             }
             is Result.Failure -> {
                 catchException(finalResult.error)
@@ -84,7 +80,7 @@ class AddAliasWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Unit, Exception> = Result.of {
+    private fun workOperation() : Result<Alias, Exception> = Result.of {
         apiClient.postAddAlias(alias, domain ?: Contact.mainDomain).body
     }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
             .flatMap { Result.of {
@@ -100,10 +96,20 @@ class AddAliasWorker(
                     domain = domain
             ))
             } }
+            .flatMap {
+                Result.of {
+                    val dbAlias = if(domain == null){
+                        aliasDao.getCriptextAliasByName(alias, activeAccount.id) ?: throw Exception()
+                    } else {
+                        aliasDao.getAliasByName(alias, domain, activeAccount.id) ?: throw Exception()
+                    }
+                    dbAlias
+                }
+            }
 
 
     private fun newRetryWithNewSessionOperation()
-            : Result<Unit, Exception> {
+            : Result<Alias, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient, activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
         return when(refreshOperation){

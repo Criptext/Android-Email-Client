@@ -43,6 +43,10 @@ class DeleteAliasWorker(
     private val apiClient = AliasesAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): AliasesResult.DeleteAlias {
+        if(ex is ServerErrorException && ex.errorCode == ServerCodes.PreConditionRequired && ex.body != null) {
+            val jsonBody = JSONObject(ex.body)
+            return AliasesResult.DeleteAlias.WaitToDelete(UIMessage(R.string.delete_criptext_alias_wait, arrayOf(jsonBody.getInt("daysLeft"))))
+        }
         return AliasesResult.DeleteAlias.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
     }
 
@@ -71,11 +75,19 @@ class DeleteAliasWorker(
     }
 
     private fun workOperation() : Result<Unit, Exception> = Result.of {
-        aliasDao.getAliasByName(alias, domain, activeAccount.id) ?: throw Exception()
-    }.flatMap {  Result.of { apiClient.deleteAlias(it.rowId) }
+        if(domain == null){
+            aliasDao.getCriptextAliasByName(alias, activeAccount.id) ?: throw Exception()
+        } else {
+            aliasDao.getAliasByName(alias, domain, activeAccount.id) ?: throw Exception()
+        }
+    }.flatMap {
+        Result.of {
+            apiClient.deleteAlias(it.rowId)
+            it
+        }
     }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
     .flatMap { Result.of {
-        aliasDao.deleteByName(alias, domain, activeAccount.id)
+        aliasDao.delete(it)
     } }
 
 
