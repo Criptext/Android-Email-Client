@@ -25,6 +25,7 @@ class LabelHolder(val view: View) : RecyclerView.ViewHolder(view){
 
     fun bindLabel(label: LabelWrapper) {
         nameView.text = label.text
+        checkBoxView.isChecked = label.isSelected
         DrawableCompat.setTint(labelColor.drawable, Color.parseColor("#${label.color}"))
     }
 

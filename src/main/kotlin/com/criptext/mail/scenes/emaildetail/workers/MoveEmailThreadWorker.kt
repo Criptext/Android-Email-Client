@@ -98,17 +98,14 @@ class MoveEmailThreadWorker(
         val selectedLabels = SelectedLabels()
         selectedLabels.add(LabelWrapper(db.getLabelByName(chosenLabel, activeAccount.id)))
 
-        val selectedLabelsList = selectedLabels.toList().map { it.label }
-        val systemLabels = db.getLabelsByName(Label.defaultItems.toList().map { it.text }, activeAccount.id)
-                .filter { !rejectedLabels.contains(it.id) }
-
         val peerSelectedLabels = selectedLabels.toList()
                 .filter { it.text != currentLabel.text }
                 .toList().map { it.text }
-        val peerRemovedLabels = db.getLabelsFromThreadId(threadId)
-                .filter { !selectedLabelsList.contains(it) }
-                .filter { (!systemLabels.contains(it)) }
-                .map { it.text }
+        val peerRemovedLabels = if(currentLabel == Label.defaultItems.trash
+                || currentLabel == Label.defaultItems.spam)
+            listOf(currentLabel.text)
+        else
+            emptyList()
 
         val result = Result.of {
             if(chosenLabel == Label.LABEL_SPAM){

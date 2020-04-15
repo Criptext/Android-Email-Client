@@ -112,20 +112,31 @@ class UpdateEmailThreadsLabelsWorker(
 
         val result =
             if(shouldRemoveCurrentLabel) {
-                if(trueCurrentLabel == Label.defaultItems.spam){
-                    peerRemovedLabels.removeAll(peerRemovedLabels)
-                    peerRemovedLabels.add(Label.LABEL_SPAM)
-                    val fromContacts  = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                    if(fromContacts.isNotEmpty())
-                        apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
-                }else
-                    peerRemovedLabels.add(trueCurrentLabel.text)
-                Result.of { removeCurrentLabelFromEmails(emailIds)}
+                when(trueCurrentLabel) {
+                    defaultItems.spam -> {
+                        peerRemovedLabels.removeAll(peerRemovedLabels)
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                        if (fromContacts.isNotEmpty())
+                            apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
+                        Result.of { removeCurrentLabelFromEmails(emailIds)}
+
+                    }
+                    defaultItems.trash -> {
+                        peerRemovedLabels.removeAll(peerRemovedLabels)
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        Result.of { removeCurrentLabelFromEmails(emailIds)}
+                    }
+                    else -> {
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        Result.of { removeCurrentLabelFromEmails(emailIds)}
+                    }
+                }
             }else {
                 Result.of{ updateLabelEmailRelations(emailIds) }
             }
 
-        val isStarred = db.getLabelsFromThreadIds(threadIds = selectedThreadIds).contains(Label.defaultItems.starred)
+        val isStarred = db.getLabelsFromThreadIds(threadIds = selectedThreadIds).contains(defaultItems.starred)
 
         return when(result){
             is Result.Success -> {
