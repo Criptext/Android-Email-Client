@@ -82,23 +82,33 @@ class UpdateEmailThreadLabelsWorker(
 
         val result =
             if(removeCurrentLabel){
-                if(trueCurrentLabel == Label.defaultItems.spam){
-                    peerRemovedLabels.removeAll(peerRemovedLabels)
-                    peerRemovedLabels.add(Label.LABEL_SPAM)
-                    val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                    if(fromContacts.isNotEmpty())
-                        apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
-                }else
-                    peerRemovedLabels.add(trueCurrentLabel.text)
-                    Result.of {
-                        if(trueCurrentLabel == Label.defaultItems.starred
-                                || trueCurrentLabel == Label.defaultItems.sent){
-                            db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds, activeAccount.id)
-                        }
-                        else{
-                            db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id)
-                    } }
+                when(trueCurrentLabel) {
+                    Label.defaultItems.spam -> {
+                        peerRemovedLabels.removeAll(peerRemovedLabels)
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                        if (fromContacts.isNotEmpty())
+                            apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
+                        Result.of { db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id) }
 
+                    }
+                    Label.defaultItems.trash -> {
+                        peerRemovedLabels.removeAll(peerRemovedLabels)
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        Result.of { db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id)}
+                    }
+                    else -> {
+                        peerRemovedLabels.add(trueCurrentLabel.text)
+                        Result.of {
+                            if(trueCurrentLabel == Label.defaultItems.starred
+                                    || trueCurrentLabel == Label.defaultItems.sent){
+                                db.deleteRelationByLabelAndEmailIds(Label.defaultItems.inbox.id, emailIds, activeAccount.id)
+                            }
+                            else{
+                                db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id)
+                            } }
+                    }
+                }
             } else {
                 Result.of {
                     db.deleteRelationByEmailIds(emailIds = emailIds)

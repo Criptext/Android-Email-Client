@@ -930,7 +930,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         is LoadParams.NewPage ->
                             threadListController.appendAll(result.emailPreviews, hasReachedEnd)
                         is LoadParams.UpdatePage -> {
-                            threadListController.replaceAndAddThreads(result.emailPreviews)
+                            threadListController.populateThreads(result.emailPreviews)
                         }
                     }
 
@@ -976,7 +976,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                         threadListController.removeThreadsById(result.threadIds)
                         feedController.reloadFeeds()
                         generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
-                    }else{
+                    } else {
                         threadListController.reRenderAll()
                     }
                     dataSource.submitRequest(MailboxRequest.GetMenuInformation())
@@ -1140,7 +1140,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
                     Event.Cmd.newEmail -> {
                         val newEmailEvent = it as ParsedEvent.NewEmail
-                        threadListController.replaceAndAddThreads(listOf(newEmailEvent.preview))
+                        threadListController.addNew(newEmailEvent.preview)
                     }
                     Event.Cmd.peerEmailThreadReadStatusUpdate -> {
                         val threadReadEvent = it as ParsedEvent.ReadThreads

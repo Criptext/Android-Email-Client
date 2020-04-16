@@ -20,6 +20,8 @@ data class LabelWrapper(val label: Label) {
         get() = label.type
     val visible: Boolean
         get() = label.visible
+    val uuid: String
+        get() = label.uuid
 
     var isSelected = false
 }

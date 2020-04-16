@@ -93,14 +93,7 @@ class ThreadListController(private val model : MailboxSceneModel,
     }
 
     fun replaceAndAddThreads(threads: List<EmailPreview>) {
-        threads.forEach { thread ->
-            val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
-            if (position > -1) {
-                model.threads[position] = thread
-            } else {
-                model.threads.add(0, thread)
-            }
-        }
+
         virtualListView?.notifyDataSetChanged()
     }
 
@@ -164,7 +157,7 @@ class ThreadListController(private val model : MailboxSceneModel,
         model.threads.forEachIndexed { index, emailPreview ->
             for (threadId in threadIds)
                 if(emailPreview.threadId == threadId) {
-                    model.threads[index] = emailPreview.copy(isStarred = isStarred)
+                    model.threads[index].isStarred = isStarred
                 }
         }
         virtualListView?.notifyDataSetChanged()

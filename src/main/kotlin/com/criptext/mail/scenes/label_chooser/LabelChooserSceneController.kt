@@ -65,7 +65,7 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
 
         labelWrappers.forEach { labelWrapper ->
             defaultSelectedLabels.forEach { selectedLabel ->
-                if(labelWrapper.id == selectedLabel.id){
+                if(labelWrapper.uuid == selectedLabel.uuid){
                     labelWrapper.isSelected = true
                 }
             }
@@ -73,13 +73,10 @@ class LabelChooserSceneController(private val scene: LabelChooserScene,
 
         val localizedLabels = labelWrappers.map {
             if(it.type == LabelTypes.SYSTEM) {
-                val label = it.label.copy(
-                    text = scene.getLabelLocalizedName(it.text)
-                )
-                it.copy(label = label)
-            }else
-                it
-        }
+                it.label.text = scene.getLabelLocalizedName(it.text)
+            }
+            it
+        }.filter { it.visible }
 
         model.selectedLabels.addMultipleSelected(selectedLabelWrappers)
         model.labels.addAll(localizedLabels)
