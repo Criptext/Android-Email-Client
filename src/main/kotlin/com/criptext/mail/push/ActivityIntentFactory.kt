@@ -23,7 +23,7 @@ class ActivityIntentFactory {
                 PushTypes.openActivity -> {
                     intent = Intent(ctx, MailboxActivity::class.java)
                     intent.addCategory(Intent.CATEGORY_LAUNCHER)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     putAccountExtra(intent, account, domain)
                     return intent
                 }
@@ -31,7 +31,7 @@ class ActivityIntentFactory {
                     PushTypes.syncDevice -> {
                     intent = Intent(ctx, MailboxActivity::class.java)
                     intent.action = Intent.ACTION_MAIN
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     putAccountExtra(intent, account, domain)
                     return intent
                 }
@@ -39,7 +39,7 @@ class ActivityIntentFactory {
                     intent = Intent(ctx, MailboxActivity::class.java)
                     intent.action = Intent.ACTION_MAIN
                     intent.addCategory(Intent.CATEGORY_LAUNCHER)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     putAccountExtra(intent, account, domain)
                     if (extraParam != null) {
                         intent.putExtra(MessagingInstance.THREAD_ID, extraParam)

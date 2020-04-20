@@ -3,69 +3,40 @@ package com.criptext.mail.services
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
-import com.crashlytics.android.Crashlytics
-import com.criptext.mail.api.HttpClient
-import com.criptext.mail.bgworker.AsyncTaskWorkRunner
-import com.criptext.mail.db.AppDatabase
+import android.os.Bundle
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.push.notifiers.Notifier
 import com.criptext.mail.push.PushController
-import com.criptext.mail.push.data.PushDataSource
-import com.github.kittinunf.result.Result
+import com.criptext.mail.push.notifiers.Notifier
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import io.fabric.sdk.android.Fabric
+import java.io.Serializable
 
 
 class MessagingService : FirebaseMessagingService(){
 
-    private var pushController: PushController? = null
-
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        if(pushController == null){
-            val db = Result.of {
-                Fabric.with(this, Crashlytics())
-                AppDatabase.getAppDatabase(this)
-            }
-            if(db is Result.Success) {
-                val storage = KeyValueStorage.SharedPrefs(this)
-                val account = ActiveAccount.loadFromStorage(this) ?: return
-                pushController = PushController(
-                        dataSource = PushDataSource(db = db.value,
-                                runner = AsyncTaskWorkRunner(),
-                                httpClient = HttpClient.Default(),
-                                activeAccount = account,
-                                storage = storage,
-                                filesDir = this.filesDir,
-                                cacheDir = this.cacheDir),
-                        host = this,
-                        isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
-                        activeAccount = account,
-                        storage = storage)
-            }
-        }
         if(remoteMessage.data.isNotEmpty()) {
-            val shouldPostNotification = !isAppOnForeground(this, packageName)
-            pushController?.parsePushPayload(remoteMessage.data, shouldPostNotification)
+            val intent = Intent(applicationContext, DecryptionService::class.java)
+            val hashMap = HashMap<String, String>()
+            hashMap.putAll(remoteMessage.data)
+            intent.putExtra("data", hashMap)
+            if (!DecryptionService.IS_RUNNING) {
+                intent.action = DecryptionService.ACTION_START_SERVICE
+            } else {
+                intent.action = DecryptionService.ACTION_ADD_NOTIFICATION_TO_QUEUE
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
         }
-    }
-
-    fun notifyPushEvent(notifier: Notifier?){
-        notifier?.notifyPushEvent(this)
-    }
-
-    fun cancelPush(notificationId: Int, storage: KeyValueStorage, key: KeyValueStorage.StringKey, headerId: Int){
-        val manager = this.applicationContext
-                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notCount = storage.getInt(key, 0)
-        manager.cancel(notificationId)
-        if((notCount - 1) <= 0) {
-            manager.cancel(headerId)
-        }
-        storage.putInt(key, if(notCount <= 0) 0 else notCount - 1)
     }
 
     companion object {

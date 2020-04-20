@@ -28,7 +28,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
         json.put("threadId", threadId)
         json.put("subject", subject)
         json.put("criptextEmails", criptextEmailsArray)
-        json.put("guestEmail", guestEmail?.toJSON())
+        if(guestEmail != null)
+            json.put("guestEmail", guestEmail.toJSON())
         if(attachments.isNotEmpty()){
             val attachmentsArray = attachments.toJSONArray()
             json.put("files", attachmentsArray)

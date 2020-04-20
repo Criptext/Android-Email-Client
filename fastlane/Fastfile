@@ -1,0 +1,49 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Upload QA APK"
+  lane :stage do |options|
+    commit = last_git_commit
+    if options[:branch] != "develop" and commit[:message].downcase.include? "#upload" or options[:branch] == "master"
+      release_type = "Release"
+
+      commit_notes = ""
+      if(options[:branch] == "master")
+        commit_notes = "Release candidate. #{commit[:message]}"
+      else
+        commit_notes = commit[:message].sub("#upload ", "")
+      end
+
+      # Upload build to Firebase
+      publish_to_firebase(flavor: options[:flavor], branch: options[:branch], notes: commit_notes, author: commit[:author], app_id: options[:app_id], firebase_token: options[:firebase_token])
+
+    end
+  end
+
+  lane :publish_to_firebase do |options|
+    build_notes = "Environment: #{options[:flavor].capitalize}. Branch: #{options[:branch]}. Notes: #{options[:notes]}. Built by #{options[:author]}"
+
+    firebase_app_distribution(
+       app: "#{options[:app_id]}",
+       groups: "developers",
+       release_notes: build_notes,
+       apk_path: "apk/debug/code-debug.apk",
+       firebase_cli_token: "#{options[:firebase_token]}"
+    )
+  end
+end

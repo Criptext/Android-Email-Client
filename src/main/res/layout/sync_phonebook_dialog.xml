@@ -10,8 +10,7 @@
         android:text="@string/sync_dialog_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:padding="15dp"
         android:textColor="?attr/criptextPrimaryTextColor"
         android:textSize="18sp"
         />

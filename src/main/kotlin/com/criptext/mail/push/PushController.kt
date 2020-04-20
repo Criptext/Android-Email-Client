@@ -10,12 +10,14 @@ import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.push.data.PushRequest
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.push.notifiers.*
+import com.criptext.mail.services.DecryptionForegroundService
+import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.services.MessagingService
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.UIMessage
 
-class PushController(private val dataSource: PushDataSource, private val host: MessagingService,
+class PushController(private val dataSource: PushDataSource, private val host: DecryptionService,
                      private val isPostNougat: Boolean, private val activeAccount: ActiveAccount,
                      private val storage: KeyValueStorage) {
 
@@ -107,6 +109,10 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                     pushData, shouldPostNotification))
     }
 
+    fun doGetEvents(){
+        dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox))
+    }
+
     private fun createAndNotifyPush(pushData: Map<String, String>, shouldPostNotification: Boolean,
                                     isSuccess: Boolean, senderImage: Bitmap?, notificationId: Int){
         val action = pushData["action"]
@@ -179,9 +185,9 @@ class PushController(private val dataSource: PushDataSource, private val host: M
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
-                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
-                        result.pushData, result.shouldPostNotification))
+                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox))
             }
+            else -> host.endService()
         }
     }
 
@@ -190,8 +196,6 @@ class PushController(private val dataSource: PushDataSource, private val host: M
             is PushResult.NewEmail.Success -> {
                 createAndNotifyPush(result.pushData, result.shouldPostNotification, true,
                         result.senderImage, result.notificationId)
-                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, null,
-                        result.pushData, result.shouldPostNotification))
             }
             is PushResult.NewEmail.Failure -> {
                 if(result.exception !is EventHelper.NoContentFoundException)
@@ -199,6 +203,7 @@ class PushController(private val dataSource: PushDataSource, private val host: M
                             null, result.notificationId)
             }
         }
+        host.pushProcessed()
     }
 
 

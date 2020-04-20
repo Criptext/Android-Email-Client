@@ -92,11 +92,6 @@ class ThreadListController(private val model : MailboxSceneModel,
         virtualListView?.notifyDataSetChanged()
     }
 
-    fun replaceAndAddThreads(threads: List<EmailPreview>) {
-
-        virtualListView?.notifyDataSetChanged()
-    }
-
     fun replaceThread(thread: EmailPreview) {
         val position = model.threads.indexOfFirst { it.threadId == thread.threadId }
         if (position > -1) {
