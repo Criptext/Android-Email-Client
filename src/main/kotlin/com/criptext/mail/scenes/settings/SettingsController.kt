@@ -13,6 +13,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
@@ -81,24 +82,46 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onBillingClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+        }
+
         override fun onAliasesClicked() {
-            host.goToScene(AliasesParams(), true)
+            if(activeAccount.type == AccountTypes.STANDARD){
+                host.showCriptextProDialog(
+                        dialogData = DialogData.DialogCriptextProData(
+                                image = R.drawable.inbox_light,
+                                type = DialogType.CriptextPro(),
+                                message = UIMessage(R.string.you_need_pro_message_unsend)
+                        ),
+                        uiObserver = this
+                )
+            } else {
+                host.goToScene(AliasesParams(), true)
+            }
         }
 
         override fun onCustomDomainClicked() {
-            host.goToScene(CustomDomainParams(), true)
+            if(activeAccount.type == AccountTypes.STANDARD){
+                host.showCriptextProDialog(
+                        dialogData = DialogData.DialogCriptextProData(
+                                image = R.drawable.inbox_light,
+                                type = DialogType.CriptextPro(),
+                                message = UIMessage(R.string.you_need_pro_message_unsend)
+                        ),
+                        uiObserver = this
+                )
+            } else {
+                host.goToScene(CustomDomainParams(), true)
+            }
         }
 
         override fun onReportBugClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Support(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = Label.defaultItems.inbox),
-                    true)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onReportAbuseClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Report(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.ABUSE) as ReportAbuseMailTemplate), currentLabel = Label.defaultItems.inbox),
-                    true)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onCloudBackupClicked() {
@@ -183,6 +206,11 @@ class SettingsController(
                         }
                     }
                 }
+                is DialogResult.DialogCriptextPro -> {
+                    if(result.type is DialogType.CriptextPro){
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+                    }
+                }
             }
         }
 
@@ -225,19 +253,19 @@ class SettingsController(
         }
 
         override fun onFAQClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("faq"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "faq"))
         }
 
         override fun onPrivacyPoliciesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("privacy"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "privacy"))
         }
 
         override fun onTermsOfServiceClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("terms"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "terms"))
         }
 
         override fun onOpenSourceLibrariesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("open-source-android"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "open-source-android"))
         }
 
         override fun onBackButtonPressed() {

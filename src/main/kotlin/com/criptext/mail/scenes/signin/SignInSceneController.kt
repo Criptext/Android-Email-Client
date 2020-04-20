@@ -95,7 +95,7 @@ class SignInSceneController(
                 model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
                 resetLayout()
                 if(canceledByMe)
-                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.temporalJWT, null))
+                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
             }
         }else{
             if(canceledByMe)
@@ -666,10 +666,19 @@ class SignInSceneController(
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            if(result is DialogResult.DialogWithInput && result.type is DialogType.RecoveryCode){
-                scene.toggleLoadRecoveryCode(true)
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
+            when(result){
+                is DialogResult.DialogWithInput -> {
+                    if(result.type is DialogType.RecoveryCode){
+                        scene.toggleLoadRecoveryCode(true)
+                        val currentState = model.state as SignInLayoutState.LoginValidation
+                        dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
+                    }
+                }
+                is DialogResult.DialogCriptextPro -> {
+                    if(result.type is DialogType.CriptextPro){
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", model.temporalJWT))
+                    }
+                }
             }
         }
 
@@ -780,7 +789,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onSubmitButtonClicked() {

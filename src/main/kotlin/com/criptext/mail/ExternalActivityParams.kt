@@ -10,7 +10,7 @@ sealed class ExternalActivityParams {
     data class PinScreen(val isFirstTime: Boolean): ExternalActivityParams()
     class Camera: ExternalActivityParams()
     class InviteFriend: ExternalActivityParams()
-    data class GoToCriptextUrl(val dir: String): ExternalActivityParams()
+    data class GoToCriptextUrl(val action: String, val params: String): ExternalActivityParams()
     data class ExportBackupFile(val filePath: String, val isEncrypted: Boolean): ExternalActivityParams()
     class SignInGoogleDrive: ExternalActivityParams()
     class SignOutGoogleDrive: ExternalActivityParams()

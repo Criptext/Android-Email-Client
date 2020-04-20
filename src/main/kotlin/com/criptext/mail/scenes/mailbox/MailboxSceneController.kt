@@ -230,7 +230,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {

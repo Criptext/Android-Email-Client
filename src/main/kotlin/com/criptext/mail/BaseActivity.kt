@@ -687,10 +687,17 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.GoToCriptextUrl -> {
                 val intent = Intent(this, WebViewActivity::class.java)
-                if(params.dir == "help-desk"){
-                    intent.putExtra("url", "https://criptext.atlassian.net/servicedesk/customer/portals")
-                } else {
-                    intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.dir}")
+                when(params.action){
+                    "help-desk" -> {
+                        intent.putExtra("url", "https://criptext.atlassian.net/servicedesk/customer/portals")
+                    }
+                    "criptext-billing" -> {
+                        intent.putExtra("url", "https://admin.criptext.com/?#/account/billing?token=${params.params}")
+                    }
+                    "criptext-url" -> {
+                        intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.params}")
+                    }
+                    else -> throw NotImplementedError()
                 }
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_up, R.anim.stay)

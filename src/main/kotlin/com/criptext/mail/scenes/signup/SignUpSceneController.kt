@@ -146,11 +146,11 @@ class SignUpSceneController(
         }
 
         override fun onTermsAndConditionsClick(){
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("terms"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "terms"))
         }
 
         override fun onContactSupportClick() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {

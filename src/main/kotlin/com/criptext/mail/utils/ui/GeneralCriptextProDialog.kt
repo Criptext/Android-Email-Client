@@ -64,8 +64,8 @@ class GeneralCriptextProDialog(val context: Context, val data: DialogData.Dialog
     private fun assignButtonEvents(view: View, dialog: AlertDialog,
                                    observer: UIObserver?) {
 
-        btnLearnMore = view.findViewById(R.id.learn_more_button) as Button
-        btnNoThanks = view.findViewById(R.id.no_thanks) as TextView
+        btnLearnMore = view.findViewById(R.id.btn_ok) as Button
+        btnNoThanks = view.findViewById(R.id.btn_cancel) as TextView
 
 
         btnLearnMore.setOnClickListener {

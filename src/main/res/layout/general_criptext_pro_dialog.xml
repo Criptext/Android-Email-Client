@@ -52,26 +52,39 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"/>
 
-    <Button
-        android:id="@+id/learn_more_button"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/btn_welcome_tour"
-        android:textColor="@drawable/btn_sign_in"
-        android:text="@string/you_need_pro_button"
-        android:padding="10dp"/>
-
-    <TextView
-        android:id="@+id/no_thanks"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="@string/you_need_pro_no_thanks"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
         android:layout_gravity="center"
-        android:textColor="@color/azure"
-        android:textSize="14sp"/>
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/button_text_color"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/btn_cancel"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_left_bg"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/you_need_pro_maybe_later" />
+
+        <Button
+            android:textColor="@color/azure"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/btn_ok"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_right_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/you_need_pro_button" />
+
+    </LinearLayout>
 </LinearLayout>
