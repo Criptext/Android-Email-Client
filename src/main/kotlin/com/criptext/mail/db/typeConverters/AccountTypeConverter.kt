@@ -11,8 +11,10 @@ class AccountTypeConverter {
     fun getAccountType(value: Int) : AccountTypes {
         return when(value) {
             0 -> AccountTypes.STANDARD
-            1 -> AccountTypes.PRO
+            1 -> AccountTypes.PLUS
             2 -> AccountTypes.ENTERPRISE
+            3 -> AccountTypes.LUCKY
+            4 -> AccountTypes.REDEEMED
             else -> AccountTypes.STANDARD
         }
     }
@@ -21,8 +23,10 @@ class AccountTypeConverter {
     fun parseAccountType(value: AccountTypes): Int {
         return when(value) {
             AccountTypes.STANDARD -> 0
-            AccountTypes.PRO -> 1
+            AccountTypes.PLUS -> 1
             AccountTypes.ENTERPRISE -> 2
+            AccountTypes.LUCKY -> 3
+            AccountTypes.REDEEMED -> 4
         }
     }
 

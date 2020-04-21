@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.Account
 import java.util.*
 
@@ -84,6 +85,11 @@ interface AccountDao {
             SET name=:name
             where recipientId=:recipientId AND domain=:domain""")
     fun updateProfileName(name: String, recipientId: String, domain: String)
+
+    @Query("""UPDATE account
+            SET type=:type
+            where recipientId=:recipientId AND domain=:domain""")
+    fun updateAccountType(type: AccountTypes, recipientId: String, domain: String)
 
     @Query("""UPDATE account
             SET jwt=:jwt

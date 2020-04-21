@@ -22,7 +22,8 @@ data class DeviceItem(val id: Int, val deviceType: Int, val friendlyName: String
 
 
     companion object {
-        const val MAX_ALLOWED_DEVICES = 10
+        const val MAX_ALLOWED_DEVICES_STD = 2
+        const val MAX_ALLOWED_DEVICES_PLUS = 5
 
         enum class Type {
             Normal, WithCheckbox;

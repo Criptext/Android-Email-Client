@@ -4,7 +4,8 @@ import androidx.room.*
 import org.json.JSONObject
 
 
-@Entity(tableName = "alias", indices = [Index(value = ["accountId"], name = "account_id_alias_index")],
+@Entity(tableName = "alias", indices = [Index(value = ["accountId"], name = "account_id_alias_index"),
+    Index(value = ["rowId", "accountId"], name = "rowId_accountId_alias_index", unique = true)],
         foreignKeys = [
                 ForeignKey(entity = Account::class,
                         parentColumns = ["id"],

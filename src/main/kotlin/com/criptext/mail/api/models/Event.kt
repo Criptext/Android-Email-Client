@@ -74,6 +74,7 @@ data class Event(val rowid: Long, val recipientId: String, val domain: String, v
             const val unsuspendEnterepriseAccount = 601
 
             //User Account Events
+            const val customerTypeChanged = 700
             const val addressCreated = 701
             const val addressStatusUpdated = 702
             const val addressDeleted = 703

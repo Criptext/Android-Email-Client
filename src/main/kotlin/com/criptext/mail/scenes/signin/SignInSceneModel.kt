@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.signin
 
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
@@ -35,4 +36,5 @@ class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var temporalJWT = ""
     var devices: ArrayList<DeviceItem> = ArrayList()
     var checkedDomains = mutableListOf<ContactDomainCheckData>()
+    var accountType = AccountTypes.STANDARD
 }

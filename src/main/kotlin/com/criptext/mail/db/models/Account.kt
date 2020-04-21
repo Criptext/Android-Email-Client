@@ -70,7 +70,10 @@ class Account(
         var backupPassword : String?,
 
         @ColumnInfo(name = "type")
-        var type: AccountTypes
+        var type: AccountTypes,
+
+        @ColumnInfo(name = "blockRemoteContent")
+        var blockRemoteContent: Boolean
 ) {
 
     override fun toString(): String {

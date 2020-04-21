@@ -1,12 +1,12 @@
 package com.criptext.mail.scenes.signin
 
-import com.criptext.mail.BuildConfig
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -24,6 +24,7 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -373,6 +374,19 @@ class SignInSceneController(
                         devices = model.devices,
                         password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
+                val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
+                else DeviceItem.MAX_ALLOWED_DEVICES_STD
+                if(model.accountType == AccountTypes.STANDARD) {
+                    host.showCriptextPlusDialog(
+                            dialogData = DialogData.DialogCriptextPlusData(
+                                    title = UIMessage(R.string.you_need_plus_title_devices),
+                                    image = R.drawable.inbox_light,
+                                    type = DialogType.CriptextPlus(),
+                                    message = UIMessage(R.string.you_need_plus_message_devices, arrayOf(maxDevices, (model.devices.size - (maxDevices - 1))))
+                            ),
+                            uiObserver = uiObserver
+                    )
+                }
             }
             is SignInResult.FindDevices.Failure -> {
                 onAuthenticationFailed(result.message)
@@ -385,8 +399,10 @@ class SignInSceneController(
             is SignInResult.RemoveDevices.Success -> {
                 uiObserver.onXPressed()
                 deviceWrapperListController?.remove(result.deviceIds)
-                if(model.devices.size >= DeviceItem.MAX_ALLOWED_DEVICES){
-                    scene.showDeviceCountRemaining(model.devices.size - (DeviceItem.MAX_ALLOWED_DEVICES - 1))
+                val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
+                else DeviceItem.MAX_ALLOWED_DEVICES_STD
+                if(model.devices.size >= maxDevices){
+                    scene.showDeviceCountRemaining(model.devices.size - (maxDevices - 1))
                 } else {
                     val state = model.state as SignInLayoutState.RemoveDevices
                     model.state = SignInLayoutState.LoginValidation(username = state.username,
@@ -665,6 +681,10 @@ class SignInSceneController(
 
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogWithInput -> {
@@ -674,8 +694,8 @@ class SignInSceneController(
                         dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
                     }
                 }
-                is DialogResult.DialogCriptextPro -> {
-                    if(result.type is DialogType.CriptextPro){
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
                         host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", model.temporalJWT))
                     }
                 }
@@ -723,8 +743,10 @@ class SignInSceneController(
                     checkedIndexes.second.add(index)
                 }
             }
+            val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
+            else DeviceItem.MAX_ALLOWED_DEVICES_STD
             if(checkedIndexes.first.isEmpty()){
-                scene.showDeviceCountRemaining(model.devices.size - (DeviceItem.MAX_ALLOWED_DEVICES - 1))
+                scene.showDeviceCountRemaining(model.devices.size - (maxDevices - 1))
             } else {
                 dataSource.submitRequest(SignInRequest.RemoveDevices(
                         userData = UserData(recipient, domain, "", null),
@@ -1010,6 +1032,7 @@ class SignInSceneController(
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
+                host.dismissCriptextPlusDialog()
                 false
             }
         }

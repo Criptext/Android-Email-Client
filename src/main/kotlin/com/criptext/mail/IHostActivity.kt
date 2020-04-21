@@ -60,7 +60,8 @@ interface IHostActivity {
 
     fun showStartGuideView(view: View, title: Int, dimension: Int)
 
-    fun showCriptextProDialog(dialogData: DialogData.DialogCriptextProData, uiObserver: UIObserver)
+    fun showCriptextPlusDialog(dialogData: DialogData.DialogCriptextPlusData, uiObserver: UIObserver)
+    fun dismissCriptextPlusDialog()
 
     interface IActivityMenu {
         fun findItemById(id: Int): MenuItem?

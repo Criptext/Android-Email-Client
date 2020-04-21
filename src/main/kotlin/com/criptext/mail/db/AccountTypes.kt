@@ -6,9 +6,8 @@ enum class AccountTypes {
     companion object {
         fun fromInt(int: Int): AccountTypes {
             val values = values()
-            val index = int - 1
-            return if (index > -1 && index < values.size)
-                values[index]
+            return if (int > -1 && int < values.size)
+                values[int]
             else
                 STANDARD
         }

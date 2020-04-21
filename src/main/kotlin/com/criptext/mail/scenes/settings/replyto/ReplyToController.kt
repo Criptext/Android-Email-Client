@@ -60,6 +60,11 @@ class ReplyToController(
     }
 
     private val replyToUIObserver = object: ReplyToUIObserver{
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {

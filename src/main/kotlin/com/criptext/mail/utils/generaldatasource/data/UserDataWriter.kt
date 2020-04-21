@@ -379,5 +379,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val FILE_ENCRYPTED_EXTENSION = "enc"
         const val FILE_UNENCRYPTED_EXTENSION = "db"
         const val FILE_GZIP_EXTENSION = "gz"
+        const val FILE_TXT_EXTENSION = "txt"
     }
 }

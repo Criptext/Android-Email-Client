@@ -87,20 +87,12 @@ class PrivacyController(
         }
 
         override fun onReadReceiptsSwitched(isChecked: Boolean) {
-            if(activeAccount.type == AccountTypes.STANDARD){
-                scene.updateReadReceipts(!isChecked)
-                host.showCriptextProDialog(
-                        dialogData = DialogData.DialogCriptextProData(
-                                image = R.drawable.inbox_light,
-                                type = DialogType.CriptextPro(),
-                                message = UIMessage(R.string.you_need_pro_message_read_receipts)
-                        ),
-                        uiObserver = this
-                )
-            } else {
-                scene.enableReadReceiptsSwitch(false)
-                generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
-            }
+            scene.enableReadReceiptsSwitch(false)
+            generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {

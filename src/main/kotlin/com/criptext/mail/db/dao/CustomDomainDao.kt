@@ -1,18 +1,15 @@
 package com.criptext.mail.db.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.criptext.mail.db.models.CustomDomain
 
 @Dao
 interface CustomDomainDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(customDomains : List<CustomDomain>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(customDomain :CustomDomain)
 
     @Query("SELECT * FROM customDomain")

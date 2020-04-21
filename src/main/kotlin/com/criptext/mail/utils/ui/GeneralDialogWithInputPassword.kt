@@ -1,7 +1,6 @@
 package com.criptext.mail.utils.ui
 
 import android.content.Context
-import android.os.CountDownTimer
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
@@ -117,8 +116,8 @@ class GeneralDialogWithInputPassword(val context: Context, val data: DialogData.
             is DialogType.DeleteLabel,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
-            is DialogType.CriptextPro ->
-                DialogResult.DialogCriptextPro(data.type)
+            is DialogType.CriptextPlus ->
+                DialogResult.DialogCriptextPlus(data.type)
         }
     }
 

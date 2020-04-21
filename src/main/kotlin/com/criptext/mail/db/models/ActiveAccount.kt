@@ -63,6 +63,12 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
     }
 
+    fun updateAccountType(storage: KeyValueStorage, newType: AccountTypes){
+        val account = toJSON()
+        account.put("type", newType.ordinal)
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+    }
+
     companion object {
         fun fromJSONString(jsonString: String): ActiveAccount {
             val json = JSONObject(jsonString)

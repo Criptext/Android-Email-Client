@@ -94,6 +94,10 @@ class CloudBackupController(
             host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -200,27 +204,15 @@ class CloudBackupController(
         }
 
         override fun onCloudBackupActivated(isActive: Boolean) {
-            if(activeAccount.type == AccountTypes.STANDARD) {
-                scene.setCloudBackupSwitchState(!isActive)
-                host.showCriptextProDialog(
-                        dialogData = DialogData.DialogCriptextProData(
-                                image = R.drawable.inbox_light,
-                                type = DialogType.CriptextPro(),
-                                message = UIMessage(R.string.you_need_pro_message_cloud_backup)
-                        ),
-                        uiObserver = this
-                )
-            } else {
-                dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
-                        CloudBackupData(
-                                hasCloudBackup = isActive,
-                                autoBackupFrequency = model.autoBackupFrequency,
-                                useWifiOnly = model.wifiOnly,
-                                fileSize = model.lastBackupSize,
-                                lastModified = model.lastTimeBackup
-                        )
-                ))
-            }
+            dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
+                    CloudBackupData(
+                            hasCloudBackup = isActive,
+                            autoBackupFrequency = model.autoBackupFrequency,
+                            useWifiOnly = model.wifiOnly,
+                            fileSize = model.lastBackupSize,
+                            lastModified = model.lastTimeBackup
+                    )
+            ))
         }
 
         override fun onBackButtonPressed() {
@@ -454,7 +446,7 @@ class CloudBackupController(
                 scene.dismissPreparingFileDialog()
                 val file = result.remoteFiles.first()
                 if(File(file.first).extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
-                                UserDataWriter.FILE_GZIP_EXTENSION)){
+                                UserDataWriter.FILE_GZIP_EXTENSION, UserDataWriter.FILE_TXT_EXTENSION)){
                     scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
                 } else {
                     host.exitToScene(RestoreBackupParams(true, Pair(file.first, false)), null, false, true)

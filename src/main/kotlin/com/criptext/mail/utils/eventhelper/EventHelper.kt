@@ -9,12 +9,12 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
-import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIUtils
 import com.github.kittinunf.result.Result
@@ -77,6 +77,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.addressDeleted -> processOnAddressDeleted(it)
                     Event.Cmd.customDomainCreated -> processOnCustomDomainCreated(it)
                     Event.Cmd.customDomainDeleted -> processOnCustomDomainDeleted(it)
+                    Event.Cmd.customerTypeChanged -> processOnCustomerTypeChanged(it)
                 }
             }
 
@@ -461,6 +462,24 @@ class EventHelper(private val db: EventLocalDB,
             val customDomain = db.getCustomDomains(activeAccount.id).find { it.name == metadata.domainName } ?: throw Exception()
             db.deleteCustomDomain(customDomain)
             db.deleteAliasesByDomain(customDomain.name)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnCustomerTypeChanged(event: Event){
+        val operation = Result.of {
+            val metadata = AccountCustomerTypeChanged.fromJSON(event.params)
+
+            val account = db.getAccount(metadata.recipientId, metadata.domain) ?: throw Exception()
+            db.updateAccountType(metadata.newType, account)
+            if(account.id == activeAccount.id){
+                activeAccount.updateAccountType(storage, metadata.newType)
+            }
         }
         when(operation){
             is Result.Success -> {

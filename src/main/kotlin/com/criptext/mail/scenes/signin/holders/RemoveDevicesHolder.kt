@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.devices.data.DeviceAdapter
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
@@ -59,10 +60,12 @@ class RemoveDevicesHolder(
             uiObserver?.onTrashPressed(recipientId, domain)
             true
         }
+        val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
+        else DeviceItem.MAX_ALLOWED_DEVICES_STD
         messageText.text = view.context.getLocalizedUIMessage(
                 UIMessage(
                         resId = R.string.sign_in_remove_message,
-                        args = arrayOf(DeviceItem.MAX_ALLOWED_DEVICES, (model.devices.size - (DeviceItem.MAX_ALLOWED_DEVICES - 1)))
+                        args = arrayOf(maxDevices, (model.devices.size - (maxDevices - 1)))
                 )
         )
         deviceListView.setAdapter(DeviceAdapter(view.context, devicesListItemListener, VirtualDeviceList(model), DeviceItem.Companion.Type.WithCheckbox))

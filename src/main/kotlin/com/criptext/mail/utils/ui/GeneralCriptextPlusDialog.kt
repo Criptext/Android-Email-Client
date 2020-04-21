@@ -16,9 +16,8 @@ import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
-import org.w3c.dom.Text
 
-class GeneralCriptextProDialog(val context: Context, val data: DialogData.DialogCriptextProData) {
+class GeneralCriptextPlusDialog(val context: Context, val data: DialogData.DialogCriptextPlusData) {
 
     private var dialog: AlertDialog? = null
     private val res = context.resources
@@ -31,7 +30,7 @@ class GeneralCriptextProDialog(val context: Context, val data: DialogData.Dialog
 
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
-        view = inflater.inflate(R.layout.general_criptext_pro_dialog, null)
+        view = inflater.inflate(R.layout.general_criptext_plus_dialog, null)
         view.findViewById<ImageView>(R.id.pro_image).setImageResource(data.image)
         view.findViewById<TextView>(R.id.message).text = context.getLocalizedUIMessage(data.message)
 
@@ -73,6 +72,7 @@ class GeneralCriptextProDialog(val context: Context, val data: DialogData.Dialog
             dialog.dismiss()
         }
         btnNoThanks.setOnClickListener {
+            observer?.onGeneralCancelButtonPressed(createResult())
             dialog.dismiss()
         }
     }
@@ -90,8 +90,8 @@ class GeneralCriptextProDialog(val context: Context, val data: DialogData.Dialog
             is DialogType.DeleteLabel,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
-            is DialogType.CriptextPro ->
-                DialogResult.DialogCriptextPro(data.type)
+            is DialogType.CriptextPlus ->
+                DialogResult.DialogCriptextPlus(data.type)
         }
     }
 

@@ -36,6 +36,7 @@ data class IncompleteAccount(
                         autoBackupFrequency = 0,
                         wifiOnly = true,
                         backupPassword = null,
-                        type = AccountTypes.STANDARD
+                        type = AccountTypes.STANDARD,
+                        blockRemoteContent = false
                 )
 }

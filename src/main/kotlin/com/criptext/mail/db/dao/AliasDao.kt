@@ -1,18 +1,15 @@
 package com.criptext.mail.db.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.criptext.mail.db.models.Alias
 
 @Dao
 interface AliasDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(aliases : List<Alias>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(alias :Alias)
 
     @Query("SELECT * FROM alias WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")

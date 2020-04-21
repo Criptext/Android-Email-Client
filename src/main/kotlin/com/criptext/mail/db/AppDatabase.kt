@@ -543,6 +543,7 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_17_18: Migration = object : Migration(17, 18) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE account ADD COLUMN type INTEGER NOT NULL DEFAULT 0""")
+                database.execSQL("""ALTER TABLE account ADD COLUMN blockRemoteContent INTEGER NOT NULL DEFAULT 0""")
                 val account = database.query("SELECT * FROM account")
                 while (account.moveToNext()){
                     val domain = account.getString(account.getColumnIndex("domain"))
@@ -559,6 +560,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX account_id_custom_domain_index ON customDomain (accountId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS rowId_accountId_custom_domain_index ON customDomain (rowId, accountId)")
 
                 database.execSQL("""CREATE TABLE IF NOT EXISTS  alias (
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -569,6 +571,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX account_id_alias_index ON alias (accountId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS rowId_accountId_alias_index ON alias (rowId, accountId)")
             }
         }
     }

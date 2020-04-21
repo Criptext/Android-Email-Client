@@ -115,6 +115,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -721,23 +725,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
 
         override fun onUnsendEmail(fullEmail: FullEmail, position: Int) {
-            if(activeAccount.type == AccountTypes.STANDARD){
-                host.showCriptextProDialog(
-                        dialogData = DialogData.DialogCriptextProData(
-                                image = R.drawable.inbox_light,
-                                type = DialogType.CriptextPro(),
-                                message = UIMessage(R.string.you_need_pro_message_unsend)
-                        ),
-                        uiObserver = emailDetailUIObserver
-                )
-            } else {
-                val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
-                        position = position,
-                        emailId = fullEmail.email.id)
-                fullEmail.isUnsending = true
-                scene.notifyFullEmailChanged(position + 1)
-                dataSource.submitRequest(req)
-            }
+            val req = EmailDetailRequest.UnsendFullEmailFromEmailId(
+                    position = position,
+                    emailId = fullEmail.email.id)
+            fullEmail.isUnsending = true
+            scene.notifyFullEmailChanged(position + 1)
+            dataSource.submitRequest(req)
         }
         override fun onForwardBtnClicked() {
             val type = ComposerType.Forward(originalId = model.emails.last().email.id,

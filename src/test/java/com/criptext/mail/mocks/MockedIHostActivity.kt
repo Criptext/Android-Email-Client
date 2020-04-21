@@ -23,7 +23,7 @@ class MockedIHostActivity: IHostActivity{
 
     }
 
-    override fun showCriptextProDialog(dialogData: DialogData.DialogCriptextProData, uiObserver: UIObserver) {
+    override fun showCriptextPlusDialog(dialogData: DialogData.DialogCriptextPlusData, uiObserver: UIObserver) {
     }
 
     override fun contextMenuRegister(view: View) {

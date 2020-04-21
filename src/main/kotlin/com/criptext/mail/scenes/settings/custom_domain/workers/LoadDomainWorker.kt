@@ -61,7 +61,11 @@ class LoadDomainWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<List<CustomDomain>, Exception> = Result.of { domainDao.getAll(activeAccount.id) }
+    private fun workOperation() : Result<List<CustomDomain>, Exception> = Result.of {
+        val domains = domainDao.getAll(activeAccount.id)
+        if(domains.isEmpty()) throw Exception()
+        domains
+    }
 
 
     private fun newRetryWithNewSessionOperation()

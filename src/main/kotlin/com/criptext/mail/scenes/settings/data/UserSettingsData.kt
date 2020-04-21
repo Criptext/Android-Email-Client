@@ -4,7 +4,6 @@ import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.scenes.settings.aliases.data.AliasData
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
-import com.criptext.mail.utils.DateAndTimeUtils
 import org.json.JSONObject
 
 data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: String,
@@ -23,7 +22,7 @@ data class UserSettingsData(val devices: List<DeviceItem>, val recoveryEmail: St
             val recoveryEmailConfirmationState = general.getInt("recoveryEmailConfirmed") == 1
             val twoFactorAuth = general.getInt("twoFactorAuth") == 1
             val trackEmailRead = general.getInt("trackEmailRead") == 1
-            val customerType: AccountTypes = AccountTypes.valueOf(general.getString("customerType"))
+            val customerType: AccountTypes = AccountTypes.fromInt(general.getInt("customerType"))
             val blockRemoteContent = general.getInt("blockRemoteContent") == 1
             val domainsAndAliases = AliasData.fromJSONArray(metadataJson.getJSONArray("addresses"), accountId)
             return UserSettingsData(devices, recoveryEmail,

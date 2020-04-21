@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -95,8 +94,8 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
             is DialogType.Message,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
-            is DialogType.CriptextPro ->
-                DialogResult.DialogCriptextPro(data.type)
+            is DialogType.CriptextPlus ->
+                DialogResult.DialogCriptextPlus(data.type)
         }
     }
 

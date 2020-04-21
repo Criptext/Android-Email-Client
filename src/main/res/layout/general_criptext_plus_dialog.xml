@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/you_need_pro_title"
+        android:text="@string/you_need_plus_title"
         fontPath="fonts/NunitoSans-Bold.ttf"
         android:gravity="center_horizontal"
         android:padding="10dp"
@@ -32,7 +32,7 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:text="@string/you_need_pro_message_read_receipts"
+        android:text="@string/you_need_plus_message_read_receipts"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         android:layout_marginStart="20dp"
@@ -46,7 +46,7 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:text="@string/you_need_pro_message_fixed"
+        android:text="@string/you_need_plus_message_fixed"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         android:layout_marginStart="20dp"
@@ -71,7 +71,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/you_need_pro_maybe_later" />
+            android:text="@string/you_need_plus_maybe_later" />
 
         <Button
             android:textColor="@color/azure"
@@ -84,7 +84,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/you_need_pro_button" />
+            android:text="@string/you_need_plus_button" />
 
     </LinearLayout>
 </LinearLayout>

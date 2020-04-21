@@ -73,12 +73,13 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 val json = JSONObject(apiClient.postValidateTwoFACode(recipientId, domain, jwt, code!!).body)
                 val deviceId = json.getInt("deviceId")
                 val name = json.getString("name")
+                val type = AccountTypes.fromInt(json.getInt("customerType"))
                 val addresses = json.optJSONArray("addresses")
                 if(!isMultiple){
                     db.clearAllTables()
                     keyValueStorage.clearAll()
                 }
-                val signalPair = signalRegistrationOperation(deviceId, name)
+                val signalPair = signalRegistrationOperation(deviceId, name, type)
                 storeAccountOperation(signalPair.first, signalPair.second, if(addresses.toString().isEmpty()) null else addresses)
             }
         }
@@ -92,7 +93,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
 
     }
 
-    private fun signalRegistrationOperation(deviceId: Int, name: String): Pair<SignalKeyGenerator.RegistrationBundles, Account> {
+    private fun signalRegistrationOperation(deviceId: Int, name: String, accountType: AccountTypes): Pair<SignalKeyGenerator.RegistrationBundles, Account> {
         val recipient = if(domain != Contact.mainDomain)
             recipientId.plus("@${domain}")
         else
@@ -104,7 +105,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 identityKeyPairB64 = privateBundle.identityKeyPair, jwt = jwt,
                 signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                 autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
-                backupPassword = null, type = AccountTypes.STANDARD)
+                backupPassword = null, type = accountType, blockRemoteContent = false)
         return Pair(registrationBundles, account)
     }
 

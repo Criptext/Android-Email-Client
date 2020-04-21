@@ -1,9 +1,11 @@
 package com.criptext.mail.scenes.settings.custom_domain
 
+import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.CustomDomain
@@ -21,6 +23,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -95,6 +98,16 @@ class CustomDomainController(
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+            when(result){
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
+                        host.finishScene()
+                    }
+                }
+            }
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -104,6 +117,11 @@ class CustomDomainController(
                         }
                         is DialogType.SignIn ->
                             host.goToScene(SignInParams(true), true)
+                    }
+                }
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
                     }
                 }
             }
@@ -283,6 +301,19 @@ class CustomDomainController(
                                 result.userSettings.aliases
                         )
                 )
+                if(result.userSettings.customerType == AccountTypes.STANDARD){
+                    if(activeAccount.type == AccountTypes.STANDARD){
+                        host.showCriptextPlusDialog(
+                                dialogData = DialogData.DialogCriptextPlusData(
+                                        image = R.drawable.inbox_light,
+                                        title = UIMessage(R.string.you_need_plus_title),
+                                        type = DialogType.CriptextPlus(),
+                                        message = UIMessage(R.string.you_need_plus_message_footer)
+                                ),
+                                uiObserver = uiObserver
+                        )
+                    }
+                }
             }
             is GeneralResult.GetUserSettings.Failure -> {
                 dataSource.submitRequest(CustomDomainRequest.LoadDomain())

@@ -77,7 +77,7 @@ import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
 import com.criptext.mail.utils.ui.ActivityMenu
-import com.criptext.mail.utils.ui.GeneralCriptextProDialog
+import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -126,7 +126,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     val shouldSendResumeEvent: Boolean
         get() = System.currentTimeMillis() - storage.getLong(KeyValueStorage.StringKey.ResumeEventTimer, 0L) > RESUME_TIMER
 
-    private var generalCriptextProDialog: GeneralCriptextProDialog? = null
+    private var generalCriptextPlusDialog: GeneralCriptextPlusDialog? = null
 
     private val handler = Handler()
 
@@ -472,9 +472,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 dimension)
     }
 
-    override fun showCriptextProDialog(dialogData: DialogData.DialogCriptextProData, uiObserver: UIObserver) {
-        generalCriptextProDialog = GeneralCriptextProDialog(this, dialogData)
-        generalCriptextProDialog?.showDialog(uiObserver)
+    override fun showCriptextPlusDialog(dialogData: DialogData.DialogCriptextPlusData, uiObserver: UIObserver) {
+        generalCriptextPlusDialog = GeneralCriptextPlusDialog(this, dialogData)
+        generalCriptextPlusDialog?.showDialog(uiObserver)
+    }
+
+    override fun dismissCriptextPlusDialog() {
+        generalCriptextPlusDialog?.dismissDialog()
     }
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
