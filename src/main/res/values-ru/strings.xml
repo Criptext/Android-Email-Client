@@ -710,6 +710,8 @@
   <string name="you_need_plus_button">Get Plus</string>
   <string name="you_need_plus_no_thanks"><u>Спасибо, не надо</u></string>
   <string name="you_need_plus_message_fixed">Получите эту функцию и многое другое при обновлении до <b>Criptext Plus</b>.</string>
+  <string name="you_need_plus_message_custom_domains">Add custom email addresses with a <b>Domain</b> that you already own like you@company.com \n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_aliases">With <b>Aliases</b> you can manage multiple addresses in one inbox.\n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
   <string name="you_need_plus_message_read_receipts">Используйте <b>Читать квитанции</b>, чтобы узнать, когда ваши электронные письма читаются получателями с синими галочками.</string>
   <string name="you_need_plus_message_unsend">Используйте <b>Читать квитанции</b>, чтобы узнать, когда ваши электронные письма читаются получателями с синими галочками.</string>
   <string name="you_need_plus_message_reminders">Используйте <b>Напоминания</b>, чтобы получать уведомления, когда пришло время следить за беседой.</string>

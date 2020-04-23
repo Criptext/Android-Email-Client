@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.Account
@@ -35,7 +36,7 @@ class EmptyTrashWorkerTest{
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 
@@ -54,7 +55,8 @@ class EmptyTrashWorkerTest{
                 name = "Tester", registrationId = 1,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null, type = AccountTypes.STANDARD, blockRemoteContent = false))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),

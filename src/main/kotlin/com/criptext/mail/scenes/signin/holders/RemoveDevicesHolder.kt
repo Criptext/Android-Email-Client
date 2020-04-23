@@ -60,12 +60,10 @@ class RemoveDevicesHolder(
             uiObserver?.onTrashPressed(recipientId, domain)
             true
         }
-        val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
-        else DeviceItem.MAX_ALLOWED_DEVICES_STD
         messageText.text = view.context.getLocalizedUIMessage(
                 UIMessage(
                         resId = R.string.sign_in_remove_message,
-                        args = arrayOf(maxDevices, (model.devices.size - (maxDevices - 1)))
+                        args = arrayOf(model.maxDevices, (model.devices.size - (model.maxDevices - 1)))
                 )
         )
         deviceListView.setAdapter(DeviceAdapter(view.context, devicesListItemListener, VirtualDeviceList(model), DeviceItem.Companion.Type.WithCheckbox))

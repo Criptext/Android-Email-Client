@@ -46,13 +46,6 @@ class CriptextJavaScriptInterface(val mContext: Context, val filename: String) {
             "close" -> {
                 activity.onBackPressed()
             }
-            "share" -> {
-                val share = Intent(Intent.ACTION_SEND)
-                share.type = "text/plain"
-                share.putExtra(Intent.EXTRA_SUBJECT, "Invite a Friend")
-                share.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.invite_text))
-                activity.startActivity(Intent.createChooser(share, mContext.getString(R.string.invite_title)))
-            }
         }
 
     }

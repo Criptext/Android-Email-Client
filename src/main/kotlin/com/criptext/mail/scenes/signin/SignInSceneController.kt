@@ -190,6 +190,7 @@ class SignInSceneController(
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 model.ephemeralJwt = result.ephemeralJwt
                 model.hasTwoFA = result.hasTwoFA
+                model.accountType = result.accountType
                 if(model.hasTwoFA){
                     if(model.realSecurePassword != null){
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
@@ -208,6 +209,7 @@ class SignInSceneController(
             is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
             is SignInResult.LinkBegin.NeedToRemoveDevices -> {
                 model.needToRemoveDevices = true
+                model.maxDevices = result.maxDevices
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 onAcceptPasswordLogin(currentState.username, currentState.domain)
             }
@@ -374,15 +376,14 @@ class SignInSceneController(
                         devices = model.devices,
                         password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
-                val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
-                else DeviceItem.MAX_ALLOWED_DEVICES_STD
                 if(model.accountType == AccountTypes.STANDARD) {
                     host.showCriptextPlusDialog(
                             dialogData = DialogData.DialogCriptextPlusData(
                                     title = UIMessage(R.string.you_need_plus_title_devices),
-                                    image = R.drawable.inbox_light,
+                                    image = R.drawable.img_devices,
                                     type = DialogType.CriptextPlus(),
-                                    message = UIMessage(R.string.you_need_plus_message_devices, arrayOf(maxDevices, (model.devices.size - (maxDevices - 1))))
+                                    message = UIMessage(R.string.you_need_plus_message_devices,
+                                            arrayOf(model.maxDevices, (model.devices.size - (model.maxDevices - 1))))
                             ),
                             uiObserver = uiObserver
                     )
@@ -399,10 +400,8 @@ class SignInSceneController(
             is SignInResult.RemoveDevices.Success -> {
                 uiObserver.onXPressed()
                 deviceWrapperListController?.remove(result.deviceIds)
-                val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
-                else DeviceItem.MAX_ALLOWED_DEVICES_STD
-                if(model.devices.size >= maxDevices){
-                    scene.showDeviceCountRemaining(model.devices.size - (maxDevices - 1))
+                if(model.devices.size >= model.maxDevices){
+                    scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
                 } else {
                     val state = model.state as SignInLayoutState.RemoveDevices
                     model.state = SignInLayoutState.LoginValidation(username = state.username,
@@ -743,10 +742,8 @@ class SignInSceneController(
                     checkedIndexes.second.add(index)
                 }
             }
-            val maxDevices = if(model.accountType == AccountTypes.PLUS) DeviceItem.MAX_ALLOWED_DEVICES_PLUS
-            else DeviceItem.MAX_ALLOWED_DEVICES_STD
             if(checkedIndexes.first.isEmpty()){
-                scene.showDeviceCountRemaining(model.devices.size - (maxDevices - 1))
+                scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
             } else {
                 dataSource.submitRequest(SignInRequest.RemoveDevices(
                         userData = UserData(recipient, domain, "", null),

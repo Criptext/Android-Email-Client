@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
@@ -29,7 +30,7 @@ class SaveEmailWorkerTest {
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 
@@ -41,7 +42,7 @@ class SaveEmailWorkerTest {
         db.accountDao().insert(Account(1, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
                 db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)

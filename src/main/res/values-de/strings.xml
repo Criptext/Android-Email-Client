@@ -715,6 +715,8 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="you_need_plus_button">Werde Plus</string>
   <string name="you_need_plus_no_thanks"><u>Nein Danke</u></string>
   <string name="you_need_plus_message_fixed">Holen Sie sich diese Funktion und mehr, wenn Sie ein Upgrade auf <b>Criptext Plus</b> durchführen.</string>
+  <string name="you_need_plus_message_custom_domains">Add custom email addresses with a <b>Domain</b> that you already own like you@company.com \n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_aliases">With <b>Aliases</b> you can manage multiple addresses in one inbox.\n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
   <string name="you_need_plus_message_read_receipts">Verwenden Sie <b>Lesebestätigungen</b>, um zu erfahren, wann Ihre E-Mails von Empfängern mit blauen Häkchen gelesen werden.</string>
   <string name="you_need_plus_message_unsend">Verwenden Sie <b>Nicht senden</b>, um einen Fehler zu korrigieren und eine E-Mail zurückzunehmen, nachdem Sie sie gesendet haben.</string>
   <string name="you_need_plus_message_reminders">Verwenden Sie <b>Erinnerungen</b>, um benachrichtigt zu werden, wenn es Zeit ist, eine Unterhaltung zu verfolgen.</string>

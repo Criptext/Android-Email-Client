@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
@@ -33,8 +34,10 @@ class DrawerMenuView(navigationView: NavigationView,
 
     //HEADER
     private val avatarView : CircleImageView
+    private val avatarPlusRing : CircleImageView
     private val textViewNombre: TextView
     private val textViewCorreo: TextView
+    private val plusBadge: TextView
 
     //EXRA ACCOUNTS
     private val avatarView2 : CircleImageView
@@ -180,8 +183,10 @@ class DrawerMenuView(navigationView: NavigationView,
 
     init {
         avatarView = navigationView.findViewById(R.id.circleView)
+        avatarPlusRing = navigationView.findViewById(R.id.plusBadgeRing)
         textViewNombre = navigationView.findViewById(R.id.textViewNombre)
         textViewCorreo = navigationView.findViewById(R.id.textViewCorreo)
+        plusBadge = navigationView.findViewById(R.id.plusBadge)
 
         openMenuArrow = navigationView.findViewById(R.id.imageViewArrow)
         multipleAccontsMenu = navigationView.findViewById(R.id.multiple_accounts_menu)
@@ -243,7 +248,7 @@ class DrawerMenuView(navigationView: NavigationView,
         Picasso.get().load(R.drawable.arrowdown).into(imageViewArrow)
     }
 
-    fun initNavHeader(fullName: String, email: String){
+    fun initNavHeader(fullName: String, email: String, accountTypes: AccountTypes){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName
 
@@ -258,6 +263,12 @@ class DrawerMenuView(navigationView: NavigationView,
 
         textViewNombre.text = safeFullName
         textViewCorreo.text = email
+
+        if(accountTypes != AccountTypes.PLUS){
+            avatarPlusRing.visibility = View.INVISIBLE
+            plusBadge.visibility = View.INVISIBLE
+        }
+
     }
 
     private fun setActiveLabel(menu: NavigationMenuOptions){

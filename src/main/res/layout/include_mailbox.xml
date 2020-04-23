@@ -18,13 +18,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/mailbox_nav_button"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+            <RelativeLayout
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="15dp"
-                android:layout_marginEnd="10dp"/>
+                android:layout_marginEnd="10dp"
+                android:id="@+id/nav_button_layout">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/mailbox_nav_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_centerInParent="true"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/plusBadgeRing"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/img_ring_inbox"
+                    />
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/badge_new_mails"
@@ -41,7 +57,7 @@
                 android:visibility="gone" />
 
             <LinearLayout
-                android:layout_toEndOf="@id/mailbox_nav_button"
+                android:layout_toEndOf="@id/nav_button_layout"
                 android:layout_width="wrap_content"
                 android:id="@+id/mailbox_title_layout"
                 android:layout_marginStart="-10dp"
@@ -64,17 +80,17 @@
                     android:layout_width="15dp"
                     android:visibility="visible"
                     android:layout_height="match_parent" />
+
                 <TextView
                     android:id="@+id/mailbox_toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:layout_height="match_parent"
-                    android:text="@string/titulo_mailbox"
-                    android:gravity="left|center_vertical"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
                     fontPath="fonts/NunitoSans-Bold.ttf"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/titulo_mailbox"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
@@ -88,6 +104,26 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/mailbox_title_size"
                 android:layout_alignParentStart="false"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/mailbox_number_emails">
+                <TextView
+                    android:id="@+id/plusBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_centerInParent="true"
+                    android:textSize="16sp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textStyle="italic|bold"
+                    android:maxLines="1"
+                    android:background="@drawable/plus_badge_text"
+                    android:text="Plus"
+                    android:ellipsize="end"/>
+            </RelativeLayout>
 
         </RelativeLayout>
 

@@ -6,6 +6,7 @@ import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Account
@@ -38,7 +39,7 @@ class CreateCustomLabelWorkerTest{
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private lateinit var httpClient: HttpClient
 
     @Before
@@ -56,7 +57,7 @@ class CreateCustomLabelWorkerTest{
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         settingsLocalDB = SettingsLocalDB.Default(db)
     }

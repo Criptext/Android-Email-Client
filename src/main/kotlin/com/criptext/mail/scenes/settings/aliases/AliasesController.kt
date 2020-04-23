@@ -382,10 +382,10 @@ class AliasesController(
                     if(activeAccount.type == AccountTypes.STANDARD){
                         host.showCriptextPlusDialog(
                                 dialogData = DialogData.DialogCriptextPlusData(
-                                        image = R.drawable.inbox_light,
+                                        image = R.drawable.img_aliases,
                                         title = UIMessage(R.string.you_need_plus_title),
                                         type = DialogType.CriptextPlus(),
-                                        message = UIMessage(R.string.you_need_plus_message_footer)
+                                        message = UIMessage(R.string.you_need_plus_message_aliases)
                                 ),
                                 uiObserver = uiObserver
                         )

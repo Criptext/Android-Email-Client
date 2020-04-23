@@ -687,6 +687,8 @@
   <string name="you_need_plus_button">Obtener Plus</string>
   <string name="you_need_plus_no_thanks"><u>No Gracias</u></string>
   <string name="you_need_plus_message_fixed">Obtén esta función y más cuando actualices a <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_custom_domains">Add custom email addresses with a <b>Domain</b> that you already own like you@company.com \n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_aliases">With <b>Aliases</b> you can manage multiple addresses in one inbox.\n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
   <string name="you_need_plus_message_read_receipts">Usa <b>Confirmaciones de Lectura</b> para saber cuándo leen tus correos, los destinatarios tendrán marcas de verificación azules.</string>
   <string name="you_need_plus_message_unsend">Usa <b>Retractar</b> para corregir algún error y recuperar un correo después de haberlo enviado.</string>
   <string name="you_need_plus_message_reminders">Usa <b>Recordatorios</b> para recibir una notificación cuando sea el momento de seguir una conversación.</string>

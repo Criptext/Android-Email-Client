@@ -685,10 +685,12 @@
   <string name="domain_verified">Verified</string>
   <string name="delete_criptext_alias_wait_title">Oops…</string>
   <string name="delete_criptext_alias_wait">Aliases ending in @criptext.com cannot be deleted within 15 days from the day they were created.\n\n<b>Days remaining: %1$d</b></string>
-  <string name="you_need_plus_title">You Need Plus</string>
+  <string name="you_need_plus_title">You need <i>Plus</i> for this</string>
   <string name="you_need_plus_button">Get Plus</string>
   <string name="you_need_plus_no_thanks"><u>No thanks</u></string>
   <string name="you_need_plus_message_fixed">Get this feature plus more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_custom_domains">Add custom email addresses with a <b>Domain</b> that you already own like you@company.com \n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_aliases">With <b>Aliases</b> you can manage multiple addresses in one inbox.\n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
   <string name="you_need_plus_message_read_receipts">Use <b>Read Receipts</b> to know when your emails are read by recipients with blue check marks.</string>
   <string name="you_need_plus_message_unsend">Use <b>Unsend</b> to correct a mistake and take back an email after you send it.</string>
   <string name="you_need_plus_message_reminders">Use <b>Reminders</b> to get notified when it\'s time to follow-up a conversation.</string>

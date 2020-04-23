@@ -105,7 +105,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Register(filepath = "/test.pdf",
-                    filetoken = mockedFiletoken, uuid = model.attachments[0].uuid))
+                    filetoken = mockedFiletoken, uuid = model.attachments[0].uuid, groupId = null))
 
             model.attachments[0].filetoken `should be` mockedFiletoken
             verify { scene.notifyAttachmentSetChanged() }

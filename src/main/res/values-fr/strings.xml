@@ -708,6 +708,8 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="you_need_plus_button">Devenir Plus</string>
   <string name="you_need_plus_no_thanks"><u>Non merci</u></string>
   <string name="you_need_plus_message_fixed">Bénéficiez de cette fonctionnalité et de plus encore lorsque vous effectuez une mise à niveau vers <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_custom_domains">Add custom email addresses with a <b>Domain</b> that you already own like you@company.com \n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
+  <string name="you_need_plus_message_aliases">With <b>Aliases</b> you can manage multiple addresses in one inbox.\n\nGet this and more when you upgrade to <b>Criptext Plus.</b></string>
   <string name="you_need_plus_message_read_receipts">Utilisez <b>Lire accusés de réception</b> pour savoir quand vos destinataires lisent des courriels bleus.</string>
   <string name="you_need_plus_message_unsend">Pour <b>annuler l\'envoi</b>, corrigez une erreur et récupérez un e-mail après l\'avoir envoyée.</string>
   <string name="you_need_plus_message_reminders">Utilisez <b>Rappels</b> pour être averti lorsque le moment est venu de suivre une conversation.</string>

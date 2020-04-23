@@ -18,6 +18,9 @@ import com.criptext.mail.utils.uiobserver.UIObserver
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun dismissCriptextPlusDialog() {
+
+    }
 
     override fun stopMessagesAndCallbacks() {
 

@@ -6,10 +6,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.ComposerLocalDB
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -54,7 +51,7 @@ class ResendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
             isTrusted = false, score = 0, spamScore = 0)
     @Before

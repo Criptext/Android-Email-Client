@@ -14,8 +14,8 @@ data class SignInSession(val token: String, val deviceId: Int, val name: String,
         json.put("token", token)
         json.put("deviceId", deviceId)
         json.put("name", name)
+        json.put("blockRemoteContent", if(blockRemoteContent) 1 else 0)
         json.put("customerType", type.ordinal)
-        json.put("blockRemoteContent", blockRemoteContent)
         return json
     }
 

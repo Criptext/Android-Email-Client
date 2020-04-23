@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.models.EmailMetadata
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.Account
@@ -42,7 +43,7 @@ class LoadInitialDataWorkerTest {
     private lateinit var composerLocalDB: ComposerLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1, score = 0, isTrusted = true, spamScore = 0)
     private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2, score = 0, isTrusted = true, spamScore = 0)
     private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3, score = 0, isTrusted = true, spamScore = 0)
@@ -59,7 +60,8 @@ class LoadInitialDataWorkerTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 1, "", "criptext.com", true, true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
+                type = AccountTypes.STANDARD, blockRemoteContent = false))
         reTemplate = REMailTemplate(mActivityRule.activity)
         fwmTemplate = FWMailTemplate(mActivityRule.activity)
         db.contactDao().insertAll(listOf(testerContact, mayerContact, danielContact))

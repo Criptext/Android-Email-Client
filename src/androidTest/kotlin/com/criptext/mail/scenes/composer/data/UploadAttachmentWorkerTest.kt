@@ -6,6 +6,7 @@ import com.criptext.mail.Config
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -30,7 +31,7 @@ class UploadAttachmentWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private val fileServiceAuthToken =
             Encoding.byteArrayToString(
                     "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(
@@ -70,7 +71,7 @@ class UploadAttachmentWorkerTest {
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, fileKey = null,
                     accountDao =  db.accountDao(), filesSize = 0L, storage = storage,
-                    uuid = "_UUID_")
+                    uuid = "_UUID_", groupId = null)
 
     @Test
     fun should_upload_file_without_errors() {

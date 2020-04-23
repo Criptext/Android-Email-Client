@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -34,7 +35,7 @@ class ReadEmailsWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     private lateinit var httpClient: HttpClient
 
@@ -46,7 +47,8 @@ class ReadEmailsWorkerTest {
                 name = "Tester", registrationId = 1,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
+                type = AccountTypes.STANDARD, blockRemoteContent = false))
         mockWebServer = MockWebServer()
         mockWebServer.start()
         storage = mockk(relaxed = true)

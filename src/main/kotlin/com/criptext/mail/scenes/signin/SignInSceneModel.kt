@@ -37,4 +37,5 @@ class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var devices: ArrayList<DeviceItem> = ArrayList()
     var checkedDomains = mutableListOf<ContactDomainCheckData>()
     var accountType = AccountTypes.STANDARD
+    var maxDevices = 0
 }
