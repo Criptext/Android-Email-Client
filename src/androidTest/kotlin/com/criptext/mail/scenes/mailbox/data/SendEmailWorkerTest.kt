@@ -58,7 +58,7 @@ class SendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
             isTrusted = true, score = 0, spamScore = 0)
     @Before
@@ -68,7 +68,7 @@ class SendEmailWorkerTest {
         db.contactDao().insertIgnoringConflicts(bobContact)
 
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(),  mActivityRule.activity.filesDir)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
 
@@ -93,16 +93,16 @@ class SendEmailWorkerTest {
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = attachments, publishFn = {}, fileKey = fileKey, rawIdentityKeyDao = db.rawIdentityKeyDao(),
                     accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir,
-                    currentLabel = Label.defaultItems.inbox)
+                    currentLabel = Label.defaultItems.inbox, senderAddress = activeAccount.userEmail)
 
 
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
-                    attachments = inputData.attachments!!, onlySave = false, account = activeAccount,
+                    attachments = inputData.attachments!!, onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = inputData.fileKey, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB)
+                    db = composerLocalDB, activeAccount = activeAccount)
 
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
@@ -140,6 +140,7 @@ class SendEmailWorkerTest {
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
+        jsonFindKeyBundleResponse.put("addresses", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
@@ -181,6 +182,7 @@ class SendEmailWorkerTest {
         jsonBlacklistObject.put("devices", JSONArray().put(1))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray().put(jsonBlacklistObject))
         jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
+        jsonFindKeyBundleResponse.put("addresses", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(
@@ -240,6 +242,7 @@ class SendEmailWorkerTest {
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
+        jsonFindKeyBundleResponse.put("addresses", JSONArray())
         val postEmailResponse = SentMailData(date = "2018-06-18 15:22:21", metadataKey = 1011,
                 messageId = "__MESSAGE_ID__", threadId = "__THREAD_ID__").toJSON().toString()
         mockWebServer.enqueueResponses(listOf(

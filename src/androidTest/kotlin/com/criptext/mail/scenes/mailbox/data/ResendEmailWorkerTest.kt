@@ -6,10 +6,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.androidtest.TestSharedPrefs
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.ComposerLocalDB
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -54,7 +51,7 @@ class ResendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
             isTrusted = false, score = 0, spamScore = 0)
     @Before
@@ -64,7 +61,7 @@ class ResendEmailWorkerTest {
         db.contactDao().insertIgnoringConflicts(bobContact)
 
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
         storage = mockk(relaxed = true)
@@ -92,14 +89,15 @@ class ResendEmailWorkerTest {
                     rawSessionDao = db.rawSessionDao(), httpClient = httpClient, db = mailboxLocalDB,
                     composerInputData = inputData, activeAccount = activeAccount,
                     attachments = emptyList(), publishFn = {}, fileKey = null, rawIdentityKeyDao = db.rawIdentityKeyDao(),
-                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox)
+                    accountDao = db.accountDao(), storage = storage, filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
+                    senderAddress = activeAccount.userEmail)
 
     private fun newSaveEmailWorker(inputData: ComposerInputData): SaveEmailWorker =
             SaveEmailWorker(composerInputData = inputData, emailId = null, threadId = null,
-                    attachments = emptyList(), onlySave = false, account = activeAccount,
+                    attachments = emptyList(), onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB)
+                    db = composerLocalDB, activeAccount = activeAccount)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)
@@ -138,6 +136,7 @@ class ResendEmailWorkerTest {
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
+        jsonFindKeyBundleResponse.put("addresses", JSONArray())
         val date = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         val strDate = dateFormat.format(date)
@@ -184,6 +183,7 @@ class ResendEmailWorkerTest {
         jsonFindKeyBundleResponse.put("keyBundles", JSONArray().put(keyBundleFromBob.toJSON()))
         jsonFindKeyBundleResponse.put("blacklistedKnownDevices", JSONArray())
         jsonFindKeyBundleResponse.put("guestDomains", JSONArray())
+        jsonFindKeyBundleResponse.put("addresses", JSONArray())
         val date = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         val strDate = dateFormat.format(date)

@@ -1,0 +1,114 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/aliases_create_dialog_title"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:text="@string/aliases_create_dialog_message"
+        android:gravity="center_horizontal"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        app:errorEnabled="true"
+        app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+        app:hintTextAppearance="@style/textinputlayout_non_criptext_email_send">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/aliases_create_dialog_text_hint"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textAllCaps="false"
+            android:textAppearance="@style/textinputlayout_non_criptext_email_send"
+            android:textSize="15sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/criptext_domain_text"
+        fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:text="@string/criptext_com"
+        android:layout_gravity="center_horizontal"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="15sp"/>
+
+    <Spinner
+        android:id="@+id/domain_spiner"
+        android:layout_width="175dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingTop="60dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/button_text_color"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/settings_remove_cancel"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_left_bg"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel" />
+
+        <Button
+            android:textColor="@color/button_text_color"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/settings_remove_yes"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_right_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/yes" />
+
+        <ProgressBar
+            android:id="@+id/check_password_progress"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_progress_bar_bg"/>
+
+    </LinearLayout>
+</LinearLayout>

@@ -19,7 +19,7 @@ class ApiCall {
             val response = client.newCall(req).execute()
             if (!response.isSuccessful) {
                 val resultHeaders = ResultHeaders(response.headers())
-                throw(ServerErrorException(response.code(), resultHeaders))
+                throw(ServerErrorException(response.code(), resultHeaders, response.body()?.string()))
             }
             return HttpResponseData(response.code(), response.body()!!.string())
         }

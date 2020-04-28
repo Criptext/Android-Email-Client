@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/alias_root_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="?attr/criptextLeftMenuSeparator"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="17dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/settings_preview"
+        android:clickable="false"
+        android:foreground="?attr/selectableItemBackground">
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/alias_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/title_allow_preview"
+            android:textSize="@dimen/drawer_text_item"
+            android:gravity="center_vertical"
+            android:textColor="?attr/criptextSettingsOptionsTextColor"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="10dp">
+            <Switch
+                android:id="@+id/switch_alias_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:layout_marginEnd="5dp"/>
+
+            <ImageView
+                android:id="@+id/trash_alias_item"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/trash"
+                android:tint="@color/trash_can_grey" />
+        </LinearLayout>
+    </FrameLayout>
+
+</RelativeLayout>

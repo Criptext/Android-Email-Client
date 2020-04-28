@@ -4,6 +4,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.ContactTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.LabelTypes
@@ -31,7 +32,7 @@ class UserDataWriterTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     val nowDate = Calendar.getInstance().time
     val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
@@ -64,6 +65,11 @@ class UserDataWriterTest {
             size = 14, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",
             cid = null)
 
+    private val aliasOne = Alias(id = 1, name = "alias1", domain = null, active = true, rowId = 1, accountId = activeAccount.id)
+    private val aliasTwo = Alias(id = 2, name = "alias2", domain = "custom.com", active = true, rowId = 2, accountId = activeAccount.id)
+
+    private val domainOne = CustomDomain(id = 1, name = "custom.com", validated = true, rowId = 1, accountId = activeAccount.id)
+
     private val emailLabel1 = EmailLabel(emailId = 1, labelId = 1)
     private val emailLabel2 = EmailLabel(emailId = 2, labelId = 2)
 
@@ -83,6 +89,9 @@ class UserDataWriterTest {
     "{\"table\":\"email\",\"object\":{\"id\":2,\"messageId\":\"id_2\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 2\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 2\",\"status\":6,\"date\":\"$strDate\",\"key\":456,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",
     "{\"table\":\"file\",\"object\":{\"id\":1,\"token\":\"txt\",\"name\":\"this.txt\",\"size\":12,\"status\":0,\"date\":\"$strDate\",\"emailId\":1,\"mimeType\":\"text\\/plain\"}}",
     "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"$strDate\",\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
+    "{\"table\":\"alias\",\"object\":{\"id\":1,\"name\":\"alias1\",\"rowId\":1,\"active\":true}}",
+    "{\"table\":\"alias\",\"object\":{\"id\":2,\"name\":\"alias2\",\"rowId\":2,\"domain\":\"custom.com\",\"active\":true}}",
+    "{\"table\":\"customDomain\",\"object\":{\"id\":1,\"name\":\"custom.com\",\"rowId\":1,\"validated\":true}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"to\"}}",
@@ -95,7 +104,7 @@ class UserDataWriterTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
@@ -107,6 +116,9 @@ class UserDataWriterTest {
         db.emailDao().insert(emailTwo)
         db.fileDao().insert(fileOne)
         db.fileDao().insert(fileTwo)
+        db.aliasDao().insert(aliasOne)
+        db.aliasDao().insert(aliasTwo)
+        db.customDomainDao().insert(domainOne)
         db.emailLabelDao().insert(emailLabel1)
         db.emailLabelDao().insert(emailLabel2)
         db.emailContactDao().insert(emailContact1)

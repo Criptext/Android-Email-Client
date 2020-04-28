@@ -34,6 +34,7 @@ class UploadAttachmentWorker(private val filesSize: Long,
                              private val activeAccount: ActiveAccount,
                              private val storage: KeyValueStorage,
                              private val accountDao: AccountDao,
+                             private val groupId: String?,
                              val fileKey: String?,
                              override val publishFn: (ComposerResult.UploadFile) -> Unit)
     : BackgroundWorker<ComposerResult.UploadFile> {
@@ -60,8 +61,8 @@ class UploadAttachmentWorker(private val filesSize: Long,
             ComposerResult.UploadFile.MaxFilesExceeds(filepath, uuid)
 
 
-    private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (String) -> Result<Unit, Exception> = { fileToken ->
-        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, fileToken, uuid))
+    private fun uploadFile(file: File, reporter: ProgressReporter<ComposerResult.UploadFile>): (Pair<String, String?>) -> Result<Unit, Exception> = { tokenAndGroupId ->
+        reporter.report(ComposerResult.UploadFile.Register(file.absolutePath, tokenAndGroupId.first, uuid, tokenAndGroupId.second))
         Result.of {
 
             val chunks = (file.length() / chunkSize).toInt() + 1
@@ -73,16 +74,16 @@ class UploadAttachmentWorker(private val filesSize: Long,
                                                         else
                                                             chunk,
                         fileName = file.name,
-                        part = index + 1, fileToken = fileToken).body
+                        part = index + 1, fileToken = tokenAndGroupId.first, groupId = groupId).body
             }
             ChunkFileReader.read(file, chunkSize, onNewChunkRead)
         }
     }
 
-    private val getFileTokenFromJSONResponse: (String) -> Result<String, Exception> = { stringResponse ->
+    private val getFileTokenFromJSONResponse: (String) -> Result<Pair<String, String?>, Exception> = { stringResponse ->
         Result.of {
             val jsonObject = JSONObject(stringResponse)
-            jsonObject.getString("filetoken")
+            Pair(jsonObject.getString("filetoken"), jsonObject.optString("groupId"))
         }
     }
 
@@ -92,7 +93,8 @@ class UploadAttachmentWorker(private val filesSize: Long,
             val totalChunks = (fileSize / chunkSize).toInt() + 1
 
             fileServiceAPIClient.registerFile(fileName = file.name,
-                    chunkSize = chunkSize, fileSize = fileSize.toInt(), totalChunks = totalChunks).body
+                    chunkSize = chunkSize, fileSize = fileSize.toInt(), totalChunks = totalChunks,
+                    groupId = groupId).body
         }
 
     override fun work(reporter: ProgressReporter<ComposerResult.UploadFile>)

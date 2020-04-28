@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/criptextLeftMenuHeader"
     android:orientation="vertical"
     android:padding="25dp"
@@ -12,13 +12,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circleView"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleView"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="25dp"
+                />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/plusBadgeRing"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/img_ring_drawer"
+                />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/extraAccountsAvatars"
@@ -105,16 +120,37 @@
             android:paddingStart="25dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textViewNombre"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="10dp"
-                android:textColor="?attr/criptextPrimaryTextColor"
-                android:textSize="16sp"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewNombre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:textSize="16sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+                <TextView
+                    android:id="@+id/plusBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textStyle="italic|bold"
+                    android:maxLines="1"
+                    android:background="@drawable/plus_badge_text"
+                    android:text="Plus"
+                    android:ellipsize="end"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textViewCorreo"
@@ -131,12 +167,12 @@
         </LinearLayout>
         <ImageView
             android:id="@+id/imageViewArrow"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginEnd="20dp"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:tint="?attr/criptextLeftMenuSeparator"
+            android:tint="@color/azure"
             android:src="@drawable/arrowdown"/>
 
     </LinearLayout>

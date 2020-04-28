@@ -72,9 +72,9 @@ class MailboxDataSource(
             is MailboxRequest.SendMail -> SendMailWorker(
                     storage = storage,
                     accountDao = accountDao,
-                    signalClient = if(params.senderAccount == null) signalClient
-                                    else SignalClient.Default(SignalStoreCriptext(db, params.senderAccount)),
-                    activeAccount = params.senderAccount ?: activeAccount,
+                    signalClient = SignalClient.Default(SignalStoreCriptext(db, params.senderAccount)),
+                    activeAccount = params.senderAccount,
+                    senderAddress = params.senderAddress,
                     currentLabel = params.currentLabel,
                     rawSessionDao = rawSessionDao,
                     rawIdentityKeyDao = rawIdentityKeyDao,

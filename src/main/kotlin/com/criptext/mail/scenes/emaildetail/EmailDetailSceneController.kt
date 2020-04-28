@@ -10,6 +10,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -41,6 +42,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -111,6 +113,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {

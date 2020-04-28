@@ -14,14 +14,18 @@ import com.criptext.mail.R
 class ToolbarHolder(val view: View) {
     private val title: TextView
     private val numberEmails: TextView
+    private val plusBadge: TextView
     private val navButton: ImageView
+    private val navButtonRing: ImageView
     private val backButton: ImageView
     private val separator: Space
 
     init {
         title = view.findViewById(R.id.mailbox_toolbar_title)
         numberEmails = view.findViewById(R.id.mailbox_number_emails)
+        plusBadge = view.findViewById(R.id.plusBadge)
         navButton = view.findViewById(R.id.mailbox_nav_button)
+        navButtonRing = view.findViewById(R.id.plusBadgeRing)
         backButton = view.findViewById(R.id.mailbox_back_button)
         separator = view.findViewById(R.id.mailbox_toolbar_multi_mode_separator)
     }
@@ -46,5 +50,14 @@ class ToolbarHolder(val view: View) {
     }
     fun updateNumberOfMails(emailsSize: Int) {
         numberEmails.text = if(emailsSize == 0) "" else "($emailsSize)"
+    }
+    fun showPlusBadge(show: Boolean){
+        if(show){
+            plusBadge.visibility = View.VISIBLE
+            navButtonRing.visibility = View.VISIBLE
+        } else {
+            plusBadge.visibility = View.INVISIBLE
+            navButtonRing.visibility = View.INVISIBLE
+        }
     }
 }

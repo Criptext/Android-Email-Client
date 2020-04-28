@@ -11,6 +11,7 @@ import com.criptext.mail.utils.UIMessage
 
 class LoadFromAddressesWorker(
         private val db: ComposerLocalDB,
+        private val activeAccount: ActiveAccount,
         override val publishFn: (ComposerResult.GetAllFromAddresses) -> Unit)
     : BackgroundWorker<ComposerResult.GetAllFromAddresses> {
 
@@ -23,7 +24,8 @@ class LoadFromAddressesWorker(
     override fun work(reporter: ProgressReporter<ComposerResult.GetAllFromAddresses>)
             : ComposerResult.GetAllFromAddresses? {
         val accounts = db.accountDao.getLoggedInAccounts()
-        return ComposerResult.GetAllFromAddresses.Success(accounts = accounts)
+        val aliases = db.aliasDao.getAll()
+        return ComposerResult.GetAllFromAddresses.Success(accounts = accounts, aliases = aliases)
     }
 
     override fun cancel() {

@@ -126,7 +126,7 @@ class SettingsRemoveDeviceDialog(val context: Context) {
 
     private fun assignPasswordTextListener() {
         password.addTextChangedListener( object : TextWatcher {
-            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(text: CharSequence?, p1: Int, ap2: Int, p3: Int) {
                 setPasswordError(null)
             }
 

@@ -71,6 +71,15 @@ interface SettingsScene{
         private val settingsMailboxSync: View by lazy {
             view.findViewById<View>(R.id.settings_sync_mailbox)
         }
+        private val settingsBilling: View by lazy {
+            view.findViewById<View>(R.id.settings_billing)
+        }
+        private val settingsCustomDomains: View by lazy {
+            view.findViewById<View>(R.id.settings_custom_domain)
+        }
+        private val settingsAliases: View by lazy {
+            view.findViewById<View>(R.id.settings_aliases)
+        }
         private val settingsDarkTheme: Switch by lazy {
             view.findViewById<Switch>(R.id.switch_dark_theme)
         }
@@ -280,6 +289,9 @@ interface SettingsScene{
             settingsMailboxSync.setOnClickListener {
                 settingsUIObserver?.onSyncMailbox()
             }
+            settingsBilling.setOnClickListener {
+                settingsUIObserver?.onBillingClicked()
+            }
             settingsPinLock.setOnClickListener {
                 settingsUIObserver?.onPinLockClicked()
             }
@@ -297,6 +309,12 @@ interface SettingsScene{
             }
             settingsReportAbuse.setOnClickListener {
                 settingsUIObserver?.onReportAbuseClicked()
+            }
+            settingsCustomDomains.setOnClickListener {
+                settingsUIObserver?.onCustomDomainClicked()
+            }
+            settingsAliases.setOnClickListener {
+                settingsUIObserver?.onAliasesClicked()
             }
             setSwitchListener()
         }

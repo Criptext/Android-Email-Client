@@ -28,7 +28,7 @@ class GetUserSettingsWorker(
                 GeneralResult.GetUserSettings) -> Unit)
     : BackgroundWorker<GeneralResult.GetUserSettings> {
 
-    override val canBeParallelized = true
+    override val canBeParallelized = false
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.GetUserSettings {
@@ -58,7 +58,7 @@ class GetUserSettingsWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                val settings = UserSettingsData.fromJSON(finalResult.value)
+                val settings = UserSettingsData.fromJSON(finalResult.value, activeAccount.id)
                 val devices = settings.devices.map { if(it.id == activeAccount.deviceId) it.copy(
                         isCurrent = true
                 ) else it }

@@ -2,17 +2,21 @@ package com.criptext.mail.utils.file
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Base64
 import android.webkit.JavascriptInterface
 import android.widget.Toast
 import com.criptext.mail.BuildConfig
+import com.criptext.mail.R
+import com.criptext.mail.scenes.WebViewActivity
+import org.json.JSONObject
 
 /**
  * Created by hirobreak on 02/08/17.
  */
-class DownloadBlobInterface(val mContext: Context, val filename: String) {
+class CriptextJavaScriptInterface(val mContext: Context, val filename: String) {
 
     @JavascriptInterface
     fun retrieveData(data: String) {
@@ -34,4 +38,15 @@ class DownloadBlobInterface(val mContext: Context, val filename: String) {
         }
     }
 
+    @JavascriptInterface
+    fun postMessage(jsonString: String) {
+        val json = JSONObject(jsonString)
+        val activity = mContext as WebViewActivity
+        when(json.getString("type")){
+            "close" -> {
+                activity.onBackPressed()
+            }
+        }
+
+    }
 }

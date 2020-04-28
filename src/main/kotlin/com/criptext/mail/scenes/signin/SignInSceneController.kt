@@ -1,12 +1,12 @@
 package com.criptext.mail.scenes.signin
 
-import com.criptext.mail.BuildConfig
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -24,6 +24,7 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -95,7 +96,7 @@ class SignInSceneController(
                 model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
                 resetLayout()
                 if(canceledByMe)
-                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.temporalJWT, null))
+                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
             }
         }else{
             if(canceledByMe)
@@ -189,6 +190,7 @@ class SignInSceneController(
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 model.ephemeralJwt = result.ephemeralJwt
                 model.hasTwoFA = result.hasTwoFA
+                model.accountType = result.accountType
                 if(model.hasTwoFA){
                     if(model.realSecurePassword != null){
                         dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
@@ -207,6 +209,7 @@ class SignInSceneController(
             is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
             is SignInResult.LinkBegin.NeedToRemoveDevices -> {
                 model.needToRemoveDevices = true
+                model.maxDevices = result.maxDevices
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 onAcceptPasswordLogin(currentState.username, currentState.domain)
             }
@@ -373,6 +376,18 @@ class SignInSceneController(
                         devices = model.devices,
                         password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
+                if(model.accountType == AccountTypes.STANDARD) {
+                    host.showCriptextPlusDialog(
+                            dialogData = DialogData.DialogCriptextPlusData(
+                                    title = UIMessage(R.string.you_need_plus_title_devices),
+                                    image = R.drawable.img_devices,
+                                    type = DialogType.CriptextPlus(),
+                                    message = UIMessage(R.string.you_need_plus_message_devices,
+                                            arrayOf(model.maxDevices, (model.devices.size - (model.maxDevices - 1))))
+                            ),
+                            uiObserver = uiObserver
+                    )
+                }
             }
             is SignInResult.FindDevices.Failure -> {
                 onAuthenticationFailed(result.message)
@@ -385,8 +400,8 @@ class SignInSceneController(
             is SignInResult.RemoveDevices.Success -> {
                 uiObserver.onXPressed()
                 deviceWrapperListController?.remove(result.deviceIds)
-                if(model.devices.size >= DeviceItem.MAX_ALLOWED_DEVICES){
-                    scene.showDeviceCountRemaining(model.devices.size - (DeviceItem.MAX_ALLOWED_DEVICES - 1))
+                if(model.devices.size >= model.maxDevices){
+                    scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
                 } else {
                     val state = model.state as SignInLayoutState.RemoveDevices
                     model.state = SignInLayoutState.LoginValidation(username = state.username,
@@ -665,11 +680,24 @@ class SignInSceneController(
 
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            if(result is DialogResult.DialogWithInput && result.type is DialogType.RecoveryCode){
-                scene.toggleLoadRecoveryCode(true)
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
+            when(result){
+                is DialogResult.DialogWithInput -> {
+                    if(result.type is DialogType.RecoveryCode){
+                        scene.toggleLoadRecoveryCode(true)
+                        val currentState = model.state as SignInLayoutState.LoginValidation
+                        dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
+                    }
+                }
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", model.temporalJWT))
+                    }
+                }
             }
         }
 
@@ -715,7 +743,7 @@ class SignInSceneController(
                 }
             }
             if(checkedIndexes.first.isEmpty()){
-                scene.showDeviceCountRemaining(model.devices.size - (DeviceItem.MAX_ALLOWED_DEVICES - 1))
+                scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
             } else {
                 dataSource.submitRequest(SignInRequest.RemoveDevices(
                         userData = UserData(recipient, domain, "", null),
@@ -780,7 +808,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onSubmitButtonClicked() {
@@ -1001,6 +1029,7 @@ class SignInSceneController(
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
+                host.dismissCriptextPlusDialog()
                 false
             }
         }

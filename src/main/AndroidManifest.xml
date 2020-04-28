@@ -128,6 +128,14 @@
             android:exported="true"/>
         <activity android:name=".scenes.restorebackup.RestoreBackupActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.custom_domain_entry.CustomDomainEntryActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.custom_domain_entry.domainconfiguration.DomainConfigurationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".scenes.settings.custom_domain.CustomDomainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".scenes.settings.aliases.AliasesActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".services.InstanceIdService"

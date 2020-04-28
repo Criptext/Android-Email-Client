@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.composer.data
 
 import com.criptext.mail.api.JSONData
+import com.criptext.mail.db.models.Alias
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.utils.EmailAddressUtils
@@ -15,7 +16,8 @@ import org.json.JSONObject
 
 class PostEmailBody(val threadId: String?, val subject: String,
                     val criptextEmails: List<CriptextEmail>, val guestEmail: GuestEmail?,
-                    val attachments: List<CriptextAttachment>): JSONData {
+                    val attachments: List<CriptextAttachment>,
+                    val alias: Alias?): JSONData {
 
     enum class RecipientTypes { to, cc, bcc, peer }
 
@@ -30,6 +32,9 @@ class PostEmailBody(val threadId: String?, val subject: String,
         if(attachments.isNotEmpty()){
             val attachmentsArray = attachments.toJSONArray()
             json.put("files", attachmentsArray)
+        }
+        if(alias != null){
+            json.put("fromAddressId", alias.rowId)
         }
 
         return json
@@ -53,7 +58,8 @@ class PostEmailBody(val threadId: String?, val subject: String,
                                      val messageType: SignalEncryptedData.Type,
                                      val type: RecipientTypes, val body: String, val fileKey: String?,
                                      val fileKeys: List<String>?, val preview: String,
-                                     val previewMessageType: SignalEncryptedData.Type): CriptextEmail() {
+                                     val previewMessageType: SignalEncryptedData.Type, val alias: String?,
+                                     val aliasDomain: String?): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val json = JSONObject()
@@ -68,6 +74,10 @@ class PostEmailBody(val threadId: String?, val subject: String,
             json.put("fileKeys", JSONArray(fileKeys))
             jsonOuter.put("type", type.toString())
             jsonOuter.put("username", recipientId)
+            if(alias != null) {
+                jsonOuter.put("aliasUsername", alias)
+                jsonOuter.put("aliasDomain", aliasDomain)
+            }
             jsonOuter.put("domain", domain)
             jsonOuter.put("type", type.toString())
             jsonOuter.put("emails", JSONArray().put(json))
@@ -75,11 +85,16 @@ class PostEmailBody(val threadId: String?, val subject: String,
         }
     }
 
-    data class EmptyCriptextEmail(val recipientId: String, val domain: String): CriptextEmail() {
+    data class EmptyCriptextEmail(val recipientId: String, val domain: String, val alias: String?,
+                                  val aliasDomain: String?): CriptextEmail() {
 
         override fun toJSON(): JSONObject {
             val jsonOuter = JSONObject()
             jsonOuter.put("username", recipientId)
+            if(alias != null) {
+                jsonOuter.put("aliasUsername", alias)
+                jsonOuter.put("aliasDomain", aliasDomain)
+            }
             jsonOuter.put("domain", domain)
             jsonOuter.put("emails", JSONArray())
             return jsonOuter

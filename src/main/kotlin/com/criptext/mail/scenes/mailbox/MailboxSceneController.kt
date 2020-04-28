@@ -230,7 +230,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
@@ -315,6 +315,10 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
@@ -475,7 +479,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
                         currentLabel = model.selectedLabel,
                         data = activityMessage.composerInputData, attachments = activityMessage.attachments,
-                        fileKey = activityMessage.fileKey, senderAccount = activityMessage.senderAccount)
+                        fileKey = activityMessage.fileKey, senderAccount = activityMessage.senderAccount,
+                        senderAddress = activityMessage.senderAddress)
                 dataSource.submitRequest(newRequest)
                 scene.showMessage(UIMessage(R.string.sending_email))
                 true
@@ -568,7 +573,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model),
-                email = activeAccount.userEmail, fullName = activeAccount.name)
+                email = activeAccount.userEmail, fullName = activeAccount.name,
+                accountType = activeAccount.type)
         scene.initDrawerLayout()
         scene.setEmtpyMailboxBackground(model.selectedLabel)
 
@@ -1039,7 +1045,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         fun onGetMenuInformation(result: MailboxResult){
             when (result) {
                 is MailboxResult.GetMenuInformation.Success -> {
-                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${result.account.domain}")
+                    scene.initNavHeader(result.account.name, "${result.account.recipientId}@${result.account.domain}", result.account.type)
                     scene.setCounterLabel(NavigationMenuOptions.INBOX, result.totalInbox)
                     scene.setCounterLabel(NavigationMenuOptions.DRAFT, result.totalDraft)
                     scene.setCounterLabel(NavigationMenuOptions.SPAM, result.totalSpam)
@@ -1110,7 +1116,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         websocketEvents.setListener(webSocketEventListener)
 
-        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
+        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
 
         scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
@@ -1182,8 +1188,8 @@ class MailboxSceneController(private val scene: MailboxScene,
                         dataSource.submitRequest(MailboxRequest.GetMenuInformation())
                     }
                     Event.Cmd.profilePictureChanged -> {
-                        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail)
-                        scene.initNavHeader(activeAccount.name, activeAccount.userEmail)
+                        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                        scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
                     }
                 }
             }

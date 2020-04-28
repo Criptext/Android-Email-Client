@@ -51,6 +51,7 @@ interface ProfileScene{
     fun updateCurrentEmailStatus(isEmailConfirmed: Boolean)
     fun hideFooterSwitch()
     fun updateAvatarByPeerEvent(fullName: String, email: String)
+    fun updateCriptextFooterSwitch(isChecked: Boolean)
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -361,6 +362,14 @@ interface ProfileScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
+        }
+
+        override fun updateCriptextFooterSwitch(isChecked: Boolean) {
+            criptextFooterSwitch.setOnCheckedChangeListener { _, _ ->  }
+            criptextFooterSwitch.isChecked = isChecked
+            criptextFooterSwitch.setOnCheckedChangeListener { _, checked ->
+                profileUIObserver.onCriptextFooterSwitched(checked)
+            }
         }
 
         override fun showMessage(message: UIMessage) {

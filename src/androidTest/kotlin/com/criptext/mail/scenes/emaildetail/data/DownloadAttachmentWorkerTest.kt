@@ -9,6 +9,7 @@ import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -48,7 +49,7 @@ class DownloadAttachmentWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     private var filetoken = ""
     private val reporter: ProgressReporter<ComposerResult.UploadFile> =
@@ -95,7 +96,7 @@ class DownloadAttachmentWorkerTest {
     private fun newWorker(filepath: String): UploadAttachmentWorker =
             UploadAttachmentWorker(filepath = filepath, activeAccount = activeAccount,
                     httpClient = httpClient, publishFn = {}, fileKey = null, accountDao = db.accountDao(),
-                    storage = storage, filesSize = 0L, uuid = "_UUID_")
+                    storage = storage, filesSize = 0L, uuid = "_UUID_", groupId = null)
 
     private fun newDownloadWorker(filetoken: String): DownloadAttachmentWorker =
             DownloadAttachmentWorker(fileToken = filetoken, emailId = 0,

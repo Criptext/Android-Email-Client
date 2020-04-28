@@ -13,7 +13,7 @@ import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -23,7 +23,6 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.profile.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.eventhelper.ParsedEvent
@@ -34,17 +33,11 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.validation.AccountDataValidator
-import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.MemoryPolicy
 import java.io.File
-import java.lang.Exception
 
 
 class ProfileController(
@@ -88,10 +81,10 @@ class ProfileController(
         override fun onCriptextFooterSwitched(isChecked: Boolean) {
             val footerData = ProfileFooterData(activeAccount.id, isChecked)
             val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
-            if(allFooterData.isNotEmpty()){
+            if (allFooterData.isNotEmpty()) {
                 val savedData = ProfileFooterData.fromJson(allFooterData)
                 val findAccountFooterData = savedData.find { it.accountId == activeAccount.id }
-                if(findAccountFooterData != null) {
+                if (findAccountFooterData != null) {
                     savedData.remove(findAccountFooterData)
                 }
                 savedData.add(footerData)
@@ -188,6 +181,10 @@ class ProfileController(
 
         override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {

@@ -18,6 +18,46 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun updateAccountType(newType: AccountTypes, account: Account){
+        db.accountDao().updateAccountType(newType, account.recipientId, account.domain)
+    }
+
+    fun createCustomDomain(customDomain: CustomDomain){
+        db.customDomainDao().insert(customDomain)
+    }
+
+    fun deleteCustomDomain(customDomain: CustomDomain){
+        db.customDomainDao().delete(customDomain)
+    }
+
+    fun createAlias(alias: Alias){
+        db.aliasDao().insert(alias)
+    }
+
+    fun deleteAlias(alias: Alias){
+        db.aliasDao().delete(alias)
+    }
+
+    fun deleteAliasesByDomain(domain: String){
+        db.aliasDao().deleteByDomain(domain)
+    }
+
+    fun updateAliasStatus(alias: Alias){
+        if(alias.domain == null){
+            db.aliasDao().updateCriptextActive(alias.name, alias.active, alias.accountId)
+        } else {
+            db.aliasDao().updateActive(alias.name, alias.domain, alias.active, alias.accountId)
+        }
+    }
+
+    fun getCustomDomains(accountId: Long): List<CustomDomain> {
+        return db.customDomainDao().getAll(accountId)
+    }
+
+    fun getAliases(accountId: Long): List<Alias> {
+        return db.aliasDao().getAll(accountId)
+    }
+
     fun getAccount(recipientId: String?, domain: String?): Account? {
         if(recipientId == null || domain == null) return null
         return db.accountDao().getAccount(recipientId, domain)
@@ -51,6 +91,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
     fun logout(accountId: Long){
         db.accountDao().logoutAccount(accountId)
+        db.aliasDao().deleteByAccountId(accountId)
+        db.customDomainDao().deleteByAccountId(accountId)
         db.rawIdentityKeyDao().deleteAll(accountId)
         db.rawPreKeyDao().deleteAll(accountId)
         db.rawSessionDao().deleteAll(accountId)
@@ -343,10 +385,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                                     metadata: EmailMetadata, activeAccount: ActiveAccount) {
+                                     metadata: EmailMetadata, activeAccount: ActiveAccount, aliases: List<String>) {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                 dao = db.emailInsertionDao(), apiClient = apiClient, metadata = metadata,
-                activeAccount = activeAccount, filesDir = filesDir)
+                activeAccount = activeAccount, filesDir = filesDir, aliases = aliases)
     }
 
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,

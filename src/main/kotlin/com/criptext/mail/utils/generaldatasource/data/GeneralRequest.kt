@@ -4,10 +4,12 @@ import android.content.ContentResolver
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
+import com.criptext.mail.scenes.settings.aliases.data.AliasData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.ContactUtils
 
@@ -52,4 +54,5 @@ sealed class GeneralRequest {
     data class GetEmailPreview(val threadId: String, val userEmail: String, val doReply: Boolean = false,
                                val activityMessage: ActivityMessage? = null): GeneralRequest()
     data class SetActiveAccountFromPush(val recipientId: String, val domain: String, val extras: IntentExtrasData) : GeneralRequest()
+    data class UpdateLocalDomainAndAliasData(val customDomains: List<CustomDomain>, val aliases: List<AliasData>) : GeneralRequest()
 }

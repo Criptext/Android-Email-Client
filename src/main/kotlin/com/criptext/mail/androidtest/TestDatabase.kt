@@ -19,8 +19,8 @@ import com.criptext.mail.db.typeConverters.*
 @Database(entities = [ Email::class, Label::class, EmailLabel::class, Account::class, EmailContact::class
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
-                     , PendingEvent::class, AccountContact::class, AntiPushMap::class],
-        version = 5,
+                     , PendingEvent::class, AccountContact::class, AntiPushMap::class, CustomDomain::class, Alias::class],
+        version = 6,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -28,7 +28,8 @@ import com.criptext.mail.db.typeConverters.*
         LabelTypeConverter::class,
         ContactTypeConverter::class,
         EmailDeliveryConverter::class,
-        FeedTypeConverter::class)
+        FeedTypeConverter::class,
+        AccountTypeConverter::class)
 abstract class TestDatabase: AppDatabase() {
     abstract fun resetDao(): ResetDao
 

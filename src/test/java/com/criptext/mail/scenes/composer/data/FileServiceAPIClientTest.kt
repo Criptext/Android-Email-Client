@@ -34,7 +34,7 @@ class FileServiceAPIClientTest {
         } returns "Ok"
 
         fileServiceClient.registerFile(fileName = "my_photo.png", fileSize =
-        1024, chunkSize = 512, totalChunks = 2)
+        1024, chunkSize = 512, totalChunks = 2, groupId = null)
 
         bodySlot.captured.toString(4).matchWithSnapshot("should send request to register file with correct shape")
     }
@@ -47,7 +47,7 @@ class FileServiceAPIClientTest {
         } returns "Ok"
 
         fileServiceClient.uploadChunk(chunk = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 127),
-                fileName = "my_photo.png", fileToken = "__FILE_TOKEN__", part = 2)
+                fileName = "my_photo.png", fileToken = "__FILE_TOKEN__", part = 2, groupId = null)
 
         bodySlot.captured.toString().matchWithSnapshot("should send request to upload chunk with correct shape")
     }

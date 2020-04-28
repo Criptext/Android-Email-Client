@@ -62,7 +62,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
                     onlySave = false, composerInputData = mockedComposerInputData, attachments = emptyList(),
-                    fileKey = null, preview = null))
+                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
 
             val sendMailMessageWithExpectedEmailId: (ActivityMessage?) -> Boolean = {
                 (it as ActivityMessage.SendMail).emailId == 1L
@@ -80,7 +80,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
                     onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList(),
-                    fileKey = null, preview = null))
+                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
 
             verify { host.exitToScene(any(), any(), any()) }
         }
@@ -105,7 +105,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
         runAfterSelectingAnAttachment {
             clearMocks(host)
             simulateAddAttachmentEvent(ComposerResult.UploadFile.Register(filepath = "/test.pdf",
-                    filetoken = mockedFiletoken, uuid = model.attachments[0].uuid))
+                    filetoken = mockedFiletoken, uuid = model.attachments[0].uuid, groupId = null))
 
             model.attachments[0].filetoken `should be` mockedFiletoken
             verify { scene.notifyAttachmentSetChanged() }

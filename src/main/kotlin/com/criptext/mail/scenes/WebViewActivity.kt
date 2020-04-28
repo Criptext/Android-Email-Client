@@ -16,7 +16,7 @@ import com.criptext.mail.R
 import com.criptext.mail.utils.DownloadHelper
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.WebViewUtils
-import com.criptext.mail.utils.file.DownloadBlobInterface
+import com.criptext.mail.utils.file.CriptextJavaScriptInterface
 import com.criptext.mail.utils.getLocalizedUIMessage
 import droidninja.filepicker.FilePickerConst
 
@@ -126,8 +126,8 @@ class WebViewActivity : AppCompatActivity() {
         webViewCriptext.webViewClient = client
         webViewCriptext.setDownloadListener(downloadListener)
 
-        val javascriptInterface = DownloadBlobInterface(this, intent.getStringExtra("name") ?: "noname")
-        webViewCriptext.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
+        val javascriptInterface = CriptextJavaScriptInterface(this, intent.getStringExtra("name") ?: "noname")
+        webViewCriptext.addJavascriptInterface(javascriptInterface, "criptoBridge")
     }
 
     private fun setupActionBar() {

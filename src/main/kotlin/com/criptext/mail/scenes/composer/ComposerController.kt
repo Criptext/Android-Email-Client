@@ -49,8 +49,8 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
-        override fun onSenderSelectedItem(sender: String) {
-            model.selectedAccount = model.accounts.find { it.userEmail == sender }
+        override fun onSenderSelectedItem(index: Int) {
+            model.selectedAddress = model.fromAddresses[index]
         }
 
         override fun onSnackbarClicked() {
@@ -63,6 +63,10 @@ class ComposerController(private val storage: KeyValueStorage,
 
         override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
+
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
 
         }
 
@@ -298,6 +302,9 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Register -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
                 composerAttachment.filetoken = result.filetoken
+                if(model.groupId == null && result.groupId != null) {
+                    model.groupId = result.groupId
+                }
             }
             is ComposerResult.UploadFile.Progress -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
@@ -363,7 +370,8 @@ class ComposerController(private val storage: KeyValueStorage,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
                             attachments = result.attachments, fileKey = model.fileKey,
-                            senderAccount = model.selectedAccount)
+                            senderAddress = result.senderAddress,
+                            senderAccount = result.account)
                     host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
@@ -395,11 +403,16 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is ComposerResult.GetAllFromAddresses.Success -> {
                 model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
-                scene.fillFromOptions(result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") })
+                val fromAddresses = mutableListOf<String>()
+                model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
+                fromAddresses.addAll(model.fromAddresses)
+                fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
+                scene.fillFromOptions(fromAddresses)
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
-                        || model.accounts.size == 1){
-                    model.selectedAccount = model.accounts.find { it.userEmail == activeAccount.userEmail }
-                    scene.switchToSimpleFrom(model.selectedAccount!!.userEmail)
+                        || (model.accounts.size == 1 && result.aliases.isEmpty())){
+                    model.selectedAddress = model.accounts.find { it.userEmail == activeAccount.userEmail }!!.userEmail
+                    scene.switchToSimpleFrom(model.selectedAddress)
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
@@ -480,7 +493,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 filepath = filepath,
                 fileKey = fileKey,
                 filesSize = model.filesSize,
-                uuid = uuid
+                uuid = uuid,
+                groupId = model.groupId
         ))
     }
 
@@ -511,7 +525,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 originalId = originalId,
                 composerInputData = composerInputData,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
-                senderAccount = model.selectedAccount,
+                senderEmail = model.selectedAddress,
                 currentLabel = model.currentLabel))
 
     }

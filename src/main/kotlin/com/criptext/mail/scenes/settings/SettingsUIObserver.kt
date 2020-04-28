@@ -24,7 +24,10 @@ interface SettingsUIObserver: UIObserver {
     fun onSyncPhonebookContacts()
     fun onCloudBackupClicked()
     fun onSyncMailbox()
+    fun onBillingClicked()
     fun onSyncMailboxCanceled()
     fun onReportBugClicked()
     fun onReportAbuseClicked()
+    fun onCustomDomainClicked()
+    fun onAliasesClicked()
 }
