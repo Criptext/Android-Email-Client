@@ -77,6 +77,15 @@ class RemoveDevicesHolder(
         }
     }
 
+    fun updateMaxDevices(maxDevices: Int, currentDevicesSize: Int){
+        messageText.text = view.context.getLocalizedUIMessage(
+                UIMessage(
+                        resId = R.string.sign_in_remove_message,
+                        args = arrayOf(maxDevices, currentDevicesSize)
+                )
+        )
+    }
+
     fun setToolbarCount(checked: Int){
         when(checked){
             0 -> {

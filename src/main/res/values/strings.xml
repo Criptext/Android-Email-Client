@@ -701,4 +701,8 @@
   <string name="you_need_plus_message_devices">You\'ve reached your maximum devices allowed (%1$d). <b>Upgrade to Plus</b> to get up to %1$d devices connected on your account. Otherwise, remove an existing device in order to continue logging in.</string>
   <string name="you_need_plus_maybe_later">Maybe Later</string>
   <string name="billing_settings_title">Billing</string>
+  <string name="web_view_no_internet_title">Connection Lost</string>
+  <string name="web_view_no_internet_message">Looks like you have lost connections with Wifi or other Internet connection</string>
+  <string name="btn_skip">Skip to Mailbox</string>
+  <string name="title_web_view_upgrade_to_plus">Upgrade To Plus</string>
 </resources>

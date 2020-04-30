@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIUtils
@@ -17,6 +18,7 @@ class AccountHolder(val view: View) : RecyclerView.ViewHolder(view){
     private val mailView : TextView = view.findViewById(R.id.textViewCorreo) as TextView
     private val badgeNumber : TextView = view.findViewById(R.id.badgeNumber) as TextView
     private val avatarView : CircleImageView = view.findViewById(R.id.accountItemAvatar)
+    private val avatarRingView : CircleImageView = view.findViewById(R.id.plusBadgeRing)
     private val rootView: View = view.findViewById(R.id.rootView)
 
     fun bindAccount(account: Account, badgeCount: Int) {
@@ -31,6 +33,12 @@ class AccountHolder(val view: View) : RecyclerView.ViewHolder(view){
                 name = account.name,
                 runnable = null,
                 domain = account.domain)
+
+        if(account.type == AccountTypes.PLUS){
+            avatarRingView.visibility = View.VISIBLE
+        } else {
+            avatarRingView.visibility = View.GONE
+        }
 
         if(badgeCount > 0) {
             badgeNumber.visibility = View.VISIBLE

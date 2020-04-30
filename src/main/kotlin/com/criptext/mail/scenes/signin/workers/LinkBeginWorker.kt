@@ -31,8 +31,10 @@ class LinkBeginWorker(val httpClient: HttpClient,
                 when(ex.errorCode){
                     ServerCodes.BadRequest -> return SignInResult.LinkBegin.NoDevicesAvailable(createErrorMessage(ex))
                     ServerCodes.TooManyDevices-> {
-                        val maxDevices = JSONObject(ex.body!!)
-                        return SignInResult.LinkBegin.NeedToRemoveDevices(createErrorMessage(ex), maxDevices.getInt("maxDevices"))
+                        val json = JSONObject(ex.body!!)
+                        return SignInResult.LinkBegin.NeedToRemoveDevices(createErrorMessage(ex),
+                                json.getInt("maxDevices"),
+                                AccountTypes.fromInt(json.getInt("customerType")))
                     }
                 }
             }

@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.mailbox.ui
 
 import android.graphics.Color
 import com.google.android.material.navigation.NavigationView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
@@ -16,7 +15,6 @@ import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
 import com.criptext.mail.scenes.mailbox.NavigationMenuOptions
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIUtils
-import com.criptext.mail.utils.Utility
 import com.criptext.mail.utils.getColorFromAttr
 import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
@@ -42,6 +40,8 @@ class DrawerMenuView(navigationView: NavigationView,
     //EXRA ACCOUNTS
     private val avatarView2 : CircleImageView
     private val avatarView3 : CircleImageView
+    private val avatarRingView2 : CircleImageView
+    private val avatarRingView3 : CircleImageView
     private val avatarViewLayout2 : RelativeLayout
     private val avatarViewLayout3 : RelativeLayout
     private val badgeAccount2 : TextView
@@ -49,7 +49,7 @@ class DrawerMenuView(navigationView: NavigationView,
 
     //MULTIPLE ACCOUNTS MENU
     private val openMenuArrow: ImageView
-    private val multipleAccontsMenu: LinearLayout
+    private val multipleAccountsMenu: LinearLayout
     private val addAccountOption: LinearLayout
     private val extraAccountsAvatars: LinearLayout
     private val recyclerViewAccount : RecyclerView
@@ -167,8 +167,8 @@ class DrawerMenuView(navigationView: NavigationView,
         }
 
         openMenuArrow.setOnClickListener {
-            val visible = multipleAccontsMenu.visibility == View.VISIBLE
-            multipleAccontsMenu.visibility = if (visible) View.GONE else View.VISIBLE
+            val visible = multipleAccountsMenu.visibility == View.VISIBLE
+            multipleAccountsMenu.visibility = if (visible) View.GONE else View.VISIBLE
             navBody.visibility = if (visible) View.VISIBLE else View.GONE
             extraAccountsAvatars.visibility = if (visible) View.VISIBLE else View.GONE
             Picasso.get().load(
@@ -189,13 +189,15 @@ class DrawerMenuView(navigationView: NavigationView,
         plusBadge = navigationView.findViewById(R.id.plusBadge)
 
         openMenuArrow = navigationView.findViewById(R.id.imageViewArrow)
-        multipleAccontsMenu = navigationView.findViewById(R.id.multiple_accounts_menu)
+        multipleAccountsMenu = navigationView.findViewById(R.id.multiple_accounts_menu)
         addAccountOption = navigationView.findViewById(R.id.add_account)
         recyclerViewAccount = navigationView.findViewById(R.id.recyclerViewAccounts)
         extraAccountsAvatars = navigationView.findViewById(R.id.extraAccountsAvatars)
 
         avatarView2 = navigationView.findViewById(R.id.circleView2)
         avatarView3 = navigationView.findViewById(R.id.circleView3)
+        avatarRingView2 = navigationView.findViewById(R.id.plusBadgeRing2)
+        avatarRingView3 = navigationView.findViewById(R.id.plusBadgeRing3)
         avatarViewLayout2 = navigationView.findViewById(R.id.extraAccount2)
         avatarViewLayout3 = navigationView.findViewById(R.id.extraAccount3)
         badgeAccount2 = navigationView.findViewById(R.id.count_account_2)
@@ -242,7 +244,7 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     fun hideMultipleAccountsMenu(){
-        multipleAccontsMenu.visibility = View.GONE
+        multipleAccountsMenu.visibility = View.GONE
         navBody.visibility = View.VISIBLE
         extraAccountsAvatars.visibility = View.VISIBLE
         Picasso.get().load(R.drawable.arrowdown).into(imageViewArrow)
@@ -339,11 +341,11 @@ class DrawerMenuView(navigationView: NavigationView,
 
         when(accounts.size){
             2 -> {
-                setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
-                setAvatarViewAndListener(avatarView3, avatarViewLayout3, accounts[1], badgeAccount3)
+                setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], avatarRingView2, badgeAccount2)
+                setAvatarViewAndListener(avatarView3, avatarViewLayout3, accounts[1], avatarRingView3, badgeAccount3)
                 addAccountOption.visibility = View.GONE
             }
-            1 -> setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], badgeAccount2)
+            1 -> setAvatarViewAndListener(avatarView2, avatarViewLayout2, accounts[0], avatarRingView2, badgeAccount2)
         }
     }
 
@@ -361,7 +363,7 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     private fun setAvatarViewAndListener(avatar: CircleImageView, layout: RelativeLayout,
-                                         account: Account, badgeText: TextView){
+                                         account: Account, ringView: CircleImageView, badgeText: TextView){
         layout.visibility = View.VISIBLE
 
         UIUtils.setProfilePicture(
@@ -371,6 +373,12 @@ class DrawerMenuView(navigationView: NavigationView,
                 name = account.name,
                 runnable = null,
                 domain = account.domain)
+
+        if(account.type == AccountTypes.PLUS){
+            ringView.visibility = View.VISIBLE
+        } else {
+            ringView.visibility = View.GONE
+        }
 
         avatar.setOnClickListener {
             drawerMenuItemListener.onAccountClicked(account)

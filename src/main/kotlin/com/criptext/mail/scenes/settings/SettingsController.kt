@@ -252,7 +252,7 @@ class SettingsController(
         generalDataSource.listener = generalDataSourceListener
 
         scene.attachView(
-                email = activeAccount.userEmail,
+                account = activeAccount,
                 model = model,
                 settingsUIObserver = settingsUIObserver)
 

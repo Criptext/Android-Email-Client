@@ -216,7 +216,7 @@ interface ComposerScene {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects,
                     bcc = bccInput.objects, subject = subjectEditText.text.toString(),
                     body = bodyEditText.text,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = fromAddress.text.toString())
         }
 
         override fun showError(message: UIMessage) {

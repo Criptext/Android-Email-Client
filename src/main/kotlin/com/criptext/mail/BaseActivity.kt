@@ -693,10 +693,16 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 val intent = Intent(this, WebViewActivity::class.java)
                 when(params.action){
                     "help-desk" -> {
-                        intent.putExtra("url", "https://criptext.atlassian.net/servicedesk/customer/portals")
+                        intent.putExtra("url", HELP_DESK_URL)
                     }
                     "criptext-billing" -> {
-                        intent.putExtra("url", "https://admin.criptext.com/?#/account/billing?token=${params.params}")
+                        intent.putExtra("url", "$ADMIN_URL${params.params}&lang=${Locale.getDefault().language}")
+                        intent.putExtra("colorBackground", this.getColorFromAttr(R.attr.criptextColorBackground))
+                        intent.putExtra("colorText1", this.getColorFromAttr(R.attr.criptextPrimaryTextColor))
+                        intent.putExtra("colorText2", this.getColorFromAttr(R.attr.criptextSecondaryTextColor))
+                        val account = ActiveAccount.loadFromStorage(storage)
+                        if(account != null)
+                            intent.putExtra("accountType", account.type.ordinal)
                     }
                     "criptext-url" -> {
                         intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.params}")
@@ -897,6 +903,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val REPLY_TO_MODEL = "ReplyToModel"
         private const val SIGNATURE_MODEL = "SignatureModel"
         private const val SIGN_UP_MODEL = "SignUpModel"
+
+        const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
+        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing?token="
 
         private const val RESUME_TIMER = 180000L
     }

@@ -17,6 +17,7 @@ import com.criptext.mail.utils.ui.RetrySyncAlertDialogNewDevice
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.ProgressButtonState
+import kotlin.math.max
 
 /**
  * Created by sebas on 2/15/18.
@@ -50,6 +51,7 @@ interface SignInScene {
     fun toggleLoadRecoveryCode(load: Boolean)
     fun dismissRecoveryCodeDialog()
     fun showGenericOkAlert(message: UIMessage)
+    fun updateMaxDevices(maxDevices: Int, currentDevicesSize: Int)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -252,6 +254,11 @@ interface SignInScene {
 
         override fun showDeviceRemovalError() {
             deviceExpirationWarning.showDialog()
+        }
+
+        override fun updateMaxDevices(maxDevices: Int, currentDevicesSize: Int){
+            val currentHolder = holder as RemoveDevicesHolder
+            currentHolder.updateMaxDevices(maxDevices, currentDevicesSize)
         }
 
         override fun showToolbarCount(checked: Int) {

@@ -142,6 +142,10 @@ class DevicesController(
     }
 
     private val onDevicesListItemListener: DevicesListItemListener = object: DevicesListItemListener {
+        override fun onDeviceCheckChanged(): Boolean {
+            return false
+        }
+
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             devicesUIObserver.onRemoveDevice(device.id, position)
             return true

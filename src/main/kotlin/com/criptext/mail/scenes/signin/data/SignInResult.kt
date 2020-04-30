@@ -38,7 +38,7 @@ sealed class SignInResult {
     sealed class LinkBegin: SignInResult() {
         data class Success(val ephemeralJwt: String, val hasTwoFA: Boolean, val accountType: AccountTypes): LinkBegin()
         data class NoDevicesAvailable(val message: UIMessage): LinkBegin()
-        data class NeedToRemoveDevices(val message: UIMessage, val maxDevices: Int): LinkBegin()
+        data class NeedToRemoveDevices(val message: UIMessage, val maxDevices: Int, val accountType: AccountTypes): LinkBegin()
         data class Failure(val message: UIMessage): LinkBegin()
     }
 
@@ -77,6 +77,12 @@ sealed class SignInResult {
         data class Success(val token: String, val devices: ArrayList<DeviceItem>): FindDevices()
         data class Failure(val message: UIMessage,
                            val exception: Exception): FindDevices()
+    }
+
+    sealed class GetMaxDevices: SignInResult() {
+        data class Success(val maxDevices: Int): GetMaxDevices()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception): GetMaxDevices()
     }
 
     sealed class RemoveDevices: SignInResult() {

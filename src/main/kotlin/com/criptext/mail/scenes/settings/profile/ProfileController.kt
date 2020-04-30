@@ -245,7 +245,7 @@ class ProfileController(
         } else {
             true
         }
-        scene.attachView(uiObserver, activeAccount.recipientId, activeAccount.domain, model)
+        scene.attachView(uiObserver, activeAccount, model)
         if(activeAccount.domain != Contact.mainDomain)
             scene.hideFooterSwitch()
         scene.enableProfileSettings(false)
@@ -328,6 +328,7 @@ class ProfileController(
                 model.userData = userData
                 scene.updateCurrentEmailStatus(model.userData.isEmailConfirmed)
                 scene.enableProfileSettings(true)
+                scene.updatePlusBadge(result.userSettings.customerType == AccountTypes.PLUS)
             }
             is GeneralResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)
