@@ -17,6 +17,7 @@ import com.criptext.mail.scenes.settings.custom_domain.data.*
 import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryRequest
 import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -177,8 +178,10 @@ class CustomDomainController(
             domainWrapperListController.addAll(listOf(DomainItem(activityMessage.customDomain, listOf())))
             scene.showMessage(UIMessage(R.string.domain_setup_complete))
         } else {
-            scene.showProgressBar(true)
-            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+            if(model.domains.isEmpty()) {
+                scene.showProgressBar(true)
+                generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+            }
         }
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
@@ -206,11 +209,25 @@ class CustomDomainController(
         scene.showProgressBar(false)
         when(result){
             is CustomDomainResult.LoadDomain.Success -> {
+                if(AccountUtils.isNotPlus(model.accountType)){
+                    host.showCriptextPlusDialog(
+                            dialogData = DialogData.DialogCriptextPlusData(
+                                    image = R.drawable.img_domain,
+                                    title = UIMessage(R.string.you_need_plus_title),
+                                    type = DialogType.CriptextPlus(),
+                                    message = UIMessage(R.string.you_need_plus_message_custom_domains)
+                            ),
+                            uiObserver = uiObserver
+                    )
+                }
                 if (result.domains.isNotEmpty())
                     domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
             }
             is CustomDomainResult.LoadDomain.Failure -> {
-                host.exitToScene(CustomDomainEntryParams(), null, true)
+                val activityMessage = if(AccountUtils.isNotPlus(model.accountType)) {
+                    ActivityMessage.IsNotPlus()
+                } else null
+                host.exitToScene(CustomDomainEntryParams(), activityMessage, true)
             }
         }
     }
@@ -301,19 +318,7 @@ class CustomDomainController(
                                 result.userSettings.aliases
                         )
                 )
-                if(result.userSettings.customerType == AccountTypes.STANDARD){
-                    if(activeAccount.type == AccountTypes.STANDARD){
-                        host.showCriptextPlusDialog(
-                                dialogData = DialogData.DialogCriptextPlusData(
-                                        image = R.drawable.img_domain,
-                                        title = UIMessage(R.string.you_need_plus_title),
-                                        type = DialogType.CriptextPlus(),
-                                        message = UIMessage(R.string.you_need_plus_message_custom_domains)
-                                ),
-                                uiObserver = uiObserver
-                        )
-                    }
-                }
+                model.accountType = result.userSettings.customerType
             }
             is GeneralResult.GetUserSettings.Failure -> {
                 dataSource.submitRequest(CustomDomainRequest.LoadDomain())

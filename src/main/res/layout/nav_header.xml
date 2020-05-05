@@ -33,77 +33,97 @@
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/img_ring_drawer"
                 />
+
+            <LinearLayout
+                android:id="@+id/extraAccountsAvatars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:visibility="visible">
+                <RelativeLayout
+                    android:id="@+id/extraAccount2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="gone">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/circleView2"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@color/attachment_background_dark"
+                        />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/plusBadgeRing2"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/img_ring_drawer"
+                        />
+
+                    <TextView
+                        android:id="@+id/count_account_2"
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:background="@drawable/badge_menu"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:layout_marginStart="25dp"
+                        android:text="8"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/extraAccount3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="gone">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/circleView3"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@color/attachment_background_dark"
+                        />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/plusBadgeRing3"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/img_ring_drawer"
+                        />
+
+                    <TextView
+                        android:id="@+id/count_account_3"
+                        fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:background="@drawable/badge_menu"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:layout_marginStart="25dp"
+                        android:text="+99"
+                        android:textColor="@android:color/white"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </LinearLayout>
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/extraAccountsAvatars"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end"
-            android:visibility="visible">
-            <RelativeLayout
-                android:id="@+id/extraAccount2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:layout_marginEnd="10dp"
-                android:visibility="gone">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/circleView2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@color/attachment_background_dark"
-                    />
-
-                <TextView
-                    android:id="@+id/count_account_2"
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:background="@drawable/badge_menu"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:layout_marginStart="25dp"
-                    android:text="8"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/white"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/extraAccount3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:layout_marginEnd="10dp"
-                android:visibility="gone">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/circleView3"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@color/attachment_background_dark"
-                    />
-
-                <TextView
-                    android:id="@+id/count_account_3"
-                    fontPath="fonts/NunitoSans-Regular.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:background="@drawable/badge_menu"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:layout_marginStart="25dp"
-                    android:text="+99"
-                    android:textColor="@android:color/white"
-                    android:visibility="gone" />
-            </RelativeLayout>
-        </LinearLayout>
     </LinearLayout>
 
 
@@ -137,15 +157,15 @@
 
                 <TextView
                     android:id="@+id/plusBadge"
+                    fontPath="fonts/NunitoSans-Bold.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:textStyle="italic|bold"
+                    android:textStyle="italic"
                     android:maxLines="1"
                     android:background="@drawable/plus_badge_text"
                     android:text="Plus"

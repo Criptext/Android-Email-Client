@@ -125,6 +125,23 @@
                     android:textColor="?attr/criptextSecondaryTextColor"
                     android:textSize="15sp" />
 
+                <TextView
+                    android:id="@+id/plusBadge"
+                    fontPath="fonts/NunitoSans-Bold.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textStyle="italic"
+                    android:maxLines="1"
+                    android:background="@drawable/plus_badge_text"
+                    android:text="Plus"
+                    android:ellipsize="end"/>
+
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="20dp" />

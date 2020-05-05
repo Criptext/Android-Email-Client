@@ -11,6 +11,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -232,6 +233,10 @@ class ComposerController(private val storage: KeyValueStorage,
                 bindWithModel(result.initialData, activeAccount.signature)
                 model.originalBody = model.body
                 model.initialized = true
+                model.selectedAddress = result.initialData.fromAddress
+                if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)){
+                    scene.switchToSimpleFrom(model.selectedAddress)
+                }
                 host.refreshToolbarItems()
             }
 
@@ -406,13 +411,15 @@ class ComposerController(private val storage: KeyValueStorage,
                 val fromAddresses = mutableListOf<String>()
                 model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
                 fromAddresses.addAll(model.fromAddresses)
-                fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
-                model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
-                scene.fillFromOptions(fromAddresses)
+                if(activeAccount.type == AccountTypes.PLUS){
+                    fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                    model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
+                }
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
                         || (model.accounts.size == 1 && result.aliases.isEmpty())){
-                    model.selectedAddress = model.accounts.find { it.userEmail == activeAccount.userEmail }!!.userEmail
                     scene.switchToSimpleFrom(model.selectedAddress)
+                } else {
+                    scene.fillFromOptions(fromAddresses)
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
@@ -483,6 +490,7 @@ class ComposerController(private val storage: KeyValueStorage,
         })
         model.body = data.body
         model.subject = data.subject
+        if(model.selectedAddress.isEmpty()) model.selectedAddress = data.fromAddress
     }
 
     private fun isReadyForSending() = (model.to.isNotEmpty() || model.cc.isNotEmpty() || model.bcc.isNotEmpty())

@@ -1191,6 +1191,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                         scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
                         scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
                     }
+                    Event.Cmd.customerTypeChanged -> {
+                        scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                        scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                    }
                 }
             }
             val newEmails = resultData.data.parsedEvents.filterIsInstance<ParsedEvent.NewEmail>()

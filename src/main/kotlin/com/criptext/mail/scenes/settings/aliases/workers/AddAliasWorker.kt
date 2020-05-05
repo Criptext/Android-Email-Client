@@ -46,7 +46,7 @@ class AddAliasWorker(
             is ServerErrorException -> {
                 when(ex.errorCode){
                     ServerCodes.BadRequest ->
-                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_error, arrayOf(ex.toString())))
+                        AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_error))
                     ServerCodes.TooManyDevices ->
                         AliasesResult.AddAlias.Failure(UIMessage(R.string.aliases_create_dialog_max_error, arrayOf(ex.headers!!.getInt("maxAliases"))))
                     else -> AliasesResult.AddAlias.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))

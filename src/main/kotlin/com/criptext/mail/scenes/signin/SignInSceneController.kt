@@ -72,6 +72,7 @@ class SignInSceneController(
             is SignInResult.FindDevices -> onFindDevices(result)
             is SignInResult.RemoveDevices -> onRemoveDevices(result)
             is SignInResult.RecoveryCode -> onGenerateRecoveryCode(result)
+            is SignInResult.GetMaxDevices -> onGetMaxDevices(result)
         }
     }
 
@@ -210,6 +211,7 @@ class SignInSceneController(
             is SignInResult.LinkBegin.NeedToRemoveDevices -> {
                 model.needToRemoveDevices = true
                 model.maxDevices = result.maxDevices
+                model.accountType = result.accountType
                 val currentState = model.state as SignInLayoutState.LoginValidation
                 onAcceptPasswordLogin(currentState.username, currentState.domain)
             }
@@ -376,14 +378,14 @@ class SignInSceneController(
                         devices = model.devices,
                         password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
-                if(model.accountType == AccountTypes.STANDARD) {
+                if(AccountUtils.isNotPlus(model.accountType)) {
                     host.showCriptextPlusDialog(
                             dialogData = DialogData.DialogCriptextPlusData(
                                     title = UIMessage(R.string.you_need_plus_title_devices),
                                     image = R.drawable.img_devices,
                                     type = DialogType.CriptextPlus(),
                                     message = UIMessage(R.string.you_need_plus_message_devices,
-                                            arrayOf(model.maxDevices, (model.devices.size - (model.maxDevices - 1))))
+                                            arrayOf(model.maxDevices, 5))
                             ),
                             uiObserver = uiObserver
                     )
@@ -391,6 +393,26 @@ class SignInSceneController(
             }
             is SignInResult.FindDevices.Failure -> {
                 onAuthenticationFailed(result.message)
+            }
+        }
+    }
+
+    private fun onGetMaxDevices(result: SignInResult.GetMaxDevices){
+        when (result) {
+            is SignInResult.GetMaxDevices.Success -> {
+                model.maxDevices = result.maxDevices
+                if(model.devices.size >= model.maxDevices) {
+                    scene.updateMaxDevices(model.maxDevices, (model.devices.size - model.maxDevices) - 1)
+                } else {
+                    val state = model.state as SignInLayoutState.RemoveDevices
+                    model.state = SignInLayoutState.LoginValidation(username = state.username,
+                            domain = state.domain,
+                            hasTwoFA = model.hasTwoFA,
+                            hasRemovedDevices = true)
+                    scene.initLayout(model, uiObserver, onDevicesListItemListener)
+                    model.realSecurePassword = state.password.sha256()
+                    dataSource.submitRequest(SignInRequest.LinkBegin(state.username, state.domain))
+                }
             }
         }
     }
@@ -676,6 +698,16 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver {
+        override fun onSkipClicked() {
+            val currentState = model.state as SignInLayoutState.LoginValidation
+            val hashedPassword = model.realSecurePassword!!
+            val userData = UserData(currentState.username, currentState.domain, hashedPassword, null)
+            dataSource.submitRequest(SignInRequest.AuthenticateUser(
+                    userData = userData,
+                    isMultiple = model.isMultiple
+            ))
+        }
+
         override fun onRecoveryCodeChangeListener(newPassword: String) {
 
         }
@@ -946,6 +978,8 @@ class SignInSceneController(
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         handleNewWebSocket()
+        if(model.state is SignInLayoutState.RemoveDevices)
+            dataSource.submitRequest(SignInRequest.GetMaxDevices(model.temporalJWT))
         return false
     }
 
@@ -1036,6 +1070,13 @@ class SignInSceneController(
     }
 
     private val onDevicesListItemListener: DevicesListItemListener = object: DevicesListItemListener {
+        override fun onDeviceCheckChanged(): Boolean {
+            scene.updateMaxDevices(model.maxDevices,
+                    ((model.devices.size - model.devices.filter { it.checked }.size)
+                            - model.maxDevices) - 1)
+            return true
+        }
+
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             val checkedDevices = model.devices.filter { it.checked }.size
             scene.showToolbarCount(checkedDevices)
@@ -1057,6 +1098,7 @@ class SignInSceneController(
         fun userLoginReady()
         fun onCantAccessDeviceClick()
         fun onRecoveryCodeClicked()
+        fun onSkipClicked()
         fun onResendDeviceLinkAuth(username: String, domain: String)
         fun onPasswordChangeListener(newPassword: String)
         fun onRecoveryCodeChangeListener(newPassword: String)

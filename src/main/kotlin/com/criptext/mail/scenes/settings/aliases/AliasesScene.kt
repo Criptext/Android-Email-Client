@@ -48,6 +48,7 @@ interface AliasesScene{
     fun deleteAliasDialogDismiss()
     fun showCriptextAliasDeleteRestrictionDialog(message: UIMessage)
     fun addButtonEnable(enabled: Boolean)
+    fun addButtonIsVisible(enabled: Boolean)
     fun showProgressBar(show: Boolean)
 
     class Default(val view: View): AliasesScene{
@@ -186,6 +187,11 @@ interface AliasesScene{
         override fun addButtonEnable(enabled: Boolean) {
             addAliasButon.isEnabled = enabled
             addAliasButon.isClickable = enabled
+        }
+
+        override fun addButtonIsVisible(enabled: Boolean) {
+            addAliasButon.visibility = if(enabled) View.VISIBLE
+            else View.GONE
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

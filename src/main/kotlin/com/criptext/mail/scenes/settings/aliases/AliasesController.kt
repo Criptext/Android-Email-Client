@@ -16,6 +16,7 @@ import com.criptext.mail.scenes.settings.AliasListItemListener
 import com.criptext.mail.scenes.settings.aliases.data.*
 import com.criptext.mail.scenes.settings.custom_domain.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -200,8 +201,10 @@ class AliasesController(
         scene.attachView(uiObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
-        scene.showProgressBar(true)
-        generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+        if(model.criptextAliases.isEmpty()) {
+            scene.showProgressBar(true)
+            generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
+        }
         return false
     }
 
@@ -256,6 +259,7 @@ class AliasesController(
         scene.showProgressBar(false)
         when(result){
             is AliasesResult.LoadAliases.Success -> {
+                scene.addButtonIsVisible(true)
                 val criptextAliases = result.aliases.filter { it.domain == null }
                 val customAliases = result.aliases.filter { it.domain != null }
                 model.domains = ArrayList(result.domains.map { domain ->
@@ -378,8 +382,7 @@ class AliasesController(
                                 result.userSettings.aliases
                         )
                 )
-                if(result.userSettings.customerType == AccountTypes.STANDARD){
-                    if(activeAccount.type == AccountTypes.STANDARD){
+                if(AccountUtils.isNotPlus(result.userSettings.customerType)){
                         host.showCriptextPlusDialog(
                                 dialogData = DialogData.DialogCriptextPlusData(
                                         image = R.drawable.img_aliases,
@@ -389,7 +392,6 @@ class AliasesController(
                                 ),
                                 uiObserver = uiObserver
                         )
-                    }
                 }
             }
             is GeneralResult.GetUserSettings.Failure -> {

@@ -46,4 +46,5 @@ sealed class ActivityMessage {
     data class SaveFileToLocalStorage(val uri: Uri): ActivityMessage()
     data class NonValidatedDomainFound(val customDomain: CustomDomain): ActivityMessage()
     data class DomainRegistered(val customDomain: CustomDomain): ActivityMessage()
+    class IsNotPlus(): ActivityMessage()
 }

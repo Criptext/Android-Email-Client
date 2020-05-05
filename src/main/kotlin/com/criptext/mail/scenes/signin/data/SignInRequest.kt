@@ -29,6 +29,8 @@ sealed class SignInRequest{
 
     data class FindDevices(val userData: UserData): SignInRequest()
 
+    data class GetMaxDevices(val tempToken: String): SignInRequest()
+
     data class RemoveDevices(val userData: UserData, val tempToken: String,
                              val deviceIds: List<Int>, val deviceIndexes: List<Int>): SignInRequest()
 }

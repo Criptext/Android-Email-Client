@@ -8,6 +8,7 @@
 
     <ImageView
         android:id="@+id/pro_image"
+        android:paddingTop="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -33,20 +34,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:text="@string/you_need_plus_message_read_receipts"
-        android:textColor="?attr/criptextSecondaryTextColor"
-        android:textSize="15sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"/>
-
-    <TextView
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="@string/you_need_plus_message_fixed"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         android:layout_marginStart="20dp"

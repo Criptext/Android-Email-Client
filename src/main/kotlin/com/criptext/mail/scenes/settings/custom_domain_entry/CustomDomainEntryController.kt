@@ -19,6 +19,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.AccountDataValidator
@@ -97,7 +98,13 @@ class CustomDomainEntryController(
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
-
+            when(result){
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
+                        host.finishScene()
+                    }
+                }
+            }
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
@@ -151,9 +158,31 @@ class CustomDomainEntryController(
         scene.attachView(uiObserver, keyboardManager, model)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
-        if(activityMessage != null && activityMessage is ActivityMessage.ShowUIMessage)
-            scene.showMessage(activityMessage.message)
-        return false
+        return handleActivityMessage(activityMessage)
+    }
+
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+        return when (activityMessage) {
+            is ActivityMessage.ShowUIMessage -> {
+                scene.showMessage(activityMessage.message)
+                true
+            }
+            is ActivityMessage.IsNotPlus -> {
+                host.showCriptextPlusDialog(
+                        dialogData = DialogData.DialogCriptextPlusData(
+                                image = R.drawable.img_domain,
+                                title = UIMessage(R.string.you_need_plus_title),
+                                type = DialogType.CriptextPlus(),
+                                message = UIMessage(R.string.you_need_plus_message_custom_domains)
+                        ),
+                        uiObserver = uiObserver
+                )
+                true
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {

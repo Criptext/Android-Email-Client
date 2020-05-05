@@ -196,6 +196,18 @@
                 android:gravity="center_horizontal"
                 android:text="@string/recovery_code"/>
 
+            <TextView
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:id="@+id/skip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:text="@string/restore_backup_dialog_skip_restore"/>
+
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

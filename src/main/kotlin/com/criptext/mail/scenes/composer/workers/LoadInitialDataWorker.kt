@@ -60,7 +60,7 @@ class LoadInitialDataWorker(
         }
         return ComposerInputData(to = to, cc = cc, bcc = bcc,
                 body = fullEmail.email.content, subject = fullEmail.email.subject,
-                attachments = attachments, fileKey = fullEmail.fileKey)
+                attachments = attachments, fileKey = fullEmail.fileKey, fromAddress = fullEmail.from.email)
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
@@ -110,7 +110,26 @@ class LoadInitialDataWorker(
                 signature = signature,
                 template = template)
         return ComposerInputData(to = to, cc = cc, bcc = emptyList(),
-                body = body, subject = subject, attachments = null, fileKey = null)
+                body = body, subject = subject, attachments = null, fileKey = null, fromAddress = getFromAddress(fullEmail))
+    }
+
+
+    private fun getFromAddress(fullEmail: FullEmail): String {
+        if(activeAccount.userEmail in fullEmail.to.map { it.email }
+                || activeAccount.userEmail in fullEmail.cc.map { it.email }
+                || activeAccount.userEmail in fullEmail.bcc.map { it.email }){
+            return activeAccount.userEmail
+        }
+        val aliases = db.aliasDao.getAll(activeAccount.id)
+        aliases.forEach { alias ->
+            val aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
+            if(aliasEmail in fullEmail.to.map { it.email }
+                    || aliasEmail in fullEmail.cc.map { it.email }
+                    || aliasEmail in fullEmail.bcc.map { it.email }){
+                return aliasEmail
+            }
+        }
+        return fullEmail.from.email
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
@@ -128,7 +147,7 @@ class LoadInitialDataWorker(
 
         return ComposerInputData(to = emptyList(), cc = emptyList(), bcc = emptyList(),
                 body = body, subject = subject, attachments = if (attachments.isEmpty()) null
-        else attachments, fileKey = fullEmail.fileKey)
+        else attachments, fileKey = fullEmail.fileKey, fromAddress = getFromAddress(fullEmail))
 
     }
 
@@ -139,14 +158,14 @@ class LoadInitialDataWorker(
         return if(supportContact != null){
             ComposerInputData(to = listOf(supportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
                     name = "Criptext Support", isTrusted = true, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }
     }
 
@@ -157,14 +176,14 @@ class LoadInitialDataWorker(
         return if(reportContact != null){
             ComposerInputData(to = listOf(reportContact), cc = emptyList(), bcc = emptyList(),
                     body = reportTemplate.body, subject = reportTemplate.subject,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }else{
             val newReportContact = Contact(id = 0, email = "abuse@${Contact.mainDomain}",
                     name = "Criptext Report Abuse", isTrusted = true, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newReportContact))
             ComposerInputData(to = listOf(newReportContact), cc = emptyList(), bcc = emptyList(),
                     body = reportTemplate.body, subject = reportTemplate.subject,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }
     }
 
@@ -173,13 +192,13 @@ class LoadInitialDataWorker(
 
         return if(contact != null){
             ComposerInputData(to = listOf(contact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", fileKey = null, attachments = null)
+                    body = "", subject = "", fileKey = null, attachments = null, fromAddress = activeAccount.userEmail)
         }else{
             val newContact = Contact(id = 0, email = to,
                     name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0, spamScore = 0)
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
-                    body = "", subject = "", attachments = null, fileKey = null)
+                    body = "", subject = "", attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }
     }
 

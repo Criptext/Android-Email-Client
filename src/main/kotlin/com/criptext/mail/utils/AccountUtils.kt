@@ -30,6 +30,11 @@ object AccountUtils {
         }
     }
 
+    fun isNotPlus(accountType: AccountTypes): Boolean {
+        return accountType == AccountTypes.STANDARD
+                || accountType == AccountTypes.LUCKY
+    }
+
     fun getAccountTypeFromInt(ordinal: Int): AccountTypes {
         val converter = AccountTypeConverter()
         return converter.getAccountType(ordinal)
