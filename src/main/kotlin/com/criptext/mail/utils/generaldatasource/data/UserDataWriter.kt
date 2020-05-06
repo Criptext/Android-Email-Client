@@ -374,7 +374,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         const val RELATIONS_BATCH_SIZE = 100
 
         const val DB_READING_LIMIT = 500
-        const val FILE_SYNC_VERSION = 7
+        const val FILE_SYNC_VERSION = 6
 
         const val FILE_ENCRYPTED_EXTENSION = "enc"
         const val FILE_UNENCRYPTED_EXTENSION = "db"
