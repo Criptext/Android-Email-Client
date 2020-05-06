@@ -99,4 +99,11 @@ sealed class EmailDetailResult {
                 val message: UIMessage,
                 val exception: Exception): DeleteDraft()
     }
+
+    sealed class UpdateContactIsTrusted : EmailDetailResult() {
+        data class Success(val metadataKey: Long, val newIsTrusted: Boolean): UpdateContactIsTrusted()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): UpdateContactIsTrusted()
+    }
 }

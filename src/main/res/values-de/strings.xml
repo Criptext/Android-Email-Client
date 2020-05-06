@@ -727,4 +727,13 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="foreground_decryption_notification">Decryption Service Notification</string>
   <string name="plus_dialog_custom_domains_title">Enjoy Custom Domains</string>
   <string name="plus_dialog_aliases_title">Enjoy Aliases</string>
+  <string name="show_images_btn">Show Images</string>
+  <string name="show_images_menu_once">Once</string>
+  <string name="show_images_menu_always">Always show from this sender</string>
+  <string name="show_images_menu_turn_off">Turn off image blocking</string>
+  <string name="privacy_block_images_title">Block Images</string>
+  <string name="privacy_block_images_message">Block images from unauthorized senders.</string>
+  <string name="block_remote_always_message">Remote content enabled for sender: %1$s</string>
+  <string name="block_remote_turn_off_message">Remote content enabled for account: %1$s</string>
+  <string name="block_remote_turn_off_message_disable">Remote content disabled for account: %1$s</string>
 </resources>

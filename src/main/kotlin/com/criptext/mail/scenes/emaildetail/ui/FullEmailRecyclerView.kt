@@ -22,7 +22,8 @@ class FullEmailRecyclerView(
         val labels: VirtualList<Label>,
         val isStarred: Boolean,
         val shouldOpenExpanded: Boolean,
-        val activeAccount: ActiveAccount) {
+        val activeAccount: ActiveAccount,
+        val blockRemoteContentSetting: Boolean) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -33,7 +34,8 @@ class FullEmailRecyclerView(
             labels = labels,
             isStarred = isStarred,
             shouldOpenExpanded = shouldOpenExpanded,
-            activeAccount = activeAccount)
+            activeAccount = activeAccount,
+            blockRemoteContentSetting = blockRemoteContentSetting)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)

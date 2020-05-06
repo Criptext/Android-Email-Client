@@ -55,4 +55,5 @@ sealed class GeneralRequest {
                                val activityMessage: ActivityMessage? = null): GeneralRequest()
     data class SetActiveAccountFromPush(val recipientId: String, val domain: String, val extras: IntentExtrasData) : GeneralRequest()
     data class UpdateLocalDomainAndAliasData(val customDomains: List<CustomDomain>, val aliases: List<AliasData>) : GeneralRequest()
+    data class ChangeBlockRemoteContentSetting(val newBlockRemoteContent: Boolean) : GeneralRequest()
 }

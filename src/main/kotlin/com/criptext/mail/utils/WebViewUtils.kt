@@ -103,6 +103,22 @@ class WebViewUtils {
             return sb.toString()
         }
 
+        fun replaceSrc(): String {
+            val sb = StringBuilder()
+            sb.append("<script>")
+            sb.append("function replaceSrc()")
+            sb.append("{")
+            sb.append("var images = document.getElementsByTagName('img');")
+            sb.append("for (var i = 0; i < images.length; ++i) {")
+            sb.append("images[i].src = images[i].src;")
+            sb.append("}")
+            sb.append("}")
+            sb.append("</script>")
+
+            return sb.toString()
+        }
+
+
         fun resizeImages() : String{
             val sb = StringBuilder()
             sb.append("<script>")

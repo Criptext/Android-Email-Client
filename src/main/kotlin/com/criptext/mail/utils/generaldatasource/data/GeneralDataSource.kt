@@ -300,6 +300,16 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.ChangeBlockRemoteContentSetting -> ChangeBlockRemoteContentSettingWorker(
+                    activeAccount = activeAccount!!,
+                    accountDao = db.accountDao(),
+                    httpClient = httpClient,
+                    storage = storage,
+                    newBlockRemoteContentSetting = params.newBlockRemoteContent,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }

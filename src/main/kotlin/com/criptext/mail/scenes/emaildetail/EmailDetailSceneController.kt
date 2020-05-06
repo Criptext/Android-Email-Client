@@ -78,6 +78,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.SetActiveAccountFromPush -> onSetActiveAccountFromPush(result)
             is GeneralResult.GetEmailPreview -> onGetEmailPreview(result)
+            is GeneralResult.ChangeBlockRemoteContentSetting -> onChangeBlockRemoteContent(result)
         }
     }
 
@@ -95,6 +96,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.MarkAsReadEmail -> onMarAsReadEmail(result)
             is EmailDetailResult.CopyToDownloads -> onCopyToDownloads(result)
             is EmailDetailResult.DeleteDraft -> onDeleteDraft(result)
+            is EmailDetailResult.UpdateContactIsTrusted -> onUpdateIsTrusted(result)
         }
     }
 
@@ -603,6 +605,21 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onUpdateIsTrusted(result: EmailDetailResult.UpdateContactIsTrusted){
+        when(result){
+            is EmailDetailResult.UpdateContactIsTrusted.Success -> {
+                val position = model.emails.indexOfFirst { it.email.metadataKey == result.metadataKey }
+                if(position > -1){
+                    val newFrom = model.emails[position].from
+                    newFrom.isTrusted = result.newIsTrusted
+                    model.emails[position] = model.emails[position].copy(from = newFrom)
+                    scene.notifyFullEmailChanged(position + 1)
+                    scene.showMessage(UIMessage(R.string.block_remote_always_message, arrayOf(newFrom.email)))
+                }
+            }
+        }
+    }
+
     private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
         val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
         if (emailIndex < 0) return
@@ -657,10 +674,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+
         override fun openBilling() {
             val map = mutableMapOf<String, Any>()
             map["auth"] = activeAccount.jwt
             host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+        }
+
+        override fun updateIsTrusted(fromContact: Contact, newIsTrusted: Boolean, metadataKey: Long) {
+            dataSource.submitRequest(EmailDetailRequest.UpdateContactIsTrusted(fromContact, newIsTrusted, metadataKey))
+        }
+
+        override fun updateRemoteContentSetting(newSetting: Boolean) {
+
         }
 
         override fun onReportOptionSelected(fullEmail: FullEmail, position: Int) {
@@ -871,6 +897,17 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onChangeBlockRemoteContent(result: GeneralResult.ChangeBlockRemoteContentSetting){
+        when(result){
+            is GeneralResult.ChangeBlockRemoteContentSetting.Success -> {
+                scene.showMessage(UIMessage(R.string.block_remote_turn_off_message, arrayOf(activeAccount.userEmail)))
+            }
+            is GeneralResult.ChangeBlockRemoteContentSetting.Failure -> {
+                scene.showMessage(result.message)
+            }
+        }
+    }
+
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
@@ -900,7 +937,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 observer = emailDetailUIObserver,
                                 shouldOpenExpanded = (fullEmailsList.size < 4
                                 || result.unreadEmails > 1 && fullEmailsList.size >= 4),
-                                activeAccount = activeAccount)
+                                activeAccount = activeAccount,
+                                blockRemoteContentSetting = activeAccount.blockRemoteContent)
 
                         if(result.changeAccountMessage != null)
                             scene.showMessage(result.changeAccountMessage)

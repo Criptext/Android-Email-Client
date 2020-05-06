@@ -299,4 +299,9 @@ sealed class GeneralResult {
         class Success : UpdateLocalDomainAndAliasData()
         data class Failure(val message: UIMessage) : UpdateLocalDomainAndAliasData()
     }
+
+    sealed class ChangeBlockRemoteContentSetting: GeneralResult() {
+        data class Success(val newBlockRemoteContent: Boolean): ChangeBlockRemoteContentSetting()
+        data class Failure(val newBlockRemoteContent: Boolean, val message: UIMessage) : ChangeBlockRemoteContentSetting()
+    }
 }

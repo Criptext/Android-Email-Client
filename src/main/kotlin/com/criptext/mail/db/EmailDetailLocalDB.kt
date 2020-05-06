@@ -33,8 +33,13 @@ interface EmailDetailLocalDB {
     fun getInternalFilesDir(): String
     fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun updateContactIsTrusted(contact: Contact, newIsTrusted: Boolean)
 
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
+        override fun updateContactIsTrusted(contact: Contact, newIsTrusted: Boolean) {
+            db.contactDao().updateContactIsTrusted(contact.email, newIsTrusted)
+        }
+
         override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
             val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }

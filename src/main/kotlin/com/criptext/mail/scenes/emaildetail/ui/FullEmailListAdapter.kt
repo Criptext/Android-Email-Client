@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -30,7 +31,8 @@ class FullEmailListAdapter(private val mContext : Context,
                            private val labels: VirtualList<Label>,
                            private val isStarred: Boolean,
                            private val shouldOpenExpanded: Boolean,
-                           private val activeAccount: ActiveAccount)
+                           private val activeAccount: ActiveAccount,
+                           private val blockRemoteContentSetting: Boolean)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
@@ -211,7 +213,7 @@ class FullEmailListAdapter(private val mContext : Context,
 
             EmailViewTypes.fullEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView, activeAccount.jwt)
+                FullEmailHolder(mView, blockRemoteContentSetting, activeAccount.jwt)
             }
             EmailViewTypes.partialEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, parent, false)
@@ -219,7 +221,7 @@ class FullEmailListAdapter(private val mContext : Context,
             }
             else -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView, activeAccount.jwt)
+                FullEmailHolder(mView, blockRemoteContentSetting, activeAccount.jwt)
             }
         }
     }
@@ -264,6 +266,8 @@ class FullEmailListAdapter(private val mContext : Context,
         fun showStartGuideEmailIsRead(view: View)
         fun contextMenuRegister(view: View)
         fun openBilling()
+        fun updateIsTrusted(fromContact: Contact, newIsTrusted: Boolean, metadataKey: Long)
+        fun updateRemoteContentSetting(newSetting: Boolean)
     }
 
     private enum class EmailViewTypes {

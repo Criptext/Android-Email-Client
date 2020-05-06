@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -43,8 +44,9 @@ import java.util.*
  * Created by sebas on 3/12/18.
  */
 
-class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmailHolder(view) {
 
+class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean,
+                      private val auth: String? = null) : ParentEmailHolder(view) {
     private val context = view.context
     private val layout : FrameLayout
     private val rootView : LinearLayout
@@ -53,6 +55,7 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
     private val replyView: ImageView
     private val threePointsView: ImageView
     private val moreButton: TextView
+    private val showImagesButton: LinearLayout
     private val toView: TextView
     private val readView: ImageView
     private val contactInfoPopUp: EmailContactInfoPopup
@@ -85,6 +88,36 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
 
         moreButton.setOnClickListener {
             contactInfoPopUp.createPopup(fullEmail)
+        }
+
+        showImagesButton.setOnClickListener {
+            val wrapper = ContextThemeWrapper(view.context, R.style.email_detail_popup_menu)
+            val popupMenu = android.widget.PopupMenu(wrapper, showImagesButton)
+            val popUpLayout = R.menu.show_images_options_menu
+            popupMenu.inflate(popUpLayout)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.showOnce -> {
+                        remoteContentShow(true)
+                        true
+                    }
+                    R.id.showAlways -> {
+                        remoteContentShow(true)
+                        emailListener?.updateIsTrusted(fullEmail.from, true, fullEmail.email.metadataKey)
+                        showImagesButton.visibility = View.GONE
+                        true
+                    }
+                    R.id.turnOff -> {
+                        remoteContentShow(true)
+                        showImagesButton.visibility = View.GONE
+                        blockRemoteContentSetting = false
+                        emailListener?.updateRemoteContentSetting(true)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
         }
 
         continueDraftView.setOnClickListener{
@@ -233,7 +266,20 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
     }
 
     override fun bindFullMail(fullEmail: FullEmail, activeAccount: ActiveAccount) {
-
+        when{
+            fullEmail.labels.contains(Label.defaultItems.spam) -> {
+                remoteContentShow(false)
+            }
+            !blockRemoteContentSetting -> {
+                remoteContentShow(true)
+                showImagesButton.visibility = View.GONE
+            }
+            blockRemoteContentSetting -> {
+                remoteContentShow(fullEmail.from.isTrusted)
+                showImagesButton.visibility = if(fullEmail.from.isTrusted) View.GONE
+                else View.VISIBLE
+            }
+        }
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             val content = if(HTMLUtils.isHtmlEmpty(fullEmail.email.content)){
                 "<font color=\"#6a707e\"><i>" + context.getLocalizedUIMessage(UIMessage(R.string.nocontent)) + "</i></font>"
@@ -290,6 +336,16 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
         setToText(fullEmail)
         setDraftIcon(fullEmail)
         setIcons(fullEmail.email.delivered)
+    }
+
+    private fun remoteContentShow(show: Boolean){
+        if(show){
+            bodyWebView.settings.loadsImagesAutomatically = true
+            bodyWebView.settings.blockNetworkImage = false
+        } else {
+            bodyWebView.settings.loadsImagesAutomatically = false
+            bodyWebView.settings.blockNetworkImage = true
+        }
     }
 
     private fun setAttachments(files: List<FileDetail>, emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
@@ -409,7 +465,7 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
                 if(isBilling) {
                     listener?.openBilling()
                 } else {
-                    WebViewUtils.openUrl(bodyWebView.context!!, url)
+                    if(!bodyWebView.settings.blockNetworkImage) WebViewUtils.openUrl(bodyWebView.context!!, url)
                 }
                 return true
             }
@@ -419,7 +475,7 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
                 if(isBilling) {
                     listener?.openBilling()
                 } else {
-                    WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
+                    if(!bodyWebView.settings.blockNetworkImage) WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
                 }
                 return true
             }
@@ -540,6 +596,7 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
         toView = view.findViewById(R.id.to)
         threePointsView = view.findViewById(R.id.more)
         moreButton = view.findViewById(R.id.more_text)
+        showImagesButton = view.findViewById(R.id.show_images)
         replyView = view.findViewById(R.id.reply)
         continueDraftView = view.findViewById(R.id.continue_draft)
         deleteDraftView = view.findViewById(R.id.delete_draft)

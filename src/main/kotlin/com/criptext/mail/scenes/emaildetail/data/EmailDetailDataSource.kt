@@ -179,6 +179,14 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount,
                     db = emailDetailLocalDB,
                     publishFn = { res -> flushResults(res) })
+            is EmailDetailRequest.UpdateContactIsTrusted -> UpdateContactTrustedStatusWorker(
+                    metadataKey = params.metadataKey,
+                    contact = params.contact,
+                    newIsTrusted = params.newIsTrusted,
+                    httpClient = httpClient,
+                    activeAccount = activeAccount,
+                    db = emailDetailLocalDB,
+                    publishFn = { res -> flushResults(res) })
         }
     }
 }
