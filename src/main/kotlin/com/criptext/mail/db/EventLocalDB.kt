@@ -18,6 +18,10 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun updateBlockRemoteContent(newBlockRemoteContent: Boolean, account: Account){
+        db.accountDao().updateBlockRemoteContent(newBlockRemoteContent, account.recipientId, account.domain)
+    }
+
     fun updateAccountType(newType: AccountTypes, account: Account){
         db.accountDao().updateAccountType(newType, account.recipientId, account.domain)
     }

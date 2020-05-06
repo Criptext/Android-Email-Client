@@ -54,6 +54,7 @@ data class Event(val rowid: Long, val recipientId: String, val domain: String, v
             const val profilePictureChanged = 313
             const val peerLabelEdited = 319
             const val peerLabelDeleted = 320
+            const val peerBlockRemoteContentChanged = 326
 
             //Sync Devices
             const val syncBeginRequest = 211

@@ -14,20 +14,9 @@ class WebViewUtils {
 
     companion object {
 
-        private var imageUriCollapsed = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "file:///android_asset/showmore-dark-collapsed.png"
-        else
-            "file:///android_asset/showmore-light-collapsed.png"
-
-        private var imageUriOpened = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "file:///android_asset/showmore-dark-opened.png"
-        else
-            "file:///android_asset/showmore-light-opened.png"
-
-        val URI_COLLAPSED_IMG: String get() = imageUriCollapsed
-        val URI_OPENED_IMG: String get() = imageUriOpened
-
         fun collapseScript(isForward: Boolean) : String{
+            val isDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            val threeDotThemeColor = HTMLUtils.getThemeColors(isDarkTheme)
             val display = if(isForward){
                 "block"
             } else {
@@ -69,19 +58,47 @@ class WebViewUtils {
                     "|| document.getElementsByClassName(\"criptext_quote\")[0] " +
                     "|| document.getElementsByClassName(\"gmail_quote\")[0] " +
                     "|| document.getElementsByTagName(\"blockquote\")[0];")
-            sb.append("var newNode = document.createElement(\"img\");")
-            sb.append("newNode.src = \"${if(isForward) imageUriOpened else imageUriCollapsed}\";")
-            sb.append("newNode.width = 30;")
-            sb.append("newNode.style.paddingTop = \"20px\";")
-            sb.append("newNode.style.paddingBottom = \"10px\";")
+            sb.append("var newNode = document.createElement(\"DIV\");")
+            sb.append("var dotSpan1 = document.createElement(\"SPAN\");")
+            sb.append("var dotSpan2 = document.createElement(\"SPAN\");")
+            sb.append("var dotSpan3 = document.createElement(\"SPAN\");")
+            sb.append("dotSpan1.setAttribute(\"id\", \"dot\");")
+            sb.append("dotSpan2.setAttribute(\"id\", \"dot\");")
+            sb.append("dotSpan3.setAttribute(\"id\", \"dot\");")
             sb.append("replybody.style.display = \"$display\";")
+            sb.append("newNode.setAttribute(\"id\", \"dotDiv\");")
+            sb.append("newNode.setAttribute(\"collapse_state\", \"${if (isForward) "open" else "close"}\");")
+            sb.append("newNode.appendChild(dotSpan1);")
+            sb.append("newNode.appendChild(dotSpan2);")
+            sb.append("newNode.appendChild(dotSpan3);")
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")
-            sb.append("newNode.addEventListener(\"click\", function(){ if(replybody.style.display == \"block\"){ " +
-                    "replybody.style.display = \"none\";} else {" +
-                    "replybody.style.display = \"block\";} " +
-                    "if(newNode.src == \"$imageUriOpened\"){ " +
-                    "newNode.src = \"$imageUriCollapsed\";} else {" +
-                    "newNode.src = \"$imageUriOpened\";} CriptextSecureEmail.toggleButton();});")
+            sb.append("""
+                newNode.addEventListener("click", 
+                                        function(){ 
+                                            if(replybody.style.display == "block"){ 
+                                                replybody.style.display = "none";
+                                            } else {
+                                                replybody.style.display = "block";
+                                            }
+                                            var dots = newNode.getElementsByTagName('SPAN');
+                                            if(newNode.getAttribute("collapse_state") == "open"){
+                                                newNode.setAttribute("collapse_state", "closed");
+                                                newNode.style.backgroundColor = "${threeDotThemeColor.backgroundClosed}";
+                                                newNode.style.borderColor = "${threeDotThemeColor.borderClosed}";
+                                                for (var i = 0; i < dots.length; ++i) {
+                                                    dots[i].style.backgroundColor = "${threeDotThemeColor.dotsClosed}"
+                                                }
+                                            } else {
+                                                newNode.style.backgroundColor = "${threeDotThemeColor.backgroundOpen}";
+                                                newNode.style.borderColor = "${threeDotThemeColor.borderOpen}";
+                                                newNode.setAttribute("collapse_state", "open");
+                                                for (var i = 0; i < dots.length; ++i) {
+                                                    dots[i].style.backgroundColor = "${threeDotThemeColor.dotsOpen}"
+                                                }
+                                            }
+                                            CriptextSecureEmail.toggleButton();
+                                        });
+            """.trimIndent())
             sb.append("</script>")
 
             return sb.toString()

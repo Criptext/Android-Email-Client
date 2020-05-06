@@ -6,6 +6,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.signal.SignalClient
@@ -28,6 +29,7 @@ class DataFileCreationWorker(
         private val db: AppDatabase,
         private val recipientId: String,
         private val domain: String,
+        private val storage: KeyValueStorage,
         override val publishFn: (
                 GeneralResult.DataFileCreation) -> Unit)
     : BackgroundWorker<GeneralResult.DataFileCreation> {
@@ -69,7 +71,7 @@ class DataFileCreationWorker(
         val account = db.accountDao().getAccount(recipientId, domain) ?: return GeneralResult.DataFileCreation.Failure(UIMessage(resId = R.string.no_account_to_sync))
         val dataWriter = UserDataWriter(db, filesDir)
         reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 40))
-        val getFileResult = dataWriter.createFile(account)
+        val getFileResult = dataWriter.createFile(account, storage)
         return if(getFileResult != null){
             reporter.report(GeneralResult.DataFileCreation.Progress(UIMessage(R.string.preparing_mailbox), 45))
             val path = compress(getFileResult)

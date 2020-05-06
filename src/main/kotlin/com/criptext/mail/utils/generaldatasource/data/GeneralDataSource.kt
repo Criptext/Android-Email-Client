@@ -78,6 +78,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = db,
                     recipientId = params.recipientId,
                     domain = params.domain,
+                    storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(

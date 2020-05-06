@@ -78,6 +78,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.customDomainCreated -> processOnCustomDomainCreated(it)
                     Event.Cmd.customDomainDeleted -> processOnCustomDomainDeleted(it)
                     Event.Cmd.customerTypeChanged -> processOnCustomerTypeChanged(it)
+                    Event.Cmd.peerBlockRemoteContentChanged -> processOnBlockRemoteContentChanged(it)
                 }
             }
 
@@ -484,6 +485,24 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 UIUtils.forceCacheClear(storage, db.getCacheDir(), activeAccount)
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processOnBlockRemoteContentChanged(event: Event){
+        val operation = Result.of {
+            val metadata = AccountBlockRemoteContentChanged.fromJSON(event.params)
+
+            val account = db.getAccount(metadata.recipientId, metadata.domain) ?: throw Exception()
+            db.updateBlockRemoteContent(metadata.newBlockRemoteContent, account)
+            if(account.id == activeAccount.id){
+                activeAccount.updateAccountBlockedRemoteContent(storage, metadata.newBlockRemoteContent)
+            }
+        }
+        when(operation){
+            is Result.Success -> {
                 if(acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }

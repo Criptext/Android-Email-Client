@@ -1,29 +1,43 @@
 package com.criptext.mail.utils.generaldatasource.data
 
+import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.exceptions.SyncFileException
 import com.github.kittinunf.result.Result
 import org.json.JSONObject
 import java.io.File
+import java.util.*
 
 class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
 {
 
     data class DataMapper(val idsMap: MutableMap<Long, Long>)
 
-    fun createFile(account: Account):String? {
+    fun createFile(account: Account, storage: KeyValueStorage):String? {
         try {
-
-
             val tmpFileLinkData = createTempFile()
+            val showFooter = if(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty()) {
+                val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
+                footerData.find { it.accountId == account.id }?.hasFooterEnabled ?: true
+            } else true
 
-            val metadata = BackupFileMetadata(FILE_SYNC_VERSION, account.recipientId, account.domain)
+            val metadata = BackupFileMetadata(
+                    fileVersion = FILE_SYNC_VERSION,
+                    recipientId = account.recipientId,
+                    domain = account.domain,
+                    showPreview = storage.getBool(KeyValueStorage.StringKey.ShowEmailPreview, true),
+                    language = Locale.getDefault().language,
+                    hasCriptextFooter = showFooter,
+                    darkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES,
+                    signature = account.signature)
             tmpFileLinkData.appendText("${BackupFileMetadata.toJSON(metadata)}\n")
             addContactsToFile(db.contactDao(), tmpFileLinkData, account.id)
             addLabelsToFile(db.labelDao(), tmpFileLinkData, account.id)

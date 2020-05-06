@@ -50,6 +50,7 @@ class CloudBackupDataSource(
                     activeAccount = activeAccount,
                     db = db,
                     filesDir = filesDir,
+                    storage = storage,
                     publishFn = { res -> flushResults(res) }
             )
             is CloudBackupRequest.DeleteFileInDrive -> DeleteOldBackupWorker(
