@@ -6,6 +6,8 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.AccountTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.settings.SettingsLogoutDialog
 import com.criptext.mail.scenes.settings.profile.ui.BottomDialog
@@ -20,7 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 interface ProfileScene{
 
-    fun attachView(uiObserver: ProfileUIObserver, recipientId: String, domain: String, model: ProfileModel)
+    fun attachView(uiObserver: ProfileUIObserver, activeAccount: ActiveAccount, model: ProfileModel)
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -51,6 +53,8 @@ interface ProfileScene{
     fun updateCurrentEmailStatus(isEmailConfirmed: Boolean)
     fun hideFooterSwitch()
     fun updateAvatarByPeerEvent(fullName: String, email: String)
+    fun updateCriptextFooterSwitch(isChecked: Boolean)
+    fun updatePlusBadge(show: Boolean)
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -143,6 +147,10 @@ interface ProfileScene{
             view.findViewById<FrameLayout>(R.id.profile_footer)
         }
 
+        private val plusBadge: TextView by lazy {
+            view.findViewById<TextView>(R.id.plusBadge)
+        }
+
         private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
@@ -154,7 +162,7 @@ interface ProfileScene{
         private val accountSuspended = AccountSuspendedDialog(context)
 
 
-        override fun attachView(uiObserver: ProfileUIObserver, recipientId: String, domain: String,
+        override fun attachView(uiObserver: ProfileUIObserver, activeAccount: ActiveAccount,
                                 model: ProfileModel) {
 
             profileUIObserver = uiObserver
@@ -205,16 +213,21 @@ interface ProfileScene{
             emailText.text = model.userData.email
             updateCurrentEmailStatus(model.userData.isEmailConfirmed)
 
-            if(domain != Contact.mainDomain){
+            if(activeAccount.domain != Contact.mainDomain){
                 profileDeleteAccountButton.visibility = View.GONE
                 profileDangerZoneSeparator.visibility = View.GONE
                 profileLineBeforeDangerZone.visibility = View.VISIBLE
             }
 
             showProfilePictureProgress()
-            UIUtils.setProfilePicture(profilePicture, context.resources, domain, recipientId,
+            UIUtils.setProfilePicture(profilePicture, context.resources, activeAccount.domain, activeAccount.recipientId,
                     model.userData.name,
                     Runnable { hideProfilePictureProgress() })
+            if(activeAccount.type == AccountTypes.PLUS){
+                plusBadge.visibility = View.VISIBLE
+            } else {
+                plusBadge.visibility = View.GONE
+            }
         }
 
         override fun updateAvatarByPeerEvent(fullName: String, email: String) {
@@ -361,6 +374,22 @@ interface ProfileScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
+        }
+
+        override fun updateCriptextFooterSwitch(isChecked: Boolean) {
+            criptextFooterSwitch.setOnCheckedChangeListener { _, _ ->  }
+            criptextFooterSwitch.isChecked = isChecked
+            criptextFooterSwitch.setOnCheckedChangeListener { _, checked ->
+                profileUIObserver.onCriptextFooterSwitched(checked)
+            }
+        }
+
+        override fun updatePlusBadge(show: Boolean) {
+            if(show){
+                plusBadge.visibility = View.VISIBLE
+            } else {
+                plusBadge.visibility = View.GONE
+            }
         }
 
         override fun showMessage(message: UIMessage) {

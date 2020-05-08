@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/domain_root_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="17dp"
+        android:id="@+id/domainItem">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.8">
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/textViewDomainName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="14sp"
+                    android:text="esteesmidomain.com.pa"/>
+
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:id="@+id/verifiedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/design_default_color_error"
+                    android:text="(Not Verified)"/>
+
+            </LinearLayout>
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/verifyButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:textSize="14sp"
+                android:textColor="@color/azure"
+                android:text="@string/btn_verify"
+                android:layout_weight="0.3"/>
+
+            <ImageView
+                android:id="@+id/imageViewTrashDomain"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="7dp"
+                android:src="@drawable/trash"
+                android:tint="@color/trash_can_grey"
+                android:layout_weight="0.1"/>
+        </LinearLayout>
+
+
+    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="?attr/criptextLeftMenuSeparator"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"/>
+
+</RelativeLayout>

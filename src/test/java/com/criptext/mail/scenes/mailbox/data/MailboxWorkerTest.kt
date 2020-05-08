@@ -1,10 +1,7 @@
 package com.criptext.mail.scenes.mailbox.data
 
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
@@ -53,7 +50,7 @@ open class MailboxWorkerTest {
         lastResult = null
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
                 jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
-                domain = Contact.mainDomain)
+                domain = Contact.mainDomain, type = AccountTypes.STANDARD)
         signalClient = mockk()
         db = mockk()
         appDB = mockk()

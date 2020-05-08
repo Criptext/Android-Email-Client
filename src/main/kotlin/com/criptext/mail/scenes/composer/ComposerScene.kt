@@ -216,7 +216,7 @@ interface ComposerScene {
             return ComposerInputData(to = toInput.objects, cc = ccInput.objects,
                     bcc = bccInput.objects, subject = subjectEditText.text.toString(),
                     body = bodyEditText.text,
-                    attachments = null, fileKey = null)
+                    attachments = null, fileKey = null, fromAddress = fromAddress.text.toString())
         }
 
         override fun showError(message: UIMessage) {
@@ -247,7 +247,7 @@ interface ComposerScene {
             fromAddresses.adapter = adapter
             fromAddresses.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    observer?.onSenderSelectedItem(list[p2])
+                    observer?.onSenderSelectedItem(p2)
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {

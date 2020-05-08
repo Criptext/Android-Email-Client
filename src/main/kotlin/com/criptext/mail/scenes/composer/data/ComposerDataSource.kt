@@ -36,15 +36,16 @@ class ComposerDataSource(
                 flushResults(res)
             }
             is ComposerRequest.GetAllFromAddresses -> LoadFromAddressesWorker(
-                    composerLocalDB
+                    composerLocalDB,
+                    activeAccount
             ) { res ->
                 flushResults(res)
             }
             is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
-                    account = params.senderAccount ?: activeAccount, dao = emailInsertionDao,
-                    filesDir = filesDir,
+                    senderAddress = params.senderEmail, dao = emailInsertionDao,
+                    filesDir = filesDir, activeAccount = activeAccount,
                     onlySave = params.onlySave, attachments = params.attachments,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
                     originalId = params.originalId,
@@ -54,7 +55,8 @@ class ComposerDataSource(
                     filepath = params.filepath,
                     httpClient = httpClient, activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }, fileKey = params.fileKey,
-                    accountDao = composerLocalDB.accountDao, storage = storage, uuid = params.uuid)
+                    accountDao = composerLocalDB.accountDao, storage = storage, uuid = params.uuid,
+                    groupId = params.groupId)
             is ComposerRequest.LoadInitialData -> LoadInitialDataWorker(
                     httpClient = HttpClient.Default(),
                     db = composerLocalDB,

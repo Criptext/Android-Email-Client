@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.models.EmailMetadata
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.SearchLocalDB
 import com.criptext.mail.db.models.*
@@ -30,7 +31,7 @@ class SearchEmailWorkerTest{
 
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
@@ -49,7 +50,7 @@ class SearchEmailWorkerTest{
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
 
         activeAccount = activeAccount.copy(id = db.accountDao().getLoggedInAccount()!!.id)

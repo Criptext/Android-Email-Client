@@ -16,6 +16,7 @@ import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
 
@@ -28,7 +29,7 @@ class GetUserSettingsWorker(
                 GeneralResult.GetUserSettings) -> Unit)
     : BackgroundWorker<GeneralResult.GetUserSettings> {
 
-    override val canBeParallelized = true
+    override val canBeParallelized = false
     private val apiClient = SettingsAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): GeneralResult.GetUserSettings {
@@ -58,11 +59,11 @@ class GetUserSettingsWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                val settings = UserSettingsData.fromJSON(finalResult.value)
-                val devices = settings.devices.map { if(it.id == activeAccount.deviceId) it.copy(
+
+                val devices = finalResult.value.devices.map { if(it.id == activeAccount.deviceId) it.copy(
                         isCurrent = true
                 ) else it }
-                GeneralResult.GetUserSettings.Success(settings.copy(
+                GeneralResult.GetUserSettings.Success(finalResult.value.copy(
                         devices = (devices.filter { it.isCurrent }
                                 + devices.filter { !it.isCurrent }
                                 .filter { it.lastActivity != null }).sorted()
@@ -79,11 +80,19 @@ class GetUserSettingsWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.getSettings().body}
+    private fun workOperation() : Result<UserSettingsData, Exception> = Result.of {apiClient.getSettings().body}
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+            .flatMap { Result.of {
+                val settings = UserSettingsData.fromJSON(it, activeAccount.id)
+                if(settings.customerType != activeAccount.type) {
+                    accountDao.updateAccountType(settings.customerType, activeAccount.recipientId, activeAccount.domain)
+                    activeAccount.updateAccountType(storage, settings.customerType)
+                }
+                settings
+            } }
 
     private fun newRetryWithNewSessionOperation()
-            : Result<String, Exception> {
+            : Result<UserSettingsData, Exception> {
         val refreshOperation =  HttpErrorHandlingHelper.newRefreshSessionOperation(apiClient,
                 activeAccount, storage, accountDao)
                 .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)

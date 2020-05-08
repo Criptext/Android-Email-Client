@@ -2,6 +2,7 @@ package com.criptext.mail.db.dao
 
 import android.os.IBinder
 import androidx.room.*
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.db.models.signal.CRPreKey
@@ -32,12 +33,15 @@ interface SignUpDao {
         isLoggedIn=:isLoggedIn,
         hasCloudBackup=:hasCloudBackup,
         wifiOnly=:wifiOnly,
-        autoBackupFrequency=:backupFrequency
+        autoBackupFrequency=:backupFrequency,
+        type=:type,
+        blockRemoteContent=:blockedRemoteContent
         WHERE recipientId=:recipientId
     """)
     fun updateAccount(recipientId: String, name: String, jwt: String, refreshJwt: String,
                       deviceId: Int, identityKey: String, registrationId: Int, domain: String,
-                      isActive: Int, isLoggedIn: Int, hasCloudBackup: Boolean, wifiOnly: Boolean, backupFrequency: Int)
+                      isActive: Int, isLoggedIn: Int, hasCloudBackup: Boolean, wifiOnly: Boolean,
+                      backupFrequency: Int, type: AccountTypes, blockedRemoteContent: Boolean)
 
     @Insert
     fun insertPreKeys(preKeys : List<CRPreKey>)
@@ -72,7 +76,7 @@ interface SignUpDao {
                 domain = account.domain, isLoggedIn = if(account.isLoggedIn) 1 else 0, isActive = if(account.isActive) 1 else 0,
                 identityKey = account.identityKeyPairB64, jwt = account.jwt, refreshJwt = account.refreshToken,
                 registrationId = account.registrationId, backupFrequency = account.autoBackupFrequency, hasCloudBackup = account.hasCloudBackup,
-                wifiOnly = account.wifiOnly)
+                wifiOnly = account.wifiOnly, type = account.type, blockedRemoteContent = account.blockRemoteContent)
 
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }

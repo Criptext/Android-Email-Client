@@ -5,6 +5,7 @@ import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.dao.EmailInsertionDao
@@ -29,7 +30,7 @@ class SaveEmailWorkerTest {
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 
@@ -41,18 +42,18 @@ class SaveEmailWorkerTest {
         db.accountDao().insert(Account(1, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
         emailInsertionDao = db.emailInsertionDao()
     }
 
     private fun newWorker(emailId: Long?, threadId: String?, onlySave: Boolean,
                           inputData: ComposerInputData, fileKey: String?): SaveEmailWorker =
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
-                    onlySave = onlySave, account = activeAccount, dao = emailInsertionDao,
-                    publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null,
+                    onlySave = onlySave, senderAddress = activeAccount.userEmail, dao = emailInsertionDao,
+                    publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null, activeAccount = activeAccount,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox, db = composerLocalDB)
 
 
@@ -66,7 +67,8 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@criptext.com", score = 0, isTrusted = false, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null)
+                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null,
+                fromAddress = activeAccount.userEmail)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)
@@ -111,7 +113,7 @@ class SaveEmailWorkerTest {
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
                 subject = "Test Finished Draft", body = "Hello, I have finished my draft",
-                attachments = null,  fileKey = null)
+                attachments = null,  fileKey = null, fromAddress = activeAccount.userEmail)
 
         val worker = newWorker(emailId = draftId, threadId = "__MESSAGE_ID__", onlySave = false,
                 inputData = inputData, fileKey = null)
@@ -148,7 +150,8 @@ class SaveEmailWorkerTest {
                 Contact(id = 0, name = "", email = "gianni@criptext.com", isTrusted = false, score = 0, spamScore = 0)
         )
         val inputData = ComposerInputData(to = toRecipients, cc = ccRecipients, bcc = emptyList(),
-                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null)
+                subject = "Test Email", body = "Hello, this is a test email", fileKey = null, attachments = null,
+                fromAddress = activeAccount.userEmail)
 
         val worker = newWorker(emailId = null, threadId = null, onlySave = false,
                 inputData = inputData, fileKey = null)

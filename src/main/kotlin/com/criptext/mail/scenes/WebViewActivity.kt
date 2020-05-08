@@ -4,32 +4,37 @@ import android.annotation.TargetApi
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.*
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.utils.DownloadHelper
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.WebViewUtils
-import com.criptext.mail.utils.file.DownloadBlobInterface
-import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.db.AccountTypes
+import com.criptext.mail.utils.*
+import com.criptext.mail.utils.file.CriptextJavaScriptInterface
 import droidninja.filepicker.FilePickerConst
-
-
+import org.w3c.dom.Text
 
 
 class WebViewActivity : AppCompatActivity() {
     val userAgent = "Mozilla/5.0 (Linux; Android 4.4.4; Nexus 5 Build/LMY48B) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
 
     val webViewCriptext: WebView by lazy { findViewById<WebView>(R.id.webViewCriptext) }
+    val progressBar: ProgressBar by lazy { findViewById<ProgressBar>(R.id.progressBar) }
+    val errorLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.errorLayout) }
     var mUrl: String? = null
     var browserName: String? = null
     private var mUploadMessage: ValueCallback<Array<Uri>>? = null
+
+    private var isOnAdmin = false
+    private var initialAccountType: AccountTypes? = null
 
     private val client = object : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -45,7 +50,30 @@ class WebViewActivity : AppCompatActivity() {
         }
 
         override fun onPageFinished(view: WebView, url: String) {
-            supportActionBar?.title = view.title
+            progressBar.visibility = View.GONE
+            if(isOnAdmin){
+                webViewCriptext.settings.loadsImagesAutomatically = true
+                if(initialAccountType == AccountTypes.PLUS) {
+                    supportActionBar?.title = view.context
+                            .getLocalizedUIMessage(UIMessage(R.string.billing_settings_title))
+                } else {
+                    supportActionBar?.title = view.context
+                            .getLocalizedUIMessage(UIMessage(R.string.title_web_view_upgrade_to_plus))
+                }
+            } else {
+                supportActionBar?.title = view.title
+            }
+        }
+
+        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+            super.onPageStarted(view, url, favicon)
+            progressBar.visibility = View.VISIBLE
+        }
+
+        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+            super.onReceivedError(view, request, error)
+            webViewCriptext.visibility = View.GONE
+            errorLayout.visibility = View.VISIBLE
         }
 
         private fun loadUrlOnView(url: String): Boolean {
@@ -113,10 +141,24 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_view)
-
+        setupThemeForError()
         setupWebView()
         setupActionBar()
+        val accountType = intent.getIntExtra("accountType", -1)
+        if(accountType != -1)
+            initialAccountType = AccountTypes.fromInt(accountType)
         tryToRestoreState(savedInstanceState)
+    }
+
+    private fun setupThemeForError(){
+        val backColor = intent.getIntExtra("colorBackground", -1)
+        if(backColor != -1) {
+            val textColor = intent.getIntExtra("colorText1", -1)
+            val textColor2 = intent.getIntExtra("colorText2", -1)
+            this.findViewById<RelativeLayout>(R.id.rootView).setBackgroundColor(backColor)
+            this.findViewById<TextView>(R.id.title).setTextColor(textColor)
+            this.findViewById<TextView>(R.id.message).setTextColor(textColor2)
+        }
     }
 
     private fun setupWebView() {
@@ -126,8 +168,8 @@ class WebViewActivity : AppCompatActivity() {
         webViewCriptext.webViewClient = client
         webViewCriptext.setDownloadListener(downloadListener)
 
-        val javascriptInterface = DownloadBlobInterface(this, intent.getStringExtra("name") ?: "noname")
-        webViewCriptext.addJavascriptInterface(javascriptInterface, "CriptextSecureEmail")
+        val javascriptInterface = CriptextJavaScriptInterface(this, intent.getStringExtra("name") ?: "noname")
+        webViewCriptext.addJavascriptInterface(javascriptInterface, "criptoBridge")
     }
 
     private fun setupActionBar() {
@@ -137,12 +179,9 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     private fun tryToRestoreState(savedInstanceState: Bundle?) {
-        if (intent.getStringExtra("url") != null && savedInstanceState == null) {
-            mUrl = intent.getStringExtra("url")
-            webViewCriptext.loadUrl(mUrl)
-        } else if (savedInstanceState != null) {
-            webViewCriptext.restoreState(savedInstanceState)
-        }
+        mUrl = intent.getStringExtra("url")
+        isOnAdmin = mUrl?.contains(BaseActivity.ADMIN_URL) ?: false
+        webViewCriptext.loadUrl(mUrl)
     }
 
     private fun injectRetrieveBlobData(url : String){
@@ -179,6 +218,7 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if(isOnAdmin) return false
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_webview, menu)
         if(!mUrl.isNullOrEmpty()) {

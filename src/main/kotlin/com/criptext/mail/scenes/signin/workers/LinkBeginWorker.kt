@@ -5,6 +5,7 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.scenes.signin.data.SignInAPIClient
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.utils.ServerCodes
@@ -29,7 +30,12 @@ class LinkBeginWorker(val httpClient: HttpClient,
             is ServerErrorException -> {
                 when(ex.errorCode){
                     ServerCodes.BadRequest -> return SignInResult.LinkBegin.NoDevicesAvailable(createErrorMessage(ex))
-                    ServerCodes.TooManyDevices -> return SignInResult.LinkBegin.NeedToRemoveDevices(createErrorMessage(ex))
+                    ServerCodes.TooManyDevices-> {
+                        val json = JSONObject(ex.body!!)
+                        return SignInResult.LinkBegin.NeedToRemoveDevices(createErrorMessage(ex),
+                                json.getInt("maxDevices"),
+                                AccountTypes.fromInt(json.getInt("customerType")))
+                    }
                 }
             }
         }
@@ -40,12 +46,15 @@ class LinkBeginWorker(val httpClient: HttpClient,
         val result = Result.of { apiClient.postLinkBegin(username, domain).body }
                 .flatMap { Result.of {
                     val json = JSONObject(it)
-                    Pair(json.getString("token"), json.getInt("twoFactorAuth") == 1)
+                    Triple(json.getString("token"),
+                            json.getInt("twoFactorAuth") == 1,
+                            AccountTypes.fromInt(json.getInt("customerType")))
                 } }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.LinkBegin.Success(result.value.first, result.value.second)
+                SignInResult.LinkBegin.Success(result.value.first, result.value.second,
+                        result.value.third)
             }
             is Result.Failure -> catchException(result.error)
         }

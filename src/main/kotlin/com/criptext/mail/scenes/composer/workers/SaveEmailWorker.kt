@@ -15,9 +15,12 @@ import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.DateAndTimeUtils
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
 import com.criptext.mail.utils.file.FileUtils
+import com.github.kittinunf.result.Result
+import kotlinx.android.synthetic.main.alias_item.view.*
 import java.io.File
 import java.util.*
 
@@ -32,7 +35,8 @@ class SaveEmailWorker(
         private val currentLabel: Label,
         private val db: ComposerLocalDB,
         private val composerInputData: ComposerInputData,
-        private val account: ActiveAccount,
+        private val senderAddress: String,
+        private val activeAccount: ActiveAccount,
         private val dao: EmailInsertionDao,
         private val fileKey: String?,
         private val onlySave: Boolean,
@@ -46,30 +50,64 @@ class SaveEmailWorker(
         return ComposerResult.SaveEmail.Failure()
     }
 
+    private var account: ActiveAccount = activeAccount
+    private var aliasEmail: String? = null
+
     override fun work(reporter: ProgressReporter<ComposerResult.SaveEmail>)
             : ComposerResult.SaveEmail? {
+        val setupOperation = Result.of { setup() }
 
-        if(isRecipientLimitReached()) return ComposerResult.SaveEmail.TooManyRecipients()
+        when(setupOperation){
+            is Result.Success -> {
+                if(isRecipientLimitReached()) return ComposerResult.SaveEmail.TooManyRecipients()
 
-        val (newEmailId, savedMailThreadId) = saveEmail()
-        val attachmentsSaved = dao.findFilesByEmailId(newEmailId).map {
-            ComposerAttachment(
-                    id = it.id, uuid = UUID.randomUUID().toString(), fileKey = it.fileKey, size = it.size,
-                    filepath = attachments.find { file -> it.token == file.filetoken }?.filepath ?: "",
-                    filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
-                    uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress,
-                    cid = it.cid
-            )
-        }.filter { it.filepath.isNotEmpty() }
-        return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
-                onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
-                fileKey = fileKey, preview = if(threadId != null) EmailPreview.fromEmailThread(getEmailPreview(newEmailId)) else null)
+                val (newEmailId, savedMailThreadId) = saveEmail()
+                val attachmentsSaved = dao.findFilesByEmailId(newEmailId).map {
+                    ComposerAttachment(
+                            id = it.id, uuid = UUID.randomUUID().toString(), fileKey = it.fileKey, size = it.size,
+                            filepath = attachments.find { file -> it.token == file.filetoken }!!.filepath,
+                            filetoken = it.token, type = attachments.find { file -> it.token == file.filetoken }!!.type,
+                            uploadProgress = attachments.find { file -> it.token == file.filetoken }!!.uploadProgress,
+                            cid = it.cid
+                    )
+                }
+                return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
+                        onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
+                        fileKey = fileKey, preview = if(threadId != null) EmailPreview.fromEmailThread(getEmailPreview(newEmailId)) else null,
+                        senderAddress = aliasEmail, account = account)
+            }
+            is Result.Failure -> {
+                catchException(setupOperation.error)
+            }
+        }
+        return ComposerResult.SaveEmail.Failure()
+    }
+
+    private fun setup(){
+        val domain = EmailAddressUtils.extractEmailAddressDomain(senderAddress)
+        if(domain.isNotEmpty()){
+            val recipientId = EmailAddressUtils.extractRecipientIdFromAddress(senderAddress, domain)
+            var dbAccount = db.accountDao.getAccount(recipientId, domain)
+            if(dbAccount == null){
+                val alias = (if(domain == Contact.mainDomain) {
+                    db.aliasDao.getCriptextAliasByName(recipientId)
+                } else {
+                    db.aliasDao.getAliasByName(recipientId, domain)
+                }) ?: throw Exception()
+                aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
+                dbAccount = db.accountDao.getAccountById(alias.accountId) ?: throw Exception()
+                account = ActiveAccount.loadFromDB(dbAccount)!!
+            }
+        } else {
+            throw Exception()
+        }
     }
 
     private fun getEmailPreview(emailId: Long): EmailThread {
         val email = db.loadFullEmail(emailId, account)!!
         val label = db.getLabelById(currentLabel.id, account.id) ?: Label.defaultItems.inbox
-        return db.getEmailThreadFromEmail(email.email, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id }, account.userEmail, account)
+        return db.getEmailThreadFromEmail(email.email, label.text, Label.defaultItems.rejectedLabelsByFolder(label.text).map { it.id },
+                account.userEmail, account)
     }
 
     override fun cancel() {
@@ -91,8 +129,9 @@ class SaveEmailWorker(
 
     private fun createMetadataColumns(): EmailMetadata.DBColumns {
         val draftMessageId = createDraftMessageId(account.deviceId)
+        val senderEmail = aliasEmail ?: (account.userEmail)
         val sender = Contact(id = 0, name = account.name,
-                email = account.userEmail,
+                email = senderEmail,
                 isTrusted = true, score = 0, spamScore = 0)
 
         val tempThreadId = System.currentTimeMillis()
@@ -107,7 +146,7 @@ class SaveEmailWorker(
                 unsentDate = DateAndTimeUtils.printDateWithServerFormat(Date()),
                 metadataKey = tempThreadId, // ugly hack because we don't have draft table
                 fromContact = sender,
-                unread = meAsRecipient,
+                unread = meAsRecipient(),
                 status = if(onlySave) DeliveryTypes.NONE else DeliveryTypes.SENDING,
                 secure = isSecure(),
                 replyTo = null,
@@ -115,9 +154,14 @@ class SaveEmailWorker(
                 boundary = null)
     }
 
-    private val meAsRecipient = composerInputData.bcc.map { it.email }.contains(account.userEmail)
-            || composerInputData.cc.map { it.email }.contains(account.userEmail)
-            || composerInputData.to.map { it.email }.contains(account.userEmail)
+    private fun meAsRecipient(): Boolean {
+        return composerInputData.bcc.map { it.email }.contains(account.userEmail)
+                || composerInputData.cc.map { it.email }.contains(account.userEmail)
+                || composerInputData.to.map { it.email }.contains(account.userEmail)
+                || (aliasEmail != null && composerInputData.to.map { it.email }.contains(aliasEmail!!))
+                || (aliasEmail != null && composerInputData.cc.map { it.email }.contains(aliasEmail!!))
+                || (aliasEmail != null && composerInputData.bcc.map { it.email }.contains(aliasEmail!!))
+    }
 
 
     private fun createDraftMessageId(deviceId: Int): String =

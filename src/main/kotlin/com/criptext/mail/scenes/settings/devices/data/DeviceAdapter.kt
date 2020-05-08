@@ -25,8 +25,17 @@ class DeviceAdapter(private val mContext : Context,
                 val device = deviceList[position]
                 holder.bindDevice(device)
                 if(devicesListItemListener != null) {
-                    holder.setOnClickListener {
-                        devicesListItemListener.onDeviceTrashClicked(device, position)
+                    when(deviceItemType){
+                        DeviceItem.Companion.Type.Normal -> {
+                            holder.setOnClickListener {
+                                devicesListItemListener.onDeviceTrashClicked(device, position)
+                            }
+                        }
+                        DeviceItem.Companion.Type.WithCheckbox -> {
+                            holder.setOnClickListener {
+                                devicesListItemListener.onDeviceCheckChanged()
+                            }
+                        }
                     }
                 }
             }

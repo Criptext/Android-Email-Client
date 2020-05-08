@@ -81,6 +81,10 @@ class RecoveryEmailController(
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -169,7 +173,6 @@ class RecoveryEmailController(
         } else {
             scene.disableChangeButton()
         }
-
     }
 
     private val dataSourceListener = { result: RecoveryEmailResult ->

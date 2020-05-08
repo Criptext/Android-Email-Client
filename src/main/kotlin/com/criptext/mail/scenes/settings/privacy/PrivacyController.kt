@@ -5,6 +5,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -23,6 +24,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -87,6 +89,10 @@ class PrivacyController(
         override fun onReadReceiptsSwitched(isChecked: Boolean) {
             scene.enableReadReceiptsSwitch(false)
             generalDataSource.submitRequest(GeneralRequest.SetReadReceipts(isChecked))
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {

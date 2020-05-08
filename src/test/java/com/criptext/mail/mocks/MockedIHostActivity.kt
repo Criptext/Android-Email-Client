@@ -10,14 +10,23 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
  * Created by gabriel on 3/1/18.
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun dismissCriptextPlusDialog() {
+
+    }
+
     override fun stopMessagesAndCallbacks() {
 
+    }
+
+    override fun showCriptextPlusDialog(dialogData: DialogData.DialogCriptextPlusData, uiObserver: UIObserver) {
     }
 
     override fun contextMenuRegister(view: View) {

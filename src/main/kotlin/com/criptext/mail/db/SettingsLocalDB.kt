@@ -11,6 +11,7 @@ interface SettingsLocalDB{
     val accountDao:AccountDao
     val contactDao:ContactDao
     val pendingEventDao:PendingEventDao
+    val customDomainDao: CustomDomainDao
     fun logoutNukeDB()
     fun logout(accountId: Long)
 
@@ -20,6 +21,7 @@ interface SettingsLocalDB{
         override val accountDao: AccountDao = db.accountDao()
         override val contactDao: ContactDao = db.contactDao()
         override val pendingEventDao: PendingEventDao = db.pendingEventDao()
+        override val customDomainDao: CustomDomainDao = db.customDomainDao()
         override fun logoutNukeDB() {
             db.clearAllTables()
         }

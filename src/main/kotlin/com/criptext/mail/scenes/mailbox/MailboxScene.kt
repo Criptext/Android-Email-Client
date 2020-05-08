@@ -19,6 +19,7 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.Label
@@ -63,8 +64,8 @@ interface MailboxScene{
     fun showSyncingDialog()
     fun hideSyncingDialog()
     fun initDrawerLayout()
-    fun initNavHeader(fullName: String, email: String)
-    fun initMailboxAvatar(fullName: String, email: String)
+    fun initNavHeader(fullName: String, email: String, accountType: AccountTypes)
+    fun initMailboxAvatar(fullName: String, email: String, accountType: AccountTypes)
     fun showExtraAccountsBadge(show: Boolean)
     fun hideMultipleAccountsMenu()
     fun onBackPressed(): Boolean
@@ -72,7 +73,8 @@ interface MailboxScene{
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
-            threadList: VirtualEmailThreadList, fullName: String, email: String)
+            threadList: VirtualEmailThreadList, fullName: String, email: String,
+            accountType: AccountTypes)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -224,14 +226,14 @@ interface MailboxScene{
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
-                threadList: VirtualEmailThreadList, fullName: String, email: String) {
+                threadList: VirtualEmailThreadList, fullName: String, email: String, accountType: AccountTypes) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
             adapter = EmailThreadAdapter(threadListener = threadEventListener,
                                          threadList = threadList)
 
-            initMailboxAvatar(fullName, email)
+            initMailboxAvatar(fullName, email, accountType)
 
             refreshLayout.setProgressBackgroundColorSchemeColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             refreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorAccent))
@@ -248,7 +250,7 @@ interface MailboxScene{
             }
         }
 
-        override fun initMailboxAvatar(fullName: String, email: String) {
+        override fun initMailboxAvatar(fullName: String, email: String, accountType: AccountTypes) {
             val domain = EmailAddressUtils.extractEmailAddressDomain(email)
             UIUtils.setProfilePicture(
                     iv = navButton,
@@ -257,6 +259,7 @@ interface MailboxScene{
                     name = fullName,
                     runnable = null,
                     domain = domain)
+            toolbarHolder.showPlusBadge(accountType == AccountTypes.PLUS)
         }
 
         override fun showExtraAccountsBadge(show: Boolean) {
@@ -303,8 +306,8 @@ interface MailboxScene{
             }
         }
 
-        override fun initNavHeader(fullName: String, email: String) {
-            drawerMenuView.initNavHeader(fullName, email)
+        override fun initNavHeader(fullName: String, email: String, accountType: AccountTypes) {
+            drawerMenuView.initNavHeader(fullName, email, accountType)
         }
 
         override fun scrollTop() {

@@ -16,6 +16,7 @@ object ServerCodes{
     const val Gone = 410
     const val PreconditionFail = 412
     const val PayloadTooLarge = 413
+    const val PreConditionRequired = 428
     const val TooManyRequests = 429
     const val TooManyDevices = 439
     const val EnterpriseAccountSuspended = 451

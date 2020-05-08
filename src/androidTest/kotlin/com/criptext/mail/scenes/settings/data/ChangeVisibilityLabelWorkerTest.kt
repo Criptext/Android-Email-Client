@@ -4,6 +4,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.SettingsLocalDB
 import com.criptext.mail.db.models.Account
@@ -31,7 +32,7 @@ class ChangeVisibilityLabelWorkerTest{
     private var labelId: Long = 0
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
 
     @Before
     fun setup() {
@@ -42,7 +43,8 @@ class ChangeVisibilityLabelWorkerTest{
                 name = "Tester", registrationId = 1,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
+                type = AccountTypes.STANDARD, blockRemoteContent = false))
         settingsLocalDB = SettingsLocalDB.Default(db)
 
         labelId = db.labelDao().insert(Label(
