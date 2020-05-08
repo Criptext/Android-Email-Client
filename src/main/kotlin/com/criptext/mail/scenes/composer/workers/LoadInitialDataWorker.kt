@@ -129,7 +129,7 @@ class LoadInitialDataWorker(
                 return aliasEmail
             }
         }
-        return fullEmail.from.email
+        return activeAccount.userEmail
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {
