@@ -51,7 +51,8 @@ class ComposerController(private val storage: KeyValueStorage,
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
         override fun onSenderSelectedItem(index: Int) {
-            model.selectedAddress = model.fromAddresses[index]
+            if(model.fromAddresses.isNotEmpty() && model.selectedAddress != model.fromAddresses[index])
+                model.selectedAddress = model.fromAddresses[index]
         }
 
         override fun onSnackbarClicked() {
@@ -411,10 +412,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 val fromAddresses = mutableListOf<String>()
                 model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
                 fromAddresses.addAll(model.fromAddresses)
-                if(activeAccount.type == AccountTypes.PLUS){
-                    fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
-                    model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
-                }
+                fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
                         || (model.accounts.size == 1 && result.aliases.isEmpty())){
                     scene.switchToSimpleFrom(model.selectedAddress)
@@ -683,6 +682,7 @@ class ComposerController(private val storage: KeyValueStorage,
         if (model.initialized) {
             if(model.type is ComposerType.Empty && model.firstTime)
                 generalDataSource.submitRequest(GeneralRequest.UserEvent(UserEvent.newComposerOpen))
+            model.selectedAddress = activeAccount.userEmail
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
         } else {
             loadInitialData()

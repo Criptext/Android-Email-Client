@@ -14,7 +14,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.utils.*
@@ -40,6 +42,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     private val attachment : ImageView
     private val isSecure : ImageView
     private val avatarView: CircleImageView
+    private val avatarRingView: ImageView
     private val iconBack: ImageView
     private val check: ImageView
     private val starIcon: ImageView
@@ -51,7 +54,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    fun bindEmailPreview(emailPreview: EmailPreview) {
+    fun bindEmailPreview(emailPreview: EmailPreview, account: ActiveAccount) {
         subjectView.text = if (emailPreview.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
         else emailPreview.subject
@@ -76,7 +79,8 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
 
         val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
         UIUtils.setProfilePicture(
-                iv = avatarView,
+                avatar = avatarView,
+                avatarRing = avatarRingView,
                 resources = context.resources,
                 recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
                 name = contactFrom.name,
@@ -226,10 +230,12 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         if(selected) {
             view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemSelectedColorBg))
             avatarView.visibility = View.GONE
+            avatarRingView.visibility = View.INVISIBLE
             iconBack.visibility = View.VISIBLE
         }else {
             view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemUnselectedColorBg))
             avatarView.visibility = View.VISIBLE
+            avatarRingView.visibility = View.VISIBLE
             iconBack.visibility = View.GONE
             if(unread) {
                 view.setBackgroundColor(context.getColorFromAttr(R.attr.criptextMailItemUnreadColorBg))
@@ -243,6 +249,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
         check = view.findViewById(R.id.check)
         headerView = view.findViewById(R.id.email_header)
         avatarView = view.findViewById(R.id.mail_item_left_name)
+        avatarRingView = view.findViewById(R.id.plusBadgeRing)
         subjectView = view.findViewById(R.id.email_subject)
         previewView = view.findViewById(R.id.email_preview)
         dateView = view.findViewById(R.id.email_date)

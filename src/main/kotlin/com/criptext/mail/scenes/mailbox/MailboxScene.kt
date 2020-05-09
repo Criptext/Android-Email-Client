@@ -22,6 +22,7 @@ import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
@@ -73,8 +74,7 @@ interface MailboxScene{
             threadEventListener: EmailThreadAdapter.OnThreadEventListener,
             onDrawerMenuItemListener: DrawerMenuItemListener,
             observer: MailboxUIObserver,
-            threadList: VirtualEmailThreadList, fullName: String, email: String,
-            accountType: AccountTypes)
+            threadList: VirtualEmailThreadList, activeAccount: ActiveAccount)
     fun refreshToolbarItems()
     fun showMultiModeBar(selectedThreadsQuantity : Int)
     fun hideMultiModeBar()
@@ -226,14 +226,15 @@ interface MailboxScene{
                 threadEventListener: EmailThreadAdapter.OnThreadEventListener,
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
-                threadList: VirtualEmailThreadList, fullName: String, email: String, accountType: AccountTypes) {
+                threadList: VirtualEmailThreadList, activeAccount: ActiveAccount) {
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
             adapter = EmailThreadAdapter(threadListener = threadEventListener,
-                                         threadList = threadList)
+                                        threadList = threadList,
+                                        activeAccount = activeAccount)
 
-            initMailboxAvatar(fullName, email, accountType)
+            initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
 
             refreshLayout.setProgressBackgroundColorSchemeColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             refreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorAccent))
@@ -253,13 +254,14 @@ interface MailboxScene{
         override fun initMailboxAvatar(fullName: String, email: String, accountType: AccountTypes) {
             val domain = EmailAddressUtils.extractEmailAddressDomain(email)
             UIUtils.setProfilePicture(
-                    iv = navButton,
+                    avatar = navButton,
+                    avatarRing = toolbarHolder.getAvatarRingImage(),
                     resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
                     name = fullName,
                     runnable = null,
                     domain = domain)
-            toolbarHolder.showPlusBadge(accountType == AccountTypes.PLUS)
+            toolbarHolder.showPlusBadge(AccountUtils.isPlus(accountType))
         }
 
         override fun showExtraAccountsBadge(show: Boolean) {

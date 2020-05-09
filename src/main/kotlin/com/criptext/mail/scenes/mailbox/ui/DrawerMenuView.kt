@@ -6,6 +6,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.criptext.mail.R
 import com.criptext.mail.db.AccountTypes
@@ -13,6 +14,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.DrawerMenuItemListener
 import com.criptext.mail.scenes.mailbox.NavigationMenuOptions
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getColorFromAttr
@@ -26,13 +28,13 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
  * Created by danieltigse on 2/7/18.
  */
 
-class DrawerMenuView(navigationView: NavigationView,
+class DrawerMenuView(private val navigationView: NavigationView,
                      private val drawerMenuItemListener: DrawerMenuItemListener
                      ){
 
     //HEADER
     private val avatarView : CircleImageView
-    private val avatarPlusRing : CircleImageView
+    private val avatarPlusRing : ImageView
     private val textViewNombre: TextView
     private val textViewCorreo: TextView
     private val plusBadge: TextView
@@ -40,8 +42,8 @@ class DrawerMenuView(navigationView: NavigationView,
     //EXRA ACCOUNTS
     private val avatarView2 : CircleImageView
     private val avatarView3 : CircleImageView
-    private val avatarRingView2 : CircleImageView
-    private val avatarRingView3 : CircleImageView
+    private val avatarRingView2 : ImageView
+    private val avatarRingView3 : ImageView
     private val avatarViewLayout2 : RelativeLayout
     private val avatarViewLayout3 : RelativeLayout
     private val badgeAccount2 : TextView
@@ -63,6 +65,7 @@ class DrawerMenuView(navigationView: NavigationView,
     private val sliderTrash : LinearLayout
     private val sliderAllMail : LinearLayout
     private val sliderLabels : LinearLayout
+    private val sliderUpgradePlus : LinearLayout
     private val sliderSettings : LinearLayout
     private val sliderInviteFriend : LinearLayout
     private val sliderSupport : LinearLayout
@@ -154,6 +157,10 @@ class DrawerMenuView(navigationView: NavigationView,
                         R.drawable.arrowup).into(imageViewArrow)
         }
 
+        sliderUpgradePlus.setOnClickListener {
+            drawerMenuItemListener.onUpgradePlusOptionClicked()
+        }
+
         sliderSettings.setOnClickListener {
             drawerMenuItemListener.onSettingsOptionClicked()
         }
@@ -211,6 +218,7 @@ class DrawerMenuView(navigationView: NavigationView,
         sliderTrash = navigationView.findViewById(R.id.slider_trash)
         sliderAllMail = navigationView.findViewById(R.id.slider_all_mail)
         sliderLabels = navigationView.findViewById(R.id.slider_labels)
+        sliderUpgradePlus = navigationView.findViewById(R.id.slider_upgrade_plus)
         sliderSettings = navigationView.findViewById(R.id.slider_settings)
         sliderInviteFriend = navigationView.findViewById(R.id.slider_invite_friend)
         sliderSupport = navigationView.findViewById(R.id.slider_support)
@@ -250,13 +258,14 @@ class DrawerMenuView(navigationView: NavigationView,
         Picasso.get().load(R.drawable.arrowdown).into(imageViewArrow)
     }
 
-    fun initNavHeader(fullName: String, email: String, accountTypes: AccountTypes){
+    fun initNavHeader(fullName: String, email: String, accountType: AccountTypes){
         val safeFullName = if(fullName.isEmpty())
             avatarView.context.resources.getString(R.string.unknown) else fullName
 
         val domain = EmailAddressUtils.extractEmailAddressDomain(email)
         UIUtils.setProfilePicture(
-                iv = avatarView,
+                avatar = avatarView,
+                avatarRing = avatarPlusRing,
                 resources = avatarView.context.resources,
                 recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
                 name = safeFullName,
@@ -266,9 +275,12 @@ class DrawerMenuView(navigationView: NavigationView,
         textViewNombre.text = safeFullName
         textViewCorreo.text = email
 
-        if(accountTypes != AccountTypes.PLUS){
+        if(AccountUtils.canJoinPlus(accountType)){
             avatarPlusRing.visibility = View.INVISIBLE
-            plusBadge.visibility = View.INVISIBLE
+            sliderUpgradePlus.visibility = View.VISIBLE
+        } else if(AccountUtils.isPlus(accountType)){
+            plusBadge.visibility = View.VISIBLE
+            plusBadge.background = UIUtils.getPlusBadgeColor(navigationView.context, accountType)
         }
 
     }
@@ -363,18 +375,19 @@ class DrawerMenuView(navigationView: NavigationView,
     }
 
     private fun setAvatarViewAndListener(avatar: CircleImageView, layout: RelativeLayout,
-                                         account: Account, ringView: CircleImageView, badgeText: TextView){
+                                         account: Account, ringView: ImageView, badgeText: TextView){
         layout.visibility = View.VISIBLE
 
         UIUtils.setProfilePicture(
-                iv = avatar,
+                avatar = avatar,
+                avatarRing = ringView,
                 resources = avatar.context.resources,
                 recipientId = account.recipientId,
                 name = account.name,
                 runnable = null,
                 domain = account.domain)
 
-        if(account.type == AccountTypes.PLUS){
+        if(AccountUtils.isPlus(account.type)){
             ringView.visibility = View.VISIBLE
         } else {
             ringView.visibility = View.GONE

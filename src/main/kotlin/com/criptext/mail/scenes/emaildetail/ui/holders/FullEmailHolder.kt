@@ -17,9 +17,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -59,6 +60,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val zoomLayout: MyZoomLayout
     private val attachmentsRecyclerView: RecyclerView
     private val leftImageView: CircleImageView
+    private val leftRingImageView: ImageView
     private val unsendProgressBar: ProgressBar
     private val isSecure : ImageView
 
@@ -229,7 +231,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         return popupMenu
     }
 
-    override fun bindFullMail(fullEmail: FullEmail) {
+    override fun bindFullMail(fullEmail: FullEmail, activeAccount: ActiveAccount) {
 
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
             val content = if(HTMLUtils.isHtmlEmpty(fullEmail.email.content)){
@@ -276,7 +278,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val contactFrom = fullEmail.from
         val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
         UIUtils.setProfilePicture(
-                iv = leftImageView,
+                avatar = leftImageView,
+                avatarRing = leftRingImageView,
                 resources = context.resources,
                 recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
                 name = contactFrom.name,
@@ -533,6 +536,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         rootView = view.findViewById(R.id.cardview)
         attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
+        leftRingImageView = view.findViewById(R.id.plusBadgeRing)
         unsendProgressBar = view.findViewById(R.id.loadingPanel)
         zoomLayout = view.findViewById(R.id.zoomLayout)
         isSecure = view.findViewById(R.id.email_is_secure)

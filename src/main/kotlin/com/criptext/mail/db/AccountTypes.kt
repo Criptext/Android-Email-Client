@@ -1,7 +1,7 @@
 package com.criptext.mail.db
 
 enum class AccountTypes {
-    STANDARD, PLUS, ENTERPRISE, LUCKY, REDEEMED;
+    STANDARD, PLUS, ENTERPRISE, LUCKY, REDEEMED, FAN, HERO, LEGEND;
 
     companion object {
         fun fromInt(int: Int): AccountTypes {
@@ -10,10 +10,6 @@ enum class AccountTypes {
                 values[int]
             else
                 STANDARD
-        }
-
-        fun getTrueOrdinal(accountTypes: AccountTypes): Int {
-            return accountTypes.ordinal + 1
         }
     }
 }

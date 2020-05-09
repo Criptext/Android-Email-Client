@@ -1,12 +1,11 @@
 package com.criptext.mail.scenes.mailbox.ui
 
-import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.mailbox.VirtualEmailThreadList
 import com.criptext.mail.scenes.mailbox.holders.EmailHolder
@@ -18,7 +17,8 @@ import com.criptext.mail.utils.virtuallist.VirtualListAdapter
  */
 
 class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
-                         private val threadList: VirtualEmailThreadList)
+                         private val threadList: VirtualEmailThreadList,
+                         private val activeAccount: ActiveAccount)
     : VirtualListAdapter(threadList) {
 
     private fun toggleThreadSelection(mailThread: EmailPreview, position: Int) {
@@ -62,7 +62,7 @@ class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
         when(holder) {
             is EmailHolder -> {
                 val mail = threadList[position]
-                holder.bindEmailPreview(mail)
+                holder.bindEmailPreview(mail, activeAccount)
                 setEmailHolderListeners(holder, position, mail)
             }
         }

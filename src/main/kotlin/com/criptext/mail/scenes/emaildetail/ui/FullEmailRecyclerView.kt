@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.IHostActivity
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -20,7 +21,8 @@ class FullEmailRecyclerView(
         val fileDetailList: Map<Long, List<FileDetail>>,
         val labels: VirtualList<Label>,
         val isStarred: Boolean,
-        val shouldOpenExpanded: Boolean) {
+        val shouldOpenExpanded: Boolean,
+        val activeAccount: ActiveAccount) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -30,7 +32,8 @@ class FullEmailRecyclerView(
             fileDetails = fileDetailList,
             labels = labels,
             isStarred = isStarred,
-            shouldOpenExpanded = shouldOpenExpanded)
+            shouldOpenExpanded = shouldOpenExpanded,
+            activeAccount = activeAccount)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)

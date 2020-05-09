@@ -5,7 +5,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -126,7 +125,7 @@ class AliasesController(
             when(result){
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.finishScene()
+                        host.dismissCriptextPlusDialog()
                     }
                 }
             }
@@ -382,16 +381,18 @@ class AliasesController(
                                 result.userSettings.aliases
                         )
                 )
-                if(AccountUtils.isNotPlus(result.userSettings.customerType)){
-                        host.showCriptextPlusDialog(
-                                dialogData = DialogData.DialogCriptextPlusData(
-                                        image = R.drawable.img_aliases,
-                                        title = UIMessage(R.string.you_need_plus_title),
-                                        type = DialogType.CriptextPlus(),
-                                        message = UIMessage(R.string.you_need_plus_message_aliases)
-                                ),
-                                uiObserver = uiObserver
-                        )
+                if(AccountUtils.canJoinPlus(result.userSettings.customerType)
+                        && !storage.getBool(KeyValueStorage.StringKey.HasBeenAskedPlusAliases, false)){
+                    storage.putBool(KeyValueStorage.StringKey.HasBeenAskedPlusAliases, true)
+                    host.showCriptextPlusDialog(
+                            dialogData = DialogData.DialogCriptextPlusData(
+                                    image = R.drawable.img_aliases,
+                                    title = UIMessage(R.string.plus_dialog_aliases_title),
+                                    type = DialogType.CriptextPlus(),
+                                    message = UIMessage(R.string.you_need_plus_message_aliases)
+                            ),
+                            uiObserver = uiObserver
+                    )
                 }
             }
             is GeneralResult.GetUserSettings.Failure -> {

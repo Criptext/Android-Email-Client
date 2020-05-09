@@ -88,8 +88,12 @@ interface AliasesScene{
             view.findViewById<LinearLayout>(R.id.custom_domain_layout)
         }
 
-        private val addAliasButon: TextView by lazy {
+        private val addAliasButton: TextView by lazy {
             view.findViewById<TextView>(R.id.add_alias_button)
+        }
+
+        private val addAliasButonLayout: LinearLayout by lazy {
+            view.findViewById<LinearLayout>(R.id.add_alias_button_layout)
         }
 
         private val aliasLoadProgress: ProgressBar by lazy {
@@ -113,7 +117,7 @@ interface AliasesScene{
             backButton.setOnClickListener {
                 this.uiObserver.onBackButtonPressed()
             }
-            addAliasButon.setOnClickListener {
+            addAliasButonLayout.setOnClickListener {
                 this.uiObserver.onAddAliasButtonPressed()
             }
 
@@ -146,9 +150,9 @@ interface AliasesScene{
                 customAliasesListView.setAdapter(AliasAdapter(view.context, aliasListItemListener, VirtualAliasList(model.domains.first().aliases)))
             }
             if(criptextAliasesLayout.visibility == View.GONE && customAliasesLayout.visibility == View.GONE)
-                addAliasButon.text = context.getLocalizedUIMessage(UIMessage(R.string.aliases_create_button))
+                addAliasButton.text = context.getLocalizedUIMessage(UIMessage(R.string.aliases_create_button))
             else
-                addAliasButon.text = context.getLocalizedUIMessage(UIMessage(R.string.aliases_create_button_add))
+                addAliasButton.text = context.getLocalizedUIMessage(UIMessage(R.string.aliases_create_button_add))
         }
 
         override fun setAddAliasDialogError(message: UIMessage?) {
@@ -185,12 +189,12 @@ interface AliasesScene{
         }
 
         override fun addButtonEnable(enabled: Boolean) {
-            addAliasButon.isEnabled = enabled
-            addAliasButon.isClickable = enabled
+            addAliasButonLayout.isEnabled = enabled
+            addAliasButonLayout.isClickable = enabled
         }
 
         override fun addButtonIsVisible(enabled: Boolean) {
-            addAliasButon.visibility = if(enabled) View.VISIBLE
+            addAliasButonLayout.visibility = if(enabled) View.VISIBLE
             else View.GONE
         }
 

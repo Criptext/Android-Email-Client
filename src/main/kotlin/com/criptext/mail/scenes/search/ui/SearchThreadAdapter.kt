@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.criptext.mail.R
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.search.VirtualSearchThreadList
@@ -20,7 +21,8 @@ import com.criptext.mail.utils.virtuallist.VirtualListAdapter
 
 class SearchThreadAdapter(private val mContext : Context,
                           private val threadListener : OnThreadEventListener,
-                          private val threadList: VirtualSearchThreadList)
+                          private val threadList: VirtualSearchThreadList,
+                          private val activeAccount: ActiveAccount)
     : VirtualListAdapter(threadList) {
 
     private fun toggleThreadSelection(mailThread: EmailThread, position: Int) {
@@ -57,7 +59,7 @@ class SearchThreadAdapter(private val mContext : Context,
             is EmailHolder -> {
                 val mail = threadList[position]
                 // TODO use email preview virtual list
-                holder.bindEmailPreview(EmailPreview.fromEmailThread(mail))
+                holder.bindEmailPreview(EmailPreview.fromEmailThread(mail), activeAccount)
                 setEmailHolderListeners(holder, position, mail)
             }
         }

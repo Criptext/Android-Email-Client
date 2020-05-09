@@ -10,6 +10,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.LabelTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -36,7 +37,7 @@ interface EmailDetailScene {
     fun attachView(
             fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
             fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
-            observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean)
+            observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean, activeAccount: ActiveAccount)
     fun showError(message : UIMessage)
     fun showMessage(message : UIMessage, showAction: Boolean = false)
     fun notifyFullEmailListChanged()
@@ -103,7 +104,7 @@ interface EmailDetailScene {
         override fun attachView(
                 fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener,
                 fullEmailList : VirtualList<FullEmail>, fileDetailList: Map<Long, List<FileDetail>>,
-                observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean){
+                observer: EmailDetailUIObserver, shouldOpenExpanded: Boolean, activeAccount: ActiveAccount){
 
             this.observer = observer
             val isStarred = EmailThreadValidator.isLabelInList(fullEmailList[0].labels, Label.LABEL_STARRED)
@@ -115,7 +116,8 @@ interface EmailDetailScene {
                     fileDetailList,
                     getLabelsFromEmails(fullEmailList),
                     isStarred,
-                    shouldOpenExpanded
+                    shouldOpenExpanded,
+                    activeAccount
                     )
 
             fullEmailsRecyclerView?.scrollToLast()

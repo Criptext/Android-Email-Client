@@ -885,7 +885,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 fileDetailList = model.fileDetails,
                                 observer = emailDetailUIObserver,
                                 shouldOpenExpanded = (fullEmailsList.size < 4
-                                || result.unreadEmails > 1 && fullEmailsList.size >= 4))
+                                || result.unreadEmails > 1 && fullEmailsList.size >= 4),
+                                activeAccount = activeAccount)
 
                         if(result.changeAccountMessage != null)
                             scene.showMessage(result.changeAccountMessage)

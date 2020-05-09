@@ -378,18 +378,6 @@ class SignInSceneController(
                         devices = model.devices,
                         password = currentState.password)
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
-                if(AccountUtils.isNotPlus(model.accountType)) {
-                    host.showCriptextPlusDialog(
-                            dialogData = DialogData.DialogCriptextPlusData(
-                                    title = UIMessage(R.string.you_need_plus_title_devices),
-                                    image = R.drawable.img_devices,
-                                    type = DialogType.CriptextPlus(),
-                                    message = UIMessage(R.string.you_need_plus_message_devices,
-                                            arrayOf(model.maxDevices, 5))
-                            ),
-                            uiObserver = uiObserver
-                    )
-                }
             }
             is SignInResult.FindDevices.Failure -> {
                 onAuthenticationFailed(result.message)

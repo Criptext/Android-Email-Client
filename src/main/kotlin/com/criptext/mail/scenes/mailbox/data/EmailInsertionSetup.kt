@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.data
 
 import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.EmailInsertionAPIClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
 import com.criptext.mail.db.DeliveryTypes
@@ -206,14 +207,15 @@ object  EmailInsertionSetup {
     }
 
     private fun decryptMessage(signalClient: SignalClient, recipientId: String, deviceId: Int,
-                               encryptedData: SignalEncryptedData): String {
+                               encryptedData: SignalEncryptedData, isFromBob: Boolean): String {
         return try {
             signalClient.decryptMessage(recipientId = recipientId,
                     deviceId = deviceId,
                     encryptedData = encryptedData)
         } catch (ex: Exception) {
             if (ex is DuplicateMessageException) throw ex
-            Crashlytics.logException(ex)
+            val loggedException = if(isFromBob) BobDecryptionException() else ex
+            Crashlytics.logException(loggedException)
             "Unable to decrypt message."
         }
     }
@@ -239,7 +241,9 @@ object  EmailInsertionSetup {
 
             decryptMessage(signalClient = signalClient,
                     recipientId = senderId.second, deviceId = senderId.first!!,
-                    encryptedData = encryptedData)
+                    encryptedData = encryptedData,
+                    isFromBob = metadata.isExternal == true
+                            && metadata.senderRecipientId == SignalUtils.externalRecipientId)
         } else
             body
     }
@@ -254,7 +258,9 @@ object  EmailInsertionSetup {
 
             decryptMessage(signalClient = signalClient,
                     recipientId = senderId.second, deviceId = senderId.first!!,
-                    encryptedData = encryptedData)
+                    encryptedData = encryptedData,
+                    isFromBob = metadata.isExternal == true
+                            && metadata.senderRecipientId == SignalUtils.externalRecipientId)
         } else null
     }
 
@@ -271,7 +277,9 @@ object  EmailInsertionSetup {
 
                 fileKeys.add(decryptMessage(signalClient = signalClient,
                         recipientId = senderId.second, deviceId = senderId.first!!,
-                        encryptedData = encryptedData))
+                        encryptedData = encryptedData,
+                        isFromBob = metadata.isExternal == true
+                                && metadata.senderRecipientId == SignalUtils.externalRecipientId))
             } else fileKeys.add("")
         }
         return fileKeys
@@ -362,4 +370,6 @@ object  EmailInsertionSetup {
         }
         println(lonReturn)
     }
+
+    class BobDecryptionException: Exception()
 }

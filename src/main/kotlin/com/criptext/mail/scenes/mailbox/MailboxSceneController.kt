@@ -221,6 +221,10 @@ class MailboxSceneController(private val scene: MailboxScene,
             reloadMailboxThreads()
         }
 
+        override fun onUpgradePlusOptionClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+        }
+
         override fun onSettingsOptionClicked() {
             host.goToScene(SettingsParams(), true)
         }
@@ -573,8 +577,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 threadEventListener = threadEventListener,
                 onDrawerMenuItemListener = onDrawerMenuItemListener,
                 observer = observer, threadList = VirtualEmailThreadList(model),
-                email = activeAccount.userEmail, fullName = activeAccount.name,
-                accountType = activeAccount.type)
+                activeAccount = activeAccount)
         scene.initDrawerLayout()
         scene.setEmtpyMailboxBackground(model.selectedLabel)
 
@@ -1204,6 +1207,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     Event.Cmd.customerTypeChanged -> {
                         scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
                         scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                        threadListController.reRenderAll()
                     }
                 }
             }

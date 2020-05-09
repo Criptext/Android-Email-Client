@@ -138,8 +138,9 @@
                     android:layout_gravity="center_horizontal"
                     android:textStyle="italic"
                     android:maxLines="1"
-                    android:background="@drawable/plus_badge_text"
+                    android:background="@drawable/plus_legend_badge_text"
                     android:text="Plus"
+                    android:visibility="gone"
                     android:ellipsize="end"/>
 
                 <Space

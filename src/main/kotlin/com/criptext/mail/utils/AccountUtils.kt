@@ -30,9 +30,22 @@ object AccountUtils {
         }
     }
 
-    fun isNotPlus(accountType: AccountTypes): Boolean {
-        return accountType == AccountTypes.STANDARD
-                || accountType == AccountTypes.LUCKY
+    fun isPlus(accountType: AccountTypes): Boolean {
+        return when(accountType){
+            AccountTypes.PLUS,
+            AccountTypes.FAN,
+            AccountTypes.HERO,
+            AccountTypes.LEGEND -> true
+            else -> false
+        }
+    }
+
+    fun canJoinPlus(accountType: AccountTypes): Boolean {
+        return when(accountType){
+            AccountTypes.LUCKY,
+            AccountTypes.STANDARD -> true
+            else -> false
+        }
     }
 
     fun getAccountTypeFromInt(ordinal: Int): AccountTypes {

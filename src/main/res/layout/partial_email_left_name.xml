@@ -14,7 +14,13 @@
             android:layout_width="38dp"
             android:layout_centerInParent="true"
             android:layout_height="38dp"
-            android:visibility="visible" />
+            android:visibility="visible"/>
+        <ImageView
+            android:id="@+id/plusBadgeRing"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true"
+            />
         <ProgressBar
             android:id="@+id/loadingPanel"
             android:layout_width="55dp"

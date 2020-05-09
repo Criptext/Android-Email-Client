@@ -10,6 +10,7 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -28,7 +29,8 @@ class FullEmailListAdapter(private val mContext : Context,
                            private val fileDetails: Map<Long, List<FileDetail>>,
                            private val labels: VirtualList<Label>,
                            private val isStarred: Boolean,
-                           private val shouldOpenExpanded: Boolean)
+                           private val shouldOpenExpanded: Boolean,
+                           private val activeAccount: ActiveAccount)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
@@ -118,7 +120,7 @@ class FullEmailListAdapter(private val mContext : Context,
                     }
                 }
 
-                holder.bindFullMail(fullEmail)
+                holder.bindFullMail(fullEmail, activeAccount)
                 holder.setListeners(
                         fullEmail = fullEmail,
                         adapter = this,
