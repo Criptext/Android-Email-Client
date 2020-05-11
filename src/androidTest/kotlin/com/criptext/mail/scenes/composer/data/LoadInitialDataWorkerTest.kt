@@ -8,6 +8,7 @@ import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -41,9 +42,10 @@ class LoadInitialDataWorkerTest {
     private lateinit var fwmTemplate: FWMailTemplate
     private lateinit var db: TestDatabase
     private lateinit var composerLocalDB: ComposerLocalDB
+    private lateinit var storage: KeyValueStorage
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
     private val testerContact = Contact(email = activeAccount.userEmail, name = "Tester", id = 1, score = 0, isTrusted = true, spamScore = 0)
     private val mayerContact = Contact(email = "mayer@criptext.com", name = "Mayer", id = 2, score = 0, isTrusted = true, spamScore = 0)
     private val danielContact = Contact(email = "daniel@criptext.com", name = "Daniel", id = 3, score = 0, isTrusted = true, spamScore = 0)
@@ -61,10 +63,11 @@ class LoadInitialDataWorkerTest {
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 1, "", "criptext.com", true, true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
-                type = AccountTypes.STANDARD, blockRemoteContent = false))
+                type = AccountTypes.STANDARD, blockRemoteContent = true))
         reTemplate = REMailTemplate(mActivityRule.activity)
         fwmTemplate = FWMailTemplate(mActivityRule.activity)
         db.contactDao().insertAll(listOf(testerContact, mayerContact, danielContact))
+        storage = mockk(relaxed = true)
 
         composerLocalDB = ComposerLocalDB(contactDao = db.contactDao(), emailDao = db.emailDao(),
                 emailContactDao = db.emailContactDao(), emailLabelDao = db.emailLabelDao(),
@@ -76,7 +79,8 @@ class LoadInitialDataWorkerTest {
     private fun newWorker(emailId: Long, type: ComposerType): LoadInitialDataWorker =
             LoadInitialDataWorker(db = composerLocalDB, emailId = emailId, composerType = type,
                     userEmailAddress = activeAccount.userEmail, signature = activeAccount.signature,
-                    publishFn = {}, activeAccount = activeAccount, httpClient = mockk())
+                    publishFn = {}, activeAccount = activeAccount, httpClient = mockk(), pendingEventDao = db.pendingEventDao(),
+                    storage = storage)
 
     private fun insertEmailToLoad(to: List<Contact>, fromContact: Contact, subject: String,
                                   decryptedBody: String, isDraft: Boolean, fileKey: String?, accountId: Long): Long {

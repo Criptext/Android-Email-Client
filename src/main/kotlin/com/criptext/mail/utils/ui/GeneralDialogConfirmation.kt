@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
+import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
@@ -64,6 +65,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
                                    observer: UIObserver?) {
 
         btnOk = view.findViewById(R.id.btn_ok) as Button
+        btnOk.text = context.getLocalizedUIMessage(UIMessage(data.confirmButtonText))
         btnCancel = view.findViewById(R.id.btn_cancel) as Button
         btnNoThanks = view.findViewById(R.id.btn_no_thanks) as Button
 

@@ -177,7 +177,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:src="@drawable/img"
+                        android:src="@drawable/img_brc"
                         />
                     <TextView
                         fontPath="fonts/NunitoSans-Regular.ttf"

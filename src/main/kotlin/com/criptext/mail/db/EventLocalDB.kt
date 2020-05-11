@@ -18,6 +18,10 @@ import java.util.*
 
 class EventLocalDB(private val db: AppDatabase, private val filesDir: File, private val cacheDir: File){
 
+    fun updateContactTrusted(contactEmail: String, trusted: Boolean){
+        db.contactDao().updateContactIsTrusted(contactEmail, trusted)
+    }
+
     fun updateBlockRemoteContent(newBlockRemoteContent: Boolean, account: Account){
         db.accountDao().updateBlockRemoteContent(newBlockRemoteContent, account.recipientId, account.domain)
     }
@@ -291,14 +295,18 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
             if(Label.defaultItems.spam in addedLabels){
                 val fromContacts = threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
-                if(fromContacts.isNotEmpty())
+                if(fromContacts.isNotEmpty()) {
                     db.contactDao().uptickSpamCounter(fromContacts, accountId)
+                    db.contactDao().updateContactsIsTrusted(fromContacts, false)
+                }
             }
 
             if(Label.defaultItems.spam in removedLabels){
                 val fromContacts = threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
-                if(fromContacts.isNotEmpty())
+                if(fromContacts.isNotEmpty()) {
                     db.contactDao().resetSpamCounter(fromContacts, accountId)
+                    db.contactDao().updateContactsIsTrusted(fromContacts, true)
+                }
             }
 
             val selectedLabels = SelectedLabels()
@@ -340,14 +348,18 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
             if(Label.defaultItems.spam in addedLabels){
                 val fromContacts = emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
-                if(fromContacts.isNotEmpty())
+                if(fromContacts.isNotEmpty()) {
                     db.contactDao().uptickSpamCounter(fromContacts, accountId)
+                    db.contactDao().updateContactsIsTrusted(fromContacts, false)
+                }
             }
 
             if(Label.defaultItems.spam in removedLabels){
                 val fromContacts = emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
-                if(fromContacts.isNotEmpty())
+                if(fromContacts.isNotEmpty()) {
                     db.contactDao().resetSpamCounter(emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
+                    db.contactDao().updateContactsIsTrusted(fromContacts, true)
+                }
             }
 
             val selectedLabels = SelectedLabels()

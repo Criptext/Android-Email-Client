@@ -39,7 +39,7 @@ class PushRequestHandlerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
 
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>
@@ -53,7 +53,7 @@ class PushRequestHandlerTest {
         db.resetDao().deleteAllData(1)
         db.labelDao().insertAll(Label.DefaultItems().toList())
         db.accountDao().insert(Account(id = 1, recipientId = "tester", deviceId = 1,
-                name = "Tester", registrationId = 1, blockRemoteContent = false,
+                name = "Tester", registrationId = 1, blockRemoteContent = true,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__", type = AccountTypes.STANDARD,
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))

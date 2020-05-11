@@ -7,6 +7,7 @@ import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.ComposerLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.EmailInsertionDao
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.composer.workers.*
 import com.criptext.mail.utils.generaldatasource.workers.GetRemoteFileWorker
@@ -20,6 +21,7 @@ class ComposerDataSource(
         private val filesDir: File,
         private val httpClient: HttpClient,
         private val composerLocalDB: ComposerLocalDB,
+        private val pendingEventDao: PendingEventDao,
         var activeAccount: ActiveAccount,
         private val storage: KeyValueStorage,
         private val emailInsertionDao: EmailInsertionDao,
@@ -65,6 +67,8 @@ class ComposerDataSource(
                     userEmailAddress = activeAccount.userEmail,
                     signature = activeAccount.signature,
                     activeAccount = activeAccount,
+                    storage = storage,
+                    pendingEventDao = pendingEventDao,
                     publishFn = { res -> flushResults(res) })
             is ComposerRequest.CheckDomain -> CheckDomainsWorker(
                     emails = params.emails,

@@ -2,9 +2,13 @@ package com.criptext.mail.scenes.composer.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.PeerEventsApiHandler
+import com.criptext.mail.api.models.PeerContactTrustedChanged
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.ComposerLocalDB
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FullEmail
@@ -22,7 +26,9 @@ import kotlin.collections.ArrayList
 class LoadInitialDataWorker(
         httpClient: HttpClient,
         private val db: ComposerLocalDB,
+        private val pendingEventDao: PendingEventDao,
         private val activeAccount: ActiveAccount,
+        private val storage: KeyValueStorage,
         override val publishFn: (ComposerResult.LoadInitialData) -> Unit,
         private var userEmailAddress: String,
         private val signature: String,
@@ -32,6 +38,8 @@ class LoadInitialDataWorker(
     override val canBeParallelized = true
 
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
+    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao,
+            storage, db.accountDao)
 
     override fun catchException(ex: Exception): ComposerResult.LoadInitialData {
         val message = UIMessage(R.string.composer_load_error)
@@ -64,8 +72,12 @@ class LoadInitialDataWorker(
     }
 
     private fun convertReplyToInputData(fullEmail: FullEmail, replyToAll: Boolean): ComposerInputData {
+        if(!fullEmail.from.isTrusted) {
+            peerEventHandler.enqueueEvent(PeerContactTrustedChanged(fullEmail.from.email, true).toJSON())
+            db.updateContactTrusted(fullEmail.from.email, true)
+        }
         val replyTo = fullEmail.email.replyTo
-        val replyToCOntact = if(replyTo == null) null
+        val replyToContact = if(replyTo == null) null
         else
             Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
                     isTrusted = false, score = 0, spamScore = 0)
@@ -74,13 +86,13 @@ class LoadInitialDataWorker(
                 fullEmail.to
             else
                 fullEmail.to.filter { it.email != userEmailAddress }
-                    .plus(replyToCOntact ?: fullEmail.from)
+                    .plus(replyToContact ?: fullEmail.from)
         }
         else {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
             else
-                listOf(replyToCOntact ?: fullEmail.from)
+                listOf(replyToContact ?: fullEmail.from)
         }
 
         val template = if(replyToAll) (composerType as ComposerType.ReplyAll).template

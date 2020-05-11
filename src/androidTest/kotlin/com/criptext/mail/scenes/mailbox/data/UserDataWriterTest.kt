@@ -77,7 +77,15 @@ class UserDataWriterTest {
 
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
-    private val metadata = BackupFileMetadata(UserDataWriter.FILE_SYNC_VERSION, activeAccount.recipientId, activeAccount.domain)
+    private val metadata = BackupFileMetadata(
+            fileVersion = UserDataWriter.FILE_SYNC_VERSION,
+            recipientId = activeAccount.recipientId,
+            domain = activeAccount.domain,
+            signature = activeAccount.signature,
+            darkTheme = false,
+            hasCriptextFooter = true,
+            language = Locale.getDefault().language,
+            showPreview = false)
 
     private val deviceLinkFileExpectedContent = listOf(BackupFileMetadata.toJSON(metadata).toString(),
     "{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
@@ -103,7 +111,7 @@ class UserDataWriterTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)

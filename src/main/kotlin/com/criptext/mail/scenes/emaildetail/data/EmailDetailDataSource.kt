@@ -6,10 +6,7 @@ import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.dao.AccountDao
-import com.criptext.mail.db.dao.EmailContactJoinDao
-import com.criptext.mail.db.dao.EmailDao
-import com.criptext.mail.db.dao.PendingEventDao
+import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.emaildetail.workers.*
 
@@ -21,6 +18,7 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                             private val pendingDao: PendingEventDao,
                             private val emailDao: EmailDao,
                             private val accountDao: AccountDao,
+                            private val aliasDao: AliasDao,
                             private val storage: KeyValueStorage,
                             private val emailContactDao: EmailContactJoinDao,
                             private val httpClient: HttpClient,
@@ -38,6 +36,8 @@ class EmailDetailDataSource(override val runner: WorkRunner,
             is EmailDetailRequest.LoadFullEmailsFromThreadId -> LoadFullEmailsFromThreadWorker(
                     activeAccount = activeAccount,
                     db = emailDetailLocalDB,
+                    accountDao = accountDao,
+                    aliasDao = aliasDao,
                     threadId = params.threadId,
                     currentLabel = params.currentLabel,
                     changeAccountMessage = params.changeAccountMessage,
@@ -186,6 +186,9 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     db = emailDetailLocalDB,
+                    storage = storage,
+                    accountDao = accountDao,
+                    pendingEventDao = pendingDao,
                     publishFn = { res -> flushResults(res) })
         }
     }

@@ -76,10 +76,15 @@ interface MailboxLocalDB {
     fun getAccountById(accountId: Long): Account?
     fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun updateIsTrusted(emailAddresses: List<String>, isTrusted: Boolean)
     fun getAlias(aliasEmail: String?): Alias?
 
 
     class Default(private val db: AppDatabase, private val filesDir: File): MailboxLocalDB {
+
+        override fun updateIsTrusted(emailAddresses: List<String>, isTrusted: Boolean) {
+            db.contactDao().updateContactsIsTrusted(emailAddresses, isTrusted)
+        }
 
         override fun getAlias(aliasEmail: String?): Alias? {
             aliasEmail ?: return null

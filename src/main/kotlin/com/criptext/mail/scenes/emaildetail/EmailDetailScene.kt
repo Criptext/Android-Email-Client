@@ -23,6 +23,7 @@ import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.mailbox.*
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualList
@@ -73,6 +74,8 @@ interface EmailDetailScene {
     fun expandAllThread()
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun showRemoteContentDialog()
+    fun changeBlockremoteSetting(block: Boolean)
 
     class EmailDetailSceneView(
             private val emailDetailView: View,
@@ -91,6 +94,12 @@ interface EmailDetailScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
+        private val blockRemoteDialog = GeneralDialogConfirmation(context, DialogData.DialogConfirmationData(
+                title = UIMessage(R.string.block_remote_dialog_title),
+                message = listOf(UIMessage(R.string.block_remote_dialog_message)),
+                type = DialogType.Message(),
+                confirmButtonText = R.string.save
+        ))
 
         private val recyclerView: RecyclerView by lazy {
             emailDetailView.findViewById<RecyclerView>(R.id.emails_detail_recycler)
@@ -169,6 +178,10 @@ interface EmailDetailScene {
                     allLabels = allLabels)
         }
 
+        override fun showRemoteContentDialog() {
+            blockRemoteDialog.showDialog(observer)
+        }
+
         override fun showDialogMoveTo(onMoveThreadsListener: OnMoveThreadsListener,
                                       currentFolder: String) {
             moveToDialog.showMoveToDialog(
@@ -198,6 +211,10 @@ interface EmailDetailScene {
 
         override fun expandAllThread() {
             fullEmailsRecyclerView?.expandAndNotify()
+        }
+
+        override fun changeBlockremoteSetting(block: Boolean) {
+            fullEmailsRecyclerView?.changeBlockremoteSetting(block)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

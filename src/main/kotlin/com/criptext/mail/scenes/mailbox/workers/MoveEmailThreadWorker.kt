@@ -131,6 +131,7 @@ class MoveEmailThreadWorker(
                                     ContactUtils.ContactReportTypes.spam,
                                     null)
                         }
+                        db.updateIsTrusted(fromContacts, false)
                     }
                     if(chosenLabel == Label.LABEL_TRASH){
                         db.setTrashDate(emailIds, activeAccount.id)

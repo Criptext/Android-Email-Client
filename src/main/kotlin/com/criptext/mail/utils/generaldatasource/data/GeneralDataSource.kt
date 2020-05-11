@@ -249,6 +249,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = db,
                     filesDir = filesDir,
                     passphrase = params.passphrase,
+                    storage = storage,
                     isLocal = params.isLocal,
                     publishFn = { result ->
                         flushResults(result)

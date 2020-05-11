@@ -70,6 +70,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.peerLabelCreated -> processLabelCreated(it)
                     Event.Cmd.peerLabelEdited -> processLabelEdited(it)
                     Event.Cmd.peerLabelDeleted -> processLabelDeleted(it)
+                    Event.Cmd.peerContactTrustedChanged -> processContactTrustedChanged(it)
                     Event.Cmd.trackingUpdate -> processTrackingUpdates(it)
                     Event.Cmd.newError -> processOnError(it)
                     Event.Cmd.addressCreated -> processOnAddressCreated(it)
@@ -356,6 +357,22 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
+    private fun processContactTrustedChanged(event: Event) {
+        val metadata = PeerContactTrustedChanged.fromJSON(event.params)
+        val operation = Result.of {
+            updateContactTrustedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+                if(existingInfo != null) parsedEvents.remove(existingInfo)
+                parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
     private fun processTrackingUpdates(event: Event) {
         val operation = Result.of {
             val metadata = TrackingUpdate.fromJSON(event.params)
@@ -553,6 +570,9 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun updateLabelDeletedStatus(metadata: PeerLabelDeletedStatusUpdate) =
             db.updateDeleteLabel(metadata.uuid, activeAccount.id)
+
+    private fun updateContactTrustedStatus(metadata: PeerContactTrustedChanged) =
+            db.updateContactTrusted(metadata.email, metadata.trusted)
 
     private fun updateLabelEditedStatus(metadata: PeerLabelEditedStatusUpdate) =
             db.updateEditLabel(metadata.uuid, metadata.name, activeAccount.id)

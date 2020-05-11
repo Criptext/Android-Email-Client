@@ -44,9 +44,7 @@ import java.util.*
  * Created by sebas on 3/12/18.
  */
 
-
-class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean,
-                      private val auth: String? = null) : ParentEmailHolder(view) {
+class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val context = view.context
     private val layout : FrameLayout
     private val rootView : LinearLayout
@@ -93,25 +91,20 @@ class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean
         showImagesButton.setOnClickListener {
             val wrapper = ContextThemeWrapper(view.context, R.style.email_detail_popup_menu)
             val popupMenu = android.widget.PopupMenu(wrapper, showImagesButton)
-            val popUpLayout = R.menu.show_images_options_menu
+            val popUpLayout = getShowImagesMenu(fullEmail)
             popupMenu.inflate(popUpLayout)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.showOnce -> {
-                        remoteContentShow(true)
+                        emailListener?.updateShowOnce(fullEmail, position - 1)
                         true
                     }
                     R.id.showAlways -> {
-                        remoteContentShow(true)
                         emailListener?.updateIsTrusted(fullEmail.from, true, fullEmail.email.metadataKey)
-                        showImagesButton.visibility = View.GONE
                         true
                     }
                     R.id.turnOff -> {
-                        remoteContentShow(true)
-                        showImagesButton.visibility = View.GONE
-                        blockRemoteContentSetting = false
-                        emailListener?.updateRemoteContentSetting(true)
+                        emailListener?.updateRemoteContentSetting(false)
                         true
                     }
                     else -> false
@@ -155,6 +148,18 @@ class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean
         val params = view.layoutParams as ViewGroup.MarginLayoutParams
         params.bottomMargin = marginBottom
         rootView.layoutParams = params
+    }
+
+    private fun getShowImagesMenu(fullEmail: FullEmail): Int {
+        return when {
+            fullEmail.isShowingRemoteContent -> {
+                R.menu.show_images_options_menu_showed_once
+            }
+            fullEmail.labels.contains(Label.defaultItems.spam) -> {
+                R.menu.show_images_options_menu_spam
+            }
+            else -> R.menu.show_images_options_menu
+        }
     }
 
     private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail, position: Int){
@@ -265,23 +270,41 @@ class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean
         return popupMenu
     }
 
-    override fun bindFullMail(fullEmail: FullEmail, activeAccount: ActiveAccount) {
-        when{
-            fullEmail.labels.contains(Label.defaultItems.spam) -> {
+    override fun bindFullMail(fullEmail: FullEmail, blockRemoteContentSetting: Boolean) {
+        val isEmailEmpty = HTMLUtils.isHtmlEmpty(fullEmail.email.content)
+        val hasAtLeastOneImage = HTMLUtils.hasAtLeastOneImage(fullEmail.email.content)
+        when {
+            fullEmail.isFromMe -> {
+                remoteContentShow(true)
+                showImagesButton.visibility = View.GONE
+            }
+            fullEmail.labels.contains(Label.defaultItems.draft)
+                    || fullEmail.labels.contains(Label.defaultItems.sent)
+                    || (fullEmail.isShowingRemoteContent && fullEmail.labels.contains(Label.defaultItems.spam))
+                    || isEmailEmpty -> {
+                remoteContentShow(true)
+                showImagesButton.visibility = View.GONE
+            }
+            !hasAtLeastOneImage -> {
+                remoteContentShow(true)
+                showImagesButton.visibility = View.GONE
+            }
+            fullEmail.labels.contains(Label.defaultItems.spam)
+                    && hasAtLeastOneImage -> {
                 remoteContentShow(false)
             }
             !blockRemoteContentSetting -> {
                 remoteContentShow(true)
                 showImagesButton.visibility = View.GONE
             }
-            blockRemoteContentSetting -> {
+            blockRemoteContentSetting && hasAtLeastOneImage -> {
                 remoteContentShow(fullEmail.from.isTrusted)
                 showImagesButton.visibility = if(fullEmail.from.isTrusted) View.GONE
                 else View.VISIBLE
             }
         }
         if(fullEmail.email.delivered != DeliveryTypes.UNSEND) {
-            val content = if(HTMLUtils.isHtmlEmpty(fullEmail.email.content)){
+            val content = if(isEmailEmpty){
                 "<font color=\"#6a707e\"><i>" + context.getLocalizedUIMessage(UIMessage(R.string.nocontent)) + "</i></font>"
             } else {
                 fullEmail.email.content
@@ -342,6 +365,7 @@ class FullEmailHolder(view: View, private var blockRemoteContentSetting: Boolean
         if(show){
             bodyWebView.settings.loadsImagesAutomatically = true
             bodyWebView.settings.blockNetworkImage = false
+            bodyWebView.evaluateJavascript("replaceSrc();", null)
         } else {
             bodyWebView.settings.loadsImagesAutomatically = false
             bodyWebView.settings.blockNetworkImage = true

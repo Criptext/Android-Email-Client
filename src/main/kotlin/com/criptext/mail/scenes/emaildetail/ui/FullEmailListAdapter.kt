@@ -1,21 +1,13 @@
 package com.criptext.mail.scenes.emaildetail.ui
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
-import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import com.criptext.mail.IHostActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.R
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
-import com.criptext.mail.db.models.FileDetail
-import com.criptext.mail.db.models.FullEmail
-import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.composer.ui.holders.AttachmentViewObserver
+import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.emaildetail.ui.holders.*
 import com.criptext.mail.utils.virtuallist.VirtualList
 
@@ -30,9 +22,7 @@ class FullEmailListAdapter(private val mContext : Context,
                            private val fileDetails: Map<Long, List<FileDetail>>,
                            private val labels: VirtualList<Label>,
                            private val isStarred: Boolean,
-                           private val shouldOpenExpanded: Boolean,
-                           private val activeAccount: ActiveAccount,
-                           private val blockRemoteContentSetting: Boolean)
+                           private val shouldOpenExpanded: Boolean)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
@@ -41,6 +31,7 @@ class FullEmailListAdapter(private val mContext : Context,
 
     private val MAX_SIZE_FOR_COLLAPSE = 5
     var isExpanded = shouldOpenExpanded
+    var blockRemoteContentSetting = true
 
 
     private var headerHolder:HeaderViewHolder? = null
@@ -122,7 +113,7 @@ class FullEmailListAdapter(private val mContext : Context,
                     }
                 }
 
-                holder.bindFullMail(fullEmail, activeAccount)
+                holder.bindFullMail(fullEmail, blockRemoteContentSetting)
                 holder.setListeners(
                         fullEmail = fullEmail,
                         adapter = this,
@@ -213,7 +204,7 @@ class FullEmailListAdapter(private val mContext : Context,
 
             EmailViewTypes.fullEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView, blockRemoteContentSetting, activeAccount.jwt)
+                FullEmailHolder(mView)
             }
             EmailViewTypes.partialEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, parent, false)
@@ -221,7 +212,7 @@ class FullEmailListAdapter(private val mContext : Context,
             }
             else -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView, blockRemoteContentSetting, activeAccount.jwt)
+                FullEmailHolder(mView)
             }
         }
     }
@@ -266,6 +257,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun showStartGuideEmailIsRead(view: View)
         fun contextMenuRegister(view: View)
         fun openBilling()
+        fun updateShowOnce(fullEmail: FullEmail, position: Int)
         fun updateIsTrusted(fromContact: Contact, newIsTrusted: Boolean, metadataKey: Long)
         fun updateRemoteContentSetting(newSetting: Boolean)
     }

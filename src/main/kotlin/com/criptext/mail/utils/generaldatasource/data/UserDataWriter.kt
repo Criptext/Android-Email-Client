@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.criptext.mail.R
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
@@ -8,6 +9,7 @@ import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.exceptions.SyncFileException
@@ -24,10 +26,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
     fun createFile(account: Account, storage: KeyValueStorage):String? {
         try {
             val tmpFileLinkData = createTempFile()
-            val showFooter = if(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty()) {
-                val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
-                footerData.find { it.accountId == account.id }?.hasFooterEnabled ?: true
-            } else true
+            val showFooter = AccountUtils.hasCriptextFooter(account, storage)
 
             val metadata = BackupFileMetadata(
                     fileVersion = FILE_SYNC_VERSION,
@@ -54,7 +53,7 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         }
     }
 
-    fun createDBFromFile(file: File) {
+    fun createDBFromFile(file: File, storage: KeyValueStorage) {
         val account = ActiveAccount.loadFromDB(db.accountDao().getLoggedInAccount()!!)!!
         val contactDataMapper = DataMapper(mutableMapOf())
         val contactWriter = ContactDataWriter(db.contactDao(), db.accountContactDao(), activeAccount = account,
@@ -75,18 +74,25 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 emailDataMapper = emaillDataMapper, labelDataMapper = labelDataMapper)
         val emailContactWriter = EmailContactDataWriter(db.emailContactDao(), listOf(contactWriter, emailWriter),
                 emailDataMapper = emaillDataMapper, contactDataMapper = contactDataMapper)
-        val data = file.bufferedReader()
+        var data = file.bufferedReader()
         var line = data.readLine()
         val operation = Result.of {
-            val metadata = BackupFileMetadata.fromJSON(line)
-            if (metadata.fileVersion == FILE_SYNC_VERSION) {
-                if (account.userEmail != metadata.recipientId.plus("@${metadata.domain}")) {
-                    throw SyncFileException.UserNotValidException()
-                } else {
-                    line = data.readLine()
-                }
+            val metadata = BackupFileMetadata.fromJSON(line, db.accountDao().getLoggedInAccount()!!, storage)
+            if (account.userEmail != metadata.recipientId.plus("@${metadata.domain}")) {
+                throw SyncFileException.UserNotValidException()
             } else {
-                throw SyncFileException.OutdatedException()
+                processMetadata(account, metadata, storage)
+                val newData = Result.of { SyncMigrationMap.Default(metadata.fileVersion, FILE_SYNC_VERSION).migrate(data) }
+                when(newData){
+                    is Result.Success -> {
+                        data.close()
+                        data = newData.value
+                    }
+                    is Result.Failure -> {
+                        throw newData.error
+                    }
+                }
+                line = data.readLine()
             }
         }
 
@@ -123,10 +129,36 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         customDomainWriter.flush()
         emailLabelWriter.flush()
         emailContactWriter.flush()
-
+        data.close()
 
         db.setTransactionSuccessful()
         db.endTransaction()
+    }
+
+    private fun processMetadata(account: ActiveAccount, metadata: BackupFileMetadata, storage: KeyValueStorage){
+        db.accountDao().updateSignature(account.id, metadata.signature)
+        account.updateSignature(storage, metadata.signature)
+        storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, metadata.darkTheme)
+        if (metadata.darkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+        val footerData = ProfileFooterData(account.id, metadata.hasCriptextFooter)
+        val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
+        if (allFooterData.isNotEmpty()) {
+            val savedData = ProfileFooterData.fromJson(allFooterData)
+            val findAccountFooterData = savedData.find { it.accountId == account.id }
+            if (findAccountFooterData != null) {
+                savedData.remove(findAccountFooterData)
+            }
+            savedData.add(footerData)
+            storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, ProfileFooterData.toJSON(savedData).toString())
+        } else {
+            val json = ProfileFooterData.toJSON(listOf(footerData))
+            storage.putString(KeyValueStorage.StringKey.ShowCriptextFooter, json.toString())
+        }
+        storage.putBool(KeyValueStorage.StringKey.ShowEmailPreview, metadata.showPreview)
     }
 
     private fun addContactsToFile(contactDao: ContactDao, tmpFile: File, accountId: Long)

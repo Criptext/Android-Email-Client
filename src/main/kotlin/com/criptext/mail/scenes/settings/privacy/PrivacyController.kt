@@ -339,11 +339,11 @@ class PrivacyController(
         when(result) {
             is GeneralResult.ChangeBlockRemoteContentSetting.Success -> {
                 scene.enableBlockRemoteContentSwitch(true)
-                if(result.newBlockRemoteContent) {
+                if(!result.newBlockRemoteContent) {
                     scene.showMessage(UIMessage(R.string.block_remote_turn_off_message,
                             arrayOf(activeAccount.userEmail)))
                 } else {
-                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message,
+                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message_disable,
                             arrayOf(activeAccount.userEmail)))
                 }
             }

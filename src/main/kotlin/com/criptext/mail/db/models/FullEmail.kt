@@ -17,5 +17,7 @@ data class FullEmail(
 
     var viewOpen = false
     var isUnsending = false
+    var isShowingRemoteContent = false
+    var isFromMe = false
 
 }

@@ -82,6 +82,7 @@ class  EmailDetailActivity: BaseActivity() {
                 generalDataSource = remoteChangeDataSource,
                 dataSource = EmailDetailDataSource(
                         pendingDao = appDB.pendingEventDao(),
+                        aliasDao = appDB.aliasDao(),
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
                         emailContactDao = appDB.emailContactDao(),

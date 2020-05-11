@@ -34,8 +34,13 @@ interface EmailDetailLocalDB {
     fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun updateContactIsTrusted(contact: Contact, newIsTrusted: Boolean)
+    fun updateContactsIsTrusted(emailAddresses: List<String>, newIsTrusted: Boolean)
 
     class Default(private val db: AppDatabase, private val filesDir: File): EmailDetailLocalDB {
+        override fun updateContactsIsTrusted(emailAddresses: List<String>, newIsTrusted: Boolean) {
+            db.contactDao().updateContactsIsTrusted(emailAddresses, newIsTrusted)
+        }
+
         override fun updateContactIsTrusted(contact: Contact, newIsTrusted: Boolean) {
             db.contactDao().updateContactIsTrusted(contact.email, newIsTrusted)
         }
