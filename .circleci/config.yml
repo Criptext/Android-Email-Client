@@ -151,38 +151,11 @@ jobs:
           path: firebase/
           destination: /firebase/
 
-  ## Submit QA Release
-
-  submit_qa:
-    <<: *android_config
-    steps:
-      - checkout
-      - *decode_gcloud_key
-      - run:
-          name: Configure Bundler
-          command: |
-            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
-            source $BASH_ENV
-            gem install bundler
-      - run:
-          name: Configure Build
-          command: bundle update fastlane && gem install bundle && bundle install
-      - *restore_cache
-      - run:
-          name: Install Firebase CLI
-          command: curl -sL firebase.tools | bash
-      - run:
-          name: Deploy build to QA
-          command: bundle exec fastlane stage flavor:alpha branch:${CIRCLE_BRANCH} app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
-
 workflows:
   version: 2
   workflow:
     jobs:
       - build_debug
-      - submit_qa:
-          requires:
-            - build_debug
       - test_unit:
           requires:
             - build_debug

@@ -165,6 +165,7 @@
             android:name=".services.DecryptionService"
             android:enabled="true"
             android:exported="false" />
+        <service android:name=".services.CloudBackupForegroundService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

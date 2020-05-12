@@ -1,27 +1,19 @@
 package com.criptext.mail.services
 
 import android.app.ActivityManager
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.push.PushController
-import com.criptext.mail.push.notifiers.Notifier
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.io.Serializable
 
 
 class MessagingService : FirebaseMessagingService(){
 
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        if(remoteMessage.data.isNotEmpty()) {
+        if(remoteMessage.data.isNotEmpty()
+                && !isAppOnForeground(this.applicationContext, this.applicationContext.packageName)) {
             val intent = Intent(applicationContext, DecryptionService::class.java)
             val hashMap = HashMap<String, String>()
             hashMap.putAll(remoteMessage.data)
