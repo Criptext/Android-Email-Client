@@ -43,6 +43,8 @@ class SignInDataSource(override val runner: WorkRunner,
                     keyGenerator = keyGenerator,
                     keyValueStorage = keyValueStorage,
                     accountDao = accountDao,
+                    aliasDao = db.aliasDao(),
+                    customDomainDao = db.customDomainDao(),
                     isMultiple = params.isMultiple,
                     messagingInstance = MessagingInstance.Default(),
                     publishFn = { result ->
@@ -107,6 +109,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     httpClient = httpClient, randomId = params.randomId,
                     username = params.username, db = signInLocalDB,
                     accountDao = accountDao, ephemeralJwt = params.ephemeralJwt,
+                    customDomainDao = db.customDomainDao(), aliasDao = db.aliasDao(),
                     keyGenerator = keyGenerator, keyValueStorage = keyValueStorage,
                     messagingInstance = MessagingInstance.Default(),
                     signUpDao = signUpDao,
@@ -138,6 +141,13 @@ class SignInDataSource(override val runner: WorkRunner,
             )
             is SignInRequest.FindDevices -> GetDevicesWorker(
                     userData = params.userData,
+                    httpClient = httpClient,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is SignInRequest.GetMaxDevices -> GetMaxDeviceWorker(
+                    tempToken = params.tempToken,
                     httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result)

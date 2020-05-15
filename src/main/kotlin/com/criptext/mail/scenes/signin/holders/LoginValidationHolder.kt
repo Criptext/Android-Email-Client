@@ -26,6 +26,7 @@ class LoginValidationHolder(
     private val rootLayout: View
     private val cantAccessDevice: TextView
     private val recoveryCodeText: TextView
+    private val skipText: TextView
     private val textViewTitle: TextView
     private val textViewBody: TextView
     private val textViewPrompt: TextView
@@ -41,6 +42,7 @@ class LoginValidationHolder(
         rootLayout = view.findViewById<View>(R.id.viewRoot)
         cantAccessDevice = view.findViewById(R.id.cant_access_device)
         recoveryCodeText = view.findViewById(R.id.recovery_code)
+        skipText = view.findViewById(R.id.skip)
         textViewTitle = view.findViewById(R.id.textViewTitle)
         textViewBody = view.findViewById(R.id.textViewBody)
         buttonResend = view.findViewById(R.id.buttonResend)
@@ -58,6 +60,7 @@ class LoginValidationHolder(
 
         if(initialState.hasRemovedDevices) {
             cantAccessDevice.visibility = View.GONE
+            skipText.visibility = View.VISIBLE
         }
 
 
@@ -153,6 +156,10 @@ class LoginValidationHolder(
 
         recoveryCodeText.setOnClickListener {
             uiObserver?.onRecoveryCodeClicked()
+        }
+
+        skipText.setOnClickListener {
+            uiObserver?.onSkipClicked()
         }
 
         buttonResend.setOnClickListener {

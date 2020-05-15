@@ -15,6 +15,7 @@ import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.AntiPushMap
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.PushResult
@@ -191,7 +192,8 @@ class GetPushEmailWorker(
         val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
                 { (_, metadata) ->
                     try {
-                        insertIncomingEmailTransaction(metadata)
+                        val aliases = db.aliasDao().getAll(accountId = activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
+                        insertIncomingEmailTransaction(metadata, aliases)
                         // insertion success, try to acknowledge it
                         true
                     } catch (ex: DuplicateMessageException) {
@@ -246,8 +248,8 @@ class GetPushEmailWorker(
         }
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata) =
-            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount)
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>) =
+            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases)
 
     private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
             dbEvents.updateExistingEmail(metadata, activeAccount)

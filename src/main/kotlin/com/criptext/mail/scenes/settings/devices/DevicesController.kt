@@ -98,6 +98,10 @@ class DevicesController(
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -138,6 +142,10 @@ class DevicesController(
     }
 
     private val onDevicesListItemListener: DevicesListItemListener = object: DevicesListItemListener {
+        override fun onDeviceCheckChanged(): Boolean {
+            return false
+        }
+
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
             devicesUIObserver.onRemoveDevice(device.id, position)
             return true

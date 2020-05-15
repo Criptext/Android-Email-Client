@@ -289,6 +289,16 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.UpdateLocalDomainAndAliasData -> UpdateLocalDomainAndAliasDataWorker(
+                    activeAccount = activeAccount!!,
+                    aliasDao = db.aliasDao(),
+                    customDomainDao = db.customDomainDao(),
+                    aliasData = params.aliases,
+                    customDomains = params.customDomains,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
         }
     }
 }

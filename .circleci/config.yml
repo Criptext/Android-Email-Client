@@ -90,7 +90,7 @@ jobs:
       - *restore_cache
       - run:
           name: Download dependencies
-          command: ./gradlew androidDependencies
+          command: ./gradlew androidDependencies --scan
       - *save_cache
       - *decode_gservices_key
       - run:

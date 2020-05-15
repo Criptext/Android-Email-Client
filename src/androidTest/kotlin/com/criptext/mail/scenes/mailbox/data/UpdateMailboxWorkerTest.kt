@@ -6,10 +6,6 @@ import android.util.Log
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
 import com.criptext.mail.api.HttpClient
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.mocks.MockEmailData
@@ -28,6 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.crashlytics.android.Crashlytics
+import com.criptext.mail.db.*
 import io.fabric.sdk.android.Fabric
 
 
@@ -48,7 +45,7 @@ class UpdateMailboxWorkerTest {
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase
@@ -61,8 +58,9 @@ class UpdateMailboxWorkerTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null))
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)

@@ -172,7 +172,7 @@ class RestoreBackupController(
     private fun setupModelFile(filePath: String){
         val file = File(filePath)
         if(file.extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
-                        UserDataWriter.FILE_GZIP_EXTENSION)){
+                        UserDataWriter.FILE_GZIP_EXTENSION, UserDataWriter.FILE_TXT_EXTENSION)){
             scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
             scene.showBackupNotFoundLayout(model.isLocal)
         } else {

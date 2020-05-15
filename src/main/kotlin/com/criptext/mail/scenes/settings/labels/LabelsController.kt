@@ -118,6 +118,10 @@ class LabelsController(
             generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {

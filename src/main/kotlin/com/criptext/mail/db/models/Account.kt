@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.criptext.mail.db.AccountTypes
 import java.util.*
 
 /**
@@ -66,7 +67,13 @@ class Account(
         var wifiOnly : Boolean,
 
         @ColumnInfo(name = "backupPassword")
-        var backupPassword : String?
+        var backupPassword : String?,
+
+        @ColumnInfo(name = "type")
+        var type: AccountTypes,
+
+        @ColumnInfo(name = "blockRemoteContent")
+        var blockRemoteContent: Boolean
 ) {
 
     override fun toString(): String {

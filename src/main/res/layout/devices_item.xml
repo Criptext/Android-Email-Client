@@ -89,7 +89,7 @@
                 android:layout_row="0"
                 android:visibility="gone"
                 android:textAlignment="textEnd"
-                android:textColor="#61b900"
+                android:textColor="@color/current_device"
                 android:textSize="14sp" />
             <ImageView
                 android:id="@+id/imageViewTrashDevice"
@@ -100,7 +100,7 @@
                 android:layout_marginEnd="7dp"
                 android:layout_gravity="end"
                 android:src="@drawable/trash"
-                android:tint="#BBBBBB"
+                android:tint="@color/trash_can_grey"
                 android:layout_row="0"
                 android:layout_column="4" />
         </GridLayout>

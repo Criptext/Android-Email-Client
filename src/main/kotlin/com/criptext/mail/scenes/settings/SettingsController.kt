@@ -1,7 +1,6 @@
 package com.criptext.mail.scenes.settings
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
@@ -12,38 +11,26 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.LabelTypes
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
-import com.criptext.mail.scenes.WebViewActivity
-import com.criptext.mail.scenes.composer.data.ComposerType
-import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
-import com.criptext.mail.scenes.settings.devices.data.DeviceItem
-import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
-import com.criptext.mail.utils.mailtemplates.ReportAbuseMailTemplate
-import com.criptext.mail.utils.mailtemplates.SupportMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketSingleton
-import java.util.*
 
 class SettingsController(
         private val model: SettingsModel,
@@ -80,16 +67,24 @@ class SettingsController(
     }
 
     private val settingsUIObserver = object: SettingsUIObserver{
+        override fun onBillingClicked() {
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+        }
+
+        override fun onAliasesClicked() {
+            host.goToScene(AliasesParams(), true)
+        }
+
+        override fun onCustomDomainClicked() {
+            host.goToScene(CustomDomainParams(), true)
+        }
+
         override fun onReportBugClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Support(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.SUPPORT) as SupportMailTemplate), currentLabel = Label.defaultItems.inbox),
-                    true)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onReportAbuseClicked() {
-            host.goToScene(ComposerParams(type = ComposerType.Report(
-                    host.getMailTemplate(CriptextMailTemplate.TemplateType.ABUSE) as ReportAbuseMailTemplate), currentLabel = Label.defaultItems.inbox),
-                    true)
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
         }
 
         override fun onCloudBackupClicked() {
@@ -157,6 +152,10 @@ class SettingsController(
                 ))
         }
 
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
+        }
+
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
                 is DialogResult.DialogConfirmation -> {
@@ -172,6 +171,11 @@ class SettingsController(
                         is DialogType.SignIn -> {
                             host.goToScene(SignInParams(true), true)
                         }
+                    }
+                }
+                is DialogResult.DialogCriptextPlus -> {
+                    if(result.type is DialogType.CriptextPlus){
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
                     }
                 }
             }
@@ -216,19 +220,19 @@ class SettingsController(
         }
 
         override fun onFAQClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("faq"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "faq"))
         }
 
         override fun onPrivacyPoliciesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("privacy"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "privacy"))
         }
 
         override fun onTermsOfServiceClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("terms"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "terms"))
         }
 
         override fun onOpenSourceLibrariesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("open-source-android"))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "open-source-android"))
         }
 
         override fun onBackButtonPressed() {
@@ -248,7 +252,7 @@ class SettingsController(
         generalDataSource.listener = generalDataSourceListener
 
         scene.attachView(
-                email = activeAccount.userEmail,
+                account = activeAccount,
                 model = model,
                 settingsUIObserver = settingsUIObserver)
 

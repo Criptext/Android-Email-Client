@@ -1,15 +1,18 @@
 package com.criptext.mail.scenes.signup.data
 
+import com.criptext.mail.api.toList
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.dao.AliasDao
+import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.dao.SignUpDao
-import com.criptext.mail.db.models.Account
-import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Label
+import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSignedPreKey
+import com.criptext.mail.scenes.settings.aliases.data.AliasData
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.signal.SignalKeyGenerator
+import org.json.JSONArray
 
 /**
  * Encapsulates the transaction needed to atomically persist a new account's data in the database
@@ -19,20 +22,22 @@ import com.criptext.mail.signal.SignalKeyGenerator
 
 class StoreAccountTransaction(private val dao: SignUpDao,
                               private val keyValueStorage: KeyValueStorage,
-                              private val accountDao: AccountDao) {
+                              private val accountDao: AccountDao,
+                              private val aliasDao: AliasDao,
+                              private val customDomainDao: CustomDomainDao) {
 
 
     private fun setNewUserAsActiveAccount(user: Account) {
         val activeAccount = ActiveAccount(id = user.id, name = user.name, recipientId = user.recipientId,
                 deviceId = user.deviceId, jwt = user.jwt, signature = "", refreshToken = user.refreshToken,
-                domain = user.domain)
+                domain = user.domain, type = user.type)
         keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())
     }
 
 
     fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle, extraSteps: Runnable?,
-            keepData: Boolean = false, isMultiple: Boolean = false) {
+            keepData: Boolean = false, isMultiple: Boolean = false, addressesJsonArray: JSONArray? = null) {
 
         accountDao.updateActiveInAccount()
         val preKeyList = keyBundle.preKeys.entries.map { (key, value) ->
@@ -46,6 +51,32 @@ class StoreAccountTransaction(private val dao: SignUpDao,
             extraSteps?.run()
             val dbAccount = accountDao.getLoggedInAccount()!!
             setNewUserAsActiveAccount(dbAccount)
+            if(addressesJsonArray != null){
+                val aliasDataAndDomains = AliasData.fromJSONArray(addressesJsonArray, dbAccount.id)
+                if(aliasDataAndDomains.second.isNotEmpty()) {
+                    aliasDao.insertAll(aliasDataAndDomains.second.map {
+                        Alias(
+                                id = 0,
+                                name = it.name,
+                                active = it.isActive,
+                                domain = if (it.domain == Contact.mainDomain) null else it.domain,
+                                rowId = it.rowId,
+                                accountId = dbAccount.id
+                        )
+                    })
+                }
+                if(aliasDataAndDomains.first.isNotEmpty()) {
+                    customDomainDao.insertAll(aliasDataAndDomains.first.filter { it.name != Contact.mainDomain }.map {
+                        CustomDomain(
+                                id = 0,
+                                name = it.name,
+                                rowId = it.rowId,
+                                validated = it.validated,
+                                accountId = dbAccount.id
+                        )
+                    })
+                }
+            }
             if(dbAccount.hasCloudBackup){
                 CloudBackupJobService.scheduleJob(keyValueStorage, dbAccount)
             }

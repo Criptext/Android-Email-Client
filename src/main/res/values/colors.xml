@@ -100,4 +100,6 @@
     <color name="collapsed_emails_circle_number">#a1a2a3</color>
     <color name="collapsed_emails_circle_number_dark">#D5D5D5</color>
     <color name="collapsed_emails_circle_border_dark">#87888F</color>
+    <color name="trash_can_grey">#BBBBBB</color>
+    <color name="current_device">#61b900</color>
 </resources>

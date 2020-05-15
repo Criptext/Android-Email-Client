@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
+import com.criptext.mail.db.AccountTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -18,7 +20,7 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 
 interface SettingsScene{
 
-    fun attachView(email: String, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
+    fun attachView(account: ActiveAccount, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
     fun showMessage(message : UIMessage)
     fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail)
     fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
@@ -71,6 +73,15 @@ interface SettingsScene{
         private val settingsMailboxSync: View by lazy {
             view.findViewById<View>(R.id.settings_sync_mailbox)
         }
+        private val settingsBilling: View by lazy {
+            view.findViewById<View>(R.id.settings_billing)
+        }
+        private val settingsCustomDomains: View by lazy {
+            view.findViewById<View>(R.id.settings_custom_domain)
+        }
+        private val settingsAliases: View by lazy {
+            view.findViewById<View>(R.id.settings_aliases)
+        }
         private val settingsDarkTheme: Switch by lazy {
             view.findViewById<Switch>(R.id.switch_dark_theme)
         }
@@ -107,6 +118,9 @@ interface SettingsScene{
         private val settingsReportAbuse: View by lazy {
             view.findViewById<View>(R.id.settings_report_abuse)
         }
+        private val separatorAddresses: TextView by lazy {
+            view.findViewById<TextView>(R.id.separator_addresses)
+        }
 
 
         private val backButton: ImageView by lazy {
@@ -125,7 +139,7 @@ interface SettingsScene{
 
         override var settingsUIObserver: SettingsUIObserver? = null
 
-        override fun attachView(email: String, model: SettingsModel,
+        override fun attachView(account: ActiveAccount, model: SettingsModel,
                                 settingsUIObserver: SettingsUIObserver) {
 
             this.settingsUIObserver = settingsUIObserver
@@ -134,7 +148,14 @@ interface SettingsScene{
             settingsDarkTheme.isChecked = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
 
             versionText.text = BuildConfig.VERSION_NAME
-            accountEmail.text = email.toUpperCase()
+            accountEmail.text = account.userEmail.toUpperCase()
+
+            if(account.type == AccountTypes.ENTERPRISE){
+                settingsBilling.visibility = View.GONE
+                settingsCustomDomains.visibility = View.GONE
+                settingsAliases.visibility = View.GONE
+                separatorAddresses.visibility = View.GONE
+            }
 
             setListeners()
             setSwitchListener()
@@ -280,6 +301,9 @@ interface SettingsScene{
             settingsMailboxSync.setOnClickListener {
                 settingsUIObserver?.onSyncMailbox()
             }
+            settingsBilling.setOnClickListener {
+                settingsUIObserver?.onBillingClicked()
+            }
             settingsPinLock.setOnClickListener {
                 settingsUIObserver?.onPinLockClicked()
             }
@@ -297,6 +321,12 @@ interface SettingsScene{
             }
             settingsReportAbuse.setOnClickListener {
                 settingsUIObserver?.onReportAbuseClicked()
+            }
+            settingsCustomDomains.setOnClickListener {
+                settingsUIObserver?.onCustomDomainClicked()
+            }
+            settingsAliases.setOnClickListener {
+                settingsUIObserver?.onAliasesClicked()
             }
             setSwitchListener()
         }

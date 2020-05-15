@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Parcelable
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -45,9 +47,13 @@ import com.criptext.mail.scenes.restorebackup.RestoreBackupModel
 import com.criptext.mail.scenes.search.SearchSceneModel
 import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
+import com.criptext.mail.scenes.settings.aliases.AliasesModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.cloudbackup.CloudBackupModel
+import com.criptext.mail.scenes.settings.custom_domain.CustomDomainModel
+import com.criptext.mail.scenes.settings.custom_domain_entry.CustomDomainEntryModel
+import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.DomainConfigurationModel
 import com.criptext.mail.scenes.settings.devices.DevicesModel
 import com.criptext.mail.scenes.settings.labels.LabelsModel
 import com.criptext.mail.scenes.settings.pinlock.PinLockModel
@@ -68,11 +74,13 @@ import com.criptext.mail.utils.*
 import com.criptext.mail.utils.compat.PermissionUtilsCompat
 import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
-import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
 import com.criptext.mail.utils.ui.ActivityMenu
+import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
+import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
@@ -84,7 +92,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
-import java.lang.Exception
 import java.util.*
 
 
@@ -118,6 +125,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     var mFirebaseAnalytics: FirebaseAnalytics? = null
     val shouldSendResumeEvent: Boolean
         get() = System.currentTimeMillis() - storage.getLong(KeyValueStorage.StringKey.ResumeEventTimer, 0L) > RESUME_TIMER
+
+    private var generalCriptextPlusDialog: GeneralCriptextPlusDialog? = null
 
     private val handler = Handler()
 
@@ -427,6 +436,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
+            is CustomDomainEntryParams -> CustomDomainEntryModel()
+            is DomainConfigurationParams -> DomainConfigurationModel(params.domain)
+            is CustomDomainParams -> CustomDomainModel()
+            is AliasesParams -> AliasesModel()
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -457,6 +470,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 this,
                 title,
                 dimension)
+    }
+
+    override fun showCriptextPlusDialog(dialogData: DialogData.DialogCriptextPlusData, uiObserver: UIObserver) {
+        generalCriptextPlusDialog = GeneralCriptextPlusDialog(this, dialogData)
+        generalCriptextPlusDialog?.showDialog(uiObserver)
+    }
+
+    override fun dismissCriptextPlusDialog() {
+        generalCriptextPlusDialog?.dismissDialog()
     }
 
     override fun postDelay(runnable: Runnable, delayMilliseconds: Long) {
@@ -669,10 +691,23 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.GoToCriptextUrl -> {
                 val intent = Intent(this, WebViewActivity::class.java)
-                if(params.dir == "help-desk"){
-                    intent.putExtra("url", "https://criptext.atlassian.net/servicedesk/customer/portals")
-                } else {
-                    intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.dir}")
+                when(params.action){
+                    "help-desk" -> {
+                        intent.putExtra("url", HELP_DESK_URL)
+                    }
+                    "criptext-billing" -> {
+                        intent.putExtra("url", "$ADMIN_URL${params.params}&lang=${Locale.getDefault().language}")
+                        intent.putExtra("colorBackground", this.getColorFromAttr(R.attr.criptextColorBackground))
+                        intent.putExtra("colorText1", this.getColorFromAttr(R.attr.criptextPrimaryTextColor))
+                        intent.putExtra("colorText2", this.getColorFromAttr(R.attr.criptextSecondaryTextColor))
+                        val account = ActiveAccount.loadFromStorage(storage)
+                        if(account != null)
+                            intent.putExtra("accountType", account.type.ordinal)
+                    }
+                    "criptext-url" -> {
+                        intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.params}")
+                    }
+                    else -> throw NotImplementedError()
                 }
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
@@ -868,6 +903,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val REPLY_TO_MODEL = "ReplyToModel"
         private const val SIGNATURE_MODEL = "SignatureModel"
         private const val SIGN_UP_MODEL = "SignUpModel"
+
+        const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
+        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing?token="
 
         private const val RESUME_TIMER = 180000L
     }

@@ -54,6 +54,10 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post(path = "/device/find", authToken = null, body = jsonPut)
     }
 
+    fun getMaxDevices(tempToken: String): HttpResponseData{
+        return httpClient.get(path = "/device/max", authToken = tempToken)
+    }
+
     fun deleteDevices(devicesIds: List<Int>, token: String, recipientId: String, domain: String): HttpResponseData{
         return httpClient.delete(path = "/device/$recipientId/$domain/$token?${devicesIds.map { "deviceId=$it" }.joinToString(separator = "&")}", authToken = null, body = JSONObject())
     }

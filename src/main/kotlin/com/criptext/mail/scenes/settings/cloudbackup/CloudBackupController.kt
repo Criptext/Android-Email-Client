@@ -5,6 +5,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -24,6 +25,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -90,6 +92,10 @@ class CloudBackupController(
 
         override fun restoreBackupPressed() {
             host.launchExternalActivityForResult(ExternalActivityParams.FilePicker())
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
+
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
@@ -440,7 +446,7 @@ class CloudBackupController(
                 scene.dismissPreparingFileDialog()
                 val file = result.remoteFiles.first()
                 if(File(file.first).extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
-                                UserDataWriter.FILE_GZIP_EXTENSION)){
+                                UserDataWriter.FILE_GZIP_EXTENSION, UserDataWriter.FILE_TXT_EXTENSION)){
                     scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
                 } else {
                     host.exitToScene(RestoreBackupParams(true, Pair(file.first, false)), null, false, true)

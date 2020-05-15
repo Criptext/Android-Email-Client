@@ -11,6 +11,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -49,8 +50,8 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver {
-        override fun onSenderSelectedItem(sender: String) {
-            model.selectedAccount = model.accounts.find { it.userEmail == sender }
+        override fun onSenderSelectedItem(index: Int) {
+            model.selectedAddress = model.fromAddresses[index]
         }
 
         override fun onSnackbarClicked() {
@@ -63,6 +64,10 @@ class ComposerController(private val storage: KeyValueStorage,
 
         override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
+
+        }
+
+        override fun onGeneralCancelButtonPressed(result: DialogResult) {
 
         }
 
@@ -228,6 +233,10 @@ class ComposerController(private val storage: KeyValueStorage,
                 bindWithModel(result.initialData, activeAccount.signature)
                 model.originalBody = model.body
                 model.initialized = true
+                model.selectedAddress = result.initialData.fromAddress
+                if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)){
+                    scene.switchToSimpleFrom(model.selectedAddress)
+                }
                 host.refreshToolbarItems()
             }
 
@@ -298,6 +307,9 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Register -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
                 composerAttachment.filetoken = result.filetoken
+                if(model.groupId == null && result.groupId != null) {
+                    model.groupId = result.groupId
+                }
             }
             is ComposerResult.UploadFile.Progress -> {
                 val composerAttachment = getAttachmentByUUID(result.uuid) ?: return
@@ -363,7 +375,8 @@ class ComposerController(private val storage: KeyValueStorage,
                             threadId = result.threadId,
                             composerInputData = result.composerInputData,
                             attachments = result.attachments, fileKey = model.fileKey,
-                            senderAccount = model.selectedAccount)
+                            senderAddress = result.senderAddress,
+                            senderAccount = result.account)
                     host.exitToScene(MailboxParams(), sendMailMessage, false)
                 }
             }
@@ -395,11 +408,18 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is ComposerResult.GetAllFromAddresses.Success -> {
                 model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
-                scene.fillFromOptions(result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") })
+                val fromAddresses = mutableListOf<String>()
+                model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
+                fromAddresses.addAll(model.fromAddresses)
+                if(activeAccount.type == AccountTypes.PLUS){
+                    fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                    model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
+                }
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
-                        || model.accounts.size == 1){
-                    model.selectedAccount = model.accounts.find { it.userEmail == activeAccount.userEmail }
-                    scene.switchToSimpleFrom(model.selectedAccount!!.userEmail)
+                        || (model.accounts.size == 1 && result.aliases.isEmpty())){
+                    scene.switchToSimpleFrom(model.selectedAddress)
+                } else {
+                    scene.fillFromOptions(fromAddresses)
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
@@ -470,6 +490,7 @@ class ComposerController(private val storage: KeyValueStorage,
         })
         model.body = data.body
         model.subject = data.subject
+        if(model.selectedAddress.isEmpty()) model.selectedAddress = data.fromAddress
     }
 
     private fun isReadyForSending() = (model.to.isNotEmpty() || model.cc.isNotEmpty() || model.bcc.isNotEmpty())
@@ -480,7 +501,8 @@ class ComposerController(private val storage: KeyValueStorage,
                 filepath = filepath,
                 fileKey = fileKey,
                 filesSize = model.filesSize,
-                uuid = uuid
+                uuid = uuid,
+                groupId = model.groupId
         ))
     }
 
@@ -511,7 +533,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 originalId = originalId,
                 composerInputData = composerInputData,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
-                senderAccount = model.selectedAccount,
+                senderEmail = model.selectedAddress,
                 currentLabel = model.currentLabel))
 
     }

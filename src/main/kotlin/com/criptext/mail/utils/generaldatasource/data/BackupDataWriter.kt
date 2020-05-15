@@ -160,6 +160,40 @@ class FileDataWriter(private val fileDao: FileDao,
     }
 }
 
+class AliasDataWriter(private val aliasDao: AliasDao,
+                      private val dependencies: List<Flushable> = listOf(),
+                      private val activeAccount: ActiveAccount):
+        BackupDataWriter<Alias>(UserDataWriter.DEFAULT_BATCH_SIZE){
+    override fun deserialize(item: String): Alias {
+        return Alias.fromJSON(item, activeAccount.id)
+    }
+
+    override fun writeBatch(batch: List<Alias>) {
+        if(dependencies.isNotEmpty()){
+            dependencies.forEach { it.flush() }
+        }
+
+        aliasDao.insertAll(batch)
+    }
+}
+
+class CustomDomainDataWriter(private val customDomain: CustomDomainDao,
+                      private val dependencies: List<Flushable> = listOf(),
+                      private val activeAccount: ActiveAccount):
+        BackupDataWriter<CustomDomain>(UserDataWriter.DEFAULT_BATCH_SIZE){
+    override fun deserialize(item: String): CustomDomain {
+        return CustomDomain.fromJSON(item, activeAccount.id)
+    }
+
+    override fun writeBatch(batch: List<CustomDomain>) {
+        if(dependencies.isNotEmpty()){
+            dependencies.forEach { it.flush() }
+        }
+
+        customDomain.insertAll(batch)
+    }
+}
+
 class EmailLabelDataWriter(private val emailLabelDao: EmailLabelDao,
                            private val dependencies: List<Flushable> = listOf(),
                            private val emailDataMapper: UserDataWriter.DataMapper,
