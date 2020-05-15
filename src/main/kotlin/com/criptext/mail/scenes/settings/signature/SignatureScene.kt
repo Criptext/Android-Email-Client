@@ -56,6 +56,7 @@ interface SignatureScene{
                 textViewStatus.text = if(isChecked) context.resources.getString(R.string.on)
                                         else context.resources.getString(R.string.off)
                 if(isChecked){
+                    bodyEditText.setFocus()
                     keyboardManager.showKeyboard(bodyEditText.view)
                 }
                 else{
