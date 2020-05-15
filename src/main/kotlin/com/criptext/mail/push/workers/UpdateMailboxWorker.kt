@@ -31,10 +31,7 @@ class UpdateMailboxWorker(
         private val dbEvents: EventLocalDB,
         private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
-        private val loadedThreadsCount: Int?,
         private val label: Label,
-        private val pushData: Map<String, String>,
-        private val shouldPostNotification: Boolean,
         httpClient: HttpClient,
         override val publishFn: (
                 PushResult.UpdateMailbox) -> Unit)
@@ -50,7 +47,7 @@ class UpdateMailboxWorker(
 
     override fun catchException(ex: Exception): PushResult.UpdateMailbox {
         val message = createErrorMessage(ex)
-        return PushResult.UpdateMailbox.Failure(label, message, ex, pushData, shouldPostNotification)
+        return PushResult.UpdateMailbox.Failure(label, message, ex)
     }
 
     private fun processFailure(failure: Result.Failure<EventHelperResultData,
@@ -59,16 +56,12 @@ class UpdateMailboxWorker(
             PushResult.UpdateMailbox.Success(
                     mailboxLabel = label,
                     isManual = true,
-                    shouldPostNotification = shouldPostNotification,
-                    pushData = pushData,
                     senderImage = null)
         else
             PushResult.UpdateMailbox.Failure(
                     mailboxLabel = label,
                     message = createErrorMessage(failure.error),
-                    exception = failure.error,
-                    pushData = pushData,
-                    shouldPostNotification = shouldPostNotification)
+                    exception = failure.error)
     }
 
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
@@ -79,20 +72,15 @@ class UpdateMailboxWorker(
         val operationResult = requestEvents
                 .flatMap(eventHelper.processEvents)
 
-        val newData = mutableMapOf<String, String>()
-        newData.putAll(pushData)
-
 
         return when(operationResult) {
             is Result.Success -> {
                 if(shouldCallAgain) {
-                    callAgainResult(newData, null)
+                    callAgainResult(null)
                 }else{
                     PushResult.UpdateMailbox.Success(
                             mailboxLabel = label,
                             isManual = true,
-                            pushData = newData,
-                            shouldPostNotification = shouldPostNotification,
                             senderImage = null
                     )
                 }
@@ -102,12 +90,10 @@ class UpdateMailboxWorker(
         }
     }
 
-    private fun callAgainResult(newData: Map<String, String>, bm: Bitmap?): PushResult.UpdateMailbox? {
+    private fun callAgainResult(bm: Bitmap?): PushResult.UpdateMailbox? {
         return PushResult.UpdateMailbox.SuccessAndRepeat(
                 mailboxLabel = label,
                 isManual = true,
-                pushData = newData,
-                shouldPostNotification = shouldPostNotification,
                 senderImage = bm
         )
     }

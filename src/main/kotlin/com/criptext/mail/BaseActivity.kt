@@ -236,6 +236,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         notificationManager.cancel(CriptextNotification.OPEN_ID)
         notificationManager.cancel(CriptextNotification.ERROR_ID)
         notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
+        notificationManager.cancel(CriptextNotification.DECRYPTION_SERVICE_ID)
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }

@@ -8,12 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.criptext.mail.R
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.services.HeaderActionService
-import com.criptext.mail.push.services.NewMailActionService
 
 /**
  * Builds Notifications used in the Criptext App.
@@ -29,6 +27,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val ACTION_SYNC_DEVICE = "sync_device"
         const val ACTION_ERROR = "error"
         const val ACTION_JOB_BACKUP = "job_backup"
+        const val ACTION_FOREGROUND_DECRYPT = "decryption_service"
 
         //Channel Id's for the Notifications
         const val CHANNEL_ID_NEW_EMAIL = "new_email_channel"// The id of the channel.
@@ -37,6 +36,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val CHANNEL_ID_SYNC_DEVICE = "sync_device_channel"// The id of the channel.
         const val CHANNEL_ID_ERROR = "error_channel"// The id of the channel.
         const val CHANNEL_ID_JOB_BACKUP = "job_backup_service_channel"// The id of the channel.
+        const val CHANNEL_ID_DECRYPTION_SERVICE = "decryption_service_channel"// The id of the channel.
 
         //Notification ID
         const val OPEN_ID = 0
@@ -44,6 +44,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val LINK_DEVICE_ID = 2
         const val SYNC_DEVICE_ID = 4
         const val ERROR_ID = 3
+        const val DECRYPTION_SERVICE_ID = 42
         const val JOB_BACKUP_ID = 100
 
         fun getChannelId(action: String): String {
@@ -54,6 +55,7 @@ abstract class CriptextNotification(open val ctx: Context) {
                 ACTION_SYNC_DEVICE -> CHANNEL_ID_SYNC_DEVICE
                 ACTION_ERROR -> CHANNEL_ID_ERROR
                 ACTION_JOB_BACKUP -> CHANNEL_ID_JOB_BACKUP
+                ACTION_FOREGROUND_DECRYPT -> CHANNEL_ID_DECRYPTION_SERVICE
                 else -> "DEFAULT_CHANNEL"
             }
         }
@@ -66,6 +68,7 @@ abstract class CriptextNotification(open val ctx: Context) {
                 ACTION_SYNC_DEVICE -> LINK_DEVICE_ID
                 ACTION_ERROR -> ERROR_ID
                 ACTION_JOB_BACKUP -> JOB_BACKUP_ID
+                ACTION_FOREGROUND_DECRYPT -> DECRYPTION_SERVICE_ID
                 else -> -1
             }
         }

@@ -703,4 +703,6 @@
   <string name="web_view_no_internet_message">Parece que has perdido conexión con tu Wifi o con tus operadora. Intenta de nuevo más tarde.</string>
   <string name="btn_skip">Saltar</string>
   <string name="title_web_view_upgrade_to_plus">Subscribirse a Plus</string>
+  <string name="foreground_decryption_message">Desencriptando Correos</string>
+  <string name="foreground_decryption_notification">Notificación del Servicio de Desencriptación</string>
 </resources>

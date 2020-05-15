@@ -473,7 +473,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
+    private fun handleActivityMessage(activityMessage: ActivityMessage?, isFromResume: Boolean = false): Boolean {
         return when (activityMessage) {
             is ActivityMessage.SendMail -> {
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
@@ -633,7 +633,17 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
-        return handleActivityMessage(activityMessage)
+        val extras = host.getIntentExtras()
+
+        if(extras != null) {
+            if(extras.account == activeAccount.recipientId && extras.domain == activeAccount.domain)
+                IntentUtils.handleIntentExtras(extras, generalDataSource, activeAccount, host, model.selectedLabel)
+            else {
+                model.waitForAccountSwitch = true
+                generalDataSource.submitRequest(GeneralRequest.SetActiveAccountFromPush(extras.account, extras.domain, extras))
+            }
+        }
+        return handleActivityMessage(activityMessage, true)
     }
 
     override fun onNeedToSendEvent(event: Int) {

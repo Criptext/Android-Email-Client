@@ -46,9 +46,6 @@ class PushDataSource(
                     storage = storage,
                     activeAccount = activeAccount,
                     label = params.label,
-                    loadedThreadsCount = params.loadedThreadsCount,
-                    pushData = params.pushData,
-                    shouldPostNotification = params.shouldPostNotification,
                     publishFn = { result ->
                         flushResults(result)
                     })

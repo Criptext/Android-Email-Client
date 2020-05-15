@@ -12,7 +12,9 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".CriptextApplication"
@@ -159,6 +161,11 @@
         <service android:name=".push.services.NewMailActionService" />
         <service android:name=".push.services.SyncDeviceActionService" />
         <service android:name=".push.services.HeaderActionService" />
+        <service
+            android:name=".services.DecryptionService"
+            android:enabled="true"
+            android:exported="false" />
+        <service android:name=".services.CloudBackupForegroundService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
