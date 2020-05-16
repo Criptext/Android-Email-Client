@@ -53,7 +53,7 @@ class WebViewActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             if(isOnAdmin){
                 webViewCriptext.settings.loadsImagesAutomatically = true
-                if(initialAccountType == AccountTypes.PLUS) {
+                if(AccountUtils.isPlus(initialAccountType!!)) {
                     supportActionBar?.title = view.context
                             .getLocalizedUIMessage(UIMessage(R.string.billing_settings_title))
                 } else {

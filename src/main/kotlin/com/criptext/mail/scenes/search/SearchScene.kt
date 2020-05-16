@@ -13,6 +13,7 @@ import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.search.ui.SearchThreadAdapter
 import com.criptext.mail.utils.KeyboardManager
 
@@ -29,7 +30,7 @@ interface SearchScene{
                    threadsList: VirtualSearchThreadList,
                    searchListener: SearchHistoryAdapter.OnSearchEventListener,
                    threadListener: SearchThreadAdapter.OnThreadEventListener,
-                   observer: SearchUIObserver)
+                   observer: SearchUIObserver, activeAccount: ActiveAccount)
     fun setSearchText(search: String)
 
     class SearchSceneView(private val searchView: View,
@@ -64,12 +65,13 @@ interface SearchScene{
                                 threadsList: VirtualSearchThreadList,
                                 searchListener: SearchHistoryAdapter.OnSearchEventListener,
                                 threadListener: SearchThreadAdapter.OnThreadEventListener,
-                                observer: SearchUIObserver) {
+                                observer: SearchUIObserver,
+                                activeAccount: ActiveAccount) {
 
             this.observer = observer
             searchListView.setAdapter(SearchHistoryAdapter(searchHistoryList, searchListener))
             threadsListView.setAdapter(SearchThreadAdapter(recyclerViewThreads.context,
-                    threadListener, threadsList))
+                    threadListener, threadsList, activeAccount))
             setListeners()
         }
 

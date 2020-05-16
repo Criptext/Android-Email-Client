@@ -7,6 +7,7 @@ interface DrawerMenuItemListener {
     fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions)
     fun onCustomLabelClicked(label: Label)
     fun onAccountClicked(account: Account)
+    fun onUpgradePlusOptionClicked()
     fun onSettingsOptionClicked()
     fun onInviteFriendOptionClicked()
     fun onSupportOptionClicked()

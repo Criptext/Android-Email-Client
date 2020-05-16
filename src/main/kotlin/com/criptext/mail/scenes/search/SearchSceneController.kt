@@ -132,7 +132,8 @@ class SearchSceneController(private val scene: SearchScene,
                 searchListener = onSearchResultListController,
                 threadsList = VirtualSearchThreadList(model),
                 threadListener = threadEventListener,
-                observer = observer
+                observer = observer,
+                activeAccount = activeAccount
         )
 
         dataSource.listener = dataSourceListener

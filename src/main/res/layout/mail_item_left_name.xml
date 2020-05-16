@@ -13,6 +13,8 @@
         android:id="@+id/icon_back"
         android:layout_width="38dp"
         android:layout_height="38dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:src="@drawable/check"
         android:background="@drawable/mailbox_selected_mail_bg"
         android:foregroundGravity="center"
@@ -24,6 +26,14 @@
         android:layout_width="38dp"
         android:layout_height="38dp"
         android:foregroundGravity="center"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:id="@+id/plusBadgeRing"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        />
 
 </RelativeLayout>

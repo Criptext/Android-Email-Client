@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/you_need_plus_title"
+        android:text="@string/slider_upgrade_plus"
         fontPath="fonts/NunitoSans-Bold.ttf"
         android:gravity="center_horizontal"
         android:padding="10dp"
@@ -33,7 +33,7 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:text="@string/you_need_plus_message_read_receipts"
+        android:text="@string/you_need_plus_message_aliases"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="15sp"
         android:layout_marginStart="20dp"

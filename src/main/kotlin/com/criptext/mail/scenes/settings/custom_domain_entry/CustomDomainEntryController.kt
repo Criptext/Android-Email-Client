@@ -101,7 +101,7 @@ class CustomDomainEntryController(
             when(result){
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.finishScene()
+                        host.dismissCriptextPlusDialog()
                     }
                 }
             }
@@ -168,15 +168,18 @@ class CustomDomainEntryController(
                 true
             }
             is ActivityMessage.IsNotPlus -> {
-                host.showCriptextPlusDialog(
-                        dialogData = DialogData.DialogCriptextPlusData(
-                                image = R.drawable.img_domain,
-                                title = UIMessage(R.string.you_need_plus_title),
-                                type = DialogType.CriptextPlus(),
-                                message = UIMessage(R.string.you_need_plus_message_custom_domains)
-                        ),
-                        uiObserver = uiObserver
-                )
+                if(!storage.getBool(KeyValueStorage.StringKey.HasBeenAskedPlusDomains, false)) {
+                    storage.putBool(KeyValueStorage.StringKey.HasBeenAskedPlusDomains, true)
+                    host.showCriptextPlusDialog(
+                            dialogData = DialogData.DialogCriptextPlusData(
+                                    image = R.drawable.img_domain,
+                                    title = UIMessage(R.string.plus_dialog_custom_domains_title),
+                                    type = DialogType.CriptextPlus(),
+                                    message = UIMessage(R.string.you_need_plus_message_custom_domains)
+                            ),
+                            uiObserver = uiObserver
+                    )
+                }
                 true
             }
             else -> {

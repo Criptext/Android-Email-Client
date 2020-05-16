@@ -5,7 +5,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.CustomDomain
@@ -14,8 +13,6 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.DomainListItemListener
 import com.criptext.mail.scenes.settings.custom_domain.data.*
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryRequest
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
@@ -103,7 +100,7 @@ class CustomDomainController(
             when(result){
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.finishScene()
+                        host.dismissCriptextPlusDialog()
                     }
                 }
             }
@@ -209,11 +206,13 @@ class CustomDomainController(
         scene.showProgressBar(false)
         when(result){
             is CustomDomainResult.LoadDomain.Success -> {
-                if(AccountUtils.isNotPlus(model.accountType)){
+                if(AccountUtils.canJoinPlus(model.accountType)
+                        && !storage.getBool(KeyValueStorage.StringKey.HasBeenAskedPlusDomains, false)){
+                    storage.putBool(KeyValueStorage.StringKey.HasBeenAskedPlusDomains, true)
                     host.showCriptextPlusDialog(
                             dialogData = DialogData.DialogCriptextPlusData(
                                     image = R.drawable.img_domain,
-                                    title = UIMessage(R.string.you_need_plus_title),
+                                    title = UIMessage(R.string.plus_dialog_custom_domains_title),
                                     type = DialogType.CriptextPlus(),
                                     message = UIMessage(R.string.you_need_plus_message_custom_domains)
                             ),
@@ -224,7 +223,7 @@ class CustomDomainController(
                     domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
             }
             is CustomDomainResult.LoadDomain.Failure -> {
-                val activityMessage = if(AccountUtils.isNotPlus(model.accountType)) {
+                val activityMessage = if(AccountUtils.canJoinPlus(model.accountType)) {
                     ActivityMessage.IsNotPlus()
                 } else null
                 host.exitToScene(CustomDomainEntryParams(), activityMessage, true)

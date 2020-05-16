@@ -18,11 +18,10 @@
             android:layout_row="0"
             android:layout_column="0"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/plusBadgeRing"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/img_ring_drawer"
             android:layout_row="0"
             android:layout_column="0"
             />

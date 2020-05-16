@@ -13,7 +13,6 @@ import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -246,6 +245,7 @@ class ProfileController(
             true
         }
         scene.attachView(uiObserver, activeAccount, model)
+        scene.showPlusBadge(activeAccount.type)
         if(activeAccount.domain != Contact.mainDomain)
             scene.hideFooterSwitch()
         scene.enableProfileSettings(false)
@@ -328,7 +328,7 @@ class ProfileController(
                 model.userData = userData
                 scene.updateCurrentEmailStatus(model.userData.isEmailConfirmed)
                 scene.enableProfileSettings(true)
-                scene.updatePlusBadge(result.userSettings.customerType == AccountTypes.PLUS)
+                scene.showPlusBadge(result.userSettings.customerType)
             }
             is GeneralResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)

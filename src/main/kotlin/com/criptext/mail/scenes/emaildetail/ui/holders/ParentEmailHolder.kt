@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
@@ -27,7 +28,7 @@ abstract class ParentEmailHolder(val view: View) : RecyclerView.ViewHolder(view)
         bodyView = view.findViewById(R.id.email_preview)
     }
 
-    abstract fun bindFullMail(fullEmail: FullEmail)
+    abstract fun bindFullMail(fullEmail: FullEmail, activeAccount: ActiveAccount)
     abstract fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
                               adapter: FullEmailListAdapter, position: Int)

@@ -54,7 +54,7 @@ interface ProfileScene{
     fun hideFooterSwitch()
     fun updateAvatarByPeerEvent(fullName: String, email: String)
     fun updateCriptextFooterSwitch(isChecked: Boolean)
-    fun updatePlusBadge(show: Boolean)
+    fun showPlusBadge(accountType: AccountTypes)
 
     class Default(val view: View): ProfileScene{
         private lateinit var profileUIObserver: ProfileUIObserver
@@ -220,10 +220,10 @@ interface ProfileScene{
             }
 
             showProfilePictureProgress()
-            UIUtils.setProfilePicture(profilePicture, context.resources, activeAccount.domain, activeAccount.recipientId,
+            UIUtils.setProfilePicture(profilePicture, null, context.resources, activeAccount.domain, activeAccount.recipientId,
                     model.userData.name,
                     Runnable { hideProfilePictureProgress() })
-            if(activeAccount.type == AccountTypes.PLUS){
+            if(AccountUtils.isPlus(activeAccount.type)){
                 plusBadge.visibility = View.VISIBLE
             } else {
                 plusBadge.visibility = View.GONE
@@ -233,7 +233,7 @@ interface ProfileScene{
         override fun updateAvatarByPeerEvent(fullName: String, email: String) {
             val domain = EmailAddressUtils.extractEmailAddressDomain(email)
             UIUtils.setProfilePicture(
-                    iv = profilePicture,
+                    avatar = profilePicture,
                     resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromAddress(email, domain),
                     name = fullName,
@@ -384,9 +384,10 @@ interface ProfileScene{
             }
         }
 
-        override fun updatePlusBadge(show: Boolean) {
-            if(show){
+        override fun showPlusBadge(accountType: AccountTypes) {
+            if(AccountUtils.isPlus(accountType)){
                 plusBadge.visibility = View.VISIBLE
+                plusBadge.background = UIUtils.getPlusBadgeColor(context, accountType)
             } else {
                 plusBadge.visibility = View.GONE
             }

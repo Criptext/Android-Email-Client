@@ -102,4 +102,7 @@
     <color name="collapsed_emails_circle_border_dark">#87888F</color>
     <color name="trash_can_grey">#BBBBBB</color>
     <color name="current_device">#61b900</color>
+    <color name="fan_badge">#6EA2CD</color>
+    <color name="hero_badge">#7876F3</color>
+    <color name="legend_badge">#E3A344</color>
 </resources>

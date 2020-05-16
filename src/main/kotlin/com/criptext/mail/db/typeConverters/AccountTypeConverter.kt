@@ -15,6 +15,9 @@ class AccountTypeConverter {
             2 -> AccountTypes.ENTERPRISE
             3 -> AccountTypes.LUCKY
             4 -> AccountTypes.REDEEMED
+            5 -> AccountTypes.FAN
+            6 -> AccountTypes.HERO
+            7 -> AccountTypes.LEGEND
             else -> AccountTypes.STANDARD
         }
     }
@@ -27,6 +30,9 @@ class AccountTypeConverter {
             AccountTypes.ENTERPRISE -> 2
             AccountTypes.LUCKY -> 3
             AccountTypes.REDEEMED -> 4
+            AccountTypes.FAN -> 5
+            AccountTypes.HERO -> 6
+            AccountTypes.LEGEND -> 7
         }
     }
 

@@ -66,7 +66,7 @@ class SearchControllerTest{
 
         every {
             scene.attachView(any(), any(), capture(searchListenerSlot),
-                    capture(threadListenerSlot), capture(observerSlot))
+                    capture(threadListenerSlot), capture(observerSlot), activeAccount)
         } just Runs
 
         every {

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +14,12 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
@@ -55,35 +59,60 @@ object UIUtils{
         clearImageDiskCache(cacheDir)
     }
 
-    fun setProfilePicture(iv: ImageView, resources: Resources, domain: String, recipientId: String, name: String, runnable: Runnable?) {
-        val url = Hosts.restApiBaseUrl.plus("/user/avatar/$domain/$recipientId")
+    fun setProfilePicture(avatar: ImageView, avatarRing: ImageView? = null, resources: Resources, domain: String, recipientId: String, name: String, runnable: Runnable?) {
+        val urlAvatar = Hosts.restApiBaseUrl.plus("/user/avatar/$domain/$recipientId")
         val bitmapFromText = Utility.getBitmapFromText(
                 name,250, 250)
         Picasso.get()
-                .load(url)
+                .load(urlAvatar)
                 .placeholder(BitmapDrawable(resources, bitmapFromText))
                 .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(iv, object : Callback {
+                .into(avatar, object : Callback {
                     override fun onSuccess() {
                         runnable?.run()
                     }
 
                     override fun onError(e: Exception) {
                         Picasso.get()
-                                .load(url)
+                                .load(urlAvatar)
                                 .placeholder(BitmapDrawable(resources, bitmapFromText))
-                                .into(iv, object : Callback {
+                                .into(avatar, object : Callback {
                                     override fun onSuccess() {
                                         runnable?.run()
                                     }
 
                                     override fun onError(e: Exception) {
                                         runnable?.run()
-                                        iv.setImageBitmap(bitmapFromText)
+                                        avatar.setImageBitmap(bitmapFromText)
                                     }
                                 })
                     }
                 })
+        if(avatarRing != null) {
+            val urlAvatarRing = Hosts.restApiBaseUrl.plus("/user/avatar/frame/$domain/$recipientId")
+            Picasso.get()
+                    .load(urlAvatarRing)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(avatarRing, object : Callback {
+                        override fun onSuccess() {
+                            runnable?.run()
+                        }
+
+                        override fun onError(e: Exception) {
+                            Picasso.get()
+                                    .load(urlAvatarRing)
+                                    .into(avatarRing, object : Callback {
+                                        override fun onSuccess() {
+                                            runnable?.run()
+                                        }
+
+                                        override fun onError(e: Exception) {
+                                            runnable?.run()
+                                        }
+                                    })
+                        }
+                    })
+        }
     }
 
     fun animationForProgressBar(progressBar: BootstrapProgressBar, progress: Int, progressBarNumber: TextView,
@@ -174,6 +203,17 @@ object UIUtils{
             Label.LABEL_TRASH -> UIMessage(R.string.titulo_mailbox_trash)
             Label.LABEL_ALL_MAIL -> UIMessage(R.string.titulo_mailbox_all_mail)
             else -> UIMessage(R.string.titulo_mailbox_custom, arrayOf(title))
+        }
+    }
+
+    fun getPlusBadgeColor(context: Context, accountType: AccountTypes): Drawable? {
+        return when(accountType){
+            AccountTypes.FAN -> ContextCompat.getDrawable(
+                    context, R.drawable.plus_fan_badge_text)
+            AccountTypes.HERO -> ContextCompat.getDrawable(
+                    context, R.drawable.plus_hero_badge_text)
+            else -> ContextCompat.getDrawable(
+                    context, R.drawable.plus_legend_badge_text)
         }
     }
 

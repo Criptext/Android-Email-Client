@@ -46,6 +46,10 @@ class ToolbarHolder(val view: View) {
         backButton.visibility = View.GONE
     }
 
+    fun getAvatarRingImage(): ImageView {
+        return navButtonRing
+    }
+
     fun updateToolbarTitle(title: String) {
         this.title.text = title.toUpperCase()
     }

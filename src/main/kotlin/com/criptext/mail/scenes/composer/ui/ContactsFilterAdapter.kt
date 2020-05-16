@@ -4,18 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.R
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIUtils
-import com.criptext.mail.utils.Utility
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.tokenautocomplete.FilteredArrayAdapter
 import de.hdodenhof.circleimageview.CircleImageView
-import java.util.*
 
 /**
  * Created by gabriel on 2/28/18.
@@ -72,7 +69,7 @@ class ContactsFilterAdapter(context : Context, private val objects : List<Contac
             val domain = EmailAddressUtils.extractEmailAddressDomain(item.email)
 
             UIUtils.setProfilePicture(
-                    iv = circleView,
+                    avatar = circleView,
                     resources = context.resources,
                     recipientId = EmailAddressUtils.extractRecipientIdFromAddress(item.email, domain),
                     name = item.name,

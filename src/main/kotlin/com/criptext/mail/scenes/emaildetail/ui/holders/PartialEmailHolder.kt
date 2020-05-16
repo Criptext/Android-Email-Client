@@ -7,9 +7,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -32,6 +33,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     private val attachment: ImageView
     private val isSecure : ImageView
     private val leftImageView: CircleImageView
+    private val leftRingImageView: ImageView
 
     override fun setBackground(drawable: Drawable) {
         rootView.background = drawable
@@ -53,7 +55,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         }
     }
 
-    override fun bindFullMail(fullEmail: FullEmail) {
+    override fun bindFullMail(fullEmail: FullEmail, account: ActiveAccount) {
 
         if(fullEmail.email.delivered == DeliveryTypes.UNSEND) {
             bodyView.alpha = 0.5.toFloat()
@@ -85,7 +87,8 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         val domain = EmailAddressUtils.extractEmailAddressDomain(contactFrom.email)
 
         UIUtils.setProfilePicture(
-                iv = leftImageView,
+                avatar = leftImageView,
+                avatarRing = leftRingImageView,
                 resources = view.context.resources,
                 recipientId = EmailAddressUtils.extractRecipientIdFromAddress(contactFrom.email, domain),
                 name = contactFrom.name,
@@ -143,6 +146,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         check = view.findViewById(R.id.check)
         attachment = view.findViewById(R.id.email_has_attachments)
         leftImageView = view.findViewById(R.id.mail_item_left_name)
+        leftRingImageView = view.findViewById(R.id.plusBadgeRing)
         rootView = view.findViewById(R.id.cardview)
         isSecure = view.findViewById(R.id.email_is_secure)
     }

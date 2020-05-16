@@ -1,17 +1,13 @@
 package com.criptext.mail.scenes.emaildetail
 
-import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.R
-import com.criptext.mail.db.models.FileDetail
 import com.criptext.mail.db.models.Label
-import com.criptext.mail.scenes.composer.data.ComposerResult
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailRequest
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.emaildetail.ui.EmailDetailUIObserver
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
 import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.virtuallist.VirtualList
 import io.mockk.*
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be equal to`
@@ -30,7 +26,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     override fun setUp() {
         super.setUp()
         every {
-            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot), true)
+            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot), true, activeAccount)
         } just Runs
 
         listenerSlot = CapturingSlot()

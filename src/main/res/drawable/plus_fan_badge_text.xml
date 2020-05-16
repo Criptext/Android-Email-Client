@@ -1,7 +1,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#e3a344"/>
+            <solid android:color="@color/fan_badge"/>
             <corners android:radius="5dp" />
         </shape>
     </item>

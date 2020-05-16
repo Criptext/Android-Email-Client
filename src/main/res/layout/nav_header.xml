@@ -25,13 +25,12 @@
                 android:layout_marginBottom="25dp"
                 />
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/plusBadgeRing"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:src="@drawable/img_ring_drawer"
                 />
 
             <LinearLayout
@@ -59,11 +58,10 @@
                         android:src="@color/attachment_background_dark"
                         />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
                         android:id="@+id/plusBadgeRing2"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/img_ring_drawer"
                         />
 
                     <TextView
@@ -100,11 +98,10 @@
                         android:src="@color/attachment_background_dark"
                         />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
                         android:id="@+id/plusBadgeRing3"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/img_ring_drawer"
                         />
 
                     <TextView
@@ -167,7 +164,8 @@
                     android:paddingEnd="5dp"
                     android:textStyle="italic"
                     android:maxLines="1"
-                    android:background="@drawable/plus_badge_text"
+                    android:background="@drawable/plus_legend_badge_text"
+                    android:visibility="gone"
                     android:text="Plus"
                     android:ellipsize="end"/>
             </LinearLayout>
