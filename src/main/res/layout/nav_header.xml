@@ -72,7 +72,7 @@
                         android:background="@drawable/badge_menu"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
-                        android:layout_marginStart="25dp"
+                        android:layout_marginStart="31dp"
                         android:text="8"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"
@@ -112,7 +112,7 @@
                         android:background="@drawable/badge_menu"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
-                        android:layout_marginStart="25dp"
+                        android:layout_marginStart="31dp"
                         android:text="+99"
                         android:textColor="@android:color/white"
                         android:visibility="gone" />

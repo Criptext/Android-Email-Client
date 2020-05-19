@@ -211,7 +211,7 @@ class FullEmailListAdapter(private val mContext : Context,
 
             EmailViewTypes.fullEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView)
+                FullEmailHolder(mView, activeAccount.jwt)
             }
             EmailViewTypes.partialEmail -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.partial_email_holder, parent, false)
@@ -219,7 +219,7 @@ class FullEmailListAdapter(private val mContext : Context,
             }
             else -> {
                 mView = LayoutInflater.from(mContext).inflate(R.layout.open_full_mail_item, parent, false)
-                FullEmailHolder(mView)
+                FullEmailHolder(mView, activeAccount.jwt)
             }
         }
     }

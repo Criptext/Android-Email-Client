@@ -134,6 +134,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:id="@+id/add_alias_button_layout"
+        android:clickable="true"
         android:paddingTop="10dp"
         android:layout_marginStart="15dp"
         android:visibility="gone">
@@ -154,7 +155,6 @@
             android:text="@string/aliases_create_button"
             android:textSize="14sp"
             android:textColor="@color/azure"
-            android:clickable="true"
             android:paddingStart="5dp"/>
     </LinearLayout>
 

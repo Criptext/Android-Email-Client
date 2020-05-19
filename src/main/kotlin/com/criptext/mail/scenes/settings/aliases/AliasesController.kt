@@ -87,9 +87,10 @@ class AliasesController(
 
         override fun onAddAliasButtonPressed() {
             val domainList = mutableListOf<String>()
-            if(model.domains.map { it.name }.isNotEmpty()) {
+            val usableDomainList = model.domains.filter { it.validated }
+            if(usableDomainList.isNotEmpty()) {
                 domainList.add("@${Contact.mainDomain}")
-                domainList.addAll(model.domains.map { "@${it.name}" })
+                domainList.addAll(usableDomainList.map { "@${it.name}" })
             }
             scene.showAddAliasDialog(domainList)
         }
@@ -238,12 +239,12 @@ class AliasesController(
             is AliasesResult.DeleteAlias.Success -> {
                 if(result.domain != null){
                     customAliasWrapperListController.remove(result.position, result.domain)
-                    scene.setupAliasesFromModel(model, onAliasesListItemListener)
                     scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${result.domain}")))
                 } else {
                     criptextAliasWrapperListController.remove(result.position)
                     scene.showMessage(UIMessage(R.string.aliases_delete_success, arrayOf("${result.aliasName}@${Contact.mainDomain}")))
                 }
+                scene.setupAliasesFromModel(model, onAliasesListItemListener)
             }
             is AliasesResult.DeleteAlias.WaitToDelete -> {
                 scene.showCriptextAliasDeleteRestrictionDialog(result.message)
