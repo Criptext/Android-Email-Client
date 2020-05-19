@@ -278,9 +278,12 @@ class DrawerMenuView(private val navigationView: NavigationView,
         if(AccountUtils.canJoinPlus(accountType)){
             avatarPlusRing.visibility = View.INVISIBLE
             sliderUpgradePlus.visibility = View.VISIBLE
+            plusBadge.visibility = View.GONE
         } else if(AccountUtils.isPlus(accountType)){
             plusBadge.visibility = View.VISIBLE
             plusBadge.background = UIUtils.getPlusBadgeColor(navigationView.context, accountType)
+            avatarPlusRing.visibility = View.VISIBLE
+            sliderUpgradePlus.visibility = View.GONE
         }
 
     }

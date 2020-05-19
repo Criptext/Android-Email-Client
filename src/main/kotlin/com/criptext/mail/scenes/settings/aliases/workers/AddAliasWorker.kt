@@ -42,7 +42,7 @@ class AddAliasWorker(
     private val apiClient = AliasesAPIClient(httpClient, activeAccount.jwt)
 
     override fun catchException(ex: Exception): AliasesResult.AddAlias {
-        when(ex){
+        return when(ex){
             is ServerErrorException -> {
                 when(ex.errorCode){
                     ServerCodes.BadRequest ->
@@ -52,8 +52,8 @@ class AddAliasWorker(
                     else -> AliasesResult.AddAlias.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
                 }
             }
+            else -> AliasesResult.AddAlias.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
         }
-        return AliasesResult.AddAlias.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
     }
 
     override fun work(reporter: ProgressReporter<AliasesResult.AddAlias>): AliasesResult.AddAlias? {

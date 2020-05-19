@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
@@ -36,13 +37,14 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.lang.Exception
+import java.util.*
 
 
 /**
  * Created by sebas on 3/12/18.
  */
 
-class FullEmailHolder(view: View) : ParentEmailHolder(view) {
+class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmailHolder(view) {
 
     private val context = view.context
     private val layout : FrameLayout
@@ -404,12 +406,12 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         webSettings.allowFileAccess = true
         bodyWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                WebViewUtils.openUrl(bodyWebView.context!!, url)
+                WebViewUtils.openUrl(bodyWebView.context!!, getTrueUrl(url))
                 return true
             }
             @TargetApi(Build.VERSION_CODES.N)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
+                WebViewUtils.openUrl(bodyWebView.context!!, getTrueUrl(request.url.toString()))
                 return true
             }
 
@@ -427,6 +429,14 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 } else {
                     super.onLoadResource(view, url)
                 }
+            }
+
+            private fun getTrueUrl(url: String): String {
+                return if(url == "https://admin.criptext.com/?#/account/billing"
+                        && auth != null)
+                    "${BaseActivity.ADMIN_URL}${auth}&lang=${Locale.getDefault().language}"
+                else
+                    url
             }
         }
 

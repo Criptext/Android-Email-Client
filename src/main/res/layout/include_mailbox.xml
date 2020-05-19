@@ -30,8 +30,7 @@
                     android:id="@+id/mailbox_nav_button"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_centerInParent="true"
-                    android:src="@color/azure"/>
+                    android:layout_centerInParent="true"/>
 
                 <ImageView
                     android:id="@+id/plusBadgeRing"
