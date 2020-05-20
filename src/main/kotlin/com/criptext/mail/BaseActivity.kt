@@ -287,6 +287,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     override fun onResume() {
         super.onResume()
         if(shouldSendResumeEvent){
+            dismissAllNotifications()
             storage.putLong(KeyValueStorage.StringKey.ResumeEventTimer, System.currentTimeMillis())
             controller.onNeedToSendEvent(UserEvent.onResumeApp)
         }
@@ -446,7 +447,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun refreshToolbarItems() {
-
         this.invalidateOptionsMenu()
     }
 
@@ -455,13 +455,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
-                           activityMessage: ActivityMessage?) {
+                           activityMessage: ActivityMessage?, forceAnimation: Boolean) {
+        if (! keep) finish()
+        if(forceAnimation) {
+            overridePendingTransition(0, R.anim.slide_out_right)
+        }
         BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass, deletePastIntents)
-
-        if (! keep) finish()
     }
 
     override fun showStartGuideView(view: View, title: Int, dimension: Int) {
@@ -488,15 +490,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun stopMessagesAndCallbacks() {
         handler.removeCallbacksAndMessages(null)
-    }
-
-    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?,
-                             forceAnimation: Boolean, deletePastIntents: Boolean) {
-        finish()
-        if(forceAnimation) {
-            overridePendingTransition(0, R.anim.slide_out_right)
-        }
-        goToScene(params, false, deletePastIntents, activityMessage)
     }
 
     override fun getIntentExtras(): IntentExtrasData? {
@@ -622,7 +615,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return null
     }
 
-    override fun finishScene() {
+    override fun finishScene(activityMessage: ActivityMessage?) {
+        if(activityMessage != null) BaseActivity.activityMessage = activityMessage
         finish()
     }
 
@@ -697,16 +691,17 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                         intent.putExtra("url", HELP_DESK_URL)
                     }
                     "criptext-billing" -> {
-                        intent.putExtra("url", "$ADMIN_URL${params.params}&lang=${Locale.getDefault().language}")
+                        intent.putExtra("url", "$ADMIN_URL?token=${params.map["auth"].toString()}&lang=${Locale.getDefault().language}")
                         intent.putExtra("colorBackground", this.getColorFromAttr(R.attr.criptextColorBackground))
                         intent.putExtra("colorText1", this.getColorFromAttr(R.attr.criptextPrimaryTextColor))
                         intent.putExtra("colorText2", this.getColorFromAttr(R.attr.criptextSecondaryTextColor))
                         val account = ActiveAccount.loadFromStorage(storage)
                         if(account != null)
                             intent.putExtra("accountType", account.type.ordinal)
+                        intent.putExtra("comesFromMailbox", params.map["comesFromMailbox"] as? Boolean)
                     }
                     "criptext-url" -> {
-                        intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.params}")
+                        intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.map["page"]}")
                     }
                     else -> throw NotImplementedError()
                 }
@@ -906,7 +901,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val SIGN_UP_MODEL = "SignUpModel"
 
         const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
-        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing?token="
+        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing"
 
         private const val RESUME_TIMER = 180000L
     }

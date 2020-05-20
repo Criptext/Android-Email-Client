@@ -216,7 +216,12 @@ class CloudBackupController(
         }
 
         override fun onBackButtonPressed() {
-            host.exitToScene(SettingsParams(), null,true)
+            host.goToScene(
+                    params = SettingsParams(),
+                    activityMessage = null,
+                    forceAnimation = true,
+                    keep = false
+            )
         }
     }
 
@@ -250,7 +255,11 @@ class CloudBackupController(
                 scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
             } else {
                 val isFileEncrypted = localFile.extension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
-                host.exitToScene(RestoreBackupParams(true, Pair(file.first, isFileEncrypted)), null, false, true)
+                host.goToScene(
+                        params = RestoreBackupParams(true, Pair(file.first, isFileEncrypted)),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
         }
     }
@@ -435,7 +444,12 @@ class CloudBackupController(
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        keep = false,
+                        deletePastIntents = true
+                )
             }
         }
     }
@@ -449,7 +463,11 @@ class CloudBackupController(
                                 UserDataWriter.FILE_GZIP_EXTENSION, UserDataWriter.FILE_TXT_EXTENSION)){
                     scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
                 } else {
-                    host.exitToScene(RestoreBackupParams(true, Pair(file.first, false)), null, false, true)
+                    host.goToScene(
+                            params = RestoreBackupParams(true, Pair(file.first, false)),
+                            activityMessage = null,
+                            keep = false, deletePastIntents = true
+                    )
                 }
             }
         }

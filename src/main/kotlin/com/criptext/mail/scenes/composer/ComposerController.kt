@@ -298,7 +298,12 @@ class ComposerController(private val storage: KeyValueStorage,
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        deletePastIntents = true,
+                        keep = false
+                )
             }
         }
     }
@@ -370,7 +375,7 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is ComposerResult.SaveEmail.Success -> {
                 if(result.onlySave) {
-                    host.exitToScene(MailboxParams(), ActivityMessage.DraftSaved(result.preview), false)
+                    host.goToScene(MailboxParams(), activityMessage = ActivityMessage.DraftSaved(result.preview), keep = false)
                 } else {
                     val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
                             threadId = result.threadId,
@@ -378,7 +383,7 @@ class ComposerController(private val storage: KeyValueStorage,
                             attachments = result.attachments, fileKey = model.fileKey,
                             senderAddress = result.senderAddress,
                             senderAccount = result.account)
-                    host.exitToScene(MailboxParams(), sendMailMessage, false)
+                    host.goToScene(MailboxParams(), activityMessage = sendMailMessage, keep = false)
                 }
             }
             is ComposerResult.SaveEmail.TooManyRecipients ->
@@ -431,13 +436,21 @@ class ComposerController(private val storage: KeyValueStorage,
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            deletePastIntents = true,
+                            keep = false,
+                            forceAnimation = true
+                    )
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            deletePastIntents = true,
+                            keep = false
+                    )
                 }
             }
         }
@@ -458,9 +471,12 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -750,7 +766,7 @@ class ComposerController(private val storage: KeyValueStorage,
         }
         val params = EmailDetailParams(threadId = threadPreview.threadId,
                 currentLabel = currentLabel, threadPreview = threadPreview)
-        host.exitToScene(params, null, true)
+        host.goToScene(params = params, keep = false, activityMessage = null)
     }
 
     private fun shouldGoBackWithoutSave(): Boolean{

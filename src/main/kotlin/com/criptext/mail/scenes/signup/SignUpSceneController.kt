@@ -146,11 +146,13 @@ class SignUpSceneController(
         }
 
         override fun onTermsAndConditionsClick(){
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "terms"))
+            val map = mutableMapOf<String, Any>()
+            map["page"] = "terms"
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
         }
 
         override fun onContactSupportClick() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {
@@ -253,10 +255,10 @@ class SignUpSceneController(
                     }
                     ServerCodes.TooManyRequests -> {
                         scene.showError(result.message)
-                        host.exitToScene(
+                        host.goToScene(
                                 params = SignInParams(),
                                 activityMessage = null,
-                                forceAnimation = false,
+                                keep = false,
                                 deletePastIntents = true)
                     }
                 }
@@ -350,10 +352,10 @@ class SignUpSceneController(
     }
 
     override fun onBackPressed(): Boolean {
-        host.exitToScene(
+        host.goToScene(
                 params = SignInParams(),
                 activityMessage = null,
-                forceAnimation = false)
+                keep = false)
         return false
     }
 

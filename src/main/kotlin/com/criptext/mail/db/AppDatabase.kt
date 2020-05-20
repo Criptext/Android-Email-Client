@@ -560,7 +560,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         accountId INTEGER NOT NULL,
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX account_id_custom_domain_index ON customDomain (accountId)")
-                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS rowId_accountId_custom_domain_index ON customDomain (rowId, accountId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS name_accountId_custom_domain_index ON customDomain (name, accountId)")
 
                 database.execSQL("""CREATE TABLE IF NOT EXISTS  alias (
                                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

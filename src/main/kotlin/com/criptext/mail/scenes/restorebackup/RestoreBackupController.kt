@@ -75,7 +75,11 @@ class RestoreBackupController(
 
     private val uiObserver = object: RestoreBackupUIObserver{
         override fun onLocalProgressFinished() {
-            host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)), true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
+                    forceAnimation = true,
+                    keep = false)
         }
 
         override fun onPasswordChangedListener(password: String) {
@@ -115,7 +119,12 @@ class RestoreBackupController(
         }
 
         override fun onCancelRestore() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = null,
+                    keep = false,
+                    deletePastIntents =  true
+            )
         }
     }
 
@@ -125,7 +134,12 @@ class RestoreBackupController(
         websocketEvents.setListener(webSocketEventListener)
         model.mDriveServiceHelper = scene.getGoogleDriveService()
         if(model.mDriveServiceHelper == null && !model.isLocal)
-            host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.restore_backup_no_account)), true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.restore_backup_no_account)),
+                    forceAnimation = true,
+                    keep = false
+            )
 
         scene.attachView(model = model, uiObserver = uiObserver)
 
@@ -309,7 +323,12 @@ class RestoreBackupController(
                 if(model.isLocal) {
                     scene.localPercentageAnimation()
                 } else {
-                    host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)), true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
+                            forceAnimation = true,
+                            keep = false
+                    )
                 }
             }
             is GeneralResult.RestoreMailbox.Progress -> scene.setProgress(result.progress)

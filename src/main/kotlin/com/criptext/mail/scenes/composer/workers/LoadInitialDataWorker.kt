@@ -24,7 +24,7 @@ class LoadInitialDataWorker(
         private val db: ComposerLocalDB,
         private val activeAccount: ActiveAccount,
         override val publishFn: (ComposerResult.LoadInitialData) -> Unit,
-        private val userEmailAddress: String,
+        private var userEmailAddress: String,
         private val signature: String,
         private val composerType: ComposerType,
         private val emailId: Long)
@@ -121,7 +121,7 @@ class LoadInitialDataWorker(
             return activeAccount.userEmail
         }
         val aliases = db.aliasDao.getAll(activeAccount.id)
-        aliases.forEach { alias ->
+        aliases.filter { it.active }.forEach { alias ->
             val aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
             if(aliasEmail in fullEmail.to.map { it.email }
                     || aliasEmail in fullEmail.cc.map { it.email }

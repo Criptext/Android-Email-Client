@@ -23,6 +23,7 @@ import com.github.kittinunf.result.mapError
 
 class LogoutWorker(
         private val shouldDeleteAllData: Boolean,
+        private val letAPIKnow: Boolean,
         private val db: EventLocalDB,
         private val accountDao: AccountDao,
         private val storage: KeyValueStorage,
@@ -64,33 +65,39 @@ class LogoutWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<Unit, Exception> = Result.of {apiClient.postLogout()}
-            .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-            .flatMap { Result.of {
-                if(shouldDeleteAllData)
-                    db.logoutNukeDB(activeAccount)
-                else
-                    db.logout(activeAccount.id)
-            } }
-            .flatMap { Result.of {
-                CloudBackupJobService.cancelJob(storage, activeAccount.id)
-            } }
-            .flatMap {
-                Result.of {
-                    val accounts = db.getLoggedAccounts()
-                    if(accounts.isNotEmpty()){
-                        db.setActiveAccount(accounts.first().id)
-                        newActiveAccount = AccountUtils.setUserAsActiveAccount(accounts.first(), storage)
-                    } else {
-                        storage.clearAll()
-                    }
-                    if(!shouldDeleteAllData) {
-                        val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
-                        loggedOutAccounts.add(activeAccount.userEmail)
-                        storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.distinct().joinToString())
-                    }
+    private fun workOperation() : Result<Unit, Exception> = if(letAPIKnow) {
+        Result.of {apiClient.postLogout()}
+                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+                .flatMap {
+                    localLogout()
                 }
+        } else localLogout()
+
+    private fun localLogout(): Result<Unit, Exception> = Result.of {
+        if(shouldDeleteAllData)
+            db.logoutNukeDB(activeAccount)
+        else
+            db.logout(activeAccount.id)
+    }
+    .flatMap { Result.of {
+        CloudBackupJobService.cancelJob(storage, activeAccount.id)
+    } }
+    .flatMap {
+        Result.of {
+            val accounts = db.getLoggedAccounts()
+            if (accounts.isNotEmpty()) {
+                db.setActiveAccount(accounts.first().id)
+                newActiveAccount = AccountUtils.setUserAsActiveAccount(accounts.first(), storage)
+            } else {
+                storage.clearAll()
             }
+            if (!shouldDeleteAllData) {
+                val loggedOutAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                loggedOutAccounts.add(activeAccount.userEmail)
+                storage.putString(KeyValueStorage.StringKey.LastLoggedUser, loggedOutAccounts.distinct().joinToString())
+            }
+        }
+    }
 
     private fun newRetryWithNewSessionOperation()
             : Result<Unit, Exception> {

@@ -99,6 +99,7 @@ class LogoutWorkerTest{
                     storage = storage,
                     accountDao = db.accountDao(),
                     shouldDeleteAllData = false,
+                    letAPIKnow = true,
                     publishFn = {})
 
     @After

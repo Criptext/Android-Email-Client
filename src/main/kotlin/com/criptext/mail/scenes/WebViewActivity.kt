@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.db.AccountTypes
+import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.CriptextJavaScriptInterface
 import droidninja.filepicker.FilePickerConst
@@ -34,6 +35,7 @@ class WebViewActivity : AppCompatActivity() {
     private var mUploadMessage: ValueCallback<Array<Uri>>? = null
 
     private var isOnAdmin = false
+    private var comesFromMailbox = false
     private var initialAccountType: AccountTypes? = null
 
     private val client = object : WebViewClient() {
@@ -145,6 +147,7 @@ class WebViewActivity : AppCompatActivity() {
         setupWebView()
         setupActionBar()
         val accountType = intent.getIntExtra("accountType", -1)
+        comesFromMailbox = intent.getBooleanExtra("comesFromMailbox", false)
         if(accountType != -1)
             initialAccountType = AccountTypes.fromInt(accountType)
         tryToRestoreState(savedInstanceState)
@@ -250,8 +253,20 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if(comesFromMailbox){
+            goToInbox()
+        } else {
+            finish()
+            overridePendingTransition(R.anim.stay, R.anim.slide_out_down)
+        }
+    }
+
+    fun goToInbox(){
         finish()
         overridePendingTransition(R.anim.stay, R.anim.slide_out_down)
+        val mailboxIntent = Intent(this, MailboxActivity::class.java)
+        mailboxIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(mailboxIntent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int,

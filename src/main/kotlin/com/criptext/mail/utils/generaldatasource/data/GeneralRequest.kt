@@ -31,7 +31,7 @@ sealed class GeneralRequest {
                             val activeAccount: ActiveAccount): GeneralRequest()
     data class TotalUnreadEmails(val currentLabel: String): GeneralRequest()
     data class SyncPhonebook(val contentResolver: ContentResolver): GeneralRequest()
-    data class Logout(val shouldDeleteAllData: Boolean): GeneralRequest()
+    data class Logout(val shouldDeleteAllData: Boolean, val letAPIKnow: Boolean): GeneralRequest()
     data class DeleteAccount(val password: String): GeneralRequest()
     data class SetReadReceipts(val readReceipts: Boolean): GeneralRequest()
     data class CheckForKeyBundle(val deviceId: Int): GeneralRequest()

@@ -100,7 +100,7 @@ class ProfileController(
 
         override fun onLogoutConfirmedClicked() {
             scene.showMessageAndProgressDialog(UIMessage(R.string.login_out_dialog_message))
-            generalDataSource.submitRequest(GeneralRequest.Logout(false))
+            generalDataSource.submitRequest(GeneralRequest.Logout(false, true))
         }
 
         override fun onDeleteAccountClicked() {
@@ -226,9 +226,20 @@ class ProfileController(
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
             if(model.comesFromMailbox){
-                host.exitToScene(MailboxParams(), null,true, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        forceAnimation = true,
+                        deletePastIntents = true,
+                        keep = false
+                )
             } else {
-                host.exitToScene(SettingsParams(), null,true)
+                host.goToScene(
+                        params = SettingsParams(),
+                        activityMessage = null,
+                        forceAnimation = true,
+                        keep = false
+                )
             }
         }
     }
@@ -274,13 +285,20 @@ class ProfileController(
                 scene.dismissMessageAndProgressDialog()
                 CloudBackupJobService.cancelJob(storage, result.oldAccountId)
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), null, false, true)
+                    host.goToScene(
+                            params = SignInParams(),
+                            activityMessage = null,
+                            keep = false,
+                            deletePastIntents = true
+                    )
                 else {
                     activeAccount = result.activeAccount
 
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.LogoutAccount(result.oldAccountEmail, result.activeAccount),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.LogoutAccount(result.oldAccountEmail, result.activeAccount),
+                            keep = false, deletePastIntents = true
+                    )
                 }
             }
             is GeneralResult.Logout.Failure -> {
@@ -308,7 +326,11 @@ class ProfileController(
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
         }
     }
@@ -334,7 +356,7 @@ class ProfileController(
                 scene.showMessage(result.message)
             }
             is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
                 scene.showConfirmPasswordDialog(uiObserver)
@@ -374,12 +396,19 @@ class ProfileController(
         when(result) {
             is GeneralResult.DeleteAccount.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)), false, true)
+                    host.goToScene(
+                            params = SignInParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.delete_account_toast_message)),
+                            keep = false, deletePastIntents = true
+                    )
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false,
+                            deletePastIntents = true
+                    )
                 }
             }
             is GeneralResult.DeleteAccount.Failure -> {
@@ -391,9 +420,12 @@ class ProfileController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -404,9 +436,12 @@ class ProfileController(
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = ActivityMessage.SyncMailbox(),
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -430,13 +465,18 @@ class ProfileController(
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(), keep = false,
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true
+                    )
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true
+                    )
                 }
             }
         }

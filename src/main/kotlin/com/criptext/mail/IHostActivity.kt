@@ -19,25 +19,20 @@ interface IHostActivity {
     fun refreshToolbarItems()
     /**
      * Launches a new activity to show the new scene.
-     * @param params object used to create the new scene.
-     * @param keep if true, the current activity will not be finished after the transition, so
-     * that the user can return by pressing back.
-     */
-    fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false, activityMessage: ActivityMessage? = null)
-
-    /**
-     * Finishes the current activity and opens a new one using a "return" animation.
      * @param params object used to create the new scene. If the activity for the scene is used,
      * it will be reused.
      * @param activityMessage an object to pass to the activity that will take the foreground. This
      * is useful when you want to return to an activity that already exists so params won't work.
+     * @param keep if true, the current activity will not be finished after the transition, so
+     * that the user can return by pressing back.
      * @param forceAnimation a boolean to determinate if you want to force the slide_out_right animation.
      */
-    fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean, deletePastIntents: Boolean = false)
+    fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false,
+                  activityMessage: ActivityMessage? = null, forceAnimation: Boolean = false)
     /**
      * Finishes the current activity.
      */
-    fun finishScene()
+    fun finishScene(activityMessage: ActivityMessage? = null)
     fun getLocalizedString(message: UIMessage): String
     fun getIntentExtras(): IntentExtrasData?
     fun showDialog(message: UIMessage)

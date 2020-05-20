@@ -68,7 +68,9 @@ class SettingsController(
 
     private val settingsUIObserver = object: SettingsUIObserver{
         override fun onBillingClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+            val map = mutableMapOf<String, Any>()
+            map["auth"] = activeAccount.jwt
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
         }
 
         override fun onAliasesClicked() {
@@ -80,11 +82,11 @@ class SettingsController(
         }
 
         override fun onReportBugClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
         }
 
         override fun onReportAbuseClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
         }
 
         override fun onCloudBackupClicked() {
@@ -137,7 +139,12 @@ class SettingsController(
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 host.setAppTheme(R.style.AppTheme)
             }
-            host.exitToScene(SettingsParams(true), null, false, true)
+            host.goToScene(
+                    params = SettingsParams(true),
+                    activityMessage = null,
+                    keep = false,
+                    deletePastIntents = true
+            )
         }
 
         override fun onResendDeviceLinkAuth() {
@@ -175,7 +182,9 @@ class SettingsController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+                        val map = mutableMapOf<String, Any>()
+                        map["auth"] = activeAccount.jwt
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
                     }
                 }
             }
@@ -220,24 +229,37 @@ class SettingsController(
         }
 
         override fun onFAQClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "faq"))
+            val map = mutableMapOf<String, Any>()
+            map["page"] = "faq"
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
         }
 
         override fun onPrivacyPoliciesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "privacy"))
+            val map = mutableMapOf<String, Any>()
+            map["page"] = "privacy"
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
         }
 
         override fun onTermsOfServiceClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "terms"))
+            val map = mutableMapOf<String, Any>()
+            map["page"] = "terms"
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
         }
 
         override fun onOpenSourceLibrariesClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", "open-source-android"))
+            val map = mutableMapOf<String, Any>()
+            map["page"] = "open-source-android"
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
         }
 
         override fun onBackButtonPressed() {
             if(model.hasChangedTheme) {
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        keep = false,
+                        deletePastIntents = true
+                )
             }
             else{
                 host.finishScene()
@@ -319,13 +341,18 @@ class SettingsController(
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(), keep = false,
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true
+                    )
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true
+                    )
                 }
             }
         }
@@ -346,9 +373,12 @@ class SettingsController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -359,9 +389,12 @@ class SettingsController(
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = ActivityMessage.SyncMailbox(),
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -448,7 +481,11 @@ class SettingsController(
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
         }
     }

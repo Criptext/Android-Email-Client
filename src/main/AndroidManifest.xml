@@ -99,7 +99,8 @@
         <activity
             android:name=".scenes.WebViewActivity"
             android:theme="@style/AppThemeWithActionBar"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".scenes.settings.recovery_email.RecoveryEmailActivity"
             android:screenOrientation="portrait"/>

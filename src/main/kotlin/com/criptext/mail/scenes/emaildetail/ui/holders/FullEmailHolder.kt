@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
@@ -406,12 +405,22 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
         webSettings.allowFileAccess = true
         bodyWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                WebViewUtils.openUrl(bodyWebView.context!!, getTrueUrl(url))
+                val isBilling = checkForBilling(url)
+                if(isBilling) {
+                    listener?.openBilling()
+                } else {
+                    WebViewUtils.openUrl(bodyWebView.context!!, url)
+                }
                 return true
             }
             @TargetApi(Build.VERSION_CODES.N)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                WebViewUtils.openUrl(bodyWebView.context!!, getTrueUrl(request.url.toString()))
+                val isBilling = checkForBilling(request.url.toString())
+                if(isBilling) {
+                    listener?.openBilling()
+                } else {
+                    WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
+                }
                 return true
             }
 
@@ -431,12 +440,8 @@ class FullEmailHolder(view: View, private val auth: String? = null) : ParentEmai
                 }
             }
 
-            private fun getTrueUrl(url: String): String {
-                return if(url == "https://admin.criptext.com/?#/account/billing"
-                        && auth != null)
-                    "${BaseActivity.ADMIN_URL}${auth}&lang=${Locale.getDefault().language}"
-                else
-                    url
+            private fun checkForBilling(url: String): Boolean {
+                return url.contains(BaseActivity.ADMIN_URL.substring(0..26))
             }
         }
 

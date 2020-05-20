@@ -483,6 +483,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
+                UIUtils.forceCacheClear(storage, db.getCacheDir(), activeAccount)
                 if(acknoledgeEvents)
                     eventsToAcknowldege.add(event.rowid)
             }
