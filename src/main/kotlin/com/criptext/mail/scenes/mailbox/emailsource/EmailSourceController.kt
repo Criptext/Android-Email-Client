@@ -110,9 +110,11 @@ class EmailSourceController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true)
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -123,9 +125,11 @@ class EmailSourceController(
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = ActivityMessage.SyncMailbox(),
+                        keep = false, deletePastIntents = true)
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -149,13 +153,16 @@ class EmailSourceController(
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(), keep = false,
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true)
                 }
             }
         }

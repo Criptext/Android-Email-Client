@@ -60,12 +60,22 @@ class SyncingController(
         }
 
         override fun onRetrySyncCancel() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = null,
+                    keep = false,
+                    deletePastIntents = true
+            )
         }
 
 
         override fun onLinkingHasFinished() {
-            host.exitToScene(MailboxParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.mailbox_sync_complete)), false, true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.mailbox_sync_complete)),
+                    keep = false,
+                    deletePastIntents = true
+            )
         }
 
         override fun onBackButtonPressed() {

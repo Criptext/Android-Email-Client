@@ -119,7 +119,9 @@ class CustomDomainController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", activeAccount.jwt))
+                        val map = mutableMapOf<String, Any>()
+                        map["auth"] = activeAccount.jwt
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
                     }
                 }
             }
@@ -164,7 +166,13 @@ class CustomDomainController(
         }
 
         override fun onCustomDomainValidateClicked(domain: DomainItem, position: Int) {
-            uiObserver.onRemoveDomain(domain.name, position)
+            host.goToScene(DomainConfigurationParams(CustomDomain(
+                    id = domain.id,
+                    accountId = domain.accountId,
+                    validated = domain.validated,
+                    rowId = domain.rowId,
+                    name = domain.name
+            )), true)
         }
     }
 
@@ -194,7 +202,11 @@ class CustomDomainController(
         when(result){
             is CustomDomainResult.DeleteDomain.Success -> {
                 domainWrapperListController.remove(result.position)
-                host.exitToScene(CustomDomainEntryParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.domain_delete_complete)), false)
+                host.goToScene(
+                        params = CustomDomainEntryParams(),
+                        activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.domain_delete_complete)),
+                        keep = false
+                )
             }
             is CustomDomainResult.DeleteDomain.Failure -> {
                 scene.showMessage(result.message)
@@ -226,7 +238,11 @@ class CustomDomainController(
                 val activityMessage = if(AccountUtils.canJoinPlus(model.accountType)) {
                     ActivityMessage.IsNotPlus()
                 } else null
-                host.exitToScene(CustomDomainEntryParams(), activityMessage, true)
+                host.goToScene(
+                        params = CustomDomainEntryParams(),
+                        activityMessage = activityMessage,
+                        forceAnimation = true, keep = false
+                )
             }
         }
     }
@@ -235,13 +251,16 @@ class CustomDomainController(
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(), keep = false,
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true)
                 }
             }
         }
@@ -262,9 +281,12 @@ class CustomDomainController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -275,9 +297,12 @@ class CustomDomainController(
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = ActivityMessage.SyncMailbox(),
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -303,7 +328,12 @@ class CustomDomainController(
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = null,
+                        keep = false,
+                        deletePastIntents = true
+                )
             }
         }
     }

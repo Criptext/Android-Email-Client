@@ -44,7 +44,7 @@ class CriptextJavaScriptInterface(val mContext: Context, val filename: String) {
         val activity = mContext as WebViewActivity
         when(json.getString("type")){
             "close" -> {
-                activity.onBackPressed()
+                activity.goToInbox()
             }
         }
 

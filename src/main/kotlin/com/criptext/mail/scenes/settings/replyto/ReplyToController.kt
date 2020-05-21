@@ -140,7 +140,11 @@ class ReplyToController(
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
             val message = if(model.comesFromMailbox) ActivityMessage.ComesFromMailbox() else null
-            host.exitToScene(ProfileParams(false), message, false)
+            host.goToScene(
+                    params = ProfileParams(false),
+                    activityMessage = message,
+                    keep = false
+            )
         }
     }
 
@@ -162,9 +166,12 @@ class ReplyToController(
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false, deletePastIntents = true
+                )
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -197,13 +204,17 @@ class ReplyToController(
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(), keep = false,
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true
+                    )
                 }
             }
         }

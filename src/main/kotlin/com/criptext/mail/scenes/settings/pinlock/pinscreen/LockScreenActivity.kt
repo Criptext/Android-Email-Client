@@ -44,7 +44,7 @@ class LockScreenActivity: AppLockActivity(){
     private val lockScreenUIObserver = object : LockScreenUIObserver{
         override fun onForgotPinYesPressed(dataSource: GeneralDataSource) {
             showLoginOutDialog()
-            dataSource.submitRequest(GeneralRequest.Logout(false))
+            dataSource.submitRequest(GeneralRequest.Logout(false, true))
         }
 
     }
@@ -72,7 +72,7 @@ class LockScreenActivity: AppLockActivity(){
             handleAttempts(MAX_ATTEMPTS - attempts)
         }else{
             showLoginOutDialog()
-            getDataSource().submitRequest(GeneralRequest.Logout(true))
+            getDataSource().submitRequest(GeneralRequest.Logout(true, true))
         }
     }
 

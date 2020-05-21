@@ -106,7 +106,7 @@ class LinkingController(
         }
 
         override fun onRetrySyncCancel() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            exitToMailbox()
         }
 
         override fun onKeepWaitingOk() {
@@ -115,15 +115,15 @@ class LinkingController(
         }
 
         override fun onKeepWaitingCancel() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            exitToMailbox()
         }
 
         override fun onCancelSync() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            exitToMailbox()
         }
 
         override fun onLinkingHasFinished() {
-            host.exitToScene(MailboxParams(), null, false, true)
+            exitToMailbox()
         }
 
         override fun onBackButtonPressed() {
@@ -144,6 +144,11 @@ class LinkingController(
 
         override fun onCancelButtonPressed() {
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
+        }
+
+        private fun exitToMailbox(){
+            host.goToScene(params = MailboxParams(), activityMessage = null,
+                    keep = false, deletePastIntents = true)
         }
     }
 
@@ -190,11 +195,13 @@ class LinkingController(
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onLinkDeviceDismiss(accountEmail: String) {
-            host.exitToScene(MailboxParams(), null, false, true)
+            host.goToScene(params = MailboxParams(), activityMessage = null,
+                    keep = false, deletePastIntents = true)
         }
 
         override fun onSyncDeviceDismiss(accountEmail: String) {
-            host.exitToScene(MailboxParams(), null, false, true)
+            host.goToScene(params = MailboxParams(), activityMessage = null,
+                    keep = false, deletePastIntents = true)
         }
 
         override fun onAccountSuspended(accountEmail: String) {
@@ -301,7 +308,8 @@ class LinkingController(
                 dataSource.activeAccount = activeAccount
                 scene.dismissAccountSuspendedDialog()
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(params = MailboxParams(), activityMessage = null,
+                        keep = false, deletePastIntents = true)
             }
         }
     }

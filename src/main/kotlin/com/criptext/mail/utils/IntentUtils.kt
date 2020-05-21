@@ -85,7 +85,10 @@ class IntentUtils {
                 Intent.ACTION_SENDTO,
                 Intent.ACTION_VIEW -> {
                     val extrasMail = extras as IntentExtrasData.IntentExtrasMailTo
-                    host.exitToScene(ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo), currentLabel = currentLabel), null, false, true)
+                    host.goToScene(
+                            params = ComposerParams(type = ComposerType.MailTo(extrasMail.mailTo), currentLabel = currentLabel),
+                            activityMessage = null, keep = false, deletePastIntents = true
+                    )
                 }
                 Intent.ACTION_APP_ERROR -> {
                     val extrasMail = extras as IntentExtrasData.IntentErrorMessage
@@ -96,7 +99,9 @@ class IntentUtils {
                     val extrasMail = extras as IntentExtrasData.IntentExtrasSend
                     val composerMessage = if(extrasMail.files.isNotEmpty()) ActivityMessage.AddAttachments(extrasMail.files, true)
                     else ActivityMessage.AddUrls(extrasMail.urls, true)
-                    host.exitToScene(ComposerParams(type = ComposerType.Empty(), currentLabel = currentLabel), composerMessage, false, true)
+                    host.goToScene(
+                            params = ComposerParams(type = ComposerType.Empty(), currentLabel = currentLabel),
+                            activityMessage = composerMessage, keep = false, deletePastIntents = true)
                 }
             }
             return null

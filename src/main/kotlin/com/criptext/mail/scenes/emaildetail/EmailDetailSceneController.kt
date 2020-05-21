@@ -158,18 +158,15 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         unread = true)
             }
             if(model.exitToMailbox){
-                host.exitToScene(
+                host.goToScene(
                         params = MailboxParams(),
                         activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
                         forceAnimation = true,
-                        deletePastIntents = true
+                        deletePastIntents = true,
+                        keep = false
                 )
             } else {
-                host.exitToScene(
-                        params = MailboxParams(),
-                        activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                        forceAnimation = false
-                )
+                host.finishScene(ActivityMessage.UpdateThreadPreview(model.threadPreview))
             }
         }
 
@@ -194,13 +191,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when (result) {
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            true, true)
+                    host.goToScene(params = SignInParams(), activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
+                            forceAnimation = true, deletePastIntents = true, keep = false)
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            keep = false, deletePastIntents = true)
                 }
             }
         }
@@ -211,13 +208,19 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.Logout.Success -> {
                 CloudBackupJobService.cancelJob(storage, result.oldAccountId)
                 if(result.activeAccount == null)
-                    host.exitToScene(SignInParams(), ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            true, true)
+                    host.goToScene(
+                            params = SignInParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
+                            forceAnimation = true,
+                            deletePastIntents = true,
+                            keep = false)
                 else {
                     activeAccount = result.activeAccount
-                    host.exitToScene(MailboxParams(),
-                            ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            false, true)
+                    host.goToScene(
+                            params = MailboxParams(),
+                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
+                            deletePastIntents = true,
+                            keep = false)
                 }
 
             }
@@ -239,9 +242,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
         when (resultData) {
             is GeneralResult.LinkAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), null,
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
+                                resultData.uuid, resultData.deviceType),
+                        activityMessage = null,
+                        keep = false,
+                        deletePastIntents = true)
             }
             is GeneralResult.LinkAccept.Failure -> {
                 scene.showError(resultData.message)
@@ -252,9 +258,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
         when (resultData) {
             is GeneralResult.SyncAccept.Success -> {
-                host.exitToScene(LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType), ActivityMessage.SyncMailbox(),
-                        false, true)
+                host.goToScene(
+                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
+                        resultData.uuid, resultData.deviceType),
+                        activityMessage = ActivityMessage.SyncMailbox(),
+                        keep = false, deletePastIntents = true)
             }
             is GeneralResult.SyncAccept.Failure -> {
                 scene.showMessage(resultData.message)
@@ -319,7 +327,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
                 scene.showMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail)))
 
-                host.exitToScene(MailboxParams(), null, false, true)
+                host.goToScene(MailboxParams(), false, true, null)
             }
         }
     }
@@ -336,7 +344,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -367,10 +375,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 model.threadPreview.isStarred = result.selectedLabels.contains(Label.defaultItems.starred)
                 scene.notifyLabelsChanged(result.selectedLabels)
                 if(result.exitAndReload)
-                    host.exitToScene(
+                    host.goToScene(
                             params = MailboxParams(),
                             activityMessage = ActivityMessage.UpdateMailBox(),
-                            forceAnimation = false
+                            keep = false
                     )
             } else -> {
                 scene.showError(UIMessage(R.string.error_updating_labels))
@@ -382,16 +390,16 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when(result) {
             is EmailDetailResult.UpdateUnreadStatus.Success ->  {
                 val message = ActivityMessage.UpdateUnreadStatusThread(result.threadId, result.unread)
-                host.exitToScene(
+                host.goToScene(
                         params = MailboxParams(),
                         activityMessage = message,
-                        forceAnimation = false)
+                        keep = false)
             }
             is EmailDetailResult.UpdateUnreadStatus.Failure -> {
                     scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -403,16 +411,16 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when(result) {
             is EmailDetailResult.MoveEmailThread.Success ->  {
                 val message = ActivityMessage.MoveThread(result.threadId)
-                host.exitToScene(
+                host.goToScene(
                         params = MailboxParams(),
                         activityMessage = message,
-                        forceAnimation = false)
+                        keep = false)
             }
             is EmailDetailResult.MoveEmailThread.Failure -> {
                     scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -427,10 +435,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 if(position > -1){
                     if(model.emails.size == 1){
                         val message = ActivityMessage.MoveThread(model.threadId)
-                        host.exitToScene(
+                        host.goToScene(
                                 params = MailboxParams(),
                                 activityMessage = message,
-                                forceAnimation = false)
+                                keep = false)
                     } else {
                         model.emails.removeAt(position)
                         model.threadPreview = model.threadPreview.copy(
@@ -444,7 +452,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmail.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is EmailDetailResult.MoveEmail.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -471,7 +479,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false))
+                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -546,10 +554,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when(result){
             is EmailDetailResult.MarkAsReadEmail.Success -> {
                     val message = ActivityMessage.UpdateUnreadStatusThread(result.threadId, result.unread)
-                    host.exitToScene(
+                    host.goToScene(
                             params = MailboxParams(),
                             activityMessage = message,
-                            forceAnimation = false)
+                            keep = false)
             }
             is EmailDetailResult.MarkAsReadEmail.Failure -> scene.showError(UIMessage(R.string.error_updating_status))
         }
@@ -571,10 +579,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 if(position > -1){
                     if(model.emails.size == 1){
                         val message = ActivityMessage.MoveThread(model.threadId)
-                        host.exitToScene(
+                        host.goToScene(
                                 params = MailboxParams(),
                                 activityMessage = message,
-                                forceAnimation = false)
+                                keep = false)
                     } else {
                         model.emails.removeAt(position)
                         val headerData = mutableListOf<EmailThread.HeaderData>()
@@ -649,6 +657,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun openBilling() {
+            val map = mutableMapOf<String, Any>()
+            map["auth"] = activeAccount.jwt
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+        }
+
         override fun onReportOptionSelected(fullEmail: FullEmail, position: Int) {
             moveEmail(fullEmail, Label.LABEL_SPAM, true)
         }
@@ -861,10 +875,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
                 if (result.fullEmailList.isEmpty()) {
-                    host.exitToScene(
+                    host.goToScene(
                             params = MailboxParams(),
                             activityMessage = ActivityMessage.UpdateMailBox(),
-                            forceAnimation = false)
+                            keep = false)
                 } else {
                     if(model.emails.isEmpty()) {
                         val lastEmail = result.fullEmailList.last().email

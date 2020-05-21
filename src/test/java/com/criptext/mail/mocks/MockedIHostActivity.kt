@@ -64,11 +64,6 @@ class MockedIHostActivity: IHostActivity{
     var isFinished: Boolean = false
     var activityLaunched: Boolean = false
 
-    override fun exitToScene(params: SceneParams, activityMessage: ActivityMessage?, forceAnimation: Boolean,
-                             deletePastIntents: Boolean) {
-        isFinished = true
-    }
-
     override fun showDialog(message: UIMessage) {
     }
 
@@ -78,10 +73,11 @@ class MockedIHostActivity: IHostActivity{
     override fun refreshToolbarItems() {
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, forceAnimation: Boolean) {
+        if(!keep) isFinished = true
     }
 
-    override fun finishScene() {
+    override fun finishScene(activityMessage: ActivityMessage?) {
         isFinished = true
     }
 

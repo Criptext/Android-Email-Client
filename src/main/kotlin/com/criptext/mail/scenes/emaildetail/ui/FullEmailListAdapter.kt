@@ -263,6 +263,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun showStartGuideMenu(view: View)
         fun showStartGuideEmailIsRead(view: View)
         fun contextMenuRegister(view: View)
+        fun openBilling()
     }
 
     private enum class EmailViewTypes {

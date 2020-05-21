@@ -68,7 +68,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                 (it as ActivityMessage.SendMail).emailId == 1L
             }
 
-            verify { host.exitToScene(MailboxParams(), match(sendMailMessageWithExpectedEmailId), false ) }
+            verify { host.goToScene(MailboxParams(), activityMessage = match(sendMailMessageWithExpectedEmailId), keep = false) }
 
         }
     }
@@ -82,7 +82,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                     onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList(),
                     fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
 
-            verify { host.exitToScene(any(), any(), any()) }
+            verify { host.goToScene(params = any(), activityMessage = any(), keep = false, forceAnimation = any()) }
         }
     }
 

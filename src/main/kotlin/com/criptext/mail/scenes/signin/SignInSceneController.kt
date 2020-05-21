@@ -102,7 +102,12 @@ class SignInSceneController(
         }else{
             if(canceledByMe)
                 generalDataSource.submitRequest(GeneralRequest.LinkCancel(activeAccount.recipientId, activeAccount.domain, activeAccount.jwt, activeAccount.deviceId))
-            host.exitToScene(MailboxParams(), null, false, true)
+            host.goToScene(
+                    params = MailboxParams(),
+                    activityMessage = null,
+                    keep = false,
+                    deletePastIntents = true
+            )
         }
     }
 
@@ -341,7 +346,8 @@ class SignInSceneController(
                             username = currentState.username,
                             domain = currentState.domain,
                             randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple))
+                            isMultiple = model.isMultiple,
+                            accountType = model.accountType))
                 }
 
             }
@@ -647,7 +653,8 @@ class SignInSceneController(
                             username = currentState.username,
                             domain = currentState.domain,
                             randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple))
+                            isMultiple = model.isMultiple,
+                            accountType = model.accountType))
                 })
             }
         }
@@ -715,7 +722,9 @@ class SignInSceneController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", model.temporalJWT))
+                        val map = mutableMapOf<String, Any>()
+                        map["auth"] = model.temporalJWT
+                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
                     }
                 }
             }
@@ -795,7 +804,8 @@ class SignInSceneController(
                             username = currentState.username,
                             domain = currentState.domain,
                             randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple))
+                            isMultiple = model.isMultiple,
+                            accountType = model.accountType))
                 }
                 is SignInResult.LinkData -> {
                     scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
@@ -828,7 +838,7 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", ""))
+            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
         }
 
         override fun onSubmitButtonClicked() {

@@ -34,6 +34,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
                           private val name : String,
                           private val username: String,
                           private val domain: String,
+                          private val accountType: AccountTypes,
                           private val accountDao: AccountDao,
                           private val aliasDao: AliasDao,
                           private val customDomainDao: CustomDomainDao,
@@ -108,7 +109,7 @@ class CreateSessionWorker(val httpClient: HttpClient,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
                     signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                     hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
-                    backupPassword = null, type = AccountTypes.STANDARD, blockRemoteContent = false)
+                    backupPassword = null, type = accountType, blockRemoteContent = true)
             Pair(registrationBundles, account)
         }
     }

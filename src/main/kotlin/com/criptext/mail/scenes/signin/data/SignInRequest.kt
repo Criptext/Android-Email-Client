@@ -1,5 +1,7 @@
 package com.criptext.mail.scenes.signin.data
 
+import com.criptext.mail.db.AccountTypes
+
 /**
  * Created by sebas on 2/28/18.
  */
@@ -20,7 +22,7 @@ sealed class SignInRequest{
     data class LinkAuth(val username: String, val ephemeralJwt: String, val domain: String, val password: String? = null): SignInRequest()
 
     data class CreateSessionFromLink(val name: String, val username: String, val domain: String, val randomId: Int,
-                                     val ephemeralJwt: String, val isMultiple: Boolean): SignInRequest()
+                                     val ephemeralJwt: String, val isMultiple: Boolean, val accountType: AccountTypes): SignInRequest()
     data class LinkData(val key: String, val dataAddress: String, val authorizerId: Int): SignInRequest()
 
     data class LinkStatus(val ephemeralJwt: String): SignInRequest()
