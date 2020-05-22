@@ -652,6 +652,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     }
 
     override fun onNeedToSendEvent(event: Int) {
+        reloadMailboxThreads()
         generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
     }
 
