@@ -180,7 +180,7 @@ class CustomDomainController(
         websocketEvents.setListener(webSocketEventListener)
         scene.attachView(uiObserver, keyboardManager, model, onDevicesListItemListener)
         if(activityMessage != null && activityMessage is ActivityMessage.DomainRegistered){
-            domainWrapperListController.addAll(listOf(DomainItem(activityMessage.customDomain, listOf())))
+            domainWrapperListController.replaceAll(listOf(DomainItem(activityMessage.customDomain, listOf())))
             scene.showMessage(UIMessage(R.string.domain_setup_complete))
         } else {
             if(model.domains.isEmpty()) {
@@ -232,7 +232,7 @@ class CustomDomainController(
                     )
                 }
                 if (result.domains.isNotEmpty())
-                    domainWrapperListController.addAll(result.domains.map { DomainItem(it, listOf()) })
+                    domainWrapperListController.replaceAll(result.domains.map { DomainItem(it, listOf()) })
             }
             is CustomDomainResult.LoadDomain.Failure -> {
                 val activityMessage = if(AccountUtils.canJoinPlus(model.accountType)) {

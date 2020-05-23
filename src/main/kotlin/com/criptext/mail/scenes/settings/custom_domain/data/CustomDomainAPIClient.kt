@@ -11,6 +11,6 @@ class CustomDomainAPIClient(private val httpClient: HttpClient, var token: Strin
     fun deleteDomain(domain: String): HttpResponseData {
         val dom = JSONObject()
         dom.put("customDomain", domain)
-        return httpClient.delete(path = "/domain", authToken = token, body = dom)
+        return httpClient.delete(path = "/user/customdomain", authToken = token, body = dom)
     }
 }

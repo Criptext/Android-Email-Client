@@ -18,6 +18,12 @@ class DomainWrapperListController(
         listView?.notifyDataSetChanged()
     }
 
+    fun replaceAll(domains: List<DomainItem>){
+        model.domains.clear()
+        model.domains.addAll(domains)
+        listView?.notifyDataSetChanged()
+    }
+
     fun update() {
         listView?.notifyDataSetChanged()
     }
