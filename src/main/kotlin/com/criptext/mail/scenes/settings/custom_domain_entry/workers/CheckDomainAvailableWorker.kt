@@ -10,11 +10,13 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryAPIClient
 import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
 
 class CheckDomainAvailableWorker(
@@ -40,6 +42,9 @@ class CheckDomainAvailableWorker(
                     }
                     else -> CustomDomainEntryResult.CheckDomainAvailability.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
                 }
+            }
+            is KnownExternalDomainException -> {
+                CustomDomainEntryResult.CheckDomainAvailability.Failure(UIMessage(R.string.custom_domain_entry_error))
             }
             else -> CustomDomainEntryResult.CheckDomainAvailability.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())))
         }
@@ -69,7 +74,8 @@ class CheckDomainAvailableWorker(
         TODO("CANCEL IS NOT IMPLEMENTED")
     }
 
-    private fun workOperation() : Result<String, Exception> = Result.of {apiClient.postDomainExist(domain).body}
+    private fun workOperation() : Result<String, Exception> = Result.of { if(domain in ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS.map { it.name }) throw KnownExternalDomainException()}
+            .flatMap { Result.of {apiClient.postDomainExist(domain).body} }
             .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private fun newRetryWithNewSessionOperation()
@@ -86,5 +92,7 @@ class CheckDomainAvailableWorker(
             }
         }
     }
+
+    private class KnownExternalDomainException: Exception()
 
 }
