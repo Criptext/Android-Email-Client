@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.R
 import com.tokenautocomplete.TokenCompleteTextView
+import com.criptext.mail.utils.EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX
 
 /**
  * Created by gabriel on 2/28/18.
@@ -35,14 +36,17 @@ class ContactCompletionView : TokenCompleteTextView<Contact> {
     }
 
     override fun defaultObject(completionText: String): Contact {
+        val index = completionText.indexOf('@')
+        val hasAtSymbol = index != -1
+        val name = if (hasAtSymbol) completionText.substring(0, index) else completionText
+        val emailAddress = if (hasAtSymbol) completionText else completionText + CRIPTEXT_DOMAIN_SUFFIX
+
         val isValidEmailAddress = android.util.Patterns.EMAIL_ADDRESS
-                                  .matcher(completionText).matches()
+                                  .matcher(emailAddress).matches()
         return if (isValidEmailAddress) {
-            val index = completionText.indexOf('@')
-            val name = completionText.substring(0, index)
-            Contact(id = 0, name = name, email = completionText.toLowerCase(), isTrusted = false, score = 0, spamScore = 0)
+            Contact(id = 0, name = name, email = emailAddress.toLowerCase(), isTrusted = false, score = 0, spamScore = 0)
         } else {
-            Contact.Invalid(name = completionText, email = completionText.toLowerCase())
+            Contact.Invalid(name = name, email = emailAddress.toLowerCase())
         }
     }
 
