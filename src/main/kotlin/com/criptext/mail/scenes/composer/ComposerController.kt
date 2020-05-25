@@ -138,6 +138,7 @@ class ComposerController(private val storage: KeyValueStorage,
             model.filesSize -= file.length()
             model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
+            model.attachmentsChanged = true
         }
 
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
@@ -283,6 +284,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 scene.dismissPreparingFileDialog()
                 model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(UUID.randomUUID().toString(), it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
+                model.attachmentsChanged = true
                 handleNextUpload()
             }
         }
@@ -597,6 +599,7 @@ class ComposerController(private val storage: KeyValueStorage,
         }
         model.attachments.addAll(localAttachments)
         scene.notifyAttachmentSetChanged()
+        model.attachmentsChanged = true
         handleNextUpload()
     }
 
@@ -772,7 +775,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun shouldGoBackWithoutSave(): Boolean{
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
-        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature, model.originalBody, model.type)
+        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature, model.originalBody, model.type, model.attachmentsChanged)
     }
 
     private fun checkForDraft(){
