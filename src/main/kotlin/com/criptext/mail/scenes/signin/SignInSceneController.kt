@@ -1,12 +1,10 @@
 package com.criptext.mail.scenes.signin
 
-import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -15,18 +13,20 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
+import com.criptext.mail.scenes.params.WebViewParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordController
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.validation.AccountDataValidator
@@ -36,6 +36,7 @@ import com.criptext.mail.validation.ProgressButtonState
 import com.criptext.mail.websocket.CriptextWebSocketFactory
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import java.util.*
 
 /**
  * Created by sebas on 2/15/18.
@@ -722,9 +723,18 @@ class SignInSceneController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        val map = mutableMapOf<String, Any>()
-                        map["auth"] = model.temporalJWT
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+                        host.goToScene(
+                                params = WebViewParams(
+                                        url = "${WebViewSceneController.ADMIN_URL}?token=${model.temporalJWT}&lang=${Locale.getDefault().language}"
+                                ),
+                                activityMessage = null,
+                                keep = true,
+                                animationData = TransitionAnimationData(
+                                        forceAnimation = true,
+                                        enterAnim = R.anim.slide_in_up,
+                                        exitAnim = R.anim.stay
+                                )
+                        )
                     }
                 }
             }
@@ -838,7 +848,18 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onSubmitButtonClicked() {

@@ -10,6 +10,7 @@ import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -25,14 +26,14 @@ interface IHostActivity {
      * is useful when you want to return to an activity that already exists so params won't work.
      * @param keep if true, the current activity will not be finished after the transition, so
      * that the user can return by pressing back.
-     * @param forceAnimation a boolean to determinate if you want to force the slide_out_right animation.
+     * @param animationData a data class to determinate if you want to force the transition animation.
      */
     fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false,
-                  activityMessage: ActivityMessage? = null, forceAnimation: Boolean = false)
+                  activityMessage: ActivityMessage? = null, animationData: TransitionAnimationData? = null)
     /**
      * Finishes the current activity.
      */
-    fun finishScene(activityMessage: ActivityMessage? = null)
+    fun finishScene(activityMessage: ActivityMessage? = null, animationData: TransitionAnimationData? = null)
     fun getLocalizedString(message: UIMessage): String
     fun getIntentExtras(): IntentExtrasData?
     fun showDialog(message: UIMessage)

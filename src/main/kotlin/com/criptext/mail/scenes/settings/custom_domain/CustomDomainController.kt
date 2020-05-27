@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.settings.custom_domain
 
-import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
@@ -14,6 +13,7 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.DomainListItemListener
 import com.criptext.mail.scenes.settings.custom_domain.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -24,9 +24,11 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
+import java.util.*
 
 class CustomDomainController(
         private val model: CustomDomainModel,
@@ -119,9 +121,18 @@ class CustomDomainController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        val map = mutableMapOf<String, Any>()
-                        map["auth"] = activeAccount.jwt
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+                        host.goToScene(
+                                params = WebViewParams(
+                                        url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                                ),
+                                activityMessage = null,
+                                keep = true,
+                                animationData = TransitionAnimationData(
+                                        forceAnimation = true,
+                                        enterAnim = R.anim.slide_in_up,
+                                        exitAnim = R.anim.stay
+                                )
+                        )
                     }
                 }
             }
@@ -241,7 +252,11 @@ class CustomDomainController(
                 host.goToScene(
                         params = CustomDomainEntryParams(),
                         activityMessage = activityMessage,
-                        forceAnimation = true, keep = false
+                        animationData = TransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = 0
+                        ), keep = false
                 )
             }
         }
@@ -254,7 +269,11 @@ class CustomDomainController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(

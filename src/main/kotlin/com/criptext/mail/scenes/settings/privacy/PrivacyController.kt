@@ -4,8 +4,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -14,19 +12,17 @@ import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.services.jobs.CloudBackupJobService
-import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -139,7 +135,11 @@ class PrivacyController(
             host.goToScene(
                     params = SettingsParams(),
                     activityMessage = null,
-                    forceAnimation = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_out_right
+                    ),
                     keep = false
             )
         }
@@ -269,7 +269,11 @@ class PrivacyController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true
                     )
                 else {
                     activeAccount = result.activeAccount
@@ -291,7 +295,11 @@ class PrivacyController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true, deletePastIntents = true
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true
                     )
                 else {
                     activeAccount = result.activeAccount

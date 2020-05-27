@@ -731,4 +731,5 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="block_remote_turn_off_message_disable">Remote content disabled for account: %1$s</string>
   <string name="block_remote_dialog_title">Turn Off Image Block</string>
   <string name="block_remote_dialog_message">Your security is affected by deactivating this function. \n\n You can reactivate this function by going to Settings->Privacy.</string>
+  <string name="download_web_view_started">Your download for has started.</string>
 </resources>

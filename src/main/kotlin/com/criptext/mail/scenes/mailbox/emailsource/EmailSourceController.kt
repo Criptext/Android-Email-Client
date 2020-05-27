@@ -11,7 +11,6 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
@@ -20,6 +19,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -156,7 +156,11 @@ class EmailSourceController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(

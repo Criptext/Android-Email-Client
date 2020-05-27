@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -33,7 +34,6 @@ import com.criptext.mail.push.services.SyncDeviceActionService
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.SceneModel
-import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -69,6 +69,7 @@ import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel
 import com.criptext.mail.services.DecryptionService
+import com.criptext.mail.scenes.webview.WebViewSceneModel
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.*
@@ -81,6 +82,7 @@ import com.criptext.mail.utils.ui.ActivityMenu
 import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
@@ -446,6 +448,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is DomainConfigurationParams -> DomainConfigurationModel(params.domain)
             is CustomDomainParams -> CustomDomainModel()
             is AliasesParams -> AliasesModel()
+            is WebViewParams -> {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
+                val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                val browserName = resolveInfo.loadLabel(packageManager).toString()
+                WebViewSceneModel(params.url, browserName)
+            }
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }
     }
@@ -459,15 +467,15 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
-                           activityMessage: ActivityMessage?, forceAnimation: Boolean) {
+                           activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
         if (! keep) finish()
-        if(forceAnimation) {
-            overridePendingTransition(0, R.anim.slide_out_right)
-        }
         BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
         cachedModels[params.activityClass] = newSceneModel
         startActivity(params.activityClass, deletePastIntents)
+        if(animationData != null && animationData.forceAnimation) {
+            overridePendingTransition(animationData.enterAnim, animationData.exitAnim)
+        }
     }
 
     override fun showStartGuideView(view: View, title: Int, dimension: Int) {
@@ -619,9 +627,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return null
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
         if(activityMessage != null) BaseActivity.activityMessage = activityMessage
         finish()
+        if(animationData != null && animationData.forceAnimation) {
+            overridePendingTransition(animationData.enterAnim, animationData.exitAnim)
+        }
     }
 
     private fun restartApplication() {
@@ -687,30 +698,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN)
                     startActivityForResult(intent, ExternalActivityParams.PIN_REQUEST_CODE)
                 }
-            }
-            is ExternalActivityParams.GoToCriptextUrl -> {
-                val intent = Intent(this, WebViewActivity::class.java)
-                when(params.action){
-                    "help-desk" -> {
-                        intent.putExtra("url", HELP_DESK_URL)
-                    }
-                    "criptext-billing" -> {
-                        intent.putExtra("url", "$ADMIN_URL?token=${params.map["auth"].toString()}&lang=${Locale.getDefault().language}")
-                        intent.putExtra("colorBackground", this.getColorFromAttr(R.attr.criptextColorBackground))
-                        intent.putExtra("colorText1", this.getColorFromAttr(R.attr.criptextPrimaryTextColor))
-                        intent.putExtra("colorText2", this.getColorFromAttr(R.attr.criptextSecondaryTextColor))
-                        val account = ActiveAccount.loadFromStorage(storage)
-                        if(account != null)
-                            intent.putExtra("accountType", account.type.ordinal)
-                        intent.putExtra("comesFromMailbox", params.map["comesFromMailbox"] as? Boolean)
-                    }
-                    "criptext-url" -> {
-                        intent.putExtra("url", "https://criptext.com/${Locale.getDefault().language}/${params.map["page"]}")
-                    }
-                    else -> throw NotImplementedError()
-                }
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
             }
             is ExternalActivityParams.InviteFriend -> {
                 val share = Intent(Intent.ACTION_SEND)
@@ -832,6 +819,31 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     }
                 })
             }
+            is ExternalActivityParams.OpenExternalBrowser -> {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
+                startActivity(browserIntent)
+            }
+            is ExternalActivityParams.OpenBrowserFilePicker -> {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+                    type = "image/*"
+                }
+                startActivityForResult(intent, FilePickerConst.REQUEST_CODE_PHOTO)
+            }
+            is ExternalActivityParams.BrowserHandleDownload -> {
+                var filename = intent.getStringExtra("name") ?: "noname"
+                if (params.contentDisposition != "") {
+                    val array = params.contentDisposition.split(";")
+                    for (element in array) {
+                        if (element.contains("filename")) {
+                            filename = element.replace("filename=", "").replace("\"", "")
+                            break
+                        }
+                    }
+                }
+                DownloadHelper.createDownloader(this, params.url, filename)
+            }
         }
     }
 
@@ -903,9 +915,6 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val REPLY_TO_MODEL = "ReplyToModel"
         private const val SIGNATURE_MODEL = "SignatureModel"
         private const val SIGN_UP_MODEL = "SignUpModel"
-
-        const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
-        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing"
 
         private const val RESUME_TIMER = 180000L
     }

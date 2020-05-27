@@ -1,18 +1,19 @@
 package com.criptext.mail.scenes.signup
 
-import android.content.Intent
 import com.criptext.mail.*
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.RunnableThrottler
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
-import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.params.WebViewParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.FormInputState
@@ -146,13 +147,33 @@ class SignUpSceneController(
         }
 
         override fun onTermsAndConditionsClick(){
-            val map = mutableMapOf<String, Any>()
-            map["page"] = "terms"
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "https://criptext.com/${Locale.getDefault().language}/terms"
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onContactSupportClick() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {

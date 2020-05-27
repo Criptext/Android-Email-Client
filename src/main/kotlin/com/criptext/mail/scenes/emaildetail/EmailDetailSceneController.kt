@@ -10,7 +10,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -31,6 +30,7 @@ import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
@@ -42,9 +42,9 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -164,17 +164,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 model.threadPreview = model.threadPreview.copy(
                         unread = true)
             }
-            if(model.exitToMailbox){
-                host.goToScene(
-                        params = MailboxParams(),
-                        activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                        forceAnimation = true,
-                        deletePastIntents = true,
-                        keep = false
-                )
-            } else {
-                host.finishScene(ActivityMessage.UpdateThreadPreview(model.threadPreview))
-            }
+            host.finishScene(activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_out_right
+                    )
+            )
         }
 
         override fun showStartGuideEmailIsRead(view: View) {
@@ -199,7 +195,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.DeviceRemoved.Success -> {
                 if(result.activeAccount == null)
                     host.goToScene(params = SignInParams(), activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true, keep = false)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true, keep = false)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(params = MailboxParams(),
@@ -218,7 +218,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     host.goToScene(
                             params = SignInParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ),
                             deletePastIntents = true,
                             keep = false)
                 else {
@@ -682,10 +686,24 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun openWebView(url: String) {
+            host.goToScene(
+                    params = WebViewParams(
+                            url = url
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
+        }
+
         override fun openBilling() {
-            val map = mutableMapOf<String, Any>()
-            map["auth"] = activeAccount.jwt
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun updateShowOnce(fullEmail: FullEmail, position: Int) {

@@ -260,6 +260,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun updateShowOnce(fullEmail: FullEmail, position: Int)
         fun updateIsTrusted(fromContact: Contact, newIsTrusted: Boolean, metadataKey: Long)
         fun updateRemoteContentSetting(newSetting: Boolean)
+        fun openWebView(url: String)
     }
 
     private enum class EmailViewTypes {

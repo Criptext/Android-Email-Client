@@ -82,7 +82,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
                     onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList(),
                     fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
 
-            verify { host.goToScene(params = any(), activityMessage = any(), keep = false, forceAnimation = any()) }
+            verify { host.goToScene(params = any(), activityMessage = any(), keep = false, animationData = any()) }
         }
     }
 

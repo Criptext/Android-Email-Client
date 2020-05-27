@@ -24,6 +24,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -292,7 +293,11 @@ class ChangePasswordController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true
                     )
                 else {
                     activeAccount = result.activeAccount

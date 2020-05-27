@@ -23,7 +23,6 @@ import com.criptext.mail.scenes.settings.labels.data.LabelsResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
@@ -31,6 +30,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -201,7 +201,11 @@ class LabelsController(
                     host.goToScene(
                             params = SignInParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ),
                             deletePastIntents = true,
                             keep = false
                     )
