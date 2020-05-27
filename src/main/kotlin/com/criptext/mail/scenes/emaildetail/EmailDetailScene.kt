@@ -129,11 +129,13 @@ interface EmailDetailScene {
 
         private fun getLabelsFromEmails(
                 emails: VirtualList<FullEmail>) : VirtualList<Label> {
-            val labelSet = HashSet<Label>()
-            for (i in 0 until emails.size) {
-                labelSet.addAll(emails[i].labels)
+            val labels = mutableListOf<Label>()
+            emails.forEach { email ->
+                email.labels.forEach {
+                    if(!labels.contains(it)) labels.add(it)
+                }
             }
-            val labelsList = ArrayList(labelSet).filter { it.type != LabelTypes.SYSTEM}
+            val labelsList = ArrayList(labels).filter { it.type != LabelTypes.SYSTEM}
             return VirtualList.Map(labelsList, { t->t })
         }
 

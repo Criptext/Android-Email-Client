@@ -1069,9 +1069,10 @@ class SignInSceneController(
 
     private val onDevicesListItemListener: DevicesListItemListener = object: DevicesListItemListener {
         override fun onDeviceCheckChanged(): Boolean {
+            val hasSpace = ((model.devices.size - model.devices.filter { it.checked }.size) <= model.maxDevices - 1)
             scene.updateMaxDevices(model.maxDevices,
-                    ((model.devices.size - model.devices.filter { it.checked }.size)
-                            - model.maxDevices) - 1)
+                    if(hasSpace) 0 else ((model.devices.size - model.devices.filter { it.checked }.size)
+                            - (model.maxDevices - 1)))
             return true
         }
 

@@ -68,6 +68,7 @@ import com.criptext.mail.scenes.settings.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel
+import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.*
@@ -237,6 +238,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         notificationManager.cancel(CriptextNotification.ERROR_ID)
         notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
         notificationManager.cancel(CriptextNotification.DECRYPTION_SERVICE_ID)
+        val stopIntent = Intent(this, DecryptionService::class.java)
+        stopIntent.action = DecryptionService.ACTION_OPEN_APP
+        startService(stopIntent)
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }
