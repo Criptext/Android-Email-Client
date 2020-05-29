@@ -327,6 +327,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 composerAttachment?.uploadProgress = 100
                 model.filesSize = result.filesSize
                 handleNextUpload()
+                model.attachmentsChanged = model.attachments.isNotEmpty()
             }
             is ComposerResult.UploadFile.Failure -> {
                 removeAttachmentByUUID(result.uuid)
@@ -598,7 +599,6 @@ class ComposerController(private val storage: KeyValueStorage,
         }
         model.attachments.addAll(localAttachments)
         scene.notifyAttachmentSetChanged()
-        model.attachmentsChanged = true
         handleNextUpload()
     }
 
