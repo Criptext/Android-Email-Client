@@ -53,7 +53,10 @@ class DecryptionService: Service() {
                     getPushNotification()
                 }
                 ACTION_STOP_FOREGROUND_SERVICE -> stopService()
-                ACTION_OPEN_APP -> stopService()
+                ACTION_OPEN_APP -> {
+                    stopService()
+                    return START_NOT_STICKY
+                }
                 ACTION_ADD_NOTIFICATION_TO_QUEUE -> {
                     queue.add(intent.extras?.getSerializable("data") as HashMap<String, String>)
                 }
