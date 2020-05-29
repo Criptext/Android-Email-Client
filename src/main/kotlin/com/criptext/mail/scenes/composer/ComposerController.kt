@@ -138,7 +138,7 @@ class ComposerController(private val storage: KeyValueStorage,
             model.filesSize -= file.length()
             model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
-            model.attachmentsChanged = true
+            model.attachmentsChanged = model.attachments.isNotEmpty()
         }
 
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
@@ -284,7 +284,6 @@ class ComposerController(private val storage: KeyValueStorage,
                 scene.dismissPreparingFileDialog()
                 model.attachments.addAll(result.remoteFiles.map { ComposerAttachment(UUID.randomUUID().toString(), it.first, it.second, model.fileKey!!) })
                 scene.notifyAttachmentSetChanged()
-                model.attachmentsChanged = true
                 handleNextUpload()
             }
         }
