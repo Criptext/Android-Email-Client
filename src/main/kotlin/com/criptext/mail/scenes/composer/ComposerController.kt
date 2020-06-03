@@ -138,6 +138,7 @@ class ComposerController(private val storage: KeyValueStorage,
             model.filesSize -= file.length()
             model.attachments.removeAt(position)
             scene.notifyAttachmentSetChanged()
+            model.attachmentsChanged = model.attachments.isNotEmpty()
         }
 
         override fun onSelectedEditTextChanged(userIsEditingRecipients: Boolean) {
@@ -326,6 +327,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 composerAttachment?.uploadProgress = 100
                 model.filesSize = result.filesSize
                 handleNextUpload()
+                model.attachmentsChanged = model.attachments.isNotEmpty()
             }
             is ComposerResult.UploadFile.Failure -> {
                 removeAttachmentByUUID(result.uuid)
@@ -772,7 +774,7 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun shouldGoBackWithoutSave(): Boolean{
         val data = scene.getDataInputByUser()
         updateModelWithInputData(data)
-        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature, model.originalBody, model.type)
+        return !Validator.mailHasMoreThanSignature(data, activeAccount.signature, model.originalBody, model.type, model.attachmentsChanged)
     }
 
     private fun checkForDraft(){

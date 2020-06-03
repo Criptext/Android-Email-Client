@@ -33,6 +33,8 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
         else -> false
     }
 
+    var attachmentsChanged = false
+
     var to = LinkedList<Contact>()
     var cc = LinkedList<Contact>()
     var bcc = LinkedList<Contact>()

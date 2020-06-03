@@ -44,7 +44,7 @@ object Validator {
     }
 
     fun mailHasMoreThanSignature(data: ComposerInputData, rawSignature: String,
-                                 originalRawBody: String, type: ComposerType) : Boolean{
+                                 originalRawBody: String, type: ComposerType, attachmentsChanged: Boolean) : Boolean{
 
         val subject = data.subject
         val body = HtmlCompat.fromHtml(data.body).toString()
@@ -64,10 +64,7 @@ object Validator {
             return true
         }
 
-        if(data.attachments != null && data.attachments.isNotEmpty())
-            return true
-
-        return false
+        return attachmentsChanged
     }
 }
 
