@@ -39,7 +39,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
     private lateinit var httpClient: HttpClient
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
 
     @Before
     fun setup() {
@@ -51,7 +51,7 @@ class UpdateEmailThreadsLabelsWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
-                type = AccountTypes.STANDARD, blockRemoteContent = false))
+                type = AccountTypes.STANDARD, blockRemoteContent = true))
 
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
 

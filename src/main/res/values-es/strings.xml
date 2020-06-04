@@ -699,4 +699,15 @@
   <string name="foreground_decryption_notification">Notificación del Servicio de Desencriptación</string>
   <string name="plus_dialog_custom_domains_title">¡Disfruta Dominios Personalizados!</string>
   <string name="plus_dialog_aliases_title">¡Disfruta de Aliases!</string>
+  <string name="show_images_btn">Mostrar Imágenes</string>
+  <string name="show_images_menu_once">Una Vez</string>
+  <string name="show_images_menu_always">Siempre para esta dirección</string>
+  <string name="show_images_menu_turn_off">Apagar bloqueo de imágenes</string>
+  <string name="privacy_block_images_title">Bloqueo de Imágenes</string>
+  <string name="privacy_block_images_message">Bloquea las imágenes y enlaces en el email que provengan de direcciones no autoriazadas.</string>
+  <string name="block_remote_always_message">%1$s ha sido marcado/a como confiable</string>
+  <string name="block_remote_turn_off_message">Contenido remoto habilitado para la cuenta: %1$s</string>
+  <string name="block_remote_turn_off_message_disable">Contenido remoto deshabilitado para la cuenta: %1$s</string>
+  <string name="block_remote_dialog_title">Apagar Bloqueo de Imágenes</string>
+  <string name="block_remote_dialog_message">Tu seguridad puede verse comprometida al desactivar este bloqueo. \n\nPuedes volver a reactivarlo desde Configuración->Privacidad.</string>
 </resources>

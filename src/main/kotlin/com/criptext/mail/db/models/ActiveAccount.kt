@@ -6,6 +6,7 @@ import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.typeConverters.AccountTypeConverter
 import com.criptext.mail.utils.AccountUtils
+import com.criptext.mail.utils.generaldatasource.workers.ChangeBlockRemoteContentSettingWorker
 import org.json.JSONObject
 
 /**
@@ -14,7 +15,7 @@ import org.json.JSONObject
 
 data class ActiveAccount(val id: Long, val name: String, val recipientId: String, val domain: String,
                          val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String,
-                         val type: AccountTypes) : JSONData {
+                         val type: AccountTypes, val blockRemoteContent: Boolean) : JSONData {
 
     val userEmail = "$recipientId@$domain"
 
@@ -29,6 +30,7 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         json.put("refreshToken", refreshToken)
         json.put("signature", signature)
         json.put("type", type.ordinal)
+        json.put("blockRemoteContent", blockRemoteContent)
         return json
     }
 
@@ -69,6 +71,12 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
     }
 
+    fun updateAccountBlockedRemoteContent(storage: KeyValueStorage, newBlockRemoteContent: Boolean){
+        val account = toJSON()
+        account.put("blockRemoteContent", newBlockRemoteContent)
+        storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+    }
+
     companion object {
         fun fromJSONString(jsonString: String): ActiveAccount {
             val json = JSONObject(jsonString)
@@ -81,16 +89,17 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
             val signature = json.getString("signature")
             val domain = if(json.has("domain")) json.getString("domain") else Contact.mainDomain
             val type = if(json.has("type")) json.getInt("type") else 0
+            val blockRemoteContent = if(json.has("blockRemoteContent")) json.getBoolean("blockRemoteContent") else true
 
             return ActiveAccount(id = if(id == 0L) 1 else id, name = name, recipientId = recipientId, deviceId = deviceId,
                     jwt = jwt, signature = signature, refreshToken = refreshToken, domain = domain,
-                    type = AccountUtils.getAccountTypeFromInt(type))
+                    type = AccountUtils.getAccountTypeFromInt(type), blockRemoteContent = blockRemoteContent)
         }
 
         fun loadFromDB(account: Account): ActiveAccount? {
             return ActiveAccount(id= account.id, name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
                     jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken,
-                    domain = account.domain, type = account.type)
+                    domain = account.domain, type = account.type, blockRemoteContent = account.blockRemoteContent)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

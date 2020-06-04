@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.data
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.db.models.FullEmail
 import com.criptext.mail.db.models.Label
@@ -98,5 +99,12 @@ sealed class EmailDetailResult {
         data class Failure(
                 val message: UIMessage,
                 val exception: Exception): DeleteDraft()
+    }
+
+    sealed class UpdateContactIsTrusted : EmailDetailResult() {
+        data class Success(val fromContact: Contact, val metadataKey: Long, val newIsTrusted: Boolean): UpdateContactIsTrusted()
+        data class Failure(
+                val message: UIMessage,
+                val exception: Exception): UpdateContactIsTrusted()
     }
 }

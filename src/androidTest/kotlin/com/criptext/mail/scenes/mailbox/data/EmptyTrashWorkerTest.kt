@@ -36,7 +36,7 @@ class EmptyTrashWorkerTest{
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 
@@ -56,7 +56,7 @@ class EmptyTrashWorkerTest{
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
-                lastTimeBackup = null, type = AccountTypes.STANDARD, blockRemoteContent = false))
+                lastTimeBackup = null, type = AccountTypes.STANDARD, blockRemoteContent = true))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),

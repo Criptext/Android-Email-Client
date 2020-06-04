@@ -56,10 +56,16 @@ class PrivacyController(
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.Set2FA -> onSet2FA(result)
             is GeneralResult.GetUserSettings -> onGetUserSettings(result)
+            is GeneralResult.ChangeBlockRemoteContentSetting -> onBlockRemoteContentChanged(result)
         }
     }
 
     private val uiObserver = object: PrivacyUIObserver{
+        override fun onBlockRemoteContentSwitched(isChecked: Boolean) {
+            scene.enableBlockRemoteContentSwitch(false)
+            generalDataSource.submitRequest(GeneralRequest.ChangeBlockRemoteContentSetting(isChecked))
+        }
+
         override fun onTwoFASwitched(isChecked: Boolean) {
             if(model.isEmailConfirmed) {
                 scene.enableTwoFASwitch(false)
@@ -145,6 +151,7 @@ class PrivacyController(
         scene.attachView(uiObserver, keyboardManager, model)
         scene.enableTwoFASwitch(false)
         scene.enableReadReceiptsSwitch(false)
+        scene.enableBlockRemoteContentSwitch(false)
         generalDataSource.listener = generalDataSourceListener
 
         generalDataSource.submitRequest(GeneralRequest.GetUserSettings())
@@ -305,10 +312,13 @@ class PrivacyController(
                 model.isEmailConfirmed = result.userSettings.recoveryEmailConfirmationState
                 model.twoFA = result.userSettings.hasTwoFA
                 model.readReceipts = result.userSettings.hasReadReceipts
+                model.blockRemoteContent = result.userSettings.blockRemoteContent
                 scene.enableReadReceiptsSwitch(true)
                 scene.updateReadReceipts(model.readReceipts)
                 scene.enableTwoFASwitch(true)
                 scene.updateTwoFa(model.twoFA)
+                scene.enableBlockRemoteContentSwitch(true)
+                scene.updateBlockRemoteContent(model.blockRemoteContent)
             }
             is GeneralResult.GetUserSettings.Failure -> {
                 scene.showMessage(result.message)
@@ -321,6 +331,26 @@ class PrivacyController(
             }
             is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
+            }
+        }
+    }
+
+    private fun onBlockRemoteContentChanged(result: GeneralResult.ChangeBlockRemoteContentSetting){
+        when(result) {
+            is GeneralResult.ChangeBlockRemoteContentSetting.Success -> {
+                scene.enableBlockRemoteContentSwitch(true)
+                if(!result.newBlockRemoteContent) {
+                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message,
+                            arrayOf(activeAccount.userEmail)))
+                } else {
+                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message_disable,
+                            arrayOf(activeAccount.userEmail)))
+                }
+            }
+            is GeneralResult.ChangeBlockRemoteContentSetting.Failure -> {
+                scene.updateBlockRemoteContent(!result.newBlockRemoteContent)
+                scene.enableBlockRemoteContentSwitch(true)
+                scene.showMessage(result.message)
             }
         }
     }

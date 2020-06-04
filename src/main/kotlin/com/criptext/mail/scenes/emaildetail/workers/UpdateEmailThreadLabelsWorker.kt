@@ -87,8 +87,10 @@ class UpdateEmailThreadLabelsWorker(
                         peerRemovedLabels.removeAll(peerRemovedLabels)
                         peerRemovedLabels.add(trueCurrentLabel.text)
                         val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
-                        if (fromContacts.isNotEmpty())
+                        if (fromContacts.isNotEmpty()) {
+                            db.updateContactsIsTrusted(fromContacts, true)
                             apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
+                        }
                         Result.of { db.deleteRelationByLabelAndEmailIds(trueCurrentLabel.id, emailIds, activeAccount.id) }
 
                     }

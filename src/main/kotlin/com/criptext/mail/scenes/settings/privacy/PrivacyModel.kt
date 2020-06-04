@@ -6,4 +6,5 @@ class PrivacyModel: SceneModel {
     var readReceipts: Boolean = false
     var twoFA: Boolean = false
     var isEmailConfirmed: Boolean = false
+    var blockRemoteContent: Boolean = true
 }

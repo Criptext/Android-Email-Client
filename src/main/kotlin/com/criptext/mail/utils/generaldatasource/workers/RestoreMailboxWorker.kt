@@ -24,6 +24,7 @@ import javax.crypto.BadPaddingException
 
 class RestoreMailboxWorker(private val filesDir: File,
                            private var activeAccount: ActiveAccount,
+                           private val storage: KeyValueStorage,
                            private val filePath: String,
                            private val passphrase: String?,
                            private val isLocal: Boolean,
@@ -76,7 +77,7 @@ class RestoreMailboxWorker(private val filesDir: File,
             Result.of {
                 val decompressedFile = File(it)
                 deleteLocalData()
-                dataWriter.createDBFromFile(decompressedFile)
+                dataWriter.createDBFromFile(decompressedFile, storage)
                 if(!isLocal) reporter.report(GeneralResult.RestoreMailbox.Progress(100))
             }
         }

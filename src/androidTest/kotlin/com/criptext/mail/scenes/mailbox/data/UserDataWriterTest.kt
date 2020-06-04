@@ -4,16 +4,14 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.criptext.mail.androidtest.TestActivity
 import com.criptext.mail.androidtest.TestDatabase
-import com.criptext.mail.db.AccountTypes
-import com.criptext.mail.db.ContactTypes
-import com.criptext.mail.db.DeliveryTypes
-import com.criptext.mail.db.LabelTypes
+import com.criptext.mail.db.*
 import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.generaldatasource.data.BackupFileMetadata
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import io.mockk.mockk
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Rule
@@ -32,7 +30,8 @@ class UserDataWriterTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+    private val storage: KeyValueStorage = mockk(relaxed = true)
 
     val nowDate = Calendar.getInstance().time
     val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
@@ -78,7 +77,15 @@ class UserDataWriterTest {
 
     private val fileKey1 = FileKey(id = 1, emailId = 1, key = "test_key_16bytes:test_iv_16_bytes")
     private val fileKey2 = FileKey(id = 2, emailId = 2, key = "test_key_16bytes:test_iv_16_bytes")
-    private val metadata = BackupFileMetadata(UserDataWriter.FILE_SYNC_VERSION, activeAccount.recipientId, activeAccount.domain)
+    private val metadata = BackupFileMetadata(
+            fileVersion = UserDataWriter.FILE_SYNC_VERSION,
+            recipientId = activeAccount.recipientId,
+            domain = activeAccount.domain,
+            signature = activeAccount.signature,
+            darkTheme = false,
+            hasCriptextFooter = true,
+            language = Locale.getDefault().language,
+            showPreview = false)
 
     private val deviceLinkFileExpectedContent = listOf(BackupFileMetadata.toJSON(metadata).toString(),
     "{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
@@ -104,7 +111,7 @@ class UserDataWriterTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
@@ -131,7 +138,7 @@ class UserDataWriterTest {
     fun should_correctly_save_all_data_from_database_into_link_device_file_with_correct_json_format() {
         val account = db.accountDao().getLoggedInAccount()!!
         val dataWriter = UserDataWriter(db, mActivityRule.activity.filesDir)
-        val result = dataWriter.createFile(account)
+        val result = dataWriter.createFile(account, storage)
 
         val lines: List<String> = File(result).readLines()
         lines `shouldEqual` deviceLinkFileExpectedContent

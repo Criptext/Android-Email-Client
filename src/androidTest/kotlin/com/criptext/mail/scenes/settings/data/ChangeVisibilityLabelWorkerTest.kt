@@ -32,7 +32,7 @@ class ChangeVisibilityLabelWorkerTest{
     private var labelId: Long = 0
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
 
     @Before
     fun setup() {
@@ -44,7 +44,7 @@ class ChangeVisibilityLabelWorkerTest{
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
-                type = AccountTypes.STANDARD, blockRemoteContent = false))
+                type = AccountTypes.STANDARD, blockRemoteContent = true))
         settingsLocalDB = SettingsLocalDB.Default(db)
 
         labelId = db.labelDao().insert(Label(

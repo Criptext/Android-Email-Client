@@ -5,12 +5,13 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.typeConverters.AccountTypeConverter
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 
 object AccountUtils {
     fun setUserAsActiveAccount(user: Account, storage: KeyValueStorage): ActiveAccount{
         val activeAccount = ActiveAccount(id = user.id, name = user.name, recipientId = user.recipientId,
                 deviceId = user.deviceId, jwt = user.jwt, signature = user.signature, refreshToken = user.refreshToken,
-                domain = user.domain, type = user.type)
+                domain = user.domain, type = user.type, blockRemoteContent = user.blockRemoteContent)
         storage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())
         return activeAccount
@@ -51,5 +52,12 @@ object AccountUtils {
     fun getAccountTypeFromInt(ordinal: Int): AccountTypes {
         val converter = AccountTypeConverter()
         return converter.getAccountType(ordinal)
+    }
+
+    fun hasCriptextFooter(user: Account, storage: KeyValueStorage): Boolean{
+        return if(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "").isNotEmpty()) {
+            val footerData = ProfileFooterData.fromJson(storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, ""))
+            footerData.find { it.accountId == user.id }?.hasFooterEnabled ?: true
+        } else true
     }
 }

@@ -119,6 +119,7 @@ class UpdateEmailThreadsLabelsWorker(
                         val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
                         if (fromContacts.isNotEmpty())
                             apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
+                        db.updateIsTrusted(fromContacts, true)
                         Result.of { removeCurrentLabelFromEmails(emailIds)}
 
                     }

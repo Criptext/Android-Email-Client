@@ -70,6 +70,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.peerLabelCreated -> processLabelCreated(it)
                     Event.Cmd.peerLabelEdited -> processLabelEdited(it)
                     Event.Cmd.peerLabelDeleted -> processLabelDeleted(it)
+                    Event.Cmd.peerContactTrustedChanged -> processContactTrustedChanged(it)
                     Event.Cmd.trackingUpdate -> processTrackingUpdates(it)
                     Event.Cmd.newError -> processOnError(it)
                     Event.Cmd.addressCreated -> processOnAddressCreated(it)
@@ -78,6 +79,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.customDomainCreated -> processOnCustomDomainCreated(it)
                     Event.Cmd.customDomainDeleted -> processOnCustomDomainDeleted(it)
                     Event.Cmd.customerTypeChanged -> processOnCustomerTypeChanged(it)
+                    Event.Cmd.peerBlockRemoteContentChanged -> processOnBlockRemoteContentChanged(it)
                 }
             }
 
@@ -355,6 +357,22 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
+    private fun processContactTrustedChanged(event: Event) {
+        val metadata = PeerContactTrustedChanged.fromJSON(event.params)
+        val operation = Result.of {
+            updateContactTrustedStatus(metadata)
+        }
+        when(operation){
+            is Result.Success -> {
+                val existingInfo = parsedEvents.find { it.cmd == event.cmd }
+                if(existingInfo != null) parsedEvents.remove(existingInfo)
+                parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
+                if (acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
     private fun processTrackingUpdates(event: Event) {
         val operation = Result.of {
             val metadata = TrackingUpdate.fromJSON(event.params)
@@ -490,6 +508,24 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
+    private fun processOnBlockRemoteContentChanged(event: Event){
+        val operation = Result.of {
+            val metadata = AccountBlockRemoteContentChanged.fromJSON(event.params)
+
+            val account = db.getAccount(metadata.recipientId, metadata.domain) ?: throw Exception()
+            db.updateBlockRemoteContent(metadata.newBlockRemoteContent, account)
+            if(account.id == activeAccount.id){
+                activeAccount.updateAccountBlockedRemoteContent(storage, metadata.newBlockRemoteContent)
+            }
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
     private fun getImageFromCdn(metadata: UpdateBannerEventData): Result<UpdateBannerData, java.lang.Exception> {
         return Result.of {
             UpdateBannerData.fromJSON(newsClient.getUpdateBannerData(
@@ -534,6 +570,9 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun updateLabelDeletedStatus(metadata: PeerLabelDeletedStatusUpdate) =
             db.updateDeleteLabel(metadata.uuid, activeAccount.id)
+
+    private fun updateContactTrustedStatus(metadata: PeerContactTrustedChanged) =
+            db.updateContactTrusted(metadata.email, metadata.trusted)
 
     private fun updateLabelEditedStatus(metadata: PeerLabelEditedStatusUpdate) =
             db.updateEditLabel(metadata.uuid, metadata.name, activeAccount.id)

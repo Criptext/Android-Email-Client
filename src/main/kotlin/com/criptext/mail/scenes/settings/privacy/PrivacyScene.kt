@@ -31,6 +31,8 @@ interface PrivacyScene{
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun updateTwoFa(isChecked: Boolean)
+    fun enableBlockRemoteContentSwitch(isEnabled: Boolean)
+    fun updateBlockRemoteContent(isChecked: Boolean)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
@@ -48,12 +50,20 @@ interface PrivacyScene{
             view.findViewById<Switch>(R.id.privacy_read_receipts_switch)
         }
 
+        private val blockRemoteContentSwitch: Switch by lazy {
+            view.findViewById<Switch>(R.id.privacy_block_remote_content_switch)
+        }
+
         private val twoFALoading: ProgressBar by lazy {
             view.findViewById<ProgressBar>(R.id.two_fa_loading)
         }
 
         private val readReceiptsLoading: ProgressBar by lazy {
             view.findViewById<ProgressBar>(R.id.read_receipts_loading)
+        }
+
+        private val blockRemoteContentLoading: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.block_remote_content_loading)
         }
 
         private val backButton: ImageView by lazy {
@@ -115,6 +125,23 @@ interface PrivacyScene{
             setSwitchListener()
         }
 
+        override fun enableBlockRemoteContentSwitch(isEnabled: Boolean) {
+            blockRemoteContentSwitch.isEnabled = isEnabled
+            if(isEnabled){
+                blockRemoteContentSwitch.visibility = View.VISIBLE
+                blockRemoteContentLoading.visibility = View.GONE
+            } else {
+                blockRemoteContentSwitch.visibility = View.INVISIBLE
+                blockRemoteContentLoading.visibility = View.VISIBLE
+            }
+        }
+
+        override fun updateBlockRemoteContent(isChecked: Boolean) {
+            blockRemoteContentSwitch.setOnCheckedChangeListener { _, _ ->  }
+            blockRemoteContentSwitch.isChecked = isChecked
+            setSwitchListener()
+        }
+
         override fun enableReadReceiptsSwitch(isEnabled: Boolean) {
             readReceiptsSwitch.isEnabled = isEnabled
             if(isEnabled){
@@ -147,6 +174,9 @@ interface PrivacyScene{
             }
             twoFASwitch.setOnCheckedChangeListener { _, isChecked ->
                 privacyUIObserver.onTwoFASwitched(isChecked)
+            }
+            blockRemoteContentSwitch.setOnCheckedChangeListener { _, isChecked ->
+                privacyUIObserver.onBlockRemoteContentSwitched(isChecked)
             }
         }
 

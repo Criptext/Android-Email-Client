@@ -63,6 +63,7 @@ class ComposerActivity : BaseActivity() {
                 filesDir = this.filesDir,
                 httpClient = httpClient,
                 composerLocalDB = db,
+                pendingEventDao = appDB.pendingEventDao(),
                 activeAccount = activeAccount,
                 emailInsertionDao = appDB.emailInsertionDao(),
                 storage = KeyValueStorage.SharedPrefs(this),

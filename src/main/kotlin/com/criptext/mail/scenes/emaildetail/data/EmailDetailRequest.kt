@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.emaildetail.data
 
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.FileKey
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
@@ -72,4 +73,7 @@ sealed class EmailDetailRequest{
     data class CopyToDownloads(val internalPath: String): EmailDetailRequest()
 
     class DeleteDraft(val emailId: Long): EmailDetailRequest()
+
+    data class UpdateContactIsTrusted(val contact: Contact, val newIsTrusted: Boolean,
+                                      val metadataKey: Long): EmailDetailRequest()
 }

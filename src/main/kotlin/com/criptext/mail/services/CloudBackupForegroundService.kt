@@ -91,9 +91,9 @@ class CloudBackupForegroundService: Service() {
 
     }
 
-    private fun newFileWorker(activeAccount: ActiveAccount, filesDir: File, db: AppDatabase): DataFileCreationWorker =
+    private fun newFileWorker(activeAccount: ActiveAccount, filesDir: File, db: AppDatabase, storage: KeyValueStorage): DataFileCreationWorker =
             DataFileCreationWorker(activeAccount = activeAccount, filesDir = filesDir, db = db, isFromJob = true,
-                    passphrase = null, publishFn = {}, isLocal = false)
+                    passphrase = null, publishFn = {}, isLocal = false, storage = storage)
 
     private fun newUploadWorker(activeAccount: ActiveAccount, storage: KeyValueStorage, accountDao: AccountDao,
                                 filePath: String, drive: Drive, driveProgress: MediaHttpUploaderProgressListener?): UploadBackupToDriveWorker =
@@ -117,7 +117,7 @@ class CloudBackupForegroundService: Service() {
         val activeAccount = ActiveAccount.loadFromDB(account)!!
 
         val filesDir = this.filesDir
-        val fileWorker = newFileWorker(activeAccount, filesDir, db)
+        val fileWorker = newFileWorker(activeAccount, filesDir, db, storage)
 
         val result = fileWorker.work(reporter)
         when(result){

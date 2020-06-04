@@ -114,6 +114,7 @@ class MoveEmailThreadWorker(
                     it.email.fromAddress != activeAccount.userEmail
                 }
                 if(fromContacts.isNotEmpty()) {
+                    db.updateContactsIsTrusted(fromContacts, false)
                     if (isPhishing)
                         apiClient.postReportSpam(fromContacts,
                                 ContactUtils.ContactReportTypes.phishing,

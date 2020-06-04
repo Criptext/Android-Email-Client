@@ -55,7 +55,7 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
         }
     }
 
-    override fun bindFullMail(fullEmail: FullEmail, account: ActiveAccount) {
+    override fun bindFullMail(fullEmail: FullEmail, blockRemoteContentSetting: Boolean) {
 
         if(fullEmail.email.delivered == DeliveryTypes.UNSEND) {
             bodyView.alpha = 0.5.toFloat()
