@@ -482,7 +482,7 @@
   <string name="labels_toolbar_title">LABELS</string>
   <string name="pin_toolbar_title">PIN LOCK</string>
   <string name="username_not_available">Username not available</string>
-  <string name="drawer_add_account">Add an Existing Account</string>
+  <string name="drawer_add_account">Add Account</string>
   <string name="drawer_create_account_account">Create an Account</string>
   <string name="snack_bar_active_account">Now logged in as %1$s</string>
   <string name="title_devices">Devices</string>
@@ -712,4 +712,5 @@
   <string name="block_remote_turn_off_message_disable">Remote content disabled for account: %1$s</string>
   <string name="block_remote_dialog_title">Turn Off Image Block</string>
   <string name="block_remote_dialog_message">Your security is affected by deactivating this function. \n\n You can reactivate this function by going to Settings->Privacy.</string>
+  <string name="download_web_view_started">Your download for has started.</string>
 </resources>

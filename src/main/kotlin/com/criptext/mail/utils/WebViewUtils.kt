@@ -3,11 +3,11 @@ package com.criptext.mail.utils
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
+import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.scenes.WebViewActivity
+import com.criptext.mail.scenes.webview.WebViewActivity
 import pub.devrel.easypermissions.EasyPermissions
 
 class WebViewUtils {
@@ -152,13 +152,6 @@ class WebViewUtils {
             return sb.toString()
         }
 
-        fun openUrl(context: Context, url: String){
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", url)
-            context.startActivity(intent)
-            (context as BaseActivity).overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
-        }
-
         fun hasSDPermissionsWeb(ctx : Context) : Boolean{
             val readSDPermission = Manifest.permission.READ_EXTERNAL_STORAGE
             if (EasyPermissions.hasPermissions(ctx as WebViewActivity, readSDPermission)) {
@@ -166,6 +159,29 @@ class WebViewUtils {
             }
 
             return false
+        }
+
+        fun injectRetrieveBlobData(webViewCriptext: WebView, url : String){
+            val sb = StringBuilder()
+            sb.append("var xhr = new XMLHttpRequest();")
+            sb.append("xhr.open('GET', '$url', true);")
+            sb.append("xhr.responseType = 'arraybuffer';")
+            sb.append("xhr.onload = function(e) {")
+            sb.append("if (this.status == 200) {")
+            sb.append("var uInt8Array = new Uint8Array(this.response);")
+            sb.append("var i = uInt8Array.length;")
+            sb.append("var binaryString = new Array(i);")
+            sb.append("while (i--){")
+            sb.append("binaryString[i] = String.fromCharCode(uInt8Array[i]);")
+            sb.append("};")
+            sb.append("var data = binaryString.join('');")
+            sb.append("var base64 = window.btoa(data);")
+            sb.append("CriptextSecureEmail.retrieveData(base64);")
+            sb.append("};")
+            sb.append("};")
+            sb.append("xhr.send();")
+
+            webViewCriptext.loadUrl("javascript:$sb")
         }
 
     }

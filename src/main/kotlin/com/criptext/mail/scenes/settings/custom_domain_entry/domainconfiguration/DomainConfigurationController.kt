@@ -14,13 +14,9 @@ import com.criptext.mail.scenes.params.CustomDomainParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryDataSource
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryRequest
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationDataSource
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationRequest
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationResult
-import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.workers.DomainValidationWorker
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -30,10 +26,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.validation.AccountDataValidator
-import com.criptext.mail.validation.FormData
-import com.criptext.mail.validation.FormInputState
-import com.criptext.mail.validation.TextInput
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -249,7 +242,11 @@ class DomainConfigurationController(
                     host.goToScene(
                             params = SignInParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ),
                             deletePastIntents = true,
                             keep = false
                     )

@@ -97,7 +97,7 @@
         <activity android:name=".androidtest.TestActivity"
             android:exported="false"/>
         <activity
-            android:name=".scenes.WebViewActivity"
+            android:name=".scenes.webview.WebViewActivity"
             android:theme="@style/AppThemeWithActionBar"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait">

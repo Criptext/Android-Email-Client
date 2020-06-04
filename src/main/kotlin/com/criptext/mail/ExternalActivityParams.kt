@@ -10,7 +10,6 @@ sealed class ExternalActivityParams {
     data class PinScreen(val isFirstTime: Boolean): ExternalActivityParams()
     class Camera: ExternalActivityParams()
     class InviteFriend: ExternalActivityParams()
-    data class GoToCriptextUrl(val action: String, val map: Map<String, Any>): ExternalActivityParams()
     data class ExportBackupFile(val filePath: String, val isEncrypted: Boolean): ExternalActivityParams()
     class SignInGoogleDrive: ExternalActivityParams()
     class SignOutGoogleDrive: ExternalActivityParams()
@@ -18,6 +17,9 @@ sealed class ExternalActivityParams {
     class OpenGooglePlay: ExternalActivityParams()
     class FilePresent(val filepath: String, val mimeType: String): ExternalActivityParams()
     class RefreshGalleryPath(val file: File): ExternalActivityParams()
+    class OpenExternalBrowser(val url: String): ExternalActivityParams()
+    class OpenBrowserFilePicker(): ExternalActivityParams()
+    class BrowserHandleDownload(val url: String, val contentDisposition: String): ExternalActivityParams()
 
     companion object {
         const val PIN_REQUEST_CODE = 2018

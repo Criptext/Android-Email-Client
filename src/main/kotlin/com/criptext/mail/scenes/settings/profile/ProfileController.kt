@@ -32,6 +32,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -229,7 +230,11 @@ class ProfileController(
                 host.goToScene(
                         params = MailboxParams(),
                         activityMessage = null,
-                        forceAnimation = true,
+                        animationData = TransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = R.anim.slide_out_right
+                        ),
                         deletePastIntents = true,
                         keep = false
                 )
@@ -237,7 +242,11 @@ class ProfileController(
                 host.goToScene(
                         params = SettingsParams(),
                         activityMessage = null,
-                        forceAnimation = true,
+                        animationData = TransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = R.anim.slide_out_right
+                        ),
                         keep = false
                 )
             }
@@ -468,7 +477,11 @@ class ProfileController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true
                     )
                 else {
                     activeAccount = result.activeAccount

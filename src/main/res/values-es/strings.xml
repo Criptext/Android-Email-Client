@@ -482,7 +482,7 @@
   <string name="labels_toolbar_title">ETIQUETAS</string>
   <string name="pin_toolbar_title">BLOQUEO PIN</string>
   <string name="username_not_available">Usuario no disponible</string>
-  <string name="drawer_add_account">Agregar cuenta existente</string>
+  <string name="drawer_add_account">Agregar cuenta</string>
   <string name="drawer_create_account_account">Crear una cuenta</string>
   <string name="snack_bar_active_account">Conectado como %1$s</string>
   <string name="title_devices">Dispositivos</string>
@@ -710,4 +710,5 @@
   <string name="block_remote_turn_off_message_disable">Contenido remoto deshabilitado para la cuenta: %1$s</string>
   <string name="block_remote_dialog_title">Apagar Bloqueo de Imágenes</string>
   <string name="block_remote_dialog_message">Tu seguridad puede verse comprometida al desactivar este bloqueo. \n\nPuedes volver a reactivarlo desde Configuración->Privacidad.</string>
+  <string name="download_web_view_started">Your download for has started.</string>
 </resources>

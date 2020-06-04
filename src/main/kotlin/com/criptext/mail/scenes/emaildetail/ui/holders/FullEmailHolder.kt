@@ -30,6 +30,7 @@ import com.criptext.mail.scenes.emaildetail.WebviewJavascriptInterface
 import com.criptext.mail.scenes.emaildetail.ui.EmailContactInfoPopup
 import com.criptext.mail.scenes.emaildetail.ui.FileListAdapter
 import com.criptext.mail.scenes.emaildetail.ui.FullEmailListAdapter
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.MyZoomLayout
 import com.otaliastudios.zoom.ZoomEngine
@@ -489,7 +490,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 if(isBilling) {
                     listener?.openBilling()
                 } else {
-                    if(!bodyWebView.settings.blockNetworkImage) WebViewUtils.openUrl(bodyWebView.context!!, url)
+                    listener?.openWebView(url)
                 }
                 return true
             }
@@ -499,7 +500,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 if(isBilling) {
                     listener?.openBilling()
                 } else {
-                    if(!bodyWebView.settings.blockNetworkImage) WebViewUtils.openUrl(bodyWebView.context!!, request.url.toString())
+                    listener?.openWebView(request.url.toString())
                 }
                 return true
             }
@@ -521,7 +522,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             }
 
             private fun checkForBilling(url: String): Boolean {
-                return url.contains(BaseActivity.ADMIN_URL.substring(0..26))
+                return url.contains(WebViewSceneController.ADMIN_URL.substring(0..26))
             }
         }
 

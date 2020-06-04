@@ -29,6 +29,7 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
@@ -40,12 +41,14 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
 import com.google.api.services.drive.Drive
 import java.io.File
+import java.util.*
 
 /**
  * Created by sebas on 1/30/18.
@@ -162,7 +165,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return host.goToScene(params, true)
             }
             host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
-                    currentLabel = model.selectedLabel, threadPreview = emailPreview), true)
+                    currentLabel = model.selectedLabel, threadPreview = emailPreview), true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_left_out
+                    ))
         }
 
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
@@ -215,11 +223,18 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onUpgradePlusOptionClicked() {
-            host.finishScene()
-            val map = mutableMapOf<String, Any>()
-            map["auth"] = activeAccount.jwt
-            map["comesFromMailbox"] = true
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                    ),
+                    activityMessage = ActivityMessage.ComesFromMailbox(),
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onSettingsOptionClicked() {
@@ -231,7 +246,18 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
@@ -563,6 +589,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                             deletePastIntents = true
                     )
                 }
+                return true
+            }
+            is ActivityMessage.RefreshUI -> {
+                scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                threadListController.reRenderAll()
                 return true
             }
             else -> {
@@ -905,7 +937,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.listener = null
                     host.goToScene(params = MailboxParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            forceAnimation = true, keep = false)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = 0,
+                                    exitAnim = 0
+                            ), keep = false)
                 }
             }
         }
@@ -1109,7 +1145,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     feedController.reloadFeeds()
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
                             currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
-                            doReply = result.doReply), true, activityMessage = result.activityMessage)
+                            doReply = result.doReply), true, activityMessage = result.activityMessage,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = 0,
+                                    exitAnim = R.anim.slide_out_right
+                            ))
                 }
                 is GeneralResult.GetEmailPreview.Failure -> {
                     dataSourceController.updateMailbox(model.selectedLabel)
@@ -1451,7 +1492,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(
@@ -1472,7 +1517,11 @@ class MailboxSceneController(private val scene: MailboxScene,
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true, deletePastIntents = true)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(

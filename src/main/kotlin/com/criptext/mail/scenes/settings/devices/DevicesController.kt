@@ -2,10 +2,8 @@ package com.criptext.mail.scenes.settings.devices
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -16,13 +14,10 @@ import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.devices.data.*
-import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
-import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
-import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -30,6 +25,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -204,7 +200,11 @@ class DevicesController(
                     host.goToScene(
                             params = SignInParams(), keep = false,
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ), deletePastIntents = true)
                 else {
                     activeAccount = result.activeAccount
                     host.goToScene(
@@ -226,7 +226,11 @@ class DevicesController(
                     host.goToScene(
                             params = SignInParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = android.R.anim.fade_in,
+                                    exitAnim = android.R.anim.fade_out
+                            ),
                             deletePastIntents = true,
                             keep = false
                     )
