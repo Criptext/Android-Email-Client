@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -78,9 +79,7 @@ import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
-import com.criptext.mail.utils.ui.ActivityMenu
-import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
-import com.criptext.mail.utils.ui.StartGuideTapped
+import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -114,6 +113,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     abstract val layoutId: Int
 
     private val progressDialog: SingletonProgressDialog by lazy { SingletonProgressDialog(this) }
+    private val confirmPassword: ConfirmPasswordDialog by lazy { ConfirmPasswordDialog(this) }
     private val storage: KeyValueStorage by lazy { KeyValueStorage.SharedPrefs(this) }
 
     /**
@@ -646,6 +646,27 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun dismissDialog() {
         progressDialog.dismiss()
+    }
+
+    override fun showConfirmPasswordDialog(observer: UIObserver) {
+        confirmPassword.showDialog(observer)
+    }
+
+    override fun dismissConfirmPasswordDialog() {
+        confirmPassword.dismissDialog()
+    }
+
+    override fun setConfirmPasswordError(message: UIMessage) {
+        confirmPassword.setPasswordError(message)
+    }
+
+    override fun showToastMessage(message: UIMessage) {
+        val duration = Toast.LENGTH_LONG
+        val toast = Toast.makeText(
+                this,
+                this.getLocalizedUIMessage(message),
+                duration)
+        toast.show()
     }
 
     override fun launchExternalActivityForResult(params: ExternalActivityParams) {

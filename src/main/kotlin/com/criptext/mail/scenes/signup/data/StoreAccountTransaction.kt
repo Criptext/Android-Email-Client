@@ -70,7 +70,6 @@ class StoreAccountTransaction(private val dao: SignUpDao,
                         CustomDomain(
                                 id = 0,
                                 name = it.name,
-                                rowId = it.rowId,
                                 validated = it.validated,
                                 accountId = dbAccount.id
                         )

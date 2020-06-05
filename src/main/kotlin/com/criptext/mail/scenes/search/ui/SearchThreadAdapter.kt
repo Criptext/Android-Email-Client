@@ -58,8 +58,7 @@ class SearchThreadAdapter(private val mContext : Context,
         when(holder) {
             is EmailHolder -> {
                 val mail = threadList[position]
-                // TODO use email preview virtual list
-                holder.bindEmailPreview(EmailPreview.fromEmailThread(mail), activeAccount)
+                holder.bindEmailPreview(EmailPreview.fromEmailThread(mail))
                 setEmailHolderListeners(holder, position, mail)
             }
         }

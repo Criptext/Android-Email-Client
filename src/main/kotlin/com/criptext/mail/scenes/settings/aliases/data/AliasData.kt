@@ -15,7 +15,6 @@ data class AliasData(val rowId: Long, val name: String, val domain: String,
                         val domain = json.getJSONObject("domain")
                         CustomDomain(
                                 id = 0,
-                                rowId = domain.getLong("domainKey"),
                                 name = domain.getString("name"),
                                 validated = domain.getInt("confirmed") == 1,
                                 accountId = accountId

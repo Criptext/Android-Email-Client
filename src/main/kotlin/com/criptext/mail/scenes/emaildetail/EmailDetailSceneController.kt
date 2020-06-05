@@ -63,7 +63,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                  private val generalDataSource: GeneralDataSource,
                                  private val dataSource: EmailDetailDataSource,
                                  private var websocketEvents: WebSocketEventPublisher,
-                                 private val keyboard: KeyboardManager) : SceneController() {
+                                 private val keyboard: KeyboardManager) : SceneController(host, activeAccount, storage) {
 
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
@@ -100,21 +100,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
-    private val emailDetailUIObserver = object: EmailDetailUIObserver{
+    private val emailDetailUIObserver = object: EmailDetailUIObserver(generalDataSource, host){
 
         override fun onSnackbarClicked() {
 
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -138,17 +127,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     }
                 }
             }
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -187,97 +165,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     R.string.start_guide_unsend_button,
                     R.dimen.focal_padding_read_mail
             )
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(params = SignInParams(), activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = android.R.anim.fade_in,
-                                    exitAnim = android.R.anim.fade_out
-                            ), deletePastIntents = true, keep = false)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true)
-                }
-            }
-        }
-    }
-
-    private fun onLogout(result: GeneralResult.Logout){
-        when (result) {
-            is GeneralResult.Logout.Success -> {
-                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = android.R.anim.fade_in,
-                                    exitAnim = android.R.anim.fade_out
-                            ),
-                            deletePastIntents = true,
-                            keep = false)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            deletePastIntents = true,
-                            keep = false)
-                }
-
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showError(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                                resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false,
-                        deletePastIntents = true)
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showError(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
         }
     }
 

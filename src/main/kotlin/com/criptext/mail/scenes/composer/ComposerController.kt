@@ -46,25 +46,16 @@ class ComposerController(private val storage: KeyValueStorage,
                          private var activeAccount: ActiveAccount,
                          private val generalDataSource: GeneralDataSource,
                          private val dataSource: ComposerDataSource)
-    : SceneController() {
+    : SceneController(host, activeAccount, storage) {
 
     private val dataSourceController = DataSourceController(dataSource)
-    private val observer = object: ComposerUIObserver {
+    private val observer = object: ComposerUIObserver(generalDataSource, host) {
         override fun onSenderSelectedItem(index: Int) {
             if(model.fromAddresses.isNotEmpty() && model.selectedAddress != model.fromAddresses[index])
                 model.selectedAddress = model.fromAddresses[index]
         }
 
         override fun onSnackbarClicked() {
-
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
 
         }
 
@@ -88,14 +79,6 @@ class ComposerController(private val storage: KeyValueStorage,
 
         override fun leaveComposer() {
             checkForDraft()
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onNewCamAttachmentRequested() {
@@ -430,62 +413,6 @@ class ComposerController(private val storage: KeyValueStorage,
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
                 scene.showError(result.message)
-            }
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            deletePastIntents = true,
-                            keep = false,
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = android.R.anim.fade_in,
-                                    exitAnim = android.R.anim.fade_out
-                            )
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            deletePastIntents = true,
-                            keep = false
-                    )
-                }
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
             }
         }
     }

@@ -67,7 +67,7 @@ class UserDataWriterTest {
     private val aliasOne = Alias(id = 1, name = "alias1", domain = null, active = true, rowId = 1, accountId = activeAccount.id)
     private val aliasTwo = Alias(id = 2, name = "alias2", domain = "custom.com", active = true, rowId = 2, accountId = activeAccount.id)
 
-    private val domainOne = CustomDomain(id = 1, name = "custom.com", validated = true, rowId = 1, accountId = activeAccount.id)
+    private val domainOne = CustomDomain(id = 1, name = "custom.com", validated = true, accountId = activeAccount.id)
 
     private val emailLabel1 = EmailLabel(emailId = 1, labelId = 1)
     private val emailLabel2 = EmailLabel(emailId = 2, labelId = 2)
@@ -98,7 +98,7 @@ class UserDataWriterTest {
     "{\"table\":\"file\",\"object\":{\"id\":2,\"token\":\"txt\",\"name\":\"that.txt\",\"size\":14,\"status\":0,\"date\":\"$strDate\",\"emailId\":2,\"mimeType\":\"text\\/plain\"}}",
     "{\"table\":\"alias\",\"object\":{\"id\":1,\"name\":\"alias1\",\"rowId\":1,\"active\":true}}",
     "{\"table\":\"alias\",\"object\":{\"id\":2,\"name\":\"alias2\",\"rowId\":2,\"domain\":\"custom.com\",\"active\":true}}",
-    "{\"table\":\"customDomain\",\"object\":{\"id\":1,\"name\":\"custom.com\",\"rowId\":1,\"validated\":true}}",
+    "{\"table\":\"customDomain\",\"object\":{\"id\":1,\"name\":\"custom.com\",\"validated\":true}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":1,\"labelId\":1}}",
     "{\"table\":\"email_label\",\"object\":{\"emailId\":2,\"labelId\":2}}",
     "{\"table\":\"email_contact\",\"object\":{\"id\":1,\"emailId\":1,\"contactId\":1,\"type\":\"to\"}}",

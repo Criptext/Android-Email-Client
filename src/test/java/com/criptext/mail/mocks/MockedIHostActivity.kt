@@ -38,6 +38,22 @@ class MockedIHostActivity: IHostActivity{
         return null
     }
 
+    override fun dismissConfirmPasswordDialog() {
+
+    }
+
+    override fun showConfirmPasswordDialog(observer: UIObserver) {
+
+    }
+
+    override fun setConfirmPasswordError(message: UIMessage) {
+
+    }
+
+    override fun showToastMessage(message: UIMessage) {
+
+    }
+
     override fun setAppTheme(themeResource: Int) {
         
     }

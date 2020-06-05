@@ -29,7 +29,7 @@ class WebViewSceneController(private val scene: WebViewScene,
                              private val activeAccount: ActiveAccount,
                              storage: KeyValueStorage,
                              private val generalDataSource: GeneralDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int?
         get() = when {
@@ -52,7 +52,7 @@ class WebViewSceneController(private val scene: WebViewScene,
         }
     }
 
-    private val dataSourceListener = { result: SearchResult ->
+    private val dataSourceListener = { _: SearchResult ->
 
     }
 
@@ -78,7 +78,7 @@ class WebViewSceneController(private val scene: WebViewScene,
         }
     }
 
-    private val observer = object :WebViewUIObserver{
+    private val observer = object :WebViewUIObserver(generalDataSource, host){
         override fun onPageStartedLoading(url: String?) {
             if(model.isOnAdmin) {
                 val title = if(AccountUtils.isPlus(activeAccount.type)) {
@@ -124,39 +124,23 @@ class WebViewSceneController(private val scene: WebViewScene,
         }
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onOkButtonPressed(password: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onCancelButtonPressed() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
     }

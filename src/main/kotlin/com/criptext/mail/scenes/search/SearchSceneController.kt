@@ -33,7 +33,7 @@ class SearchSceneController(private val scene: SearchScene,
                             storage: KeyValueStorage,
                             private val dataSource: SearchDataSource,
                             private val generalDataSource: GeneralDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     private val searchHistoryManager = SearchHistoryManager(storage)
 

@@ -64,4 +64,10 @@ interface IHostActivity {
     }
 
     fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate?
+
+    //General Scenes Functionality
+    fun dismissConfirmPasswordDialog()
+    fun showConfirmPasswordDialog(observer: UIObserver)
+    fun setConfirmPasswordError(message: UIMessage)
+    fun showToastMessage(message : UIMessage)
 }

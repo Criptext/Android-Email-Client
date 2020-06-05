@@ -4,6 +4,7 @@ import com.criptext.mail.*
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.RunnableThrottler
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
@@ -29,8 +30,9 @@ class SignUpSceneController(
         private val scene: SignUpScene,
         private val keyboardManager: KeyboardManager,
         private val host : IHostActivity,
+        private val storage: KeyValueStorage,
         private val dataSource: BackgroundWorkManager<SignUpRequest, SignUpResult>,
-        private val runnableThrottler: RunnableThrottler): SceneController() {
+        private val runnableThrottler: RunnableThrottler): SceneController(host, null, storage) {
 
     override val menuResourceId: Int?
         get() = null

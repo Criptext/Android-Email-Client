@@ -13,6 +13,7 @@ abstract class SyncMigrationMap {
         }
 
         init {
+            functionMap = mutableMapOf()
             for(i in 1..myVersion){
                 functionMap[Pair(i, myVersion)] = when(i){
                     myVersion -> fromCurrentToCurrentVersion

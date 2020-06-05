@@ -94,7 +94,6 @@ class RegisterDomainWorker(
                     accountId = activeAccount.id,
                     id = 0,
                     name = domain,
-                    rowId = it,
                     validated = false
             )) } }
 

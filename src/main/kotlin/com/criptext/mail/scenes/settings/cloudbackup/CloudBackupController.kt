@@ -47,7 +47,7 @@ class CloudBackupController(
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: CloudBackupDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
 
 
@@ -84,7 +84,7 @@ class CloudBackupController(
         }
     }
 
-    private val uiObserver = object: CloudBackupUIObserver{
+    private val uiObserver = object: CloudBackupUIObserver(generalDataSource, host){
         override fun exportBackupPressed() {
             scene.showEncryptBackupDialog(this)
         }
@@ -119,23 +119,7 @@ class CloudBackupController(
 
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-
-        }
-
         override fun onSnackbarClicked() {
-
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
@@ -186,7 +170,7 @@ class CloudBackupController(
             ))
         }
 
-        override fun onWifiOnlySwiched(isActive: Boolean) {
+        override fun onWifiOnlySwitched(isActive: Boolean) {
             dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
                     CloudBackupData(
                             hasCloudBackup = model.hasCloudBackup,

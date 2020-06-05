@@ -85,7 +85,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 val newData = Result.of { SyncMigrationMap.Default(metadata.fileVersion, FILE_SYNC_VERSION).migrate(data) }
                 when(newData){
                     is Result.Success -> {
-                        data.close()
                         data = newData.value
                     }
                     is Result.Failure -> {
@@ -102,37 +101,35 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                     throw operation.error
             }
         }
-        db.beginTransaction()
-        while(line != null && line.isNotEmpty()) {
-            val json = JSONObject(line)
-            when (json.getString("table")) {
-                "contact" -> contactWriter.insert(json.get("object").toString())
-                "label" -> labelWriter.insert(json.get("object").toString())
-                "email" -> {
-                    emailWriter.insert(json.get("object").toString())
+        db.runInTransaction {
+            while (line != null && line.isNotEmpty()) {
+                val json = JSONObject(line)
+                when (json.getString("table")) {
+                    "contact" -> contactWriter.insert(json.get("object").toString())
+                    "label" -> labelWriter.insert(json.get("object").toString())
+                    "email" -> {
+                        emailWriter.insert(json.get("object").toString())
+                    }
+                    "file" -> {
+                        fileWriter.insert(json.get("object").toString())
+                    }
+                    "alias" -> aliasWriter.insert(json.get("object").toString())
+                    "customDomain" -> customDomainWriter.insert(json.get("object").toString())
+                    "email_label" -> emailLabelWriter.insert(json.get("object").toString())
+                    "email_contact" -> emailContactWriter.insert(json.get("object").toString())
                 }
-                "file" ->  {
-                    fileWriter.insert(json.get("object").toString())
-                }
-                "alias" -> aliasWriter.insert(json.get("object").toString())
-                "customDomain" -> customDomainWriter.insert(json.get("object").toString())
-                "email_label" -> emailLabelWriter.insert(json.get("object").toString())
-                "email_contact" -> emailContactWriter.insert(json.get("object").toString())
+                line = data.readLine()
             }
-            line = data.readLine()
+            contactWriter.flush()
+            labelWriter.flush()
+            emailWriter.flush()
+            fileWriter.flush()
+            aliasWriter.flush()
+            customDomainWriter.flush()
+            emailLabelWriter.flush()
+            emailContactWriter.flush()
+            data.close()
         }
-        contactWriter.flush()
-        labelWriter.flush()
-        emailWriter.flush()
-        fileWriter.flush()
-        aliasWriter.flush()
-        customDomainWriter.flush()
-        emailLabelWriter.flush()
-        emailContactWriter.flush()
-        data.close()
-
-        db.setTransactionSuccessful()
-        db.endTransaction()
     }
 
     private fun processMetadata(account: ActiveAccount, metadata: BackupFileMetadata, storage: KeyValueStorage){
@@ -352,7 +349,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 val jsonObject = JSONObject()
                 jsonObject.put("id", customDomain.id)
                 jsonObject.put("name", customDomain.name)
-                jsonObject.put("rowId", customDomain.rowId)
                 jsonObject.put("validated", customDomain.validated)
                 jsonArrayAllContacts.add(jsonObject.toString())
                 tmpFile.appendText("${JSONObject("{table: customDomain, object: $jsonObject}")}\n")

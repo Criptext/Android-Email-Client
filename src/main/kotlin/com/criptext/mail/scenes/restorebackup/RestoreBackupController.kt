@@ -39,7 +39,7 @@ class RestoreBackupController(
         private val websocketEvents: WebSocketEventPublisher,
         private val dataSource: BackgroundWorkManager<RestoreBackupRequest, RestoreBackupResult>,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
 
 

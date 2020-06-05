@@ -152,7 +152,7 @@ class CloudBackupForegroundService: Service() {
                 }
             }
         }
-        cancelPushNotification(activeAccount, storage)
+        cancelPushNotification(storage)
         stopService()
     }
 
@@ -219,7 +219,7 @@ class CloudBackupForegroundService: Service() {
         }
     }
 
-    private fun cancelPushNotification(activeAccount: ActiveAccount, storage: KeyValueStorage){
+    private fun cancelPushNotification(storage: KeyValueStorage){
         val notCount = storage.getInt(KeyValueStorage.StringKey.CloudBackupNotificationCount, 0)
         storage.putInt(KeyValueStorage.StringKey.CloudBackupNotificationCount, if(notCount <= 0) 0 else notCount - 1)
     }
