@@ -62,7 +62,7 @@ class EmailThreadAdapter(private val threadListener : OnThreadEventListener,
         when(holder) {
             is EmailHolder -> {
                 val mail = threadList[position]
-                holder.bindEmailPreview(mail, activeAccount)
+                holder.bindEmailPreview(mail)
                 setEmailHolderListeners(holder, position, mail)
             }
         }

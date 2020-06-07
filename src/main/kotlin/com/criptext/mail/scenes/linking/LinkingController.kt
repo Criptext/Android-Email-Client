@@ -36,7 +36,7 @@ class LinkingController(
         private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: LinkingDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     
 
@@ -57,16 +57,8 @@ class LinkingController(
         }
     }
 
-    private val linkingUIObserver = object: LinkingUIObserver{
+    private val linkingUIObserver = object: LinkingUIObserver(generalDataSource, host) {
         override fun onSnackbarClicked() {
-
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
@@ -127,14 +119,6 @@ class LinkingController(
         }
 
         override fun onBackButtonPressed() {
-
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
 
         }
 

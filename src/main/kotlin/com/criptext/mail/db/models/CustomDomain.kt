@@ -19,9 +19,6 @@ class CustomDomain(
         @ColumnInfo(name = "id")
         var id : Long,
 
-        @ColumnInfo(name = "rowId")
-        var rowId : Long,
-
         @ColumnInfo(name = "name")
         var name : String,
 
@@ -38,7 +35,6 @@ class CustomDomain(
             return CustomDomain(
                     id = 0,
                     name = json.getString("name"),
-                    rowId = json.getLong("rowId"),
                     validated = json.getBoolean("validated"),
                     accountId = accountId
 

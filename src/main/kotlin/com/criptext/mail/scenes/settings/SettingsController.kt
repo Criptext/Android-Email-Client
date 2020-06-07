@@ -23,11 +23,9 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -43,7 +41,7 @@ class SettingsController(
         private val keyboardManager: KeyboardManager,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: SettingsDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -54,7 +52,7 @@ class SettingsController(
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
-            is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
+            is GeneralResult.SyncPhonebook -> onSyncPhoneBook(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
@@ -67,7 +65,7 @@ class SettingsController(
         }
     }
 
-    private val settingsUIObserver = object: SettingsUIObserver{
+    private val settingsUIObserver = object: SettingsUIObserver(generalDataSource, host){
         override fun onBillingClicked() {
             host.goToScene(
                     params = WebViewParams(
@@ -135,17 +133,6 @@ class SettingsController(
             generalDataSource.submitRequest(GeneralRequest.SyncCancel())
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
-        }
-
         override fun onDarkThemeSwitched(isChecked: Boolean) {
             storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, isChecked)
             model.hasChangedTheme = true
@@ -211,7 +198,7 @@ class SettingsController(
             }
         }
 
-        override fun onSyncPhonebookContacts() {
+        override fun onSyncPhoneBookContacts() {
             if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
                 storage.putBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, true)
@@ -224,17 +211,6 @@ class SettingsController(
 
         override fun onPinLockClicked() {
             host.goToScene(PinLockParams(), false)
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -360,76 +336,7 @@ class SettingsController(
             generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
     }
 
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = android.R.anim.fade_in,
-                                    exitAnim = android.R.anim.fade_out
-                            ), deletePastIntents = true
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncPhonebook(resultData: GeneralResult.SyncPhonebook){
+    private fun onSyncPhoneBook(resultData: GeneralResult.SyncPhonebook){
         scene.setSyncContactsProgressVisisble(false)
         when (resultData) {
             is GeneralResult.SyncPhonebook.Success -> {

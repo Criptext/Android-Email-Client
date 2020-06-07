@@ -43,6 +43,7 @@ class SignUpActivity: BaseActivity() {
                         httpClient = HttpClient.Default(),
                         db = appDB,
                         keyValueStorage = keyValueStorage,
-                        signalKeyGenerator = signalKeyGenerator))
+                        signalKeyGenerator = signalKeyGenerator),
+                storage = keyValueStorage)
     }
 }

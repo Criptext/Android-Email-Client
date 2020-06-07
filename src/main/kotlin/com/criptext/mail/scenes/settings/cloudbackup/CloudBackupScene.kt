@@ -5,13 +5,11 @@ import android.view.View
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.services.jobs.CloudBackupJobService
-import com.criptext.mail.services.jobs.CriptextJobCreator
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.evernote.android.job.JobManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -267,7 +265,7 @@ interface CloudBackupScene{
             backupOverSwitch.setOnCheckedChangeListener { _,_ -> }
             backupOverSwitch.isChecked = isChecked
             backupOverSwitch.setOnCheckedChangeListener { _, checked ->
-                cloudBackupUIObserver?.onWifiOnlySwiched(checked)
+                cloudBackupUIObserver?.onWifiOnlySwitched(checked)
             }
         }
 

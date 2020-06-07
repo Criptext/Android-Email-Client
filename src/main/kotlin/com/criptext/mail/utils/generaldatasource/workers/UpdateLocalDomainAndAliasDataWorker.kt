@@ -58,8 +58,7 @@ class UpdateLocalDomainAndAliasDataWorker(private val customDomainDao: CustomDom
             }
             if(newDomains.isNotEmpty()) {
                 customDomainDao.insertAll(newDomains.map {
-                    CustomDomain(0, rowId = it.rowId,
-                            accountId = activeAccount.id, validated = it.validated, name = it.name)
+                    CustomDomain(0, accountId = activeAccount.id, validated = it.validated, name = it.name)
                 })
             }
         }

@@ -232,13 +232,13 @@ class GetPushEmailWorker(
             PushTypes.newMail.actionCode() -> {
                 val metadataKey = data["metadataKey"]
                 if(!metadataKey.isNullOrEmpty())
-                    notificationId = db.antiPushMapDao().insert(AntiPushMap(0, metadataKey!!, activeAccount.id)).toInt()
+                    notificationId = db.antiPushMapDao().insert(AntiPushMap(0, metadataKey, activeAccount.id)).toInt()
             }
             PushTypes.linkDevice.actionCode(),
             PushTypes.syncDevice.actionCode() -> {
                 val randomId = data["randomId"]
                 if(!randomId.isNullOrEmpty())
-                    notificationId = db.antiPushMapDao().insert(AntiPushMap(0, randomId!!, activeAccount.id)).toInt()
+                    notificationId = db.antiPushMapDao().insert(AntiPushMap(0, randomId, activeAccount.id)).toInt()
         }
             else -> {
                 val isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N

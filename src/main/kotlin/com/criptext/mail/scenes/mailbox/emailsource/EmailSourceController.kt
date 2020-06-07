@@ -15,6 +15,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
@@ -32,8 +33,8 @@ class EmailSourceController(
         private val storage: KeyValueStorage,
         private val keyboardManager: KeyboardManager,
         private val websocketEvents: WebSocketEventPublisher,
-        private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
-    : SceneController(){
+        private val generalDataSource: GeneralDataSource)
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -46,20 +47,9 @@ class EmailSourceController(
         }
     }
 
-    private val uiObserver = object: EmailSourceUIObserver{
+    private val uiObserver = object: EmailSourceUIObserver(generalDataSource, host){
         override fun onSnackbarClicked() {
 
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -78,17 +68,6 @@ class EmailSourceController(
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
-        }
-
         override fun onBackButtonPressed() {
             host.finishScene()
         }
@@ -105,71 +84,6 @@ class EmailSourceController(
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         return false
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = android.R.anim.fade_in,
-                                    exitAnim = android.R.anim.fade_out
-                            ), deletePastIntents = true)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true)
-                }
-            }
-        }
     }
 
     override fun onPause() {

@@ -28,7 +28,7 @@ class SyncingController(
         private val storage: KeyValueStorage,
         private val websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
 
 

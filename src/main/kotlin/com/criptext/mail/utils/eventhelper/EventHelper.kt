@@ -458,7 +458,6 @@ class EventHelper(private val db: EventLocalDB,
 
             val customDomain = CustomDomain(
                     id = 0,
-                    rowId = 0,
                     name = metadata.domainName,
                     validated = true,
                     accountId = activeAccount.id

@@ -293,7 +293,7 @@ interface SettingsScene{
                 settingsUIObserver?.onOpenSourceLibrariesClicked()
             }
             settingsSyncPhonebookContacts.setOnClickListener {
-                settingsUIObserver?.onSyncPhonebookContacts()
+                settingsUIObserver?.onSyncPhoneBookContacts()
             }
             settingsCloudBackup.setOnClickListener {
                 settingsUIObserver?.onCloudBackupClicked()

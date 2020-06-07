@@ -50,7 +50,7 @@ class SignInSceneController(
         private val storage: KeyValueStorage,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: SignInDataSource,
-        private val keyboard: KeyboardManager): SceneController() {
+        private val keyboard: KeyboardManager): SceneController(host, null, storage) {
 
     override val menuResourceId: Int? = R.menu.menu_remove_device_holder
 
@@ -693,7 +693,7 @@ class SignInSceneController(
         }
     }
 
-    private val uiObserver = object : SignInUIObserver {
+    private val uiObserver = object : SignInUIObserver(generalDataSource, host) {
         override fun onSkipClicked() {
             val currentState = model.state as SignInLayoutState.LoginValidation
             val hashedPassword = model.realSecurePassword!!
@@ -748,23 +748,7 @@ class SignInSceneController(
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
@@ -1111,29 +1095,29 @@ class SignInSceneController(
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     }
 
-    interface SignInUIObserver: UIObserver {
-        fun onSubmitButtonClicked()
-        fun toggleUsernameFocusState(isFocused: Boolean)
-        fun onSignUpLabelClicked()
-        fun userLoginReady()
-        fun onCantAccessDeviceClick()
-        fun onRecoveryCodeClicked()
-        fun onSkipClicked()
-        fun onResendDeviceLinkAuth(username: String, domain: String)
-        fun onPasswordChangeListener(newPassword: String)
-        fun onRecoveryCodeChangeListener(newPassword: String)
-        fun onConfirmPasswordChangeListener(confirmPassword: String)
-        fun onUsernameTextChanged(newUsername: String)
-        fun onForgotPasswordClick()
-        fun onBackPressed()
-        fun onXPressed()
-        fun onContactSupportPressed()
-        fun onProgressHolderFinish()
-        fun onRetrySyncOk(result: SignInResult)
-        fun onRetrySyncCancel()
-        fun onSignInWarningContinue(userName: String, domain: String)
-        fun onSetupDevices(devicesListView: VirtualListView)
-        fun onTrashPressed(recipient: String, domain: String)
+    abstract class SignInUIObserver(generalDataSource: GeneralDataSource, host: IHostActivity): UIObserver(generalDataSource, host) {
+        abstract fun onSubmitButtonClicked()
+        abstract fun toggleUsernameFocusState(isFocused: Boolean)
+        abstract fun onSignUpLabelClicked()
+        abstract fun userLoginReady()
+        abstract fun onCantAccessDeviceClick()
+        abstract fun onRecoveryCodeClicked()
+        abstract fun onSkipClicked()
+        abstract fun onResendDeviceLinkAuth(username: String, domain: String)
+        abstract fun onPasswordChangeListener(newPassword: String)
+        abstract fun onRecoveryCodeChangeListener(newPassword: String)
+        abstract fun onConfirmPasswordChangeListener(confirmPassword: String)
+        abstract fun onUsernameTextChanged(newUsername: String)
+        abstract fun onForgotPasswordClick()
+        abstract fun onBackPressed()
+        abstract fun onXPressed()
+        abstract fun onContactSupportPressed()
+        abstract fun onProgressHolderFinish()
+        abstract fun onRetrySyncOk(result: SignInResult)
+        abstract fun onRetrySyncCancel()
+        abstract fun onSignInWarningContinue(userName: String, domain: String)
+        abstract fun onSetupDevices(devicesListView: VirtualListView)
+        abstract fun onTrashPressed(recipient: String, domain: String)
     }
 
     companion object {
