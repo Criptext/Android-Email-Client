@@ -721,6 +721,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="plus_dialog_custom_domains_title">Enjoy Custom Domains</string>
   <string name="plus_dialog_aliases_title">Enjoy Aliases</string>
   <string name="show_images_btn">Show Images</string>
+  <string name="show_always_btn">Show Always</string>
   <string name="show_images_menu_once">Once</string>
   <string name="show_images_menu_always">Always show from this sender</string>
   <string name="show_images_menu_turn_off">Turn off image blocking</string>

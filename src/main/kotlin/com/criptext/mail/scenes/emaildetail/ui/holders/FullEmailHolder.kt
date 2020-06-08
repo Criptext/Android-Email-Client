@@ -55,6 +55,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val threePointsView: ImageView
     private val moreButton: TextView
     private val showImagesButton: LinearLayout
+    private val showImagesText: TextView
     private val toView: TextView
     private val readView: ImageView
     private val contactInfoPopUp: EmailContactInfoPopup
@@ -293,6 +294,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             fullEmail.labels.contains(Label.defaultItems.spam)
                     && hasAtLeastOneImage -> {
                 remoteContentShow(false)
+            }
+            fullEmail.isShowingRemoteContent -> {
+                showImagesText.text = context.getLocalizedUIMessage(UIMessage(R.string.show_always_btn))
+                remoteContentShow(true)
             }
             !blockRemoteContentSetting -> {
                 remoteContentShow(true)
@@ -622,6 +627,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         threePointsView = view.findViewById(R.id.more)
         moreButton = view.findViewById(R.id.more_text)
         showImagesButton = view.findViewById(R.id.show_images)
+        showImagesText = view.findViewById(R.id.show_images_text)
         replyView = view.findViewById(R.id.reply)
         continueDraftView = view.findViewById(R.id.continue_draft)
         deleteDraftView = view.findViewById(R.id.delete_draft)

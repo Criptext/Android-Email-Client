@@ -13,6 +13,7 @@ import java.io.File
 interface SignInLocalDB {
     fun login(): Boolean
     fun accountExistsLocally(username: String): Boolean
+    fun getAccount(recipientId: String, domain: String): Account?
     fun deleteDatabase(account: Account)
     fun deleteDatabase(user: String, domain: String)
     fun deleteDatabase(users: List<String>)
@@ -20,6 +21,10 @@ interface SignInLocalDB {
     fun deleteSystemLabels()
 
     class Default(private val db: AppDatabase, private val filesDir: File): SignInLocalDB {
+
+        override fun getAccount(recipientId: String, domain: String): Account? {
+            return db.accountDao().getAccount(recipientId, domain)
+        }
 
         override fun accountExistsLocally(username: String): Boolean {
             val account = db.accountDao().getLoggedInAccount()

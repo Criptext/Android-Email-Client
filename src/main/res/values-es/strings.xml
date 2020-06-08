@@ -700,6 +700,7 @@
   <string name="plus_dialog_custom_domains_title">¡Disfruta Dominios Personalizados!</string>
   <string name="plus_dialog_aliases_title">¡Disfruta de Aliases!</string>
   <string name="show_images_btn">Mostrar Imágenes</string>
+  <string name="show_always_btn">Mostrar Siempre</string>
   <string name="show_images_menu_once">Una Vez</string>
   <string name="show_images_menu_always">Siempre para esta dirección</string>
   <string name="show_images_menu_turn_off">Apagar bloqueo de imágenes</string>

@@ -61,7 +61,8 @@ class AuthenticateUserWorker(
 
     private val shouldKeepData: Boolean by lazy {
         userData.username in AccountUtils.getLastLoggedAccounts(keyValueStorage) ||
-        userData.username.plus("@${userData.domain}") in AccountUtils.getLastLoggedAccounts(keyValueStorage)
+        userData.username.plus("@${userData.domain}") in AccountUtils.getLastLoggedAccounts(keyValueStorage) ||
+        db.getAccount(userData.username, userData.domain) != null
     }
 
     private fun authenticateUser(): String {
