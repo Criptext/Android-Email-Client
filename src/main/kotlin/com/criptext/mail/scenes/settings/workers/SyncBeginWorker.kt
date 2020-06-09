@@ -30,13 +30,6 @@ class SyncBeginWorker(val httpClient: HttpClient,
     override val canBeParallelized = false
 
     override fun catchException(ex: Exception): SettingsResult.SyncBegin {
-        when(ex){
-            is ServerErrorException -> {
-                when(ex.errorCode){
-                    ServerCodes.BadRequest -> return SettingsResult.SyncBegin.NoDevicesAvailable(createErrorMessage(ex))
-                }
-            }
-        }
         return SettingsResult.SyncBegin.Failure(createErrorMessage(ex))
     }
 
