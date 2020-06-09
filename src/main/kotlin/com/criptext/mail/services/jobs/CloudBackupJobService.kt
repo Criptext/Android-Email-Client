@@ -12,6 +12,7 @@ import android.util.Log
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
+import com.criptext.mail.services.CloudBackupForegroundService
 import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.utils.AccountUtils
@@ -105,7 +106,7 @@ class CloudBackupJobService: Job() {
                 (!useWifiOnly && isConnected && !isWiFi)) {
             val account = getAccount(accountSavedData.accountId)
             if(account != null){
-                val intent = Intent(context, DecryptionService::class.java)
+                val intent = Intent(context, CloudBackupForegroundService::class.java)
                 intent.putExtra("accountId", accountSavedData.accountId)
                 intent.putExtra("accountEmail", account.recipientId.plus("@${account.domain}"))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
