@@ -181,6 +181,7 @@
                         />
                     <TextView
                         fontPath="fonts/NunitoSans-Regular.ttf"
+                        android:id="@+id/show_images_text"
                         android:layout_width="wrap_content"
                         android:layout_height="28dp"
                         android:paddingStart="5dp"

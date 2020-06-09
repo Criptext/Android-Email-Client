@@ -79,6 +79,12 @@ class WebViewSceneController(private val scene: WebViewScene,
     }
 
     private val observer = object :WebViewUIObserver(generalDataSource, host){
+        override fun onPageReceiveError() {
+            if(model.isOnAdmin){
+                scene.showWebError()
+            }
+        }
+
         override fun onPageStartedLoading(url: String?) {
             if(model.isOnAdmin) {
                 val title = if(AccountUtils.isPlus(activeAccount.type)) {

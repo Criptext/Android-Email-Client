@@ -11,4 +11,5 @@ abstract class WebViewUIObserver(generalDataSource: GeneralDataSource, host: IHo
     abstract fun onPageFinishedLoading(url: String)
     abstract fun onJSInterfaceClose()
     abstract fun onBrowserDownload(url: String, contentDisposition: String)
+    abstract fun onPageReceiveError()
 }

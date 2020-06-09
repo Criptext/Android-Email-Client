@@ -1,23 +1,16 @@
 package com.criptext.mail.scenes.webview
 
 import android.annotation.TargetApi
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.view.View
 import android.webkit.*
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.search.ui.SearchUIObserver
 import com.criptext.mail.scenes.webview.ui.WebViewUIObserver
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.CriptextJavaScriptInterface
-import droidninja.filepicker.FilePickerConst
-import kotlinx.android.synthetic.main.activity_web_view.view.*
-import org.w3c.dom.Text
 
 interface WebViewScene{
 
@@ -27,6 +20,7 @@ interface WebViewScene{
     fun loadUrl(url: String?)
     fun setTitle(title: UIMessage)
     fun showError(message: UIMessage)
+    fun showWebError()
 
     class WebViewSceneView(private val view: View,
                           private val keyboard: KeyboardManager): WebViewScene {
@@ -64,6 +58,11 @@ interface WebViewScene{
 
         override fun showError(message: UIMessage) {
             Toast.makeText(view.context, view.context.getLocalizedUIMessage(message), Toast.LENGTH_SHORT).show()
+        }
+
+        override fun showWebError() {
+            webViewCriptext.visibility = View.GONE
+            errorLayout.visibility = View.VISIBLE
         }
 
         private fun setupWebView(model: WebViewSceneModel, chromeClient: WebChromeClient) {
@@ -116,8 +115,7 @@ interface WebViewScene{
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
-                webViewCriptext.visibility = View.GONE
-                errorLayout.visibility = View.VISIBLE
+                observer?.onPageReceiveError()
             }
 
             private fun loadUrlOnView(url: String): Boolean {
