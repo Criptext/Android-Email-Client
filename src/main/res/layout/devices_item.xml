@@ -3,110 +3,104 @@
     android:id="@+id/device_root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="17dp"
-        android:id="@+id/deviceItem">
+        android:padding="10dp">
+        <CheckBox
+            android:id="@+id/deviceCheckbox"
+            android:layout_gravity="center"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:visibility="gone"
+            android:layout_weight="0"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            />
 
-        <GridLayout
+        <ImageView
+            android:id="@+id/imageViewDeviceType"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_weight="0"
+            android:src="@drawable/device_m"
+            android:tint="#9b9b9b"
+            android:layout_gravity="center"
+            />
+
+        <LinearLayout
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <CheckBox
-                android:id="@+id/deviceCheckbox"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:scaleX="0.8"
-                android:scaleY="0.8"
-                android:visibility="gone"/>
-
-            <ImageView
-                android:id="@+id/imageViewDeviceType"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/device_m"
-                android:tint="#9b9b9b"
-                android:layout_row="0"
-                android:layout_column="1" />
-
-            <LinearLayout
-                android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp"
+            android:layout_weight="0.1"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/textViewDeviceName"
+                fontPath="fonts/NunitoSans-Bold.ttf"
+                android:textSize="15sp"
                 android:layout_width="wrap_content"
-                android:orientation="vertical"
-                android:layout_row="0"
-                android:layout_column="2"
-                android:gravity="center_vertical"
-                android:layout_marginStart="5dp">
+                android:layout_height="wrap_content"
+                android:maxLength="25"
+                android:text="Samsung MS"
+                android:ellipsize="end"
+                android:textColor="?attr/criptextPrimaryTextColor"/>
+            <LinearLayout
+                android:id="@+id/lastActivityLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/textViewDeviceName"
                     fontPath="fonts/NunitoSans-Bold.ttf"
-                    android:textSize="15sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLength="25"
-                    android:ellipsize="end"
-                    android:textColor="?attr/criptextPrimaryTextColor"/>
-                <LinearLayout
-                    android:id="@+id/lastActivityLayout"
+                    android:maxLines="1"
+                    android:text="@string/device_last_activity"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:textSize="13sp" />
+                <TextView
+                    android:id="@+id/textViewDeviceLastActive"
+                    fontPath="fonts/NunitoSans-Bold.ttf"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-                    <TextView
-                        fontPath="fonts/NunitoSans-Bold.ttf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:text="@string/device_last_activity"
-                        android:textColor="?attr/criptextPrimaryTextColor"
-                        android:textSize="13sp" />
-                    <TextView
-                        android:id="@+id/textViewDeviceLastActive"
-                        fontPath="fonts/NunitoSans-Bold.ttf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:text="@string/device_last_activity_time"
-                        android:textColor="?attr/criptextSecondaryTextColor"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/device_last_activity_time"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:textSize="13sp" />
             </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
-            <TextView
-                fontPath="fonts/NunitoSans-Regular.ttf"
-                android:id="@+id/textViewCurrentDevice"
-                android:layout_width="113dp"
-                android:layout_height="wrap_content"
-                android:layout_column="4"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="15dp"
-                android:layout_row="0"
-                android:visibility="gone"
-                android:textAlignment="textEnd"
-                android:textColor="@color/current_device"
-                android:textSize="14sp" />
-            <ImageView
-                android:id="@+id/imageViewTrashDevice"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:paddingBottom="9dp"
-                android:paddingStart="9dp"
-                android:layout_marginEnd="7dp"
-                android:layout_gravity="end"
-                android:src="@drawable/trash"
-                android:tint="@color/trash_can_grey"
-                android:layout_row="0"
-                android:layout_column="4" />
-        </GridLayout>
-
-
-    </FrameLayout>
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:id="@+id/textViewCurrentDevice"
+        android:layout_width="113dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="15dp"
+        android:visibility="visible"
+        android:layout_weight="0"
+        android:text="Current"
+        android:layout_centerVertical="true"
+        android:textAlignment="textEnd"
+        android:textColor="@color/current_device"
+        android:layout_alignParentEnd="true"
+        android:textSize="14sp" />
+    <ImageView
+        android:id="@+id/imageViewTrashDevice"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:paddingBottom="9dp"
+        android:paddingStart="9dp"
+        android:layout_marginEnd="7dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/trash"
+        android:tint="@color/trash_can_grey"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

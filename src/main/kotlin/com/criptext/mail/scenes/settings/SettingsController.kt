@@ -349,12 +349,14 @@ class SettingsController(
     }
 
     private fun onSyncBegin(result: SettingsResult.SyncBegin){
-        scene.enableSyncBeginResendButton()
         when(result) {
             is SettingsResult.SyncBegin.Success -> {
+                scene.enableSyncBeginResendButton()
                 generalDataSource.submitRequest(GeneralRequest.SyncStatus())
             }
             is SettingsResult.SyncBegin.Failure -> {
+                scene.dismissSyncBeginDialog()
+                model.isWaitingForSync = false
                 scene.showMessage(result.message)
             }
         }

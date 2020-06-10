@@ -11,7 +11,6 @@ sealed class SettingsResult{
 
     sealed class SyncBegin: SettingsResult() {
         class Success: SyncBegin()
-        data class NoDevicesAvailable(val message: UIMessage): SyncBegin()
         data class Failure(val message: UIMessage): SyncBegin()
     }
 
