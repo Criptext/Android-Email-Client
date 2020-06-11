@@ -24,5 +24,7 @@ abstract class MailboxUIObserver(generalDataSource: GeneralDataSource, host: IHo
     abstract fun showStartGuideMultiple(view: View)
     abstract fun showSecureIconGuide(view: View)
     abstract fun restoreFromBackupPressed()
+    abstract fun turnOnAutoBackup()
+    abstract fun notNowAutoBackup()
     abstract fun restoreFromLocalBackupPressed()
 }

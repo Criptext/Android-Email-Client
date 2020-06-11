@@ -241,7 +241,7 @@
   <string name="no_devices_available">No hay dispositivos autorizados disponibles para aprobar este dispositivo.</string>
   <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?]]></string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
-  <string name="password_warning_dialog_title">Advertencia</string>
+  <string name="password_warning_dialog_title">Advertencia ⚠️</string>
   <string name="password_warning_dialog_message">Si inicias sesión usando tu contraseña\n        <b>tu historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
   <string name="slide_1_title">
     <b>¡Bienvenido!</b>
@@ -712,4 +712,10 @@
   <string name="block_remote_dialog_title">Apagar Bloqueo de Imágenes</string>
   <string name="block_remote_dialog_message">Tu seguridad puede verse comprometida al desactivar este bloqueo. \n\nPuedes volver a reactivarlo desde Configuración->Privacidad.</string>
   <string name="download_web_view_started">Your download for has started.</string>
+  <string name="recommend_backup_title">Auto Backup to Drive</string>
+  <string name="recommend_backup_message">Activate backups to guarantee you never loose your data.</string>
+  <string name="recommend_backup_ok">Turn on Auto Backup</string>
+  <string name="recommend_backup_not_now"><u>Not now</u></string>
+  <string name="recommend_backup_warning_message">Your emails are exclusively kept on your device, not on Criptext servers. \nThis means that if you delete he app or loose the device you will loose all your emails.</string>
+  <string name="recommend_backup_warning_cancel"><u>I don\'t want backups</u></string>
 </resources>

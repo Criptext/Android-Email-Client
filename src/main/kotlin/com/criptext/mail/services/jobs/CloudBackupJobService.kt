@@ -36,6 +36,14 @@ class CloudBackupJobService: Job() {
         cancel(context, accountId)
     }
 
+    fun run(){
+        val builder = JobRequest.Builder(JOB_TAG)
+        builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)
+        builder.startNow()
+                .build()
+                .schedule()
+    }
+
     fun schedule(context: Context, intervalMillis: Long, accountId: Long, useWifiOnly: Boolean) {
         val builder = JobRequest.Builder(JOB_TAG)
         builder.setRequiredNetworkType(JobRequest.NetworkType.ANY)

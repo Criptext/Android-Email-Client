@@ -28,6 +28,7 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.IntentUtils
@@ -287,7 +288,12 @@ class MailboxSceneController(private val scene: MailboxScene,
     val googleSignInListener = object: GoogleSignInObserver {
         override fun signInSuccess(drive: Drive){
             model.mDriveServiceHelper = drive
-            host.goToScene(RestoreBackupParams(), false)
+            if(model.isCreateBackup){
+                scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                scene.scheduleCloudBackupJob(0, activeAccount.id, true)
+            } else {
+                host.goToScene(RestoreBackupParams(), false)
+            }
         }
 
         override fun signInFailed(){
@@ -311,6 +317,23 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver(generalDataSource, host) {
+        override fun turnOnAutoBackup() {
+            storage.putBool(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, true)
+            if(model.mDriveServiceHelper == null) model.mDriveServiceHelper = scene.getGoogleDriveService()
+            if(model.mDriveServiceHelper != null) {
+                scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                scene.scheduleCloudBackupJob(0, activeAccount.id, true)
+            }else{
+                model.isCreateBackup = true
+                host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
+                host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
+            }
+        }
+
+        override fun notNowAutoBackup() {
+            storage.putBool(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, true)
+        }
+
         override fun restoreFromLocalBackupPressed() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -783,6 +806,13 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
 
+    private fun checkRecommendBackup(threadSize: Int){
+        if(threadSize > 10
+                && !storage.getBool(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, false)){
+            scene.showRecommendBackupDialog()
+        }
+    }
+
     fun updateEmailThreadsLabelsRelations(selectedLabels: SelectedLabels): Boolean {
         dataSourceController.updateEmailThreadsLabelsRelations(selectedLabels, false)
         return false
@@ -952,6 +982,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.updateToolbarTitle(toolbarTitle)
             when(result) {
                 is MailboxResult.LoadEmailThreads.Success -> {
+                    checkRecommendBackup(model.threads.size)
                     if(model.threads.isEmpty())
                         dataSourceController.updateMailbox(model.selectedLabel)
                     val hasReachedEnd = result.emailPreviews.size < threadsPerPage
