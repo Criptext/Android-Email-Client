@@ -13,7 +13,7 @@
         android:paddingTop="20dp"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
-        android:src="@drawable/inbox_light"
+        android:src="@drawable/group_46"
         android:gravity="center_horizontal" />
 
 
@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:text="@string/recommend_backup_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
@@ -38,26 +39,9 @@
         android:text="@string/recommend_backup_message"
         fontPath="fonts/NunitoSans-Regular.ttf"
         android:gravity="center_horizontal"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:paddingEnd="15dp"
-        android:paddingStart="15dp"
+        android:padding="25dp"
         android:textColor="?attr/criptextSecondaryTextColor"
         android:textSize="14sp"/>
-
-    <Button
-        android:id="@+id/turn_on"
-        android:layout_width="220dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/btn_welcome_tour"
-        android:textColor="@drawable/btn_sign_in"
-        android:textAllCaps="false"
-        android:text="@string/recommend_backup_ok"
-        android:textSize="12sp"
-        android:padding="10dp"/>
 
     <TextView
         android:id="@+id/not_now"
@@ -67,9 +51,24 @@
         android:layout_gravity="center_horizontal"
         android:textColor="?attr/criptextPrimaryTextColor"
         android:text="@string/recommend_backup_not_now"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:padding="10dp"
         android:clickable="true"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/turn_on"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/label_button_center_bg"
+        android:textColor="@color/azure"
+        android:textAllCaps="false"
+        android:text="@string/recommend_backup_ok"
+        android:textSize="14sp"
+        android:padding="10dp"/>
+
+
 
 </LinearLayout>

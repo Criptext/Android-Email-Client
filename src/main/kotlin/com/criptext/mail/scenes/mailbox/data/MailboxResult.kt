@@ -6,6 +6,8 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -106,5 +108,18 @@ sealed class MailboxResult {
         data class Success(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class Failure(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class ServerFailure(val message: UIMessage, val queueIsEmpty: Boolean): ResendPeerEvents()
+    }
+
+    sealed class SetCloudBackupActive : MailboxResult() {
+        data class Success(val cloudBackupData: CloudBackupData): SetCloudBackupActive()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?,
+                           val cloudBackupData: CloudBackupData): SetCloudBackupActive()
+    }
+
+    sealed class CheckCloudBackupEnabled : MailboxResult() {
+        data class Success(val isEnabled: Boolean): CheckCloudBackupEnabled()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?): CheckCloudBackupEnabled()
     }
 }

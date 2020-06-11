@@ -6,6 +6,7 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
+import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
@@ -26,17 +27,35 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
 
     override val canBeParallelized = false
 
+    private var account: Account? = null
+
     override fun catchException(ex: Exception): CloudBackupResult.LoadCloudBakcupData {
         return if(ex is ServerErrorException) {
-            CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
+            CloudBackupResult.LoadCloudBakcupData.Failure(
+                    message = UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)),
+                    exception = ex,
+                    cloudBackupData = CloudBackupData(
+                            hasCloudBackup = account!!.hasCloudBackup,
+                            useWifiOnly = account!!.wifiOnly,
+                            autoBackupFrequency = account!!.autoBackupFrequency,
+                            lastModified = null,
+                            fileSize = 0
+                    ))
         }else {
-            CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_error_exception), ex)
+            CloudBackupResult.LoadCloudBakcupData.Failure(UIMessage(R.string.server_error_exception), ex,
+                    cloudBackupData = CloudBackupData(
+                            hasCloudBackup = account!!.hasCloudBackup,
+                            useWifiOnly = account!!.wifiOnly,
+                            autoBackupFrequency = account!!.autoBackupFrequency,
+                            lastModified = null,
+                            fileSize = 0
+                    ))
         }
     }
 
     override fun work(reporter: ProgressReporter<CloudBackupResult.LoadCloudBakcupData>): CloudBackupResult.LoadCloudBakcupData? {
         val result =  Result.of {
-            val account = accountDao.getAccountById(activeAccount.id) ?: throw Exception()
+            account = accountDao.getAccountById(activeAccount.id) ?: throw Exception()
             val info = if(mDriveServiceHelper != null){
                 val parentFolder = mDriveServiceHelper.files().list().setQ("name='Criptext Backups'").execute()
                 if(parentFolder.files.isEmpty())
@@ -61,7 +80,7 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
                 val savedCloudDataString = storage.getString(KeyValueStorage.StringKey.SavedBackupData, "")
                 if(savedCloudDataString.isEmpty()) throw Exception()
                 val savedCloudData = SavedCloudData.fromJson(savedCloudDataString)
-                val accountSavedData = savedCloudData.find { it.accountId == account.id } ?: throw Exception()
+                val accountSavedData = savedCloudData.find { it.accountId == account!!.id } ?: throw Exception()
                 Pair(accountSavedData.backupSize, accountSavedData.lastModified)
             }
             Triple(account, info.first, info.second)
@@ -70,9 +89,9 @@ class LoadCloudBackupDataWorker(val activeAccount: ActiveAccount,
         return when (result) {
             is Result.Success -> CloudBackupResult.LoadCloudBakcupData.Success(
                     cloudBackupData = CloudBackupData(
-                        hasCloudBackup = result.value.first.hasCloudBackup,
-                        useWifiOnly = result.value.first.wifiOnly,
-                        autoBackupFrequency = result.value.first.autoBackupFrequency,
+                        hasCloudBackup = result.value.first!!.hasCloudBackup,
+                        useWifiOnly = result.value.first!!.wifiOnly,
+                        autoBackupFrequency = result.value.first!!.autoBackupFrequency,
                         lastModified = Date(result.value.third),
                         fileSize = result.value.second
                     )

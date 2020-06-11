@@ -711,11 +711,13 @@
   <string name="block_remote_turn_off_message_disable">Contenido remoto deshabilitado para la cuenta: %1$s</string>
   <string name="block_remote_dialog_title">Apagar Bloqueo de Imágenes</string>
   <string name="block_remote_dialog_message">Tu seguridad puede verse comprometida al desactivar este bloqueo. \n\nPuedes volver a reactivarlo desde Configuración->Privacidad.</string>
-  <string name="download_web_view_started">Your download for has started.</string>
-  <string name="recommend_backup_title">Auto Backup to Drive</string>
-  <string name="recommend_backup_message">Activate backups to guarantee you never loose your data.</string>
-  <string name="recommend_backup_ok">Turn on Auto Backup</string>
-  <string name="recommend_backup_not_now"><u>Not now</u></string>
-  <string name="recommend_backup_warning_message">Your emails are exclusively kept on your device, not on Criptext servers. \nThis means that if you delete he app or loose the device you will loose all your emails.</string>
-  <string name="recommend_backup_warning_cancel"><u>I don\'t want backups</u></string>
+  <string name="download_web_view_started">Tu descarga ha comenzado.</string>
+  <string name="recommend_backup_title">Respaldo Automático a Drive</string>
+  <string name="recommend_backup_message">Cuando activas el respaldo automático te aseguras de no perder tu información.</string>
+  <string name="recommend_backup_ok">Activar Respaldo Automático</string>
+  <string name="recommend_backup_not_now"><u>No por ahora</u></string>
+  <string name="recommend_backup_warning_message">Tus correos solo existen en tu dispositivo, no en los servidores de Criptext. \nEsto quiere decir que si desinstalas tu app o pierdes tu dispositivo, perderás también todos tus correos.</string>
+  <string name="recommend_backup_warning_cancel"><u>Realmente no quiero respaldos.</u></string>
+  <string name="loading_cloud_backup_settings">Cargando configuraciones de respaldo…</string>
+  <string name="recommend_backup_sucess">Respaldo Automático Activado 📤</string>
 </resources>

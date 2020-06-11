@@ -43,7 +43,9 @@ interface CloudBackupScene{
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
     fun showPreparingFileDialog()
+    fun showLoadingSettingsDialog()
     fun dismissPreparingFileDialog()
+    fun dismissLoadingSettingsDialog()
 
     var cloudBackupUIObserver: CloudBackupUIObserver?
 
@@ -121,6 +123,7 @@ interface CloudBackupScene{
         private val encryptPassphraseDialog = EncryptPassphraseDialog(view.context)
         private val accountSuspended = AccountSuspendedDialog(context)
         private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
+        private val loadingSettings = MessageAndProgressDialog(context, UIMessage(R.string.loading_cloud_backup_settings))
 
         private val autoBackupSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -259,6 +262,14 @@ interface CloudBackupScene{
 
         override fun dismissPreparingFileDialog() {
             preparingFileDialog.dismiss()
+        }
+
+        override fun showLoadingSettingsDialog() {
+            loadingSettings.showDialog()
+        }
+
+        override fun dismissLoadingSettingsDialog() {
+            loadingSettings.dismiss()
         }
 
         private fun setWifiOnlySwitchState(isChecked: Boolean) {

@@ -35,12 +35,6 @@ class DecryptionService: Service() {
         return null
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        startForegroundService()
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, "ON START COMMAND")
@@ -49,6 +43,8 @@ class DecryptionService: Service() {
 
             when (intent.action) {
                 ACTION_START_SERVICE -> {
+                    notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    startForegroundService()
                     data = intent.extras?.getSerializable("data") as HashMap<String, String>
                     getPushNotification()
                 }

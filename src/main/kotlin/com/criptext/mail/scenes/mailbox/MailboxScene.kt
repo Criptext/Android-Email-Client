@@ -413,7 +413,6 @@ interface MailboxScene{
         override fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean) {
             val cloudBackupJobService = CloudBackupJobService()
             cloudBackupJobService.schedule(context, AccountUtils.getFrequencyPeriod(period), accountId, useWifiOnly)
-            cloudBackupJobService.run()
         }
 
         override fun removeFromScheduleCloudBackupJob(accountId: Long) {
