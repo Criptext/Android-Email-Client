@@ -241,7 +241,7 @@
   <string name="no_devices_available">No hay dispositivos autorizados disponibles para aprobar este dispositivo.</string>
   <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?]]></string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
-  <string name="password_warning_dialog_title">Advertencia</string>
+  <string name="password_warning_dialog_title">Advertencia ⚠️</string>
   <string name="password_warning_dialog_message">Si inicias sesión usando tu contraseña\n        <b>tu historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
   <string name="slide_1_title">
     <b>¡Bienvenido!</b>
@@ -711,5 +711,13 @@
   <string name="block_remote_turn_off_message_disable">Contenido remoto deshabilitado para la cuenta: %1$s</string>
   <string name="block_remote_dialog_title">Apagar Bloqueo de Imágenes</string>
   <string name="block_remote_dialog_message">Tu seguridad puede verse comprometida al desactivar este bloqueo. \n\nPuedes volver a reactivarlo desde Configuración->Privacidad.</string>
-  <string name="download_web_view_started">Your download for has started.</string>
+  <string name="download_web_view_started">Tu descarga ha comenzado.</string>
+  <string name="recommend_backup_title">Respaldo Automático a Drive</string>
+  <string name="recommend_backup_message">Cuando activas el respaldo automático te aseguras de no perder tu información.</string>
+  <string name="recommend_backup_ok">Activar Respaldo Automático</string>
+  <string name="recommend_backup_not_now"><u>No por ahora</u></string>
+  <string name="recommend_backup_warning_message">Tus correos solo existen en tu dispositivo, no en los servidores de Criptext. \nEsto quiere decir que si desinstalas tu app o pierdes tu dispositivo, perderás también todos tus correos.</string>
+  <string name="recommend_backup_warning_cancel"><u>Realmente no quiero respaldos.</u></string>
+  <string name="loading_cloud_backup_settings">Cargando configuraciones de respaldo…</string>
+  <string name="recommend_backup_sucess">Respaldo Automático Activado 📤</string>
 </resources>

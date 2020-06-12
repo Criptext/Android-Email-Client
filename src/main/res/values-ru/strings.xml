@@ -257,7 +257,7 @@
 
        Хотите продолжить?]]></string>
   <string name="sign_in_warning_dialog_title">Предупреждение о входе</string>
-  <string name="password_warning_dialog_title">Предупреждение</string>
+  <string name="password_warning_dialog_title">Предупреждение ⚠️</string>
   <string name="password_warning_dialog_message">Если вы осуществите вход с помощью вашего пароля, ваша
         <b>история почтовых сообщений из других устройств не будет доступна</b> на данном устройстве. Хотите продолжить?</string>
   <string name="slide_1_title">
@@ -735,4 +735,12 @@
   <string name="block_remote_dialog_title">Turn Off Image Block</string>
   <string name="block_remote_dialog_message">Your security is affected by deactivating this function. \n\n You can reactivate this function by going to Settings->Privacy.</string>
   <string name="download_web_view_started">Your download for has started.</string>
+  <string name="recommend_backup_title">Auto Backup</string>
+  <string name="recommend_backup_message">Auto Backup ensures that your data is never lost.</string>
+  <string name="recommend_backup_ok">Turn on Auto Backup</string>
+  <string name="recommend_backup_not_now"><u>Not now</u></string>
+  <string name="recommend_backup_warning_message">Your emails are exclusively kept on your device, not on Criptext servers. \nThis means that if you delete the app or loose the device you will loose all your emails.</string>
+  <string name="recommend_backup_warning_cancel"><u>I don\'t want backups</u></string>
+  <string name="loading_cloud_backup_settings">Loading cloud backup settings…</string>
+  <string name="recommend_backup_sucess">Backup Activated 📤</string>
 </resources>

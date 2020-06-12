@@ -29,11 +29,9 @@ import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
-import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
-import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
-import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
-import com.criptext.mail.scenes.mailbox.ui.RestoreBackupDialog
+import com.criptext.mail.scenes.mailbox.ui.*
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.apputils.AppRater
 import com.criptext.mail.utils.ui.*
@@ -126,6 +124,9 @@ interface MailboxScene{
     fun dismissPreparingFileDialog()
     fun hideComposer(shouldHide: Boolean)
     fun checkRating(storage: KeyValueStorage)
+    fun showRecommendBackupDialog()
+    fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean)
+    fun removeFromScheduleCloudBackupJob(accountId: Long)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -159,6 +160,7 @@ interface MailboxScene{
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
         private val restoreBackupDialog = RestoreBackupDialog(context)
         private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
+        private val recommendBackupDialog = RecommendBackupDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -402,6 +404,20 @@ interface MailboxScene{
 
         override fun checkRating(storage: KeyValueStorage) {
             AppRater.appLaunched(context, storage)
+        }
+
+        override fun showRecommendBackupDialog() {
+            recommendBackupDialog.showDialog(observer)
+        }
+
+        override fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean) {
+            val cloudBackupJobService = CloudBackupJobService()
+            cloudBackupJobService.schedule(context, AccountUtils.getFrequencyPeriod(period), accountId, useWifiOnly)
+        }
+
+        override fun removeFromScheduleCloudBackupJob(accountId: Long) {
+            val cloudBackupJobService = CloudBackupJobService()
+            cloudBackupJobService.cancel(context, accountId)
         }
 
         override fun dismissConfirmPasswordDialog() {

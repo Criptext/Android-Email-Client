@@ -14,6 +14,7 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
@@ -28,8 +29,14 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
+import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -94,6 +101,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
+            is MailboxResult.SetCloudBackupActive -> dataSourceController.onSetCloudBackupActive(result)
+            is MailboxResult.CheckCloudBackupEnabled -> dataSourceController.onCheckCloudBackupEnabled(result)
         }
     }
 
@@ -287,7 +296,19 @@ class MailboxSceneController(private val scene: MailboxScene,
     val googleSignInListener = object: GoogleSignInObserver {
         override fun signInSuccess(drive: Drive){
             model.mDriveServiceHelper = drive
-            host.goToScene(RestoreBackupParams(), false)
+            if(model.isCreateBackup){
+                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                        CloudBackupData(
+                                hasCloudBackup = true,
+                                autoBackupFrequency = 0,
+                                useWifiOnly = true,
+                                fileSize = 0,
+                                lastModified = null
+                        )
+                ))
+            } else {
+                host.goToScene(RestoreBackupParams(), false)
+            }
         }
 
         override fun signInFailed(){
@@ -309,8 +330,49 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     }
 
+    private fun setHasShowedBackup(hasShowed: Boolean){
+        val hasShowedBackupData = ProfileAskedForBackupData(activeAccount.id, hasShowed)
+        val allShowedBackupData = storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, "")
+        if (allShowedBackupData.isNotEmpty()) {
+            val savedData = ProfileAskedForBackupData.fromJson(allShowedBackupData)
+            val findAccountData = savedData.find { it.accountId == activeAccount.id }
+            if (findAccountData != null) {
+                savedData.remove(findAccountData)
+            }
+            savedData.add(hasShowedBackupData)
+            storage.putString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, ProfileAskedForBackupData.toJSON(savedData).toString())
+        } else {
+            val json = ProfileAskedForBackupData.toJSON(listOf(hasShowedBackupData))
+            storage.putString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, json.toString())
+        }
+    }
+
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver(generalDataSource, host) {
+        override fun turnOnAutoBackup() {
+            setHasShowedBackup(true)
+            if(model.mDriveServiceHelper == null) model.mDriveServiceHelper = scene.getGoogleDriveService()
+            if(model.mDriveServiceHelper != null) {
+                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                        CloudBackupData(
+                                hasCloudBackup = true,
+                                autoBackupFrequency = 0,
+                                useWifiOnly = true,
+                                fileSize = 0,
+                                lastModified = null
+                        )
+                ))
+            }else{
+                model.isCreateBackup = true
+                host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
+                host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
+            }
+        }
+
+        override fun notNowAutoBackup() {
+            setHasShowedBackup(true)
+        }
+
         override fun restoreFromLocalBackupPressed() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -663,6 +725,7 @@ class MailboxSceneController(private val scene: MailboxScene,
     override fun onNeedToSendEvent(event: Int) {
         reloadMailboxThreads()
         generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
+        checkRecommendBackup(model.threads.size)
     }
 
     override fun onPause() {
@@ -781,6 +844,20 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         dataSource.submitRequest(req)
         scene.showDialogLabelsChooser(LabelDataHandler(this))
+    }
+
+    private fun checkRecommendBackup(threadSize: Int){
+        val hasAskedForBackup = when {
+            storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, "").isNotEmpty() -> {
+                val showedBackupData = ProfileAskedForBackupData.fromJson(storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, ""))
+                showedBackupData.find { it.accountId == activeAccount.id }?.hasAskedForBackup ?: false
+            }
+            else -> false
+        }
+        if(threadSize >= 10
+                && !hasAskedForBackup){
+            dataSource.submitRequest(MailboxRequest.CheckCloudBackupEnabled())
+        }
     }
 
     fun updateEmailThreadsLabelsRelations(selectedLabels: SelectedLabels): Boolean {
@@ -919,6 +996,29 @@ class MailboxSceneController(private val scene: MailboxScene,
                                     enterAnim = 0,
                                     exitAnim = 0
                             ), keep = false)
+                }
+            }
+        }
+
+        fun onSetCloudBackupActive(result: MailboxResult.SetCloudBackupActive){
+            when(result){
+                is MailboxResult.SetCloudBackupActive.Success -> {
+                    scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                    scene.scheduleCloudBackupJob(result.cloudBackupData.autoBackupFrequency, activeAccount.id, result.cloudBackupData.useWifiOnly)
+                    scene.showMessage(UIMessage(R.string.recommend_backup_sucess))
+                }
+                is MailboxResult.SetCloudBackupActive.Failure -> {
+                    scene.showMessage(result.message)
+                }
+            }
+        }
+
+        fun onCheckCloudBackupEnabled(result: MailboxResult.CheckCloudBackupEnabled){
+            when(result){
+                is MailboxResult.CheckCloudBackupEnabled.Success -> {
+                    if(!result.isEnabled) {
+                        scene.showRecommendBackupDialog()
+                    }
                 }
             }
         }
@@ -1082,9 +1182,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.setMenuLabels(result.labels.map { LabelWrapper(it) })
                     scene.setMenuAccounts(model.extraAccounts, model.extraAccounts.map { 0 })
                     val position = model.threads.indexOfFirst { it.isSecure }
-                    if(position > -1){
+                    if(position > -1) {
                         val secureLockHasShown = storage.getBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, false)
-                        if(!secureLockHasShown) {
+                        if (!secureLockHasShown) {
                             scene.showSecureLockGuide(position)
                             storage.putBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, true)
                         }
@@ -1339,7 +1439,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
                 }
                 scene.updateBadges(resultData.extraAccountsData)
-
             }
         }
     }

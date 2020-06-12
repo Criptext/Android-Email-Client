@@ -15,7 +15,6 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.workers.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
-import com.criptext.mail.utils.generaldatasource.workers.SetActiveAccountFromPushWorker
 import java.io.File
 
 /**
@@ -178,6 +177,17 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
+            is MailboxRequest.SetCloudBackupActive -> SetCloudBackupActiveWorker(
+                    activeAccount = activeAccount,
+                    cloudBackupData = params.cloudBackupData,
+                    accountDao = db.accountDao(),
+                    publishFn = { res -> flushResults(res) }
+            )
+            is MailboxRequest.CheckCloudBackupEnabled -> CheckCloudBackupEnableWorker(
+                    activeAccount = activeAccount,
+                    accountDao = db.accountDao(),
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 

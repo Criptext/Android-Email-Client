@@ -84,6 +84,7 @@ import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
+import com.github.kittinunf.result.Result
 import com.github.omadahealth.lollipin.lib.PinCompatActivity
 import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -240,9 +241,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         notificationManager.cancel(CriptextNotification.ERROR_ID)
         notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
         notificationManager.cancel(CriptextNotification.DECRYPTION_SERVICE_ID)
-        val stopIntent = Intent(this, DecryptionService::class.java)
-        stopIntent.action = DecryptionService.ACTION_OPEN_APP
-        startService(stopIntent)
+        Result.of {
+            val stopIntent = Intent(this, DecryptionService::class.java)
+            stopIntent.action = DecryptionService.ACTION_OPEN_APP
+            startService(stopIntent)
+        }
         storage.getInt(KeyValueStorage.StringKey.NewMailNotificationCount, 0)
         storage.getInt(KeyValueStorage.StringKey.SyncNotificationCount, 0)
     }

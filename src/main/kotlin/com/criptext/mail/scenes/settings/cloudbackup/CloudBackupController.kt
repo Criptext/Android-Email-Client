@@ -220,6 +220,7 @@ class CloudBackupController(
         scene.attachView(model = model, cloudBackupUIObserver1 = uiObserver)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        scene.showLoadingSettingsDialog()
         dataSource.submitRequest(CloudBackupRequest.LoadCloudBackupData(model.mDriveService))
         return handleActivityMessage(activityMessage)
     }
@@ -372,6 +373,7 @@ class CloudBackupController(
     }
 
     private fun onLoadCloudBackupData(result: CloudBackupResult.LoadCloudBakcupData){
+        scene.dismissLoadingSettingsDialog()
         when(result){
             is CloudBackupResult.LoadCloudBakcupData.Success -> {
                 model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
@@ -382,6 +384,9 @@ class CloudBackupController(
                 scene.updateCloudBackupData(model)
             }
             is CloudBackupResult.LoadCloudBakcupData.Failure -> {
+                model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
+                model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
+                model.wifiOnly = result.cloudBackupData.useWifiOnly
                 scene.updateCloudBackupData(model)
             }
         }

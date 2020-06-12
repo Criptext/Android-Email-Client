@@ -8,6 +8,8 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerInputData
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
 
 /**
  * Created by sebas on 3/20/18.
@@ -60,4 +62,7 @@ sealed class MailboxRequest{
     class ResendEmails: MailboxRequest()
 
     class ResendPeerEvents: MailboxRequest()
+
+    class CheckCloudBackupEnabled: MailboxRequest()
+    data class SetCloudBackupActive(val cloudBackupData: CloudBackupData): MailboxRequest()
 }
