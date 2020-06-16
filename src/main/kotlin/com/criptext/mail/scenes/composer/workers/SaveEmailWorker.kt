@@ -20,7 +20,6 @@ import com.criptext.mail.utils.EmailUtils
 import com.criptext.mail.utils.HTMLUtils
 import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
-import kotlinx.android.synthetic.main.alias_item.view.*
 import java.io.File
 import java.util.*
 
@@ -28,6 +27,7 @@ import java.util.*
  * Created by danieltigse on 4/17/18.
  */
 class SaveEmailWorker(
+        private val goToRecoveryEmail: Boolean,
         private val filesDir: File,
         private val originalId: Long?,
         private val threadId: String?,
@@ -74,7 +74,7 @@ class SaveEmailWorker(
                 return ComposerResult.SaveEmail.Success(emailId = newEmailId, threadId = savedMailThreadId,
                         onlySave = onlySave, composerInputData = composerInputData, attachments = attachmentsSaved,
                         fileKey = fileKey, preview = if(threadId != null) EmailPreview.fromEmailThread(getEmailPreview(newEmailId)) else null,
-                        senderAddress = aliasEmail, account = account)
+                        senderAddress = aliasEmail, account = account, goToRecoveryEmail = goToRecoveryEmail)
             }
             is Result.Failure -> {
                 catchException(setupOperation.error)

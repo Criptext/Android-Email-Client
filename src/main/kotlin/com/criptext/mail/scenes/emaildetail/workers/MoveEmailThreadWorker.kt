@@ -56,7 +56,9 @@ class MoveEmailThreadWorker(
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    EmailDetailResult.MoveEmailThread.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    EmailDetailResult.MoveEmailThread.Unauthorized(createErrorMessage(ex))
+                ex.errorCode == ServerCodes.SessionExpired ->
+                    EmailDetailResult.MoveEmailThread.SessionExpired()
                 ex.errorCode == ServerCodes.Forbidden ->
                     EmailDetailResult.MoveEmailThread.Forbidden()
                 else -> EmailDetailResult.MoveEmailThread.Failure(

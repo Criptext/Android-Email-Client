@@ -97,7 +97,7 @@ class ResendEmailWorkerTest {
                     attachments = emptyList(), onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB, activeAccount = activeAccount)
+                    db = composerLocalDB, activeAccount = activeAccount, goToRecoveryEmail = false)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

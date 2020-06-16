@@ -20,6 +20,7 @@ import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.scenes.label_chooser.SelectedLabels
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.utils.ContactUtils
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
@@ -54,13 +55,23 @@ class MoveEmailWorker(
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): EmailDetailResult.MoveEmail {
-
-        val message = createErrorMessage(ex)
-        return EmailDetailResult.MoveEmail.Failure(
-                message = message,
-                exception = ex)
-    }
+    override fun catchException(ex: Exception): EmailDetailResult.MoveEmail =
+            if(ex is ServerErrorException) {
+                when {
+                    ex.errorCode == ServerCodes.Unauthorized ->
+                        EmailDetailResult.MoveEmail.Unauthorized(createErrorMessage(ex))
+                    ex.errorCode == ServerCodes.SessionExpired ->
+                        EmailDetailResult.MoveEmail.SessionExpired()
+                    ex.errorCode == ServerCodes.Forbidden ->
+                        EmailDetailResult.MoveEmail.Forbidden()
+                    else -> EmailDetailResult.MoveEmail.Failure(
+                            message = createErrorMessage(ex),
+                            exception = ex)
+                }
+            }
+            else EmailDetailResult.MoveEmail.Failure(
+                    message = createErrorMessage(ex),
+                    exception = ex)
 
     override fun work(reporter: ProgressReporter<EmailDetailResult.MoveEmail>): EmailDetailResult.MoveEmail? {
 
@@ -80,8 +91,7 @@ class MoveEmailWorker(
                     EmailDetailResult.MoveEmail.Success(emailId)
                 }
                 is Result.Failure -> {
-                    val message = createErrorMessage(result.error)
-                    EmailDetailResult.MoveEmail.Failure(message = message, exception = result.error)
+                    catchException(result.error)
                 }
             }
         }
@@ -140,8 +150,7 @@ class MoveEmailWorker(
                 EmailDetailResult.MoveEmail.Success(emailId)
             }
             is Result.Failure -> {
-                val message = createErrorMessage(result.error)
-                EmailDetailResult.MoveEmail.Failure(message = message, exception = result.error)
+                catchException(result.error)
             }
         }
 
@@ -153,10 +162,7 @@ class MoveEmailWorker(
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when(ex){
             is ServerErrorException -> {
-                when {
-                    ex.errorCode == 401 -> UIMessage(resId = R.string.device_removed_remotely_exception)
-                    else -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
-                }
+                UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             }
             else -> UIMessage(resId = R.string.unable_to_move_email, args = arrayOf(ex.toString()))
         }

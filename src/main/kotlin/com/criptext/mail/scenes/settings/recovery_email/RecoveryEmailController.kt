@@ -61,6 +61,7 @@ class RecoveryEmailController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.ResendConfirmationLink -> onResendConfirmationEmail(result)
         }
     }
 
@@ -124,7 +125,11 @@ class RecoveryEmailController(
         }
 
         override fun onChangeButtonPressed(text: String) {
-            scene.showEnterPasswordDialog()
+            if(model.userData.isEmailConfirmed)
+                scene.showEnterPasswordDialog()
+            else
+                dataSource.submitRequest(RecoveryEmailRequest.ChangeRecoveryEmail(null, model.newRecoveryEmail.value))
+
         }
 
         override fun onEnterPasswordOkPressed(password: String) {
@@ -145,7 +150,7 @@ class RecoveryEmailController(
         override fun onResendRecoveryLinkPressed() {
             lastTimeConfirmationLinkSent = System.currentTimeMillis()
             scene.onResendLinkTimeSet(RESEND_TIME)
-            dataSource.submitRequest(RecoveryEmailRequest.ResendConfirmationLink())
+            generalDataSource.submitRequest(GeneralRequest.ResendConfirmationLink())
         }
     }
 
@@ -159,7 +164,6 @@ class RecoveryEmailController(
 
     private val dataSourceListener = { result: RecoveryEmailResult ->
         when (result) {
-            is RecoveryEmailResult.ResendConfirmationLink -> onResendConfirmationEmail(result)
             is RecoveryEmailResult.ChangeRecoveryEmail -> onChangeRecoveryEmail(result)
         }
     }
@@ -180,13 +184,13 @@ class RecoveryEmailController(
         return false
     }
 
-    private fun onResendConfirmationEmail(result: RecoveryEmailResult.ResendConfirmationLink){
+    private fun onResendConfirmationEmail(result: GeneralResult.ResendConfirmationLink){
         when(result) {
-            is RecoveryEmailResult.ResendConfirmationLink.Success -> {
+            is GeneralResult.ResendConfirmationLink.Success -> {
                 model.lastTimeConfirmationLinkSent = lastTimeConfirmationLinkSent
                 scene.showConfirmationSentDialog()
             }
-            is RecoveryEmailResult.ResendConfirmationLink.Failure -> {
+            is GeneralResult.ResendConfirmationLink.Failure -> {
                 scene.onResendLinkFailed()
                 scene.showMessage(UIMessage(R.string.recovery_confirmation_resend_failed))
             }

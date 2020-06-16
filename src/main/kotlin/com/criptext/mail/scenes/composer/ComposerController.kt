@@ -8,7 +8,6 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
-import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
@@ -19,10 +18,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
-import com.criptext.mail.scenes.params.EmailDetailParams
-import com.criptext.mail.scenes.params.LinkingParams
-import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SignInParams
+import com.criptext.mail.scenes.params.*
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -30,7 +26,6 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import java.io.File
 import java.util.*
 
@@ -50,6 +45,19 @@ class ComposerController(private val storage: KeyValueStorage,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object: ComposerUIObserver(generalDataSource, host) {
+        override fun onVerifyRecoveryEmailPressed() {
+            when {
+                model.hasRecoveryEmail && !model.isEmailConfirmed -> {
+                    generalDataSource.submitRequest(GeneralRequest.ResendConfirmationLink())
+                }
+                !model.hasRecoveryEmail -> {
+                    val data = scene.getDataInputByUser()
+                    updateModelWithInputData(data)
+                    saveEmailAsDraft(data, onlySave = false, goToRecoveryEmail = true)
+                }
+            }
+        }
+
         override fun onSenderSelectedItem(index: Int) {
             if(model.fromAddresses.isNotEmpty() && model.selectedAddress != model.fromAddresses[index])
                 model.selectedAddress = model.fromAddresses[index]
@@ -101,7 +109,7 @@ class ComposerController(private val storage: KeyValueStorage,
             updateModelWithInputData(data)
 
             if(isReadyForSending())
-                saveEmailAsDraft(data, onlySave = false)
+                saveEmailAsDraft(data, onlySave = false, goToRecoveryEmail = false)
         }
 
         override fun sendDialogCancelPressed() {
@@ -186,6 +194,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.ResendConfirmationLink -> onResendConfirmationLink(result)
         }
     }
 
@@ -197,6 +206,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile -> onUploadFile(result)
             is ComposerResult.LoadInitialData -> onLoadedInitialData(result)
             is ComposerResult.CheckDomain -> onCheckDomain(result)
+            is ComposerResult.CheckCanSend -> onCheckCanSend(result)
         }
     }
 
@@ -261,6 +271,19 @@ class ComposerController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onCheckCanSend(result: ComposerResult.CheckCanSend) {
+        when (result) {
+            is ComposerResult.CheckCanSend.Success -> {
+                saveEmailAsDraft(result.composerInputData, onlySave = false, goToRecoveryEmail = false)
+            }
+            is ComposerResult.CheckCanSend.Failure -> {
+                model.hasRecoveryEmail = result.hasRecoveryEmail
+                model.isEmailConfirmed = result.isEmailConfirmed
+                scene.showRecoveryEmailRestrictionDialog()
+            }
+        }
+    }
+
     private fun onGetRemoteFile(result: GeneralResult.GetRemoteFile) {
         when (result) {
             is GeneralResult.GetRemoteFile.Success -> {
@@ -288,6 +311,14 @@ class ComposerController(private val storage: KeyValueStorage,
                         deletePastIntents = true,
                         keep = false
                 )
+            }
+        }
+    }
+
+    private fun onResendConfirmationLink(result: GeneralResult.ResendConfirmationLink){
+        when(result){
+            is GeneralResult.ResendConfirmationLink.Success -> {
+                host.showToastMessage(UIMessage(R.string.recovery_email_restriction_toast))
             }
         }
     }
@@ -324,6 +355,9 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.UploadFile.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)
             }
+            is ComposerResult.UploadFile.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(false))
+            }
             is ComposerResult.UploadFile.MaxFilesExceeds -> {
                 removeAttachmentByUUID(result.uuid, true)
                 model.filesExceedingMaxEmailSize.add(FileUtils.getName(result.filepath))
@@ -359,16 +393,20 @@ class ComposerController(private val storage: KeyValueStorage,
     private fun onEmailSavesAsDraft(result: ComposerResult.SaveEmail) {
         when (result) {
             is ComposerResult.SaveEmail.Success -> {
-                if(result.onlySave) {
-                    host.goToScene(MailboxParams(), activityMessage = ActivityMessage.DraftSaved(result.preview), keep = false)
-                } else {
-                    val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
-                            threadId = result.threadId,
-                            composerInputData = result.composerInputData,
-                            attachments = result.attachments, fileKey = model.fileKey,
-                            senderAddress = result.senderAddress,
-                            senderAccount = result.account)
-                    host.goToScene(MailboxParams(), activityMessage = sendMailMessage, keep = false)
+                when {
+                    result.goToRecoveryEmail -> {
+                        host.goToScene(ProfileParams(true), activityMessage = null, keep = false)
+                    }
+                    result.onlySave -> host.goToScene(MailboxParams(), activityMessage = ActivityMessage.DraftSaved(result.preview), keep = false)
+                    else -> {
+                        val sendMailMessage = ActivityMessage.SendMail(emailId = result.emailId,
+                                threadId = result.threadId,
+                                composerInputData = result.composerInputData,
+                                attachments = result.attachments, fileKey = model.fileKey,
+                                senderAddress = result.senderAddress,
+                                senderAccount = result.account)
+                        host.goToScene(MailboxParams(), activityMessage = sendMailMessage, keep = false)
+                    }
                 }
             }
             is ComposerResult.SaveEmail.TooManyRecipients ->
@@ -464,7 +502,7 @@ class ComposerController(private val storage: KeyValueStorage,
         }
     }
 
-    private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean) {
+    private fun saveEmailAsDraft(composerInputData: ComposerInputData, onlySave: Boolean, goToRecoveryEmail: Boolean) {
         val draftId = when (model.type) {
             is ComposerType.Draft -> model.type.draftId
             else -> null
@@ -480,6 +518,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 emailId = draftId,
                 originalId = originalId,
                 composerInputData = composerInputData,
+                goToRecoveryEmail = goToRecoveryEmail,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
                 senderEmail = model.selectedAddress,
                 currentLabel = model.currentLabel))
@@ -494,8 +533,7 @@ class ComposerController(private val storage: KeyValueStorage,
             val validationError = Validator.validateContacts(data)
             when {
                 validationError != null -> scene.showError(validationError.toUIMessage())
-                Validator.criptextOnlyContacts(data) -> saveEmailAsDraft(data, onlySave = false)
-                else -> observer.sendDialogButtonPressed()
+                else -> dataSource.submitRequest(ComposerRequest.CheckCanSend(data))
             }
         } else if(model.isUploadingAttachments && model.attachments.isNotEmpty()) {
             scene.showError(UIMessage(R.string.wait_for_attachments))
@@ -712,7 +750,8 @@ class ComposerController(private val storage: KeyValueStorage,
         if (shouldGoBackWithoutSave()) {
             exitToEmailDetailScene()
         } else {
-            saveEmailAsDraft(composerInputData = scene.getDataInputByUser(), onlySave = true)
+            saveEmailAsDraft(composerInputData = scene.getDataInputByUser(), onlySave = true,
+                    goToRecoveryEmail = false)
         }
     }
 

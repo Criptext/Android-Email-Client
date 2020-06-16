@@ -124,6 +124,12 @@ sealed class GeneralResult {
             }
         }
 
+        class SessionExpired: ActiveAccountUpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return Label.defaultItems.inbox
+            }
+        }
+
         data class Forbidden(
                 val mailboxLabel: Label,
                 val message: UIMessage,
@@ -251,6 +257,7 @@ sealed class GeneralResult {
         data class Success(val userSettings: UserSettingsData): GetUserSettings()
         data class Failure(val message: UIMessage): GetUserSettings()
         data class Unauthorized(val message: UIMessage): GetUserSettings()
+        class SessionExpired(): GetUserSettings()
         class Forbidden: GetUserSettings()
         class EnterpriseSuspended: GetUserSettings()
     }
@@ -303,5 +310,10 @@ sealed class GeneralResult {
     sealed class ChangeBlockRemoteContentSetting: GeneralResult() {
         data class Success(val newBlockRemoteContent: Boolean): ChangeBlockRemoteContentSetting()
         data class Failure(val newBlockRemoteContent: Boolean, val message: UIMessage) : ChangeBlockRemoteContentSetting()
+    }
+
+    sealed class ResendConfirmationLink: GeneralResult() {
+        class Success: ResendConfirmationLink()
+        data class Failure(val message: UIMessage): ResendConfirmationLink()
     }
 }

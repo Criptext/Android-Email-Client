@@ -6,14 +6,9 @@ import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.WorkRunner
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.custom_domain.workers.DeleteDomainWorker
 import com.criptext.mail.scenes.settings.custom_domain.workers.LoadDomainWorker
-import com.criptext.mail.scenes.settings.custom_domain_entry.workers.CheckDomainAvailableWorker
-import com.criptext.mail.scenes.settings.custom_domain_entry.workers.RegisterDomainWorker
-import com.criptext.mail.scenes.settings.recovery_email.workers.ChangeRecoveryEmailWorker
-import com.criptext.mail.scenes.settings.recovery_email.workers.ResendLinkWorker
 
 class CustomDomainDataSource(
         private val db: AppDatabase,

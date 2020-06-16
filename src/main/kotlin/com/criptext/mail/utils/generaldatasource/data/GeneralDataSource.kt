@@ -312,6 +312,13 @@ class GeneralDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     }
             )
+            is GeneralRequest.ResendConfirmationLink -> ResendRecoveryEmailLinkWorker(
+                    accountDao = db.accountDao(),
+                    storage = storage,
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = flushResults
+            )
         }
     }
 }

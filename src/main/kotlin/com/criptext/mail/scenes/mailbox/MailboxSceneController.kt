@@ -946,7 +946,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.EmptyTrash.Failure ->
                     scene.showMessage(resultData.message)
                 is MailboxResult.EmptyTrash.Unauthorized ->
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(resultData.message)
+                is MailboxResult.EmptyTrash.SessionExpired ->
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 is MailboxResult.EmptyTrash.Forbidden ->
                     scene.showConfirmPasswordDialog(observer)
             }
@@ -1093,7 +1095,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.UpdateEmailThreadsLabelsRelations.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1121,7 +1126,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
                 is MailboxResult.MoveEmailThread.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.MoveEmailThread.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1148,7 +1156,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(result.message)
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.SendMail.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1207,7 +1218,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
                 is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.UpdateUnreadStatus.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
                     scene.showConfirmPasswordDialog(observer)
@@ -1518,7 +1532,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showMessage(resultData.message)
+            }
+            is GeneralResult.ActiveAccountUpdateMailbox.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
                 scene.showConfirmPasswordDialog(observer)

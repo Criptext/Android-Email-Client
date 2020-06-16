@@ -46,7 +46,9 @@ class UpdateUnreadStatusWorker(
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    MailboxResult.UpdateUnreadStatus.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    MailboxResult.UpdateUnreadStatus.Unauthorized(createErrorMessage(ex))
+                ex.errorCode == ServerCodes.SessionExpired ->
+                    MailboxResult.UpdateUnreadStatus.SessionExpired()
                 ex.errorCode == ServerCodes.Forbidden ->
                     MailboxResult.UpdateUnreadStatus.Forbidden()
                 else -> MailboxResult.UpdateUnreadStatus.Failure(createErrorMessage(ex))

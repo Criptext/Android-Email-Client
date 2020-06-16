@@ -22,6 +22,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
         data class Unauthorized(val message: UIMessage) : UpdateEmailThreadsLabelsRelations()
+        class SessionExpired : UpdateEmailThreadsLabelsRelations()
         class Forbidden: UpdateEmailThreadsLabelsRelations()
     }
 
@@ -31,6 +32,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
         data class Unauthorized(val message: UIMessage) : MoveEmailThread()
+        class SessionExpired : MoveEmailThread()
         class Forbidden: MoveEmailThread()
     }
 
@@ -69,6 +71,7 @@ sealed class MailboxResult {
         class Success(val newEmailPreview: EmailPreview?, val currentLabel: Label, val isSecure: Boolean): SendMail()
         data class Failure(val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
+        class SessionExpired: SendMail()
         class Forbidden: SendMail()
         class EnterpriseSuspended: SendMail()
     }
@@ -88,6 +91,7 @@ sealed class MailboxResult {
         data class Success(val threadId: List<String>, val unreadStatus: Boolean): UpdateUnreadStatus()
         class Failure(val message: UIMessage): UpdateUnreadStatus()
         class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
+        class SessionExpired: UpdateUnreadStatus()
         class Forbidden: UpdateUnreadStatus()
     }
 
@@ -95,6 +99,7 @@ sealed class MailboxResult {
         class Success: EmptyTrash()
         class Failure(val message: UIMessage): EmptyTrash()
         class Unauthorized(val message: UIMessage): EmptyTrash()
+        class SessionExpired: EmptyTrash()
         class Forbidden: EmptyTrash()
     }
 

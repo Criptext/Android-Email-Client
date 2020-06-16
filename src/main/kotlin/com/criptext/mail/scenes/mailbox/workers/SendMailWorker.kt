@@ -222,7 +222,9 @@ class SendMailWorker(private val signalClient: SignalClient,
         return if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    MailboxResult.SendMail.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                    MailboxResult.SendMail.Unauthorized(createErrorMessage(ex))
+                ex.errorCode == ServerCodes.SessionExpired ->
+                    MailboxResult.SendMail.SessionExpired()
                 ex.errorCode == ServerCodes.Forbidden ->
                     MailboxResult.SendMail.Forbidden()
                 ex.errorCode == ServerCodes.TooManyRequests ->

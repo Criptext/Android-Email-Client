@@ -62,7 +62,8 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
                     onlySave = false, composerInputData = mockedComposerInputData, attachments = emptyList(),
-                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
+                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount,
+                    goToRecoveryEmail = false))
 
             val sendMailMessageWithExpectedEmailId: (ActivityMessage?) -> Boolean = {
                 (it as ActivityMessage.SendMail).emailId == 1L
@@ -80,7 +81,8 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
 
             simulateMailSaveEvent(ComposerResult.SaveEmail.Success(emailId = 1, threadId = "1:1",
                     onlySave = true, composerInputData = mockedComposerInputData, attachments = emptyList(),
-                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount))
+                    fileKey = null, preview = null, senderAddress = activeAccount.userEmail, account = activeAccount,
+                    goToRecoveryEmail = false))
 
             verify { host.goToScene(params = any(), activityMessage = any(), keep = false, animationData = any()) }
         }
