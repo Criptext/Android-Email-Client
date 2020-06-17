@@ -28,7 +28,8 @@ class EventHelper(private val db: EventLocalDB,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
                   private val acknoledgeEvents: Boolean,
-                  private val doNotParseEmails: Boolean = false){
+                  private val doNotParseEmails: Boolean = false,
+                  private val progressListener: EventHelperListener? = null){
 
     private val mailboxAPIClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private val emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
@@ -172,6 +173,7 @@ class EventHelper(private val db: EventLocalDB,
 
         when(operation){
             is Result.Success -> {
+                progressListener?.emailHasBeenParsed()
                 val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
                         label.id, activeAccount)
                 if(newPreview != null)
@@ -183,6 +185,7 @@ class EventHelper(private val db: EventLocalDB,
             is Result.Failure -> {
                 when(operation.error){
                     is DuplicateMessageException -> {
+                        progressListener?.emailHasBeenParsed()
                         updateExistingEmailTransaction(metadata)
                         val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
                                 label.id, activeAccount)
@@ -613,4 +616,5 @@ class EventHelper(private val db: EventLocalDB,
 
     class NothingNewException: Exception()
     class NoContentFoundException: Exception()
+    class AccountNotFoundException: Exception()
 }

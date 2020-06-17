@@ -1,14 +1,12 @@
 package com.criptext.mail.push.workers
 
-import android.content.res.Resources
 import android.os.Build
+import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.ServerErrorException
-import com.criptext.mail.api.models.EmailMetadata
-import com.criptext.mail.api.models.Event
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
@@ -19,18 +17,18 @@ import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.PushResult
+import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.signal.SignalStoreCriptext
+import com.criptext.mail.signal.SignalUtils
 import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.eventhelper.EventHelper
-import com.criptext.mail.utils.eventhelper.EventLoader
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.eventhelper.EventHelper
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.flatMap
 import com.squareup.picasso.Picasso
 import org.whispersystems.libsignal.DuplicateMessageException
-import java.io.IOException
 
 
 class GetPushEmailWorker(
@@ -49,7 +47,6 @@ class GetPushEmailWorker(
 
     private lateinit var apiClient: MailboxAPIClient
     private lateinit var emailInsertionApiClient: EmailInsertionAPIClient
-    private val eventsToAcknowldege = mutableListOf<Long>()
     private lateinit var activeAccount: ActiveAccount
     private lateinit var signalClient: SignalClient
     private var notificationId: Int = -1
@@ -57,10 +54,11 @@ class GetPushEmailWorker(
     override fun catchException(ex: Exception): PushResult.NewEmail {
         val message = createErrorMessage(ex)
         return PushResult.NewEmail.Failure(label, message, ex, pushData, shouldPostNotification,
-                notificationId)
+                notificationId,
+                activeAccount)
     }
 
-    private fun processFailure(failure: Result.Failure<Boolean,
+    private fun processFailure(failure: Result.Failure<String,
             Exception>): PushResult.NewEmail {
         return if (failure.error is EventHelper.NothingNewException)
             PushResult.NewEmail.Success(
@@ -69,7 +67,8 @@ class GetPushEmailWorker(
                     shouldPostNotification = shouldPostNotification,
                     pushData = pushData,
                     senderImage = null,
-                    notificationId = notificationId)
+                    notificationId = notificationId,
+                    activeAccount = activeAccount)
         else
             PushResult.NewEmail.Failure(
                     mailboxLabel = label,
@@ -77,7 +76,8 @@ class GetPushEmailWorker(
                     exception = failure.error,
                     pushData = pushData,
                     shouldPostNotification = shouldPostNotification,
-                    notificationId = notificationId)
+                    notificationId = notificationId,
+                    activeAccount = activeAccount)
     }
 
     override fun work(reporter: ProgressReporter<PushResult.NewEmail>)
@@ -85,11 +85,12 @@ class GetPushEmailWorker(
 
         val dbAccount = dbEvents.getAccount(pushData["account"], pushData["domain"]) ?: return PushResult.NewEmail.Failure(
                 mailboxLabel = label,
-                message = createErrorMessage(EventHelper.NothingNewException()),
-                exception = EventHelper.NothingNewException(),
+                message = createErrorMessage(EventHelper.AccountNotFoundException()),
+                exception = EventHelper.AccountNotFoundException(),
                 pushData = pushData,
                 shouldPostNotification = shouldPostNotification,
-                notificationId = -1)
+                notificationId = -1,
+                activeAccount = activeAccount)
 
         activeAccount = ActiveAccount.loadFromDB(dbAccount)!!
         setupForAntiPush(pushData)
@@ -103,7 +104,8 @@ class GetPushEmailWorker(
                     exception = EventHelper.NothingNewException(),
                     pushData = pushData,
                     shouldPostNotification = shouldPostNotification,
-                    notificationId = notificationId)
+                    notificationId = notificationId,
+                    activeAccount = activeAccount)
         }
 
 
@@ -112,114 +114,85 @@ class GetPushEmailWorker(
         apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
         emailInsertionApiClient = EmailInsertionAPIClient(httpClient, activeAccount.jwt)
 
-        val requestEvents = EventLoader.getEvent(apiClient, rowId)
-        val operationResult = requestEvents
-                .flatMap(processEvent)
-
         val newData = mutableMapOf<String, String>()
         newData.putAll(pushData)
 
+        val operationResult = Result.of {
+            val encryptedPreview = newData["preview"] ?: throw NullPointerException()
+            getDecryptedEmailPreview(signalClient = signalClient, encryptedPreview = encryptedPreview, metadata = newData)
+        }
 
         return when(operationResult) {
             is Result.Success -> {
-                val metadataKey = newData["metadataKey"]?.toLong()
-                if(metadataKey != null) {
-                    val email = dbEvents.getEmailByMetadataKey(metadataKey, activeAccount.id)
-                    if(email != null){
-                        val fullEmail = dbEvents.getFullEmailById(emailId = email.id, activeAccount = activeAccount)!!
-                        val files = fullEmail.files
-                        newData["preview"] = email.preview
-                        newData["subject"] = email.subject
-                        newData["hasInlineImages"] = (files.firstOrNull { it.cid != null && it.cid != "" }  != null).toString()
-                        newData["name"] = dbEvents.getFromContactByEmailId(email.id)[0].name
-                        newData["email"] = dbEvents.getFromContactByEmailId(email.id)[0].email
-                        val emailAddress = newData["email"]
-                        val bm = try {
-                            if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
-                                val domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
-                                Picasso.get().load(Hosts.restApiBaseUrl
-                                        .plus("/user/avatar/$domain/${EmailAddressUtils.extractRecipientIdFromAddress(emailAddress, domain)}")).get()
-                            } else
-                                null
-                        } catch (ex: Exception){
-                            null
-                        }
-                        if(fullEmail.labels.contains(Label.defaultItems.spam)){
-                            PushResult.NewEmail.SilentSuccess()
-                        } else {
-                            PushResult.NewEmail.Success(
-                                    mailboxLabel = label,
-                                    isManual = true,
-                                    pushData = newData,
-                                    shouldPostNotification = shouldPostNotification,
-                                    senderImage = bm,
-                                    notificationId = notificationId
-                            )
-                        }
-                    }else{
-                        PushResult.NewEmail.Failure(
-                                mailboxLabel = label,
-                                message = createErrorMessage(Resources.NotFoundException()),
-                                exception = Resources.NotFoundException(),
-                                pushData = pushData,
-                                shouldPostNotification = shouldPostNotification,
-                                notificationId = notificationId)
-                    }
-                }else {
-                    PushResult.NewEmail.Failure(
-                            mailboxLabel = label,
-                            message = createErrorMessage(Resources.NotFoundException()),
-                            exception = Resources.NotFoundException(),
-                            pushData = pushData,
-                            shouldPostNotification = shouldPostNotification,
-                            notificationId = notificationId)
+                newData["preview"] = operationResult.value
+                newData["subject"] = pushData["body"] ?: ""
+                newData["hasInlineImages"] = pushData["hasInlineImages"] ?: ""
+                newData["name"] = pushData["title"] ?: ""
+                newData["email"] = pushData["email"] ?: ""
+                val emailAddress = newData["email"]
+                val bm = try {
+                    if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress)) {
+                        val domain = EmailAddressUtils.extractEmailAddressDomain(emailAddress)
+                        Picasso.get().load(Hosts.restApiBaseUrl
+                                .plus("/user/avatar/$domain/${EmailAddressUtils.extractRecipientIdFromAddress(emailAddress, domain)}")).get()
+                    } else
+                        null
+                } catch (ex: Exception){
+                    null
                 }
+                PushResult.NewEmail.Success(
+                        mailboxLabel = label,
+                        isManual = true,
+                        pushData = newData,
+                        shouldPostNotification = shouldPostNotification,
+                        senderImage = bm,
+                        notificationId = notificationId,
+                        activeAccount = activeAccount
+                )
             }
 
             is Result.Failure -> processFailure(operationResult)
         }
     }
 
-    val processEvent: (Event) -> Result<Boolean, Exception> = { event ->
-        Result.of {
-            processNewEmails(event)
-        }
+    private fun getDecryptedEmailPreview(signalClient: SignalClient,
+                                         encryptedPreview: String,
+                                         metadata: Map<String, String>): String {
+        val senderId = getSenderId(metadata)
+        val messageType = SignalEncryptedData.Type.fromInt(metadata["previewMessageType"]?.toInt()) ?: return encryptedPreview
+        return if (senderId.first != null) {
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = encryptedPreview,
+                    type = messageType)
+
+            decryptMessage(signalClient = signalClient,
+                    recipientId = senderId.second, deviceId = senderId.first!!,
+                    encryptedData = encryptedData,
+                    isFromBob = senderId.second == SignalUtils.externalRecipientId)
+        } else
+            encryptedPreview
     }
 
-    private fun processNewEmails(event: Event): Boolean {
-        val toIdAndMetadataPair: (Event) -> Pair<Long, EmailMetadata> =
-                { Pair( it.rowid, EmailMetadata.fromJSON(it.params)) }
-        val emailInsertedSuccessfully: (Pair<Long, EmailMetadata>) -> Boolean =
-                { (_, metadata) ->
-                    try {
-                        val aliases = db.aliasDao().getAll(accountId = activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
-                        insertIncomingEmailTransaction(metadata, aliases)
-                        // insertion success, try to acknowledge it
-                        true
-                    } catch (ex: DuplicateMessageException) {
-                        // duplicated, try to acknowledge it
-                        true
-                    }
-                    catch (ex: Exception) {
-                        // Unknown exception, probably network related, skip acknowledge
-                        if(ex is DuplicateMessageException){
-                            updateExistingEmailTransaction(metadata)
-                        }
-                        ex is DuplicateMessageException
-                    }
-                }
-        val toEventId: (Pair<Long, EmailMetadata>) -> Long =
-                { (eventId, _) -> eventId }
+    private fun getSenderId(metadata: Map<String, String>): Pair<Int?, String>{
+        val senderDeviceId = metadata["deviceId"]?.toInt()
+        val senderDomain = metadata["senderDomain"] ?: throw NullPointerException()
+        val senderRecipientId = if(senderDomain.isEmpty() || senderDomain == Contact.mainDomain) metadata["senderId"]!!
+        else metadata["senderId"].plus("@$senderDomain")
+        return Pair(senderDeviceId, senderRecipientId)
+    }
 
-        val eventIdsToAcknowledge = listOf(event)
-                .map(toIdAndMetadataPair)
-                .filter(emailInsertedSuccessfully)
-                .map(toEventId)
-
-        if (eventIdsToAcknowledge.isNotEmpty())
-            eventsToAcknowldege.addAll(eventIdsToAcknowledge)
-
-        return eventIdsToAcknowledge.isNotEmpty()
+    private fun decryptMessage(signalClient: SignalClient, recipientId: String, deviceId: Int,
+                               encryptedData: SignalEncryptedData, isFromBob: Boolean): String {
+        return try {
+            signalClient.decryptMessage(recipientId = recipientId,
+                    deviceId = deviceId,
+                    encryptedData = encryptedData)
+        } catch (ex: Exception) {
+            if (ex is DuplicateMessageException) throw ex
+            val loggedException = if(isFromBob) EmailInsertionSetup.BobDecryptionException() else ex
+            Crashlytics.logException(loggedException)
+            "Unable to decrypt message."
+        }
     }
 
     override fun cancel() {
@@ -246,22 +219,6 @@ class GetPushEmailWorker(
                 notificationId =  if(isPostNougat) type.requestCodeRandom() else type.requestCode()
             }
         }
-    }
-
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>) =
-            dbEvents.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases)
-
-    private fun updateExistingEmailTransaction(metadata: EmailMetadata) =
-            dbEvents.updateExistingEmail(metadata, activeAccount)
-
-    private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Long>): Boolean {
-        try {
-            if(eventIdsToAcknowledge.isNotEmpty())
-                apiClient.acknowledgeEvents(eventIdsToAcknowledge)
-        } catch (ex: IOException) {
-            // if this request fails, just ignore it, we can acknowledge again later
-        }
-        return eventIdsToAcknowledge.isNotEmpty()
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

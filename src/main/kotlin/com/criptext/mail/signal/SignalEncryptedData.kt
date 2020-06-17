@@ -16,7 +16,7 @@ data class SignalEncryptedData(
         }
 
         companion object {
-            fun fromInt(i: Int): Type? =
+            fun fromInt(i: Int?): Type? =
                 when (i) {
                     1 -> normal
                     3 -> preKey
