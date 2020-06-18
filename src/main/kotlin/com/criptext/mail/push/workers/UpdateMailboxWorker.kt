@@ -14,12 +14,17 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import org.whispersystems.libsignal.DuplicateMessageException
 import android.graphics.Bitmap
+import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
+import com.criptext.mail.api.models.Event
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.eventhelper.EventHelper
+import com.criptext.mail.utils.eventhelper.EventHelperListener
 import com.criptext.mail.utils.eventhelper.EventHelperResultData
 import com.criptext.mail.utils.eventhelper.EventLoader
+import com.github.kittinunf.result.mapError
+import org.json.JSONObject
 
 
 /**
@@ -27,12 +32,12 @@ import com.criptext.mail.utils.eventhelper.EventLoader
  */
 
 class UpdateMailboxWorker(
-        signalClient: SignalClient,
+        private val signalClient: SignalClient,
         private val dbEvents: EventLocalDB,
         private val activeAccount: ActiveAccount,
-        storage: KeyValueStorage,
+        private val storage: KeyValueStorage,
         private val label: Label,
-        httpClient: HttpClient,
+        private val httpClient: HttpClient,
         override val publishFn: (
                 PushResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<PushResult.UpdateMailbox> {
@@ -40,8 +45,9 @@ class UpdateMailboxWorker(
 
     override val canBeParallelized = false
 
-    private val eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
-            true)
+    private lateinit var eventHelper: EventHelper
+    private var parsedEmailCount = 0
+    private var maxEmailCount = 0
     private val apiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
     private var shouldCallAgain = false
 
@@ -64,12 +70,33 @@ class UpdateMailboxWorker(
                     exception = failure.error)
     }
 
+    private fun setup(reporter: ProgressReporter<PushResult.UpdateMailbox>): Result<Pair<List<Event>, Boolean>, Exception>{
+        val count = Result.of {
+            apiClient.getPendingEventCount(Event.Cmd.newEmail)
+        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        when(count){
+            is Result.Success -> {
+                maxEmailCount = JSONObject(count.value.body).getInt("total")
+                eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
+                        true, false, object : EventHelperListener {
+                    override fun emailHasBeenParsed() {
+                        parsedEmailCount += 1
+                        reporter.report(PushResult.UpdateMailbox.Progress(parsedEmailCount, maxEmailCount))
+                    }
+                })
+                eventHelper.setupForMailbox(label)
+                val requestEvents = EventLoader.getEvents(apiClient)
+                shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
+                return requestEvents
+            }
+            is Result.Failure -> throw EventHelper.NoContentFoundException()
+        }
+    }
+
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)
             : PushResult.UpdateMailbox? {
-        eventHelper.setupForMailbox(label)
-        val requestEvents = EventLoader.getEvents(apiClient)
-        shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
-        val operationResult = requestEvents
+
+        val operationResult = setup(reporter)
                 .flatMap(eventHelper.processEvents)
 
 

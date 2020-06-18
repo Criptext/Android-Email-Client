@@ -723,8 +723,9 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="web_view_no_internet_message">Looks like you have lost connections with Wifi or other Internet connection</string>
   <string name="btn_skip">Skip to Mailbox</string>
   <string name="title_web_view_upgrade_to_plus">Join Plus</string>
-  <string name="foreground_decryption_message">Decrypting Emails</string>
-  <string name="foreground_decryption_notification">Decryption Service Notification</string>
+  <string name="foreground_decryption_message">Getting Emails…</string>
+  <string name="foreground_decryption_message_progress">Getting Emails…%1$d of %2$d</string>
+  <string name="foreground_decryption_notification">Decryption Service</string>
   <string name="plus_dialog_custom_domains_title">Enjoy Custom Domains</string>
   <string name="plus_dialog_aliases_title">Enjoy Aliases</string>
   <string name="show_images_btn">Show Images</string>

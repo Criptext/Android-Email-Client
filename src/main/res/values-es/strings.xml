@@ -695,8 +695,9 @@
   <string name="web_view_no_internet_message">Parece que has perdido conexión con tu Wifi o con tus operadora. Intenta de nuevo más tarde.</string>
   <string name="btn_skip">Saltar</string>
   <string name="title_web_view_upgrade_to_plus">Unirse a Plus</string>
-  <string name="foreground_decryption_message">Desencriptando Correos</string>
-  <string name="foreground_decryption_notification">Notificación del Servicio de Desencriptación</string>
+  <string name="foreground_decryption_message">Recibiendo Correos…</string>
+  <string name="foreground_decryption_message_progress">Recibiendo Correos %1$d de %2$d</string>
+  <string name="foreground_decryption_notification">Servicio de Desencriptación</string>
   <string name="plus_dialog_custom_domains_title">¡Disfruta Dominios Personalizados!</string>
   <string name="plus_dialog_aliases_title">¡Disfruta de Aliases!</string>
   <string name="show_images_btn">Mostrar Imágenes</string>
