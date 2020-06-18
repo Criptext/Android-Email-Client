@@ -102,7 +102,7 @@ class SendEmailWorkerTest {
                     attachments = inputData.attachments!!, onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = inputData.fileKey, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB, activeAccount = activeAccount)
+                    db = composerLocalDB, activeAccount = activeAccount, goToRecoveryEmail = false)
 
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {

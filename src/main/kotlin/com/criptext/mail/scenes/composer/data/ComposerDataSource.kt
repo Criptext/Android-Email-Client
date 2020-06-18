@@ -44,6 +44,7 @@ class ComposerDataSource(
                 flushResults(res)
             }
             is ComposerRequest.SaveEmailAsDraft -> SaveEmailWorker(
+                    goToRecoveryEmail = params.goToRecoveryEmail,
                     threadId = params.threadId,
                     emailId = params.emailId, composerInputData = params.composerInputData,
                     senderAddress = params.senderEmail, dao = emailInsertionDao,
@@ -72,6 +73,12 @@ class ComposerDataSource(
                     publishFn = { res -> flushResults(res) })
             is ComposerRequest.CheckDomain -> CheckDomainsWorker(
                     emails = params.emails,
+                    httpClient = HttpClient.Default(),
+                    activeAccount = activeAccount,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is ComposerRequest.CheckCanSend -> CheckCanSendWorker(
+                    composerInputData = params.composerInputData,
                     httpClient = HttpClient.Default(),
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }

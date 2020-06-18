@@ -111,6 +111,21 @@ class RegisterUserWorker(
             is ServerErrorException -> {
                 when {
                     ex.errorCode == ServerCodes.BadRequest -> UIMessage(resId = R.string.taken_username_error)
+                    ex.errorCode == ServerCodes.MethodNotAllowed -> {
+                        val body = ex.body
+                        if(body == null) {
+                            UIMessage(resId = R.string.recovery_email_sign_up_error)
+                        } else {
+                            val json = JSONObject(body)
+                            when (json.getInt("error")){
+                                1 -> UIMessage(resId = R.string.recovery_email_sign_up_error_1)
+                                2 -> UIMessage(resId = R.string.recovery_email_sign_up_error_2,
+                                        args = arrayOf(json.getJSONObject("data").getInt("max")))
+                                3 -> UIMessage(resId = R.string.recovery_email_sign_up_error_3)
+                                else -> UIMessage(resId = R.string.recovery_email_sign_up_error)
+                            }
+                        }
+                    }
                     ex.errorCode == ServerCodes.TooManyRequests -> {
                         val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {

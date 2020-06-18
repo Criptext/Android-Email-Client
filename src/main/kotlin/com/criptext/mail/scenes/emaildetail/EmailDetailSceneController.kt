@@ -242,7 +242,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.ActiveAccountUpdateMailbox.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -294,10 +297,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         keep = false)
             }
             is EmailDetailResult.UpdateUnreadStatus.Failure -> {
-                    scene.showError(UIMessage(R.string.error_updating_status))
+                scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(UIMessage(R.string.error_updating_status))
+            }
+            is EmailDetailResult.UpdateUnreadStatus.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -315,10 +321,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         keep = false)
             }
             is EmailDetailResult.MoveEmailThread.Failure -> {
-                    scene.showError(UIMessage(R.string.error_moving_emails))
+                scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.MoveEmailThread.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -350,7 +359,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmail.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.MoveEmail.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmail.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)
@@ -377,7 +389,10 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.UnsendFullEmailFromEmailId.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
                 scene.showConfirmPasswordDialog(emailDetailUIObserver)

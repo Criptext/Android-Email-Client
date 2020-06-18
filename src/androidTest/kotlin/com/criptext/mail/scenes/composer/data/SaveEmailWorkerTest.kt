@@ -54,7 +54,8 @@ class SaveEmailWorkerTest {
             SaveEmailWorker(emailId = emailId, threadId = threadId, composerInputData = inputData,
                     onlySave = onlySave, senderAddress = activeAccount.userEmail, dao = emailInsertionDao,
                     publishFn = {}, attachments = emptyList(), fileKey = fileKey, originalId = null, activeAccount = activeAccount,
-                    filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox, db = composerLocalDB)
+                    filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox, db = composerLocalDB,
+                    goToRecoveryEmail = false)
 
 
     @Test

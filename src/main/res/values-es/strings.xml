@@ -608,7 +608,7 @@
   <string name="error_deleting_label">Error borrando etiqueta. Por favor intenta de nuevo.</string>
   <string name="error_editing_label">Error editando etiqueta. Por favor intenta de nuevo.</string>
   <string name="recovery_code">
-    <u>Enviar Código de Recuperqación</u>
+    <u>Enviar Código de Recuperación</u>
   </string>
   <string name="recovery_code_dialog_title">Código de Recuperación</string>
   <string name="recovery_code_dialog_message">Por favor revisa tu correo de recuperación e introduce el código que te hemos enviado.</string>
@@ -721,4 +721,12 @@
   <string name="recommend_backup_warning_cancel"><u>Realmente no quiero respaldos.</u></string>
   <string name="loading_cloud_backup_settings">Cargando configuraciones de respaldo…</string>
   <string name="recommend_backup_sucess">Respaldo Automático Activado 📤</string>
+  <string name="recovery_email_sign_up_error">Error con tu correo de recuperación.</string>
+  <string name="recovery_email_sign_up_error_1">Esta dirección no ha confirmado su correo de recuperación.</string>
+  <string name="recovery_email_sign_up_error_2">Este correo de recuperación ya ha sido usado %1$d.</string>
+  <string name="recovery_email_sign_up_error_3">Esta dirección de correo no es soportada.</string>
+  <string name="recovery_email_restriction_title">No tan rápido 🤨</string>
+  <string name="recovery_email_restriction_message">Necesitas verificar to correo de recuperación para poder enviar correos. \n\nEsto es en caso de que pierdas tu contraseña, puedas recuperar el acceso a tu cuenta.</string>
+  <string name="recovery_email_restriction_btn">Verifica tu Correo de Recuperación</string>
+  <string name="recovery_email_restriction_toast">Un nuevo enlace de confirmación fue enviado a tu corre de recuperación.</string>
 </resources>

@@ -338,6 +338,14 @@ class AliasesController(
                     )
                 }
             }
+            is GeneralResult.GetUserSettings.Unauthorized -> {
+                dataSource.submitRequest(AliasesRequest.LoadAliases())
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.SessionExpired ->
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
+            is GeneralResult.GetUserSettings.Forbidden ->
+                scene.showConfirmPasswordDialog(uiObserver)
             is GeneralResult.GetUserSettings.Failure -> {
                 dataSource.submitRequest(AliasesRequest.LoadAliases())
             }

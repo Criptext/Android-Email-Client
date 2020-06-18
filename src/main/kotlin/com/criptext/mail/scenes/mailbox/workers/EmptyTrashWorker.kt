@@ -39,7 +39,9 @@ class EmptyTrashWorker(
             if(ex is ServerErrorException) {
                 when {
                     ex.errorCode == ServerCodes.Unauthorized ->
-                        MailboxResult.EmptyTrash.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                        MailboxResult.EmptyTrash.Unauthorized(createErrorMessage(ex))
+                    ex.errorCode == ServerCodes.SessionExpired ->
+                        MailboxResult.EmptyTrash.SessionExpired()
                     ex.errorCode == ServerCodes.Forbidden ->
                         MailboxResult.EmptyTrash.Forbidden()
                     else -> MailboxResult.EmptyTrash.Failure(createErrorMessage(ex))

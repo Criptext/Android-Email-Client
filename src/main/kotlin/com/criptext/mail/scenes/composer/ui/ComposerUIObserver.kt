@@ -24,4 +24,5 @@ abstract class ComposerUIObserver(generalDataSource: GeneralDataSource, host: IH
     abstract fun leaveComposer()
     abstract fun showStartGuideAttachments(view: View)
     abstract fun onSenderSelectedItem(index: Int)
+    abstract fun onVerifyRecoveryEmailPressed()
 }

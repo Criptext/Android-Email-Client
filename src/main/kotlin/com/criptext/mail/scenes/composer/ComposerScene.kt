@@ -68,6 +68,7 @@ interface ComposerScene {
     fun fillFromOptions(list: List<String>)
     fun switchToSimpleFrom(from: String)
     fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>)
+    fun showRecoveryEmailRestrictionDialog()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -78,6 +79,7 @@ interface ComposerScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
+        private val recoveryEmailRestrictionDialog = RecoveryEmailRestrictionDialog(ctx)
 
         private val fromAddresses: Spinner by lazy {
             view.findViewById<Spinner>(R.id.spinner_from)
@@ -334,6 +336,10 @@ interface ComposerScene {
 
         override fun showStayInComposerDialog(observer: ComposerUIObserver) {
             stayInComposerDialog.showLinkDeviceAuthDialog(observer)
+        }
+
+        override fun showRecoveryEmailRestrictionDialog() {
+            recoveryEmailRestrictionDialog.showDialog(observer)
         }
 
         override fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>) {

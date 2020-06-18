@@ -749,4 +749,12 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="recommend_backup_warning_cancel"><u>I don\'t want backups</u></string>
   <string name="loading_cloud_backup_settings">Loading cloud backup settings…</string>
   <string name="recommend_backup_sucess">Backup Activated 📤</string>
+  <string name="recovery_email_sign_up_error">Error with your recovery email.</string>
+  <string name="recovery_email_sign_up_error_1">This address has no verified recovery email.</string>
+  <string name="recovery_email_sign_up_error_2">The recovery email has already been used %1$d times.</string>
+  <string name="recovery_email_sign_up_error_3">Black-listed email provider.</string>
+  <string name="recovery_email_restriction_title">Not so fast 🤨</string>
+  <string name="recovery_email_restriction_message">You need to verify a Recovery Email before being able to send emails.\n\nThis is only so you can regain access to your account if you ever forget your password.</string>
+  <string name="recovery_email_restriction_btn">Verify Recovery Email</string>
+  <string name="recovery_email_restriction_toast">A new confirmation link was sent to your recovery email address.</string>
 </resources>
