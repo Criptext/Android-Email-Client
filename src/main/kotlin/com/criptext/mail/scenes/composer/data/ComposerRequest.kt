@@ -19,5 +19,6 @@ sealed class ComposerRequest {
     class UploadAttachment(val filepath: String, val fileKey: String?, val filesSize: Long, val uuid: String, val groupId: String?): ComposerRequest()
     class LoadInitialData(val composerType: ComposerType, val emailId: Long): ComposerRequest()
     data class CheckDomain(val emails: List<String>) : ComposerRequest()
-    class CheckCanSend(val composerInputData: ComposerInputData) : ComposerRequest()
+    data class CheckCanSend(val composerInputData: ComposerInputData) : ComposerRequest()
+    data class SwitchActiveAccount(val old: String, val new: String) : ComposerRequest()
 }

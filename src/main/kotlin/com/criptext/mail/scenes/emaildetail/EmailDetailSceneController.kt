@@ -248,7 +248,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
             is GeneralResult.ActiveAccountUpdateMailbox.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -306,7 +306,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -330,7 +330,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -365,7 +365,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmail.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -395,7 +395,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -445,7 +445,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
             is EmailDetailResult.DownloadFile.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -1245,7 +1245,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             })
         }
 

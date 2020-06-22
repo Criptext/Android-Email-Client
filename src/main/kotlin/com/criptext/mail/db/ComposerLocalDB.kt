@@ -18,6 +18,11 @@ class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fi
                       val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val aliasDao: AliasDao,
                       val filesDir: File) {
 
+    fun setActiveAccount(id: Long){
+        accountDao.updateActiveInAccount()
+        accountDao.updateActiveInAccount(id)
+    }
+
     fun updateContactTrusted(contactEmail: String, trusted: Boolean){
         contactDao.updateContactIsTrusted(contactEmail, trusted)
     }

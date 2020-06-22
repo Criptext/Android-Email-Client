@@ -185,7 +185,7 @@ class ReplyToController(
                 scene.showMessage(result.message)
             }
             is ReplyToResult.SetReplyToEmail.Forbidden -> {
-                scene.showConfirmPasswordDialog(replyToUIObserver)
+                host.showConfirmPasswordDialog(replyToUIObserver)
             }
             is ReplyToResult.SetReplyToEmail.EnterpriseSuspended-> {
                 showSuspendedAccountDialog()
@@ -308,7 +308,7 @@ class ReplyToController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(replyToUIObserver)
+                host.showConfirmPasswordDialog(replyToUIObserver)
             })
         }
 

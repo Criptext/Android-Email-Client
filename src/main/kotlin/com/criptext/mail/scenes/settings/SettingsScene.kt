@@ -26,9 +26,6 @@ interface SettingsScene{
     fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
     fun showSyncBeginDialog()
     fun toggleGeneralDialogWithInputLoad(isLoading: Boolean)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -130,7 +127,6 @@ interface SettingsScene{
         private var generalDialogWithInput: GeneralDialogWithInput? = null
         private var generalDialogConfirmation: GeneralDialogConfirmation? = null
 
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
         private val syncBeginDialog = SyncBeginDialog(context, UIMessage(R.string.title_sync))
@@ -190,18 +186,6 @@ interface SettingsScene{
 
         override fun dismissReplyToEmailDialog() {
             generalDialogWithInput?.dismiss()
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

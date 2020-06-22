@@ -127,8 +127,10 @@ class RecoveryEmailController(
         override fun onChangeButtonPressed(text: String) {
             if(model.userData.isEmailConfirmed)
                 scene.showEnterPasswordDialog()
-            else
+            else {
+                scene.loadChangeEmailButton(true)
                 dataSource.submitRequest(RecoveryEmailRequest.ChangeRecoveryEmail(null, model.newRecoveryEmail.value))
+            }
 
         }
 
@@ -198,6 +200,7 @@ class RecoveryEmailController(
     }
 
     private fun onChangeRecoveryEmail(result: RecoveryEmailResult.ChangeRecoveryEmail){
+        scene.loadChangeEmailButton(false)
         when(result) {
             is RecoveryEmailResult.ChangeRecoveryEmail.Success -> {
                 model.userData.recoveryEmail = model.newRecoveryEmail.value
@@ -353,7 +356,7 @@ class RecoveryEmailController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(recoveryEmailUIObserver)
+                host.showConfirmPasswordDialog(recoveryEmailUIObserver)
             })
         }
 

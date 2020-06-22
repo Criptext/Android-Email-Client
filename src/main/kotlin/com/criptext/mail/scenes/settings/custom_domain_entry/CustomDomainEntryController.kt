@@ -313,7 +313,7 @@ class CustomDomainEntryController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             })
         }
 

@@ -164,6 +164,14 @@
                 android:textColor="?attr/criptextSecondaryTextColor"
                 android:textSize="13sp" />
 
+            <ProgressBar
+                android:id="@+id/change_progress_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/progress_shape"/>
+
             <Button
                 android:id="@+id/change_email_button"
                 android:layout_width="140dp"

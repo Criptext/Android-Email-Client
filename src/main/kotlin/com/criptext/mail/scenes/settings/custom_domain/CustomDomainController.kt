@@ -284,7 +284,7 @@ class CustomDomainController(
             is GeneralResult.GetUserSettings.SessionExpired ->
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             is GeneralResult.GetUserSettings.Forbidden ->
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             is GeneralResult.GetUserSettings.Failure -> {
                 dataSource.submitRequest(CustomDomainRequest.LoadDomain())
             }
@@ -386,7 +386,7 @@ class CustomDomainController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             })
         }
 
