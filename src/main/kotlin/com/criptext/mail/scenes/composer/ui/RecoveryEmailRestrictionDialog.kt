@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
@@ -22,6 +19,7 @@ class RecoveryEmailRestrictionDialog(val context: Context) {
     private var title: TextView? = null
     private var message: TextView? = null
     private var verifyRecoveryEmail: Button? = null
+    private var verifyRecoveryEmailProgress: ProgressBar? = null
     private var notNow: TextView? = null
 
     fun showDialog(mailboxUIObserver: ComposerUIObserver?) {
@@ -55,7 +53,6 @@ class RecoveryEmailRestrictionDialog(val context: Context) {
 
 
         verifyRecoveryEmail?.setOnClickListener{
-            dialog?.dismiss()
             uiObserver?.onVerifyRecoveryEmailPressed()
         }
 
@@ -68,10 +65,21 @@ class RecoveryEmailRestrictionDialog(val context: Context) {
     }
 
     private fun loadViews(dialogView: View){
-        verifyRecoveryEmail = dialogView.findViewById(R.id.turn_on)
+        verifyRecoveryEmail = dialogView.findViewById(R.id.verify_button)
+        verifyRecoveryEmailProgress = dialogView.findViewById(R.id.verify_progress)
         notNow = dialogView.findViewById(R.id.not_now)
         title = dialogView.findViewById(R.id.backup_recommend_title)
         message = dialogView.findViewById(R.id.backup_recommend_message)
+    }
+
+    fun loading(isLoading: Boolean){
+        if(isLoading){
+            verifyRecoveryEmail?.visibility = View.GONE
+            verifyRecoveryEmailProgress?.visibility = View.VISIBLE
+        } else {
+            verifyRecoveryEmail?.visibility = View.VISIBLE
+            verifyRecoveryEmailProgress?.visibility = View.GONE
+        }
     }
 
     fun dismiss() {

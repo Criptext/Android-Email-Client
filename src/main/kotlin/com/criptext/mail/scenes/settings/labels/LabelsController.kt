@@ -378,7 +378,7 @@ class LabelsController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(labelsUIObserver)
+                host.showConfirmPasswordDialog(labelsUIObserver)
             })
         }
 

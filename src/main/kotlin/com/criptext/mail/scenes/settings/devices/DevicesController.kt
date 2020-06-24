@@ -215,7 +215,7 @@ class DevicesController(
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
-                scene.showConfirmPasswordDialog(devicesUIObserver)
+                host.showConfirmPasswordDialog(devicesUIObserver)
             }
             is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -307,7 +307,7 @@ class DevicesController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(devicesUIObserver)
+                host.showConfirmPasswordDialog(devicesUIObserver)
             })
         }
 

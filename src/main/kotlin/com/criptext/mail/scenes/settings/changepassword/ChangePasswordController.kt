@@ -320,7 +320,7 @@ class ChangePasswordController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(changePasswordUIObserver)
+                host.showConfirmPasswordDialog(changePasswordUIObserver)
             })
         }
 

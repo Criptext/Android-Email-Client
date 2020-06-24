@@ -45,20 +45,28 @@
         android:padding="10dp"
         android:clickable="true"
         android:layout_marginTop="10dp"/>
-
-    <Button
-        android:id="@+id/turn_on"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/label_button_center_bg"
-        android:textColor="@color/azure"
-        android:textAllCaps="false"
-        android:text="@string/recovery_email_restriction_btn"
-        android:textSize="14sp"
-        android:padding="10dp"/>
+        android:layout_marginTop="20dp">
+        <ProgressBar
+            android:id="@+id/verify_progress"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_progress_bar_bg" />
 
+        <Button
+            android:id="@+id/verify_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
-
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_button_center_bg"
+            android:textColor="@color/azure"
+            android:textAllCaps="false"
+            android:text="@string/recovery_email_restriction_btn"
+            android:textSize="14sp" />
+    </RelativeLayout>
 </LinearLayout>

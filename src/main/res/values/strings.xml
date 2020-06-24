@@ -730,5 +730,5 @@
   <string name="recovery_email_restriction_title">Not so fast 🤨</string>
   <string name="recovery_email_restriction_message">You need to verify a Recovery Email before being able to send emails.\n\nThis is only so you can regain access to your account if you ever forget your password.</string>
   <string name="recovery_email_restriction_btn">Verify Recovery Email</string>
-  <string name="recovery_email_restriction_toast">A new confirmation link was sent to your recovery email address.</string>
+  <string name="recovery_email_restriction_toast">A new confirmation link was sent to your recovery email address: %1$s.</string>
 </resources>

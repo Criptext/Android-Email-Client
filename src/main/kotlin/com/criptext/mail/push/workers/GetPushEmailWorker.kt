@@ -127,8 +127,8 @@ class GetPushEmailWorker(
                 newData["preview"] = operationResult.value
                 newData["subject"] = pushData["body"] ?: ""
                 newData["hasInlineImages"] = pushData["hasInlineImages"] ?: ""
-                newData["name"] = pushData["title"] ?: ""
-                newData["email"] = pushData["email"] ?: ""
+                newData["name"] = pushData["title"] ?: pushData["senderId"].plus("@${pushData["senderDomain"]}")
+                newData["email"] = pushData["email"] ?: pushData["senderId"].plus("@${pushData["senderDomain"]}")
                 val emailAddress = newData["email"]
                 val bm = try {
                     if(emailAddress != null && EmailAddressUtils.isFromCriptextDomain(emailAddress)) {

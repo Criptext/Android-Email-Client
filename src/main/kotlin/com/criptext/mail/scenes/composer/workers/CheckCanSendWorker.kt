@@ -42,7 +42,7 @@ class CheckCanSendWorker(httpClient: HttpClient,
                         val json = JSONObject(body)
                         val data = json.getJSONObject("data")
                         val recovery = data.getString("recovery")
-                        return ComposerResult.CheckCanSend.Failure(recovery.isNotEmpty(), false)
+                        return ComposerResult.CheckCanSend.Failure(recovery, false)
                     }
                 }
             }

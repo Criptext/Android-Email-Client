@@ -949,8 +949,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(resultData.message)
                 is MailboxResult.EmptyTrash.SessionExpired ->
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
-                is MailboxResult.EmptyTrash.Forbidden ->
-                    scene.showConfirmPasswordDialog(observer)
+                is MailboxResult.EmptyTrash.Forbidden -> {
+                    host.showConfirmPasswordDialog(observer)
+                }
             }
         }
 
@@ -1101,7 +1102,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1132,7 +1133,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1162,7 +1163,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
                 is MailboxResult.SendMail.EnterpriseSuspended -> {
                     showSuspendedAccountDialog()
@@ -1224,7 +1225,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1538,7 +1539,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
-                scene.showConfirmPasswordDialog(observer)
+                host.showConfirmPasswordDialog(observer)
             }
             is GeneralResult.ActiveAccountUpdateMailbox.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -1640,7 +1641,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(observer)
+                host.showConfirmPasswordDialog(observer)
             })
         }
 

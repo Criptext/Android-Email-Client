@@ -29,9 +29,6 @@ interface ChangePasswordScene{
     fun toggleChangePasswordButton(enable: Boolean)
     fun showOldPasswordError(message: UIMessage?)
     fun showForgotPasswordDialog(email: String?)
-    fun dismissConfirmPasswordDialog()
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -80,7 +77,6 @@ interface ChangePasswordScene{
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
@@ -188,18 +184,6 @@ interface ChangePasswordScene{
 
         override fun showForgotPasswordDialog(email: String?) {
             ForgotPasswordDialog(context, email).showForgotPasswordDialog()
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPasswordDialog.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPasswordDialog.setPasswordError(message)
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPasswordDialog.showDialog(observer)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

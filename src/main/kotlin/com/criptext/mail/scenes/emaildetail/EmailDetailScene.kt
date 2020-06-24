@@ -58,9 +58,6 @@ interface EmailDetailScene {
     fun updateAttachmentProgress(emailPosition: Int, attachmentPosition: Int)
     fun updateInlineImage(emailPosition: Int, cid: String, filePath: String)
     fun removeAttachmentAt(emailPosition: Int, attachmentPosition: Int)
-    fun dismissConfirmPasswordDialog()
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -90,7 +87,6 @@ interface EmailDetailScene {
         private val moveToDialog = MoveToDialog(context)
         private val deleteThreadDialog = DeleteThreadDialog(context)
         private val deleteEmailDialog = DeleteEmailDialog(context)
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
@@ -201,14 +197,6 @@ interface EmailDetailScene {
             
         }
 
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
         override fun expandAllThread() {
             fullEmailsRecyclerView?.expandAndNotify()
         }
@@ -237,10 +225,6 @@ interface EmailDetailScene {
 
         override fun dismissSyncDeviceDialog() {
             syncAuthDialog.dismiss()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-
         }
 
         override fun printFullEmail(info: HTMLUtils.PrintHeaderInfo, content: String, documentName: String,

@@ -63,6 +63,11 @@ sealed class ComposerResult {
 
     sealed class CheckCanSend : ComposerResult() {
         data class Success(val composerInputData: ComposerInputData): CheckCanSend()
-        data class Failure(val hasRecoveryEmail: Boolean, val isEmailConfirmed: Boolean): CheckCanSend()
+        data class Failure(val recoveryEmail: String, val isEmailConfirmed: Boolean): CheckCanSend()
+    }
+
+    sealed class SwitchActiveAccount : ComposerResult() {
+        data class Success(val newAccount: ActiveAccount): SwitchActiveAccount()
+        data class Failure(val message: UIMessage): SwitchActiveAccount()
     }
 }

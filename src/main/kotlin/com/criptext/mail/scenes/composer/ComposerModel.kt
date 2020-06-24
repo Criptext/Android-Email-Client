@@ -58,6 +58,7 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
     var shareActivityMessage: ActivityMessage.AddAttachments? = null
     var fromAddresses = mutableListOf<String>()
     var groupId: String? = null
-    var hasRecoveryEmail: Boolean = false
+    var recoveryEmailAddress = ""
+    var hasRecoveryEmail: Boolean = recoveryEmailAddress.isNotEmpty()
     var isEmailConfirmed: Boolean = false
 }

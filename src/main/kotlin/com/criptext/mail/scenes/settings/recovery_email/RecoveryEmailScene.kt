@@ -1,15 +1,13 @@
 package com.criptext.mail.scenes.settings.recovery_email
 
+import android.graphics.Typeface
 import android.os.CountDownTimer
 import androidx.core.content.ContextCompat
 import androidx.appcompat.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHolder
@@ -39,15 +37,13 @@ interface RecoveryEmailScene{
     fun setRecoveryEmailState(state: FormInputState)
     fun updateCurrent(model: RecoveryEmailModel)
     fun showForgotPasswordDialog(email: String)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
     fun dismissSyncDeviceDialog()
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
+    fun loadChangeEmailButton(isLoading: Boolean)
 
     class Default(val view: View): RecoveryEmailScene{
         private lateinit var recoveryEmailUIObserver: RecoveryEmailUIObserver
@@ -78,6 +74,10 @@ interface RecoveryEmailScene{
             view.findViewById<Button>(R.id.change_email_button)
         }
 
+        private val changeEmailButtonLoading: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.change_progress_button)
+        }
+
         private val textViewNewEmail: AppCompatEditText by lazy {
             view.findViewById<AppCompatEditText>(R.id.input)
         }
@@ -93,7 +93,6 @@ interface RecoveryEmailScene{
 
         private val confirmationSentDialog = ConfirmationSentDialog(context)
         private val enterPasswordDialog = EnterPasswordDialog(context)
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
@@ -124,22 +123,31 @@ interface RecoveryEmailScene{
         }
 
         private fun updateCurrentEmailStatus(model: RecoveryEmailModel){
-            if(model.userData.isEmailConfirmed) {
-                textViewConfirmText.setTextColor(ContextCompat.getColor(
-                        view.context, R.color.green))
-                textViewConfirmText.setText(R.string.status_confirmed)
-                resendLinkButton.visibility = View.GONE
-            }else{
-                textViewConfirmText.setTextColor(ContextCompat.getColor(
-                        view.context, R.color.red))
-                textViewConfirmText.setText(R.string.status_not_confirmed)
-                val lastResend = System.currentTimeMillis() - model.lastTimeConfirmationLinkSent
-                if(model.lastTimeConfirmationLinkSent != 0L && (lastResend < RecoveryEmailController.RESEND_TIME)){
-                    resendLinkButton.isEnabled = false
-                    timerListener(RecoveryEmailController.RESEND_TIME - lastResend)
-                }else {
-                    if(model.userData.recoveryEmail.isNotEmpty())
-                        resendLinkButton.visibility = View.VISIBLE
+            when {
+                model.userData.isEmailConfirmed -> {
+                    textViewConfirmText.setTextColor(ContextCompat.getColor(
+                            view.context, R.color.green))
+                    textViewConfirmText.setText(R.string.status_confirmed)
+                    resendLinkButton.visibility = View.GONE
+                }
+                model.userData.recoveryEmail.isEmpty() -> {
+                    textViewCurrentEmail.text = view.context.getLocalizedUIMessage(UIMessage(R.string.forgot_password_title_no_recovery))
+                    textViewCurrentEmail.setTypeface(textViewCurrentEmail.typeface, Typeface.ITALIC)
+                    resendLinkButton.visibility = View.GONE
+                    textViewConfirmText.visibility = View.GONE
+                }
+                else -> {
+                    textViewConfirmText.setTextColor(ContextCompat.getColor(
+                            view.context, R.color.red))
+                    textViewConfirmText.setText(R.string.status_not_confirmed)
+                    val lastResend = System.currentTimeMillis() - model.lastTimeConfirmationLinkSent
+                    if(model.lastTimeConfirmationLinkSent != 0L && (lastResend < RecoveryEmailController.RESEND_TIME)){
+                        resendLinkButton.isEnabled = false
+                        timerListener(RecoveryEmailController.RESEND_TIME - lastResend)
+                    }else {
+                        if(model.userData.recoveryEmail.isNotEmpty())
+                            resendLinkButton.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -164,6 +172,7 @@ interface RecoveryEmailScene{
                     val min = ((millisUntilFinished / 1000) / 60).toInt()
                     val sec = ((millisUntilFinished / 1000) % 60).toInt()
                     resendLinkButton.text = if(sec < 10) "$min:0$sec" else "$min:$sec"
+                    resendLinkButton.isEnabled = false
                 }
 
                 override fun onFinish() {
@@ -220,6 +229,16 @@ interface RecoveryEmailScene{
             changeEmailButton.isEnabled = true
         }
 
+        override fun loadChangeEmailButton(isLoading: Boolean) {
+            if(isLoading){
+                changeEmailButtonLoading.visibility = View.VISIBLE
+                changeEmailButton.visibility = View.GONE
+            } else {
+                changeEmailButtonLoading.visibility = View.GONE
+                changeEmailButton.visibility = View.VISIBLE
+            }
+        }
+
         override fun dialogToggleLoad(loading: Boolean) {
             enterPasswordDialog.toggleLoad(loading)
         }
@@ -246,18 +265,6 @@ interface RecoveryEmailScene{
             resendLinkButton.visibility = View.VISIBLE
             resendLinkButton.isEnabled = false
             resendLinkProgressButton.visibility = View.GONE
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun updateCurrent(model: RecoveryEmailModel) {

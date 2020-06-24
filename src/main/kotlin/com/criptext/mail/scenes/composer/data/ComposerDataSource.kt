@@ -83,6 +83,15 @@ class ComposerDataSource(
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }
             )
+            is ComposerRequest.SwitchActiveAccount -> SwitchActiveAccountWorker(
+                    db = composerLocalDB,
+                    newAccountAddress = params.new,
+                    oldAccountAddress = params.old,
+                    storage = storage,
+                    httpClient = HttpClient.Default(),
+                    activeAccount = activeAccount,
+                    publishFn = { res -> flushResults(res) }
+            )
         }
     }
 

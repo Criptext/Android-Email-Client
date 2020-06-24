@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.mailbox.ui
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -13,6 +14,10 @@ import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import android.text.style.UnderlineSpan
+import android.text.SpannableString
+
+
 
 class RecommendBackupDialog(val context: Context) {
 
@@ -73,7 +78,9 @@ class RecommendBackupDialog(val context: Context) {
         imageView?.visibility = View.GONE
         title?.text = view.context.getLocalizedUIMessage(UIMessage(R.string.password_warning_dialog_title))
         message?.text = view.context.getLocalizedUIMessage(UIMessage(R.string.recommend_backup_warning_message))
-        notNow?.text = view.context.getLocalizedUIMessage(UIMessage(R.string.recommend_backup_warning_cancel))
+        val content = SpannableString(view.context.getLocalizedUIMessage(UIMessage(R.string.recommend_backup_warning_cancel)))
+        content.setSpan(UnderlineSpan(), 0, content.length, 0)
+        notNow?.text = content
         notNow?.setOnClickListener{
             dismiss()
             uiObserver?.notNowAutoBackup()

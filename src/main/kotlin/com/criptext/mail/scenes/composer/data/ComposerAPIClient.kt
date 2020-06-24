@@ -33,7 +33,7 @@ class ComposerAPIClient(private val httpClient: HttpClient, var token: String): 
     }
 
     fun getCanSend(): HttpResponseData {
-        return httpClient.get(path = "user/cansend", authToken = token)
+        return httpClient.get(path = "/user/cansend", authToken = token)
     }
 
 }

@@ -15,6 +15,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
@@ -323,6 +326,18 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             item.isChecked = true
         }
         controller.onOptionsItemSelected(itemId)
+        when(itemId){
+            R.id.composer_send -> {
+                val progressBar = ProgressBar(this)
+                progressBar.layoutParams = ViewGroup.LayoutParams(100,100)
+                progressBar.setPaddingRelative(0,0,50,0)
+                item.actionView = progressBar
+                item.actionView.postDelayed({
+                    item.actionView = null
+            }, 1000)
+            return true
+            }
+        }
         return true
     }
 

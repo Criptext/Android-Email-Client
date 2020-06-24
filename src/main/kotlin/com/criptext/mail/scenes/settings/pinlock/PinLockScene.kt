@@ -27,9 +27,6 @@ interface PinLockScene{
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
     fun dismissSyncDeviceDialog()
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showForgotPasswordDialog(email: String)
     fun setPinLockStatus(isEnabled: Boolean)
     fun togglePinOptions(isEnabled: Boolean)
@@ -64,7 +61,6 @@ interface PinLockScene{
            view.findViewById(R.id.auto_lock_spinner) as Spinner
         }
 
-        private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
@@ -118,18 +114,6 @@ interface PinLockScene{
                 lockManager.appLock.addIgnoredActivity(SignInActivity::class.java)
                 lockManager.appLock.addIgnoredActivity(SignUpActivity::class.java)
             }
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPasswordDialog.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPasswordDialog.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPasswordDialog.setPasswordError(message)
         }
 
         override fun showForgotPasswordDialog(email: String) {

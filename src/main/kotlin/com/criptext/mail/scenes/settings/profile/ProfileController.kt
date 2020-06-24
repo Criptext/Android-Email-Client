@@ -349,7 +349,7 @@ class ProfileController(
                 generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             }
             is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -617,7 +617,7 @@ class ProfileController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             })
         }
 

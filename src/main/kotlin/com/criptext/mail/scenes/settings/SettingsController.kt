@@ -523,7 +523,7 @@ class SettingsController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(settingsUIObserver)
+                host.showConfirmPasswordDialog(settingsUIObserver)
             })
         }
 
