@@ -670,6 +670,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         confirmPassword.showDialog(observer)
     }
 
+    override fun toggleLoad(isLoading: Boolean) {
+        confirmPassword.toggleLoad(isLoading)
+    }
+
     override fun dismissConfirmPasswordDialog() {
         confirmPassword.dismissDialog()
     }

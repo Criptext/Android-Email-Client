@@ -153,6 +153,7 @@ abstract class SceneController(private val host: IHostActivity,
     }
 
     protected fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
+        host.toggleLoad(false)
         when (result) {
             is GeneralResult.ConfirmPassword.Success -> {
                 host.dismissConfirmPasswordDialog()
