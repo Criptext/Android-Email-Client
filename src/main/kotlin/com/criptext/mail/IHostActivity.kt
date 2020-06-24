@@ -68,6 +68,7 @@ interface IHostActivity {
     //General Scenes Functionality
     fun dismissConfirmPasswordDialog()
     fun showConfirmPasswordDialog(observer: UIObserver)
+    fun toggleLoad(isLoading: Boolean)
     fun setConfirmPasswordError(message: UIMessage)
     fun showToastMessage(message : UIMessage)
 }

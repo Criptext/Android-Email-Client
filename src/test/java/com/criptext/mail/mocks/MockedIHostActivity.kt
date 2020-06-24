@@ -19,6 +19,10 @@ import com.criptext.mail.utils.uiobserver.UIObserver
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun toggleLoad(isLoading: Boolean) {
+
+    }
+
     override fun dismissCriptextPlusDialog() {
 
     }
