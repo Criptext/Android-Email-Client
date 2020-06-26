@@ -156,6 +156,7 @@ class WebViewSceneController(private val scene: WebViewScene,
         scene.attachView(
                 observer, activeAccount, model, chromeClient
         )
+        scene.loadUrl(model.mUrl)
         return handleActivityMessage(activityMessage)
     }
 

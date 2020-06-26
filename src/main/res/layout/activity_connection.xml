@@ -5,21 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_content"
-    android:gravity="center"
     android:keepScreenOn="true">
 
     <TextView
         fontPath="fonts/NunitoSans-Regular.ttf"
-        android:id="@+id/titleSync"
+        android:id="@+id/version_text"
         android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:text="v0.22.2"
         android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
-        android:layout_marginBottom="60dp"
-        android:textSize="24sp"
-        android:textAlignment="center"
-        android:textColor="?attr/criptextPrimaryTextColor"
-        android:layout_centerHorizontal="true"
-        android:text="@string/title_sync"/>
+        android:textSize="@dimen/drawer_text_item"
+        android:textColor="@color/black"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/titleSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="130dp"
+            android:layout_marginBottom="60dp"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:layout_centerHorizontal="true"
+            android:text="@string/title_sync"/>
 
         <LinearLayout
             android:id="@+id/viewAnimation"
@@ -90,111 +106,111 @@
             android:background="@drawable/circle_succesed"
             android:alpha="0.0"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/viewAnimation"
-        android:background="#ddf0ff"
-        android:layout_marginTop="45dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:id="@+id/layoutProgressbar">
-        <com.beardedhen.androidbootstrap.BootstrapProgressBar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/progressbar_height"
-            app:animated="true"
-            app:bootstrapBrand="primary"
-            app:bootstrapProgress="0"
-            app:striped="true"
-            />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewAnimation"
+            android:background="#ddf0ff"
+            android:layout_marginTop="45dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:id="@+id/layoutProgressbar">
+            <com.beardedhen.androidbootstrap.BootstrapProgressBar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/progressbar_height"
+                app:animated="true"
+                app:bootstrapBrand="primary"
+                app:bootstrapProgress="0"
+                app:striped="true"
+                />
+        </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/progress_bar_percentage"
-        android:layout_below="@+id/layoutProgressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp">
-
-        <View
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@drawable/diamond_black"
-            android:layout_centerHorizontal="true"/>
-
-        <TextView
-            android:id="@+id/percentage_advanced"
+        <RelativeLayout
+            android:id="@+id/progress_bar_percentage"
+            android:layout_below="@+id/layoutProgressbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/square_round_corners_black"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="3dp"
-            android:text="0%"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
 
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/diamond_black"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/percentage_advanced"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/square_round_corners_black"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:text="0%"/>
+
+        </RelativeLayout>
+
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/textViewStatus"
+            android:layout_below="@+id/progress_bar_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="14sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:text="@string/establishing"/>
+
+        <TextView
+            android:id="@+id/textViewEmail"
+            android:layout_below="@+id/textViewStatus"
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:alpha="0.4"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_below="@+id/textViewEmail"
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:alpha="0.4"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="15sp"
+            android:text="@string/sync_screen_message"/>
+
+        <TextView
+            android:id="@+id/cancelSync"
+            android:paddingBottom="20dp"
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="@string/cancel_sync"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/azure"
+            android:textSize="14sp"
+            android:visibility="visible"/>
     </RelativeLayout>
-
-
-    <TextView
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:id="@+id/textViewStatus"
-        android:layout_below="@+id/progress_bar_percentage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="14sp"
-        android:textColor="?attr/criptextPrimaryTextColor"
-        android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:text="@string/establishing"/>
-
-    <TextView
-        android:id="@+id/textViewEmail"
-        android:layout_below="@+id/textViewStatus"
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:alpha="0.4"
-        android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:textColor="?attr/criptextSecondaryTextColor"
-        android:textSize="12sp" />
-
-    <TextView
-        android:layout_below="@+id/textViewEmail"
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:alpha="0.4"
-        android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:textColor="?attr/criptextSecondaryTextColor"
-        android:textSize="15sp"
-        android:text="@string/sync_screen_message"/>
-
-    <TextView
-        android:id="@+id/cancelSync"
-        android:layout_marginBottom="20dp"
-        fontPath="fonts/NunitoSans-Regular.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="@string/cancel_sync"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/azure"
-        android:textSize="14sp"
-        android:visibility="gone"/>
-
 </RelativeLayout>

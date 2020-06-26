@@ -1,4 +1,4 @@
-<LinearLayout
+<RelativeLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 android:background="@drawable/login_background"
@@ -7,6 +7,17 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:id="@+id/viewRoot"
 android:focusableInTouchMode="true" >
+
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:id="@+id/version_text"
+        android:layout_width="match_parent"
+        android:gravity="end"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/drawer_text_item"
+        android:textColor="@color/white"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"/>
 
     <ImageView
         android:id="@+id/icon_back"
@@ -20,7 +31,8 @@ android:focusableInTouchMode="true" >
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -173,4 +185,4 @@ android:focusableInTouchMode="true" >
                 android:textSize="14sp" />
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+</RelativeLayout>

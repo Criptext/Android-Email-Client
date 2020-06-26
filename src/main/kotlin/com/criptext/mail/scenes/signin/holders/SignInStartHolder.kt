@@ -19,6 +19,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.compat.ViewAnimationUtilsCompat
@@ -44,9 +45,11 @@ class SignInStartHolder(
     private val imageError: ImageView = view.findViewById(R.id.signin_error_image)
     private val backButton: View = view.findViewById(R.id.icon_back)
     private val contactSupport: View = view.findViewById(R.id.contact_support)
+    private val versionText: TextView = view.findViewById(R.id.version_text)
 
     init {
         usernameInput.text = SpannableStringBuilder(initialUsername)
+        versionText.text = "v${BuildConfig.VERSION_NAME}"
         showNormalTints()
         setListeners()
 

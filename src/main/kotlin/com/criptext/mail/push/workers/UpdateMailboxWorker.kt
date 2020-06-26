@@ -89,7 +89,7 @@ class UpdateMailboxWorker(
                 shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
                 return requestEvents
             }
-            is Result.Failure -> throw EventHelper.NoContentFoundException()
+            is Result.Failure -> return Result.of { throw EventHelper.NoContentFoundException() }
         }
     }
 
