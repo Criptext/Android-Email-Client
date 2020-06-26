@@ -44,7 +44,6 @@ interface WebViewScene{
             this.observer = observer
             setupWebView(model, chromeClient)
             setListeners()
-            loadUrl(model.mUrl)
         }
 
         override fun loadUrl(url: String?) {
@@ -66,9 +65,10 @@ interface WebViewScene{
         }
 
         private fun setupWebView(model: WebViewSceneModel, chromeClient: WebChromeClient) {
-            webViewCriptext.webChromeClient = chromeClient
             webViewCriptext.settings.javaScriptEnabled = true
             webViewCriptext.settings.userAgentString = WebViewSceneController.userAgent
+            webViewCriptext.settings.domStorageEnabled = true
+            webViewCriptext.webChromeClient = chromeClient
             webViewCriptext.webViewClient = client
             webViewCriptext.setDownloadListener(downloadListener)
 

@@ -189,9 +189,8 @@ class GetPushEmailWorker(
                     encryptedData = encryptedData)
         } catch (ex: Exception) {
             if (ex is DuplicateMessageException) throw ex
-            val loggedException = if(isFromBob) EmailInsertionSetup.BobDecryptionException() else ex
-            Crashlytics.logException(loggedException)
-            "Unable to decrypt message."
+            Crashlytics.logException(if(isFromBob) EmailInsertionSetup.BobDecryptionException() else ex)
+            ""
         }
     }
 
