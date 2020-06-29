@@ -21,7 +21,6 @@
             android:id="@+id/version_text"
             android:layout_width="match_parent"
             android:gravity="end"
-            android:text="v0.22.3"
             android:layout_height="wrap_content"
             android:textSize="@dimen/drawer_text_item"
             android:textColor="@color/white"
