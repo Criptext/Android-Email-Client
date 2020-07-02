@@ -15,7 +15,7 @@ import org.json.JSONObject
 
 data class ActiveAccount(val id: Long, val name: String, val recipientId: String, val domain: String,
                          val deviceId: Int, val jwt: String, val refreshToken: String, val signature: String,
-                         val type: AccountTypes, val blockRemoteContent: Boolean) : JSONData {
+                         val type: AccountTypes, val blockRemoteContent: Boolean, val defaultAddress: Long?) : JSONData {
 
     val userEmail = "$recipientId@$domain"
 
@@ -31,6 +31,7 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         json.put("signature", signature)
         json.put("type", type.ordinal)
         json.put("blockRemoteContent", blockRemoteContent)
+        if(defaultAddress != null) json.put("defaultAddress", defaultAddress)
         return json
     }
 
@@ -77,6 +78,14 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
         storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
     }
 
+    fun updateAccountDefaultAddress(storage: KeyValueStorage, newDefaultAddress: Long?){
+        val account = toJSON()
+        if(newDefaultAddress != null) {
+            account.put("defaultAddress", newDefaultAddress)
+            storage.putString(KeyValueStorage.StringKey.ActiveAccount, account.toString())
+        }
+    }
+
     companion object {
         fun fromJSONString(jsonString: String): ActiveAccount {
             val json = JSONObject(jsonString)
@@ -90,16 +99,18 @@ data class ActiveAccount(val id: Long, val name: String, val recipientId: String
             val domain = if(json.has("domain")) json.getString("domain") else Contact.mainDomain
             val type = if(json.has("type")) json.getInt("type") else 0
             val blockRemoteContent = if(json.has("blockRemoteContent")) json.getBoolean("blockRemoteContent") else true
+            val defaultAddress = if(json.has("defaultAddress")) json.getLong("defaultAddress") else null
 
             return ActiveAccount(id = if(id == 0L) 1 else id, name = name, recipientId = recipientId, deviceId = deviceId,
                     jwt = jwt, signature = signature, refreshToken = refreshToken, domain = domain,
-                    type = AccountUtils.getAccountTypeFromInt(type), blockRemoteContent = blockRemoteContent)
+                    type = AccountUtils.getAccountTypeFromInt(type), blockRemoteContent = blockRemoteContent, defaultAddress = defaultAddress)
         }
 
         fun loadFromDB(account: Account): ActiveAccount? {
             return ActiveAccount(id= account.id, name = account.name, recipientId = account.recipientId, deviceId = account.deviceId,
                     jwt = account.jwt, signature = account.signature, refreshToken = account.refreshToken,
-                    domain = account.domain, type = account.type, blockRemoteContent = account.blockRemoteContent)
+                    domain = account.domain, type = account.type, blockRemoteContent = account.blockRemoteContent,
+                    defaultAddress = account.defaultAddress)
         }
 
         fun loadFromStorage(storage: KeyValueStorage): ActiveAccount? {

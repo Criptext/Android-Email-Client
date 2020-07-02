@@ -39,7 +39,8 @@ class PushRequestHandlerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
 
     private lateinit var httpClient: HttpClient
     private lateinit var loadedEmails: List<FullEmail>
@@ -56,7 +57,8 @@ class PushRequestHandlerTest {
                 name = "Tester", registrationId = 1, blockRemoteContent = true,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__", type = AccountTypes.STANDARD,
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null,
+                defaultAddress = null))
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         mockWebServer = MockWebServer()
         mockWebServer.start()

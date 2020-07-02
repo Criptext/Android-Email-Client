@@ -1,11 +1,11 @@
-package com.criptext.mail.scenes.settings.aliases.data
+package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.CustomDomain
 import org.json.JSONArray
 
 data class AliasData(val rowId: Long, val name: String, val domain: String,
-                     val isActive: Boolean, val accountId: Long){
+                     val isActive: Boolean, val accountId: Long, val isDefault: Boolean){
     companion object {
         fun fromJSONArray(array: JSONArray, accountId: Long): Pair<List<CustomDomain>, List<AliasData>> {
             val length = array.length()
@@ -35,7 +35,8 @@ data class AliasData(val rowId: Long, val name: String, val domain: String,
                                             name = alias.getString("name"),
                                             isActive = alias.getInt("status") == 1,
                                             domain = domainName,
-                                            accountId = accountId
+                                            accountId = accountId,
+                                            isDefault = alias.getInt("default") == 1
                                     )
                                     )
                                 }

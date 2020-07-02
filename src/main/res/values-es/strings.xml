@@ -729,4 +729,5 @@
   <string name="recovery_email_restriction_message">Necesitas verificar to correo de recuperación para poder enviar correos. \n\nEsto es en caso de que pierdas tu contraseña, puedas recuperar el acceso a tu cuenta.</string>
   <string name="recovery_email_restriction_btn">Verifica tu Correo de Recuperación</string>
   <string name="recovery_email_restriction_toast">Un nuevo enlace de confirmación fue enviado a tu corre de recuperación: %1$s.</string>
+  <string name="settings_option_address_manager">Administrador de Direcciones</string>
 </resources>

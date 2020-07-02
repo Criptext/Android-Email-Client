@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.settings.data
 
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.CustomDomain
-import com.criptext.mail.scenes.settings.aliases.data.AliasData
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import org.json.JSONObject
 

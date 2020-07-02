@@ -105,7 +105,8 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 identityKeyPairB64 = privateBundle.identityKeyPair, jwt = jwt,
                 signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                 autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
-                backupPassword = null, type = accountType, blockRemoteContent = true)
+                backupPassword = null, type = accountType, blockRemoteContent = true,
+                defaultAddress = null)
         return Pair(registrationBundles, account)
     }
 

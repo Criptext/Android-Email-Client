@@ -82,6 +82,8 @@ data class Event(val rowid: Long, val recipientId: String, val domain: String, v
             const val addressDeleted = 703
             const val customDomainCreated = 704
             const val customDomainDeleted = 705
+            const val defaultAddressUpdated = 706
+            const val addressNameUpdated = 707
 
         }
     }

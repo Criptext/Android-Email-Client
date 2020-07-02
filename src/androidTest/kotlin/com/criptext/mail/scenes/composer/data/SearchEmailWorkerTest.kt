@@ -31,7 +31,8 @@ class SearchEmailWorkerTest{
 
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
 
     private fun createMetadataColumns(id: Int, fromContact: Contact): EmailMetadata.DBColumns {
         val seconds = if (id < 10) "0$id" else id.toString()
@@ -51,7 +52,8 @@ class SearchEmailWorkerTest{
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null, defaultAddress = null))
 
         activeAccount = activeAccount.copy(id = db.accountDao().getLoggedInAccount()!!.id)
 

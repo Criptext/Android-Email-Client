@@ -1,6 +1,5 @@
 package com.criptext.mail.scenes.signup.data
 
-import com.criptext.mail.api.toList
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.AliasDao
@@ -9,7 +8,7 @@ import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.db.models.signal.CRSignedPreKey
-import com.criptext.mail.scenes.settings.aliases.data.AliasData
+import com.criptext.mail.scenes.settings.data.AliasData
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.signal.SignalKeyGenerator
 import org.json.JSONArray
@@ -30,7 +29,8 @@ class StoreAccountTransaction(private val dao: SignUpDao,
     private fun setNewUserAsActiveAccount(user: Account) {
         val activeAccount = ActiveAccount(id = user.id, name = user.name, recipientId = user.recipientId,
                 deviceId = user.deviceId, jwt = user.jwt, signature = "", refreshToken = user.refreshToken,
-                domain = user.domain, type = user.type, blockRemoteContent = user.blockRemoteContent)
+                domain = user.domain, type = user.type, blockRemoteContent = user.blockRemoteContent,
+                defaultAddress = user.defaultAddress)
         keyValueStorage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())
     }
@@ -50,11 +50,14 @@ class StoreAccountTransaction(private val dao: SignUpDao,
         val extraRegistrationSteps = Runnable {
             extraSteps?.run()
             val dbAccount = accountDao.getLoggedInAccount()!!
-            setNewUserAsActiveAccount(dbAccount)
             if(addressesJsonArray != null){
                 val aliasDataAndDomains = AliasData.fromJSONArray(addressesJsonArray, dbAccount.id)
                 if(aliasDataAndDomains.second.isNotEmpty()) {
                     aliasDao.insertAll(aliasDataAndDomains.second.map {
+                        if(it.isDefault){
+                            accountDao.updateDefaultAddress(dbAccount.recipientId, dbAccount.domain, it.rowId)
+                            dbAccount.defaultAddress = it.rowId
+                        }
                         Alias(
                                 id = 0,
                                 name = it.name,
@@ -76,6 +79,7 @@ class StoreAccountTransaction(private val dao: SignUpDao,
                     })
                 }
             }
+            setNewUserAsActiveAccount(dbAccount)
             if(dbAccount.hasCloudBackup){
                 CloudBackupJobService.scheduleJob(keyValueStorage, dbAccount)
             }

@@ -51,7 +51,8 @@ class UnsendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)
@@ -63,7 +64,7 @@ class UnsendEmailWorkerTest {
                 "_KEY_PAIR_", 1, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
-                lastTimeBackup = null))
+                lastTimeBackup = null, defaultAddress = null))
         emailDetailLocalDB = EmailDetailLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),

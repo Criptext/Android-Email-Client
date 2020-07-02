@@ -14,7 +14,6 @@ import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
-import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.UIUtils
 import com.github.kittinunf.result.Result
@@ -79,6 +78,8 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.addressDeleted -> processOnAddressDeleted(it)
                     Event.Cmd.customDomainCreated -> processOnCustomDomainCreated(it)
                     Event.Cmd.customDomainDeleted -> processOnCustomDomainDeleted(it)
+                    Event.Cmd.defaultAddressUpdated -> processDefaultAddress(it)
+                    Event.Cmd.addressNameUpdated -> processUpdateAddressName(it)
                     Event.Cmd.customerTypeChanged -> processOnCustomerTypeChanged(it)
                     Event.Cmd.peerBlockRemoteContentChanged -> processOnBlockRemoteContentChanged(it)
                 }
@@ -482,6 +483,34 @@ class EventHelper(private val db: EventLocalDB,
             val customDomain = db.getCustomDomains(activeAccount.id).find { it.name == metadata.domainName } ?: throw Exception()
             db.deleteCustomDomain(customDomain)
             db.deleteAliasesByDomain(customDomain.name)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processDefaultAddress(event: Event){
+        val operation = Result.of {
+            val metadata = AccountDefaultAddressUpdate.fromJSON(event.params)
+
+            db.updateDefaultAddress(metadata.recipientId, metadata.domain, metadata.addressId)
+            activeAccount.updateAccountDefaultAddress(storage, metadata.addressId)
+        }
+        when(operation){
+            is Result.Success -> {
+                if(acknoledgeEvents)
+                    eventsToAcknowldege.add(event.rowid)
+            }
+        }
+    }
+
+    private fun processUpdateAddressName(event: Event){
+        val operation = Result.of {
+            val metadata = AccountAddressNameUpdate.fromJSON(event.params)
+            db.updateAddressUserName(metadata.addressId, metadata.fullName)
         }
         when(operation){
             is Result.Success -> {

@@ -34,6 +34,9 @@ interface AccountDao {
     @Query("SELECT * FROM account WHERE id=:id")
     fun getAccountById(id: Long) : Account?
 
+    @Query("UPDATE account SET defaultAddress = :defaultAddress WHERE recipientId=:recipientId AND domain=:domain")
+    fun updateDefaultAddress(recipientId: String, domain: String, defaultAddress: Long?)
+
     @Query("""UPDATE account
         SET
         hasCloudBackup=:googleDriveIsActive,

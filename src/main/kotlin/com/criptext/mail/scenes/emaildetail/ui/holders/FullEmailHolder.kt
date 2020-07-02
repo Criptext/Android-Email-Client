@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.FileDetail
@@ -527,7 +528,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             }
 
             private fun checkForBilling(url: String): Boolean {
-                return url.contains(WebViewSceneController.ADMIN_URL.substring(0..26))
+                return url.contains(Hosts.ADMIN_URL)
             }
         }
 

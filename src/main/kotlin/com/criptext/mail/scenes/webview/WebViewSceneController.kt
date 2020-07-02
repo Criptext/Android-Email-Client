@@ -8,6 +8,7 @@ import android.webkit.WebView
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -86,17 +87,13 @@ class WebViewSceneController(private val scene: WebViewScene,
         }
 
         override fun onPageStartedLoading(url: String?) {
-            if(model.isOnAdmin) {
-                val title = if(AccountUtils.isPlus(activeAccount.type)) {
-                    UIMessage(R.string.billing_settings_title)
-                } else {
-                    UIMessage(R.string.title_web_view_upgrade_to_plus)
-                }
-                scene.setTitle(title)
-            }
+            if(model.title != null)
+                scene.setTitle(model.title)
         }
 
         override fun onPageFinishedLoading(url: String) {
+            if(model.title != null)
+                scene.setTitle(model.title)
 
         }
 
@@ -152,7 +149,7 @@ class WebViewSceneController(private val scene: WebViewScene,
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
-        model.isOnAdmin = model.mUrl?.contains(ADMIN_URL) ?: false
+        model.isOnAdmin = model.mUrl?.contains(Hosts.ADMIN_URL) ?: false
         scene.attachView(
                 observer, activeAccount, model, chromeClient
         )
@@ -204,8 +201,5 @@ class WebViewSceneController(private val scene: WebViewScene,
 
     companion object{
         const val userAgent = "Mozilla/5.0 (Linux; Android 4.4.4; Nexus 5 Build/LMY48B) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
-
-        const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
-        const val ADMIN_URL = "https://admin.criptext.com/?#/account/billing"
     }
 }

@@ -45,7 +45,8 @@ class UpdateMailboxWorkerTest {
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase
@@ -60,7 +61,7 @@ class UpdateMailboxWorkerTest {
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
-                lastTimeBackup = null))
+                lastTimeBackup = null, defaultAddress = null))
         emailInsertionDao = db.emailInsertionDao()
         signalClient = SignalClient.Default(SignalStoreCriptext(db))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)

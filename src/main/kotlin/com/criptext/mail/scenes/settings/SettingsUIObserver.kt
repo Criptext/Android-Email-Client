@@ -29,6 +29,5 @@ abstract class SettingsUIObserver(generalDataSource: GeneralDataSource, host: IH
     abstract fun onSyncMailboxCanceled()
     abstract fun onReportBugClicked()
     abstract fun onReportAbuseClicked()
-    abstract fun onCustomDomainClicked()
-    abstract fun onAliasesClicked()
+    abstract fun onAddressManagerClicked()
 }

@@ -11,7 +11,8 @@ object AccountUtils {
     fun setUserAsActiveAccount(user: Account, storage: KeyValueStorage): ActiveAccount{
         val activeAccount = ActiveAccount(id = user.id, name = user.name, recipientId = user.recipientId,
                 deviceId = user.deviceId, jwt = user.jwt, signature = user.signature, refreshToken = user.refreshToken,
-                domain = user.domain, type = user.type, blockRemoteContent = user.blockRemoteContent)
+                domain = user.domain, type = user.type, blockRemoteContent = user.blockRemoteContent,
+                defaultAddress = user.defaultAddress)
         storage.putString(KeyValueStorage.StringKey.ActiveAccount,
                 activeAccount.toJSON().toString())
         return activeAccount

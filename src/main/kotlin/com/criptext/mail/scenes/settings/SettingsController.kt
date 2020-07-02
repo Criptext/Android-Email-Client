@@ -8,6 +8,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
@@ -18,6 +19,7 @@ import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -69,25 +71,34 @@ class SettingsController(
         override fun onBillingClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                            url = Hosts.billing(activeAccount.jwt, Locale.getDefault().language),
+                            title = if(AccountUtils.isPlus(activeAccount.type)) {
+                                        UIMessage(R.string.billing_settings_title)
+                                    } else {
+                                        UIMessage(R.string.title_web_view_upgrade_to_plus)
+                                    }
                     ),
                     activityMessage = null,
                     keep = true
             )
         }
 
-        override fun onAliasesClicked() {
-            host.goToScene(AliasesParams(), true)
-        }
-
-        override fun onCustomDomainClicked() {
-            host.goToScene(CustomDomainParams(), true)
+        override fun onAddressManagerClicked() {
+            host.goToScene(
+                    params = WebViewParams(
+                            url = Hosts.addressManager(activeAccount.jwt, Locale.getDefault().language),
+                            title = UIMessage(R.string.settings_option_address_manager)
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun onReportBugClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = WebViewSceneController.HELP_DESK_URL
+                            url = Hosts.HELP_DESK_URL,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true
@@ -97,7 +108,8 @@ class SettingsController(
         override fun onReportAbuseClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = WebViewSceneController.HELP_DESK_URL
+                            url = Hosts.HELP_DESK_URL,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true
@@ -188,7 +200,12 @@ class SettingsController(
                     if(result.type is DialogType.CriptextPlus){
                         host.goToScene(
                                 params = WebViewParams(
-                                        url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                                        url = Hosts.billing(activeAccount.jwt, Locale.getDefault().language),
+                                        title = if(AccountUtils.isPlus(activeAccount.type)) {
+                                                    UIMessage(R.string.billing_settings_title)
+                                                } else {
+                                                    UIMessage(R.string.title_web_view_upgrade_to_plus)
+                                                }
                                 ),
                                 activityMessage = null,
                                 keep = true
@@ -244,7 +261,8 @@ class SettingsController(
         private fun openWebViewToCriptextUrl(page: String){
             host.goToScene(
                     params = WebViewParams(
-                            url = "https://criptext.com/${Locale.getDefault().language}/$page"
+                            url = "https://criptext.com/${Locale.getDefault().language}/$page",
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true

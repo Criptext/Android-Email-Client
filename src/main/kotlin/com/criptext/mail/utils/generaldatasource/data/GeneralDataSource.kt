@@ -298,6 +298,8 @@ class GeneralDataSource(override val runner: WorkRunner,
                     customDomainDao = db.customDomainDao(),
                     aliasData = params.aliases,
                     customDomains = params.customDomains,
+                    storage = storage,
+                    accountDao = db.accountDao(),
                     publishFn = { result ->
                         flushResults(result)
                     }
