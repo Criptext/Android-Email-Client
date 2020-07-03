@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.core.content.ContextCompat
 import android.widget.TextView
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
@@ -29,9 +30,13 @@ class LockScreenActivity: AppLockActivity(){
     private val warningText: TextView by lazy {
         this.findViewById<TextView>(R.id.warning_text)
     }
+    private val versionText: TextView by lazy {
+        this.findViewById<TextView>(R.id.version_text)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
+        versionText.text = "v${BuildConfig.VERSION_NAME}"
         val storage = KeyValueStorage.SharedPrefs(this)
         this.findViewById<TextView>(R.id.rootView).background =
                 if(storage.getBool(KeyValueStorage.StringKey.HasDarkTheme, false)) ContextCompat.getDrawable(
