@@ -37,6 +37,7 @@ data class IncompleteAccount(
                         wifiOnly = true,
                         backupPassword = null,
                         type = AccountTypes.STANDARD,
-                        blockRemoteContent = true
+                        blockRemoteContent = true,
+                        defaultAddress = null
                 )
 }

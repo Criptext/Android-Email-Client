@@ -4,13 +4,15 @@ import android.content.res.Resources
 import com.criptext.mail.R
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
+import com.criptext.mail.db.KeyValueStorage
+import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.dao.AliasDao
 import com.criptext.mail.db.dao.CustomDomainDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Alias
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.CustomDomain
-import com.criptext.mail.scenes.settings.aliases.data.AliasData
+import com.criptext.mail.scenes.settings.data.AliasData
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
@@ -18,7 +20,9 @@ import com.github.kittinunf.result.Result
 
 class UpdateLocalDomainAndAliasDataWorker(private val customDomainDao: CustomDomainDao,
                                           private val aliasDao: AliasDao,
+                                          private val accountDao: AccountDao,
                                           private val activeAccount: ActiveAccount,
+                                          private val storage: KeyValueStorage,
                                           private val customDomains: List<CustomDomain>,
                                           private val aliasData: List<AliasData>,
                                           override val publishFn: (GeneralResult.UpdateLocalDomainAndAliasData) -> Unit
@@ -60,6 +64,11 @@ class UpdateLocalDomainAndAliasDataWorker(private val customDomainDao: CustomDom
                 customDomainDao.insertAll(newDomains.map {
                     CustomDomain(0, accountId = activeAccount.id, validated = it.validated, name = it.name)
                 })
+            }
+            val defaultAlias = aliasData.find { it.isDefault }
+            if(defaultAlias != null){
+                accountDao.updateDefaultAddress(activeAccount.recipientId, activeAccount.domain, defaultAlias.rowId)
+                activeAccount.updateAccountDefaultAddress(storage, defaultAlias.rowId)
             }
         }
         return when (operation){

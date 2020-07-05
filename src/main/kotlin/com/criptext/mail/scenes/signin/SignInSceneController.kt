@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.signin
 
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
@@ -725,7 +726,8 @@ class SignInSceneController(
                     if(result.type is DialogType.CriptextPlus){
                         host.goToScene(
                                 params = WebViewParams(
-                                        url = "${WebViewSceneController.ADMIN_URL}?token=${model.temporalJWT}&lang=${Locale.getDefault().language}"
+                                        url = Hosts.billing(model.temporalJWT, Locale.getDefault().language),
+                                        title = null
                                 ),
                                 activityMessage = null,
                                 keep = true,
@@ -834,7 +836,8 @@ class SignInSceneController(
         override fun onContactSupportPressed() {
             host.goToScene(
                     params = WebViewParams(
-                            url = WebViewSceneController.HELP_DESK_URL
+                            url = Hosts.HELP_DESK_URL,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true,

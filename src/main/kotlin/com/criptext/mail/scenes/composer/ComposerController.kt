@@ -468,8 +468,18 @@ class ComposerController(private val storage: KeyValueStorage,
                 model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
                 val fromAddresses = mutableListOf<String>()
                 model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
-                fromAddresses.addAll(model.fromAddresses)
-                fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                val defaultAlias = if(activeAccount.defaultAddress != null) result.aliases.find { it.rowId == activeAccount.defaultAddress } else null
+                if(defaultAlias != null){
+                    val defaultAliasAddress = defaultAlias.name.plus(
+                            "@${defaultAlias.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == defaultAlias.accountId}!!.userEmail})")
+                    fromAddresses.add(defaultAliasAddress)
+                    fromAddresses.addAll(model.fromAddresses)
+                    fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") }.filter { it != defaultAliasAddress })
+                } else {
+                    fromAddresses.add(activeAccount.userEmail)
+                    fromAddresses.addAll(model.fromAddresses.filter { it != activeAccount.userEmail })
+                    fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                }
                 model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
                         || (model.accounts.size == 1 && result.aliases.isEmpty())){

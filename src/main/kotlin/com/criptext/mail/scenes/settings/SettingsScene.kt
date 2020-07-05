@@ -73,11 +73,8 @@ interface SettingsScene{
         private val settingsBilling: View by lazy {
             view.findViewById<View>(R.id.settings_billing)
         }
-        private val settingsCustomDomains: View by lazy {
-            view.findViewById<View>(R.id.settings_custom_domain)
-        }
-        private val settingsAliases: View by lazy {
-            view.findViewById<View>(R.id.settings_aliases)
+        private val settingsAddressManager: View by lazy {
+            view.findViewById<View>(R.id.settings_address_manager)
         }
         private val settingsDarkTheme: Switch by lazy {
             view.findViewById<Switch>(R.id.switch_dark_theme)
@@ -148,8 +145,7 @@ interface SettingsScene{
 
             if(account.type == AccountTypes.ENTERPRISE){
                 settingsBilling.visibility = View.GONE
-                settingsCustomDomains.visibility = View.GONE
-                settingsAliases.visibility = View.GONE
+                settingsAddressManager.visibility = View.GONE
                 separatorAddresses.visibility = View.GONE
             }
 
@@ -306,11 +302,8 @@ interface SettingsScene{
             settingsReportAbuse.setOnClickListener {
                 settingsUIObserver?.onReportAbuseClicked()
             }
-            settingsCustomDomains.setOnClickListener {
-                settingsUIObserver?.onCustomDomainClicked()
-            }
-            settingsAliases.setOnClickListener {
-                settingsUIObserver?.onAliasesClicked()
+            settingsAddressManager.setOnClickListener {
+                settingsUIObserver?.onAddressManagerClicked()
             }
             setSwitchListener()
         }

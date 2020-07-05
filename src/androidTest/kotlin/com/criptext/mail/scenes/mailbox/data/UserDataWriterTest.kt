@@ -30,7 +30,8 @@ class UserDataWriterTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
     private val storage: KeyValueStorage = mockk(relaxed = true)
 
     val nowDate = Calendar.getInstance().time
@@ -112,7 +113,8 @@ class UserDataWriterTest {
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null, defaultAddress = null))
         db.contactDao().insertIgnoringConflicts(bobContact)
         db.contactDao().insertIgnoringConflicts(joeContact)
         db.emailInsertionDao().insertAccountContact(listOf(

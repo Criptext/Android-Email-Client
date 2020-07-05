@@ -73,7 +73,10 @@ class Account(
         var type: AccountTypes,
 
         @ColumnInfo(name = "blockRemoteContent")
-        var blockRemoteContent: Boolean
+        var blockRemoteContent: Boolean,
+
+        @ColumnInfo(name = "defaultAddress")
+        var defaultAddress: Long?
 ) {
 
     override fun toString(): String {

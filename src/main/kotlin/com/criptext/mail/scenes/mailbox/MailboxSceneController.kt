@@ -7,6 +7,7 @@ import android.os.Handler
 import android.provider.ContactsContract
 import android.view.View
 import com.criptext.mail.*
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
@@ -37,6 +38,7 @@ import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.data.JobIdData
+import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -233,7 +235,12 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onUpgradePlusOptionClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                            url = Hosts.billing(activeAccount.jwt, Locale.getDefault().language),
+                            title = if(AccountUtils.isPlus(activeAccount.type)) {
+                                        UIMessage(R.string.billing_settings_title)
+                                    } else {
+                                        UIMessage(R.string.title_web_view_upgrade_to_plus)
+                                    }
                     ),
                     activityMessage = ActivityMessage.ComesFromMailbox(),
                     keep = true,
@@ -256,7 +263,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun onSupportOptionClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = WebViewSceneController.HELP_DESK_URL
+                            url = Hosts.HELP_DESK_URL,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true,

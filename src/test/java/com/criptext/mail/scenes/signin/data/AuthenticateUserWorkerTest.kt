@@ -112,7 +112,7 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null,
-                type = AccountTypes.STANDARD, blockRemoteContent = true)
+                type = AccountTypes.STANDARD, blockRemoteContent = true,  defaultAddress = null)
         every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
@@ -183,7 +183,7 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null,
-                blockRemoteContent = true, type = AccountTypes.STANDARD)
+                blockRemoteContent = true, type = AccountTypes.STANDARD, defaultAddress = null)
         every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs

@@ -49,6 +49,12 @@ interface ContactDao {
     @Query("""UPDATE contact
             SET name=:name
             where email=:email
+            """)
+    fun updateContactName(email: String, name: String)
+
+    @Query("""UPDATE contact
+            SET name=:name
+            where email=:email
             AND EXISTS
             (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)""")
     fun updateContactName(email: String, name: String, accountId: Long)

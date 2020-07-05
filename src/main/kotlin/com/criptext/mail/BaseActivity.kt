@@ -16,7 +16,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
@@ -51,13 +50,9 @@ import com.criptext.mail.scenes.restorebackup.RestoreBackupModel
 import com.criptext.mail.scenes.search.SearchSceneModel
 import com.criptext.mail.scenes.settings.SettingsActivity
 import com.criptext.mail.scenes.settings.SettingsModel
-import com.criptext.mail.scenes.settings.aliases.AliasesModel
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordActivity
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordModel
 import com.criptext.mail.scenes.settings.cloudbackup.CloudBackupModel
-import com.criptext.mail.scenes.settings.custom_domain.CustomDomainModel
-import com.criptext.mail.scenes.settings.custom_domain_entry.CustomDomainEntryModel
-import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.DomainConfigurationModel
 import com.criptext.mail.scenes.settings.devices.DevicesModel
 import com.criptext.mail.scenes.settings.labels.LabelsModel
 import com.criptext.mail.scenes.settings.pinlock.PinLockModel
@@ -72,8 +67,8 @@ import com.criptext.mail.scenes.settings.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel
-import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.scenes.webview.WebViewSceneModel
+import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.splash.SplashActivity
 import com.criptext.mail.utils.*
@@ -82,7 +77,10 @@ import com.criptext.mail.utils.dialog.SingletonProgressDialog
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.*
-import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.ActivityMenu
+import com.criptext.mail.utils.ui.ConfirmPasswordDialog
+import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
+import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
@@ -462,15 +460,11 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
-            is CustomDomainEntryParams -> CustomDomainEntryModel()
-            is DomainConfigurationParams -> DomainConfigurationModel(params.domain)
-            is CustomDomainParams -> CustomDomainModel()
-            is AliasesParams -> AliasesModel()
             is WebViewParams -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
                 val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
                 val browserName = resolveInfo.loadLabel(packageManager).toString()
-                WebViewSceneModel(params.url, browserName)
+                WebViewSceneModel(params.title, params.url, browserName)
             }
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")
         }

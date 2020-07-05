@@ -31,7 +31,8 @@ class UploadAttachmentWorkerTest {
     private lateinit var mockWebServer: MockWebServer
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
     private val fileServiceAuthToken =
             Encoding.byteArrayToString(
                     "qynhtyzjrshazxqarkpy:lofjksedbxuucdjjpnby".toByteArray(

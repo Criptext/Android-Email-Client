@@ -36,7 +36,8 @@ class MoveEmailThreadsWorkerTest{
     private lateinit var mailboxLocalDB: MailboxLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
     private lateinit var httpClient: HttpClient
     private lateinit var mockWebServer: MockWebServer
 
@@ -55,7 +56,8 @@ class MoveEmailThreadsWorkerTest{
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null, defaultAddress = null))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
         MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.inbox),

@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.*
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.bgworker.RunnableThrottler
@@ -151,7 +152,8 @@ class SignUpSceneController(
         override fun onTermsAndConditionsClick(){
             host.goToScene(
                     params = WebViewParams(
-                            url = "https://criptext.com/${Locale.getDefault().language}/terms"
+                            url = "https://criptext.com/${Locale.getDefault().language}/terms",
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true,
@@ -166,7 +168,8 @@ class SignUpSceneController(
         override fun onContactSupportClick() {
             host.goToScene(
                     params = WebViewParams(
-                            url = WebViewSceneController.HELP_DESK_URL
+                            url = Hosts.HELP_DESK_URL,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true,

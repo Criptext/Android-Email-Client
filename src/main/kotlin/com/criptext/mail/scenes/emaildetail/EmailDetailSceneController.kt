@@ -8,6 +8,7 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
+import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.DeliveryTypes
@@ -591,7 +592,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun openWebView(url: String) {
             host.goToScene(
                     params = WebViewParams(
-                            url = url
+                            url = url,
+                            title = null
                     ),
                     activityMessage = null,
                     keep = true
@@ -601,7 +603,12 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun openBilling() {
             host.goToScene(
                     params = WebViewParams(
-                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                            url = Hosts.billing(activeAccount.jwt, Locale.getDefault().language),
+                            title = if(AccountUtils.isPlus(activeAccount.type)) {
+                                        UIMessage(R.string.billing_settings_title)
+                                    } else {
+                                        UIMessage(R.string.title_web_view_upgrade_to_plus)
+                                    }
                     ),
                     activityMessage = null,
                     keep = true

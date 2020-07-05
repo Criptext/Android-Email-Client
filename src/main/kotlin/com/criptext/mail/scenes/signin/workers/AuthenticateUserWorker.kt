@@ -118,7 +118,8 @@ class AuthenticateUserWorker(
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = signInSession.token,
                     signature = "", refreshToken = "", isActive = true, domain = userData.domain, isLoggedIn = true,
                     autoBackupFrequency = 0, hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true,
-                    backupPassword = null, type = signInSession.type, blockRemoteContent = signInSession.blockRemoteContent)
+                    backupPassword = null, type = signInSession.type, blockRemoteContent = signInSession.blockRemoteContent,
+                    defaultAddress = null)
             Pair(registrationBundles, account)
         }
     }

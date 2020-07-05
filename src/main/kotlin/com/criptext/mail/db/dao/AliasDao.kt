@@ -12,6 +12,9 @@ interface AliasDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(alias :Alias)
 
+    @Query("SELECT * FROM alias WHERE rowId = :rowId")
+    fun getAliasByRowId(rowId: Long) : Alias?
+
     @Query("SELECT * FROM alias WHERE name = :aliasName AND domain=:domain AND accountId=:accountId")
     fun getAliasByName(aliasName: String, domain: String?, accountId: Long) : Alias?
 

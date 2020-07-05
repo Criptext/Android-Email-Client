@@ -30,7 +30,8 @@ class SaveEmailWorkerTest {
     private lateinit var emailInsertionDao: EmailInsertionDao
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
+            defaultAddress = null)
 
     private val progressReporter: ProgressReporter<ComposerResult.SaveEmail> = mockk()
 
@@ -43,7 +44,8 @@ class SaveEmailWorkerTest {
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
                 true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
-                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true, lastTimeBackup = null))
+                backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
+                lastTimeBackup = null, defaultAddress = null))
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
                 db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
         emailInsertionDao = db.emailInsertionDao()

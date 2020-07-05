@@ -22,6 +22,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         db.contactDao().updateContactIsTrusted(contactEmail, trusted)
     }
 
+    fun updateDefaultAddress(recipientId: String, domain: String, addressId: Long?){
+        db.accountDao().updateDefaultAddress(recipientId, domain, addressId)
+    }
+
     fun updateBlockRemoteContent(newBlockRemoteContent: Boolean, account: Account){
         db.accountDao().updateBlockRemoteContent(newBlockRemoteContent, account.recipientId, account.domain)
     }
@@ -377,6 +381,11 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     fun updateUserName(recipientId: String, domain: String, name: String, accountId: Long) {
         db.contactDao().updateContactName("$recipientId@$domain", name, accountId)
         db.accountDao().updateProfileName(name, recipientId, domain)
+    }
+
+    fun updateAddressUserName(addressId: Long, newName: String) {
+        val alias = db.aliasDao().getAliasByRowId(addressId) ?: return
+        db.contactDao().updateContactName("${alias.name}@${alias.domain ?: Contact.mainDomain}", newName)
     }
 
     fun updateUnsendStatusByMetadataKey(metadataKey: Long, unsentDate: Date, activeAccount: ActiveAccount) {

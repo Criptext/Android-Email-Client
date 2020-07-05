@@ -109,7 +109,8 @@ class CreateSessionWorker(val httpClient: HttpClient,
                     identityKeyPairB64 = privateBundle.identityKeyPair, jwt = ephemeralJwt,
                     signature = "", refreshToken = "", isActive = true, domain = domain, isLoggedIn = true,
                     hasCloudBackup = false, lastTimeBackup = null, wifiOnly = true, autoBackupFrequency = 0,
-                    backupPassword = null, type = accountType, blockRemoteContent = true)
+                    backupPassword = null, type = accountType, blockRemoteContent = true,
+                    defaultAddress = null)
             Pair(registrationBundles, account)
         }
     }

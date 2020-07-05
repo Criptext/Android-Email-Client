@@ -11,4 +11,9 @@ object Hosts {
     const val fileTransferServer = "https://transfer.criptext.com"
     const val newsRepository = "https://news.criptext.com"
     const val fileServiceAuthToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="
+    const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
+    const val ADMIN_URL = "https://admin.criptext.com/"
+
+    fun billing(jwt: String, language: String) = "${ADMIN_URL}?#/account/billing?token=$jwt&lang=$language"
+    fun addressManager(jwt: String, language: String) = "${ADMIN_URL}?#/addresses??token=$jwt&lang=$language"
 }

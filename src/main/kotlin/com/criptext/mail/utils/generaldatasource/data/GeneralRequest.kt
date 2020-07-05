@@ -8,8 +8,7 @@ import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
-import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
-import com.criptext.mail.scenes.settings.aliases.data.AliasData
+import com.criptext.mail.scenes.settings.data.AliasData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.ContactUtils
 
