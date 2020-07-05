@@ -6,6 +6,8 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -20,6 +22,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : UpdateEmailThreadsLabelsRelations()
         data class Unauthorized(val message: UIMessage) : UpdateEmailThreadsLabelsRelations()
+        class SessionExpired : UpdateEmailThreadsLabelsRelations()
         class Forbidden: UpdateEmailThreadsLabelsRelations()
     }
 
@@ -29,6 +32,7 @@ sealed class MailboxResult {
                 val message: UIMessage,
                 val exception: Exception) : MoveEmailThread()
         data class Unauthorized(val message: UIMessage) : MoveEmailThread()
+        class SessionExpired : MoveEmailThread()
         class Forbidden: MoveEmailThread()
     }
 
@@ -67,6 +71,7 @@ sealed class MailboxResult {
         class Success(val newEmailPreview: EmailPreview?, val currentLabel: Label, val isSecure: Boolean): SendMail()
         data class Failure(val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
+        class SessionExpired: SendMail()
         class Forbidden: SendMail()
         class EnterpriseSuspended: SendMail()
     }
@@ -86,6 +91,7 @@ sealed class MailboxResult {
         data class Success(val threadId: List<String>, val unreadStatus: Boolean): UpdateUnreadStatus()
         class Failure(val message: UIMessage): UpdateUnreadStatus()
         class Unauthorized(val message: UIMessage): UpdateUnreadStatus()
+        class SessionExpired: UpdateUnreadStatus()
         class Forbidden: UpdateUnreadStatus()
     }
 
@@ -93,6 +99,7 @@ sealed class MailboxResult {
         class Success: EmptyTrash()
         class Failure(val message: UIMessage): EmptyTrash()
         class Unauthorized(val message: UIMessage): EmptyTrash()
+        class SessionExpired: EmptyTrash()
         class Forbidden: EmptyTrash()
     }
 
@@ -106,5 +113,18 @@ sealed class MailboxResult {
         data class Success(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class Failure(val queueIsEmpty: Boolean): ResendPeerEvents()
         data class ServerFailure(val message: UIMessage, val queueIsEmpty: Boolean): ResendPeerEvents()
+    }
+
+    sealed class SetCloudBackupActive : MailboxResult() {
+        data class Success(val cloudBackupData: CloudBackupData): SetCloudBackupActive()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?,
+                           val cloudBackupData: CloudBackupData): SetCloudBackupActive()
+    }
+
+    sealed class CheckCloudBackupEnabled : MailboxResult() {
+        data class Success(val isEnabled: Boolean): CheckCloudBackupEnabled()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?): CheckCloudBackupEnabled()
     }
 }

@@ -33,7 +33,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class, AccountContact::class, AntiPushMap::class, CustomDomain::class, Alias::class],
-        version = 18,
+        version = 19,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -78,7 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
                                 MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
                                 MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17,
-                                MIGRATION_17_18)
+                                MIGRATION_17_18, MIGRATION_18_19)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -572,6 +572,28 @@ abstract class AppDatabase : RoomDatabase() {
                                         FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
                 database.execSQL("CREATE INDEX account_id_alias_index ON alias (accountId)")
                 database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS rowId_accountId_alias_index ON alias (rowId, accountId)")
+            }
+        }
+
+        val MIGRATION_18_19: Migration = object : Migration(18, 19) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  new_customDomain (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        name TEXT NOT NULL,
+                                        validated INTEGER NOT NULL,
+                                        accountId INTEGER NOT NULL,
+                                        FOREIGN KEY(accountId) REFERENCES account(id) ON DELETE CASCADE)""")
+
+                database.execSQL(
+                        """INSERT INTO new_customDomain (id, name, validated, accountId)
+                                SELECT id, name, validated, accountId
+                                FROM customDomain""")
+
+                database.execSQL("DROP TABLE customDomain")
+                database.execSQL("ALTER TABLE new_customDomain RENAME TO customDomain")
+
+                database.execSQL("CREATE INDEX IF NOT EXISTS account_id_custom_domain_index ON customDomain (accountId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS name_accountId_custom_domain_index ON customDomain (name, accountId)")
             }
         }
     }

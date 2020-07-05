@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/showAlways"
+        app:showAsAction="collapseActionView"
+        android:title="@string/show_images_menu_always"/>
+    <item
+        android:id="@+id/turnOff"
+        app:showAsAction="collapseActionView"
+        android:title="@string/show_images_menu_turn_off"/>
+</menu>
+

@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.scenes.signin.SignInSceneController
@@ -27,6 +28,7 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
     private val loadingView: View
     private val textViewStatus: TextView
     private val textViewEmail: TextView
+    private val textViewVersion: TextView
     private val progressBar: BootstrapProgressBar
     private val progressBarNumber: TextView
     private val oldDevice: ImageView
@@ -104,7 +106,9 @@ class ConnectionHolder(val view: View, val username: String, val domain: String,
         loadingView = view.findViewById(R.id.viewAnimation)
         textViewStatus = view.findViewById(R.id.textViewStatus)
         textViewEmail = view.findViewById(R.id.textViewEmail)
+        textViewVersion = view.findViewById(R.id.version_text)
         textViewEmail.text = username.plus("@$domain")
+        textViewVersion.text = "v${BuildConfig.VERSION_NAME}"
         progressBar = view.findViewById(R.id.progressBar)
         progressBarNumber = view.findViewById(R.id.percentage_advanced)
         oldDevice = view.findViewById(R.id.imageViewDevice1)

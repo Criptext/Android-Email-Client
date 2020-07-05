@@ -3,31 +3,20 @@ package com.criptext.mail.utils
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
+import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
-import com.criptext.mail.scenes.WebViewActivity
+import com.criptext.mail.scenes.webview.WebViewActivity
 import pub.devrel.easypermissions.EasyPermissions
 
 class WebViewUtils {
 
     companion object {
 
-        private var imageUriCollapsed = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "file:///android_asset/showmore-dark-collapsed.png"
-        else
-            "file:///android_asset/showmore-light-collapsed.png"
-
-        private var imageUriOpened = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "file:///android_asset/showmore-dark-opened.png"
-        else
-            "file:///android_asset/showmore-light-opened.png"
-
-        val URI_COLLAPSED_IMG: String get() = imageUriCollapsed
-        val URI_OPENED_IMG: String get() = imageUriOpened
-
         fun collapseScript(isForward: Boolean) : String{
+            val isDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            val threeDotThemeColor = HTMLUtils.getThemeColors(isDarkTheme)
             val display = if(isForward){
                 "block"
             } else {
@@ -69,19 +58,47 @@ class WebViewUtils {
                     "|| document.getElementsByClassName(\"criptext_quote\")[0] " +
                     "|| document.getElementsByClassName(\"gmail_quote\")[0] " +
                     "|| document.getElementsByTagName(\"blockquote\")[0];")
-            sb.append("var newNode = document.createElement(\"img\");")
-            sb.append("newNode.src = \"${if(isForward) imageUriOpened else imageUriCollapsed}\";")
-            sb.append("newNode.width = 30;")
-            sb.append("newNode.style.paddingTop = \"20px\";")
-            sb.append("newNode.style.paddingBottom = \"10px\";")
+            sb.append("var newNode = document.createElement(\"DIV\");")
+            sb.append("var dotSpan1 = document.createElement(\"SPAN\");")
+            sb.append("var dotSpan2 = document.createElement(\"SPAN\");")
+            sb.append("var dotSpan3 = document.createElement(\"SPAN\");")
+            sb.append("dotSpan1.setAttribute(\"id\", \"dot\");")
+            sb.append("dotSpan2.setAttribute(\"id\", \"dot\");")
+            sb.append("dotSpan3.setAttribute(\"id\", \"dot\");")
             sb.append("replybody.style.display = \"$display\";")
+            sb.append("newNode.setAttribute(\"id\", \"dotDiv\");")
+            sb.append("newNode.setAttribute(\"collapse_state\", \"${if (isForward) "open" else "close"}\");")
+            sb.append("newNode.appendChild(dotSpan1);")
+            sb.append("newNode.appendChild(dotSpan2);")
+            sb.append("newNode.appendChild(dotSpan3);")
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")
-            sb.append("newNode.addEventListener(\"click\", function(){ if(replybody.style.display == \"block\"){ " +
-                    "replybody.style.display = \"none\";} else {" +
-                    "replybody.style.display = \"block\";} " +
-                    "if(newNode.src == \"$imageUriOpened\"){ " +
-                    "newNode.src = \"$imageUriCollapsed\";} else {" +
-                    "newNode.src = \"$imageUriOpened\";} CriptextSecureEmail.toggleButton();});")
+            sb.append("""
+                newNode.addEventListener("click", 
+                                        function(){ 
+                                            if(replybody.style.display == "block"){ 
+                                                replybody.style.display = "none";
+                                            } else {
+                                                replybody.style.display = "block";
+                                            }
+                                            var dots = newNode.getElementsByTagName('SPAN');
+                                            if(newNode.getAttribute("collapse_state") == "open"){
+                                                newNode.setAttribute("collapse_state", "closed");
+                                                newNode.style.backgroundColor = "${threeDotThemeColor.backgroundClosed}";
+                                                newNode.style.borderColor = "${threeDotThemeColor.borderClosed}";
+                                                for (var i = 0; i < dots.length; ++i) {
+                                                    dots[i].style.backgroundColor = "${threeDotThemeColor.dotsClosed}"
+                                                }
+                                            } else {
+                                                newNode.style.backgroundColor = "${threeDotThemeColor.backgroundOpen}";
+                                                newNode.style.borderColor = "${threeDotThemeColor.borderOpen}";
+                                                newNode.setAttribute("collapse_state", "open");
+                                                for (var i = 0; i < dots.length; ++i) {
+                                                    dots[i].style.backgroundColor = "${threeDotThemeColor.dotsOpen}"
+                                                }
+                                            }
+                                            CriptextSecureEmail.toggleButton();
+                                        });
+            """.trimIndent())
             sb.append("</script>")
 
             return sb.toString()
@@ -103,6 +120,22 @@ class WebViewUtils {
             return sb.toString()
         }
 
+        fun replaceSrc(): String {
+            val sb = StringBuilder()
+            sb.append("<script>")
+            sb.append("function replaceSrc()")
+            sb.append("{")
+            sb.append("var images = document.getElementsByTagName('img');")
+            sb.append("for (var i = 0; i < images.length; ++i) {")
+            sb.append("images[i].src = images[i].src;")
+            sb.append("}")
+            sb.append("}")
+            sb.append("</script>")
+
+            return sb.toString()
+        }
+
+
         fun resizeImages() : String{
             val sb = StringBuilder()
             sb.append("<script>")
@@ -119,13 +152,6 @@ class WebViewUtils {
             return sb.toString()
         }
 
-        fun openUrl(context: Context, url: String){
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra("url", url)
-            context.startActivity(intent)
-            (context as BaseActivity).overridePendingTransition(R.anim.slide_in_up, R.anim.stay)
-        }
-
         fun hasSDPermissionsWeb(ctx : Context) : Boolean{
             val readSDPermission = Manifest.permission.READ_EXTERNAL_STORAGE
             if (EasyPermissions.hasPermissions(ctx as WebViewActivity, readSDPermission)) {
@@ -133,6 +159,29 @@ class WebViewUtils {
             }
 
             return false
+        }
+
+        fun injectRetrieveBlobData(webViewCriptext: WebView, url : String){
+            val sb = StringBuilder()
+            sb.append("var xhr = new XMLHttpRequest();")
+            sb.append("xhr.open('GET', '$url', true);")
+            sb.append("xhr.responseType = 'arraybuffer';")
+            sb.append("xhr.onload = function(e) {")
+            sb.append("if (this.status == 200) {")
+            sb.append("var uInt8Array = new Uint8Array(this.response);")
+            sb.append("var i = uInt8Array.length;")
+            sb.append("var binaryString = new Array(i);")
+            sb.append("while (i--){")
+            sb.append("binaryString[i] = String.fromCharCode(uInt8Array[i]);")
+            sb.append("};")
+            sb.append("var data = binaryString.join('');")
+            sb.append("var base64 = window.btoa(data);")
+            sb.append("CriptextSecureEmail.retrieveData(base64);")
+            sb.append("};")
+            sb.append("};")
+            sb.append("xhr.send();")
+
+            webViewCriptext.loadUrl("javascript:$sb")
         }
 
     }

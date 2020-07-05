@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.recovery_email.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
@@ -12,33 +12,30 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailAPIClient
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
 import kotlinx.android.synthetic.main.restore_backup_dialog.view.*
 
 
-/**
- * Created by danieltigse on 28/06/18.
- */
-
-class ResendLinkWorker(
+class ResendRecoveryEmailLinkWorker(
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
         private val httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
         override val publishFn: (
-                RecoveryEmailResult.ResendConfirmationLink) -> Unit)
-    : BackgroundWorker<RecoveryEmailResult.ResendConfirmationLink> {
+                GeneralResult.ResendConfirmationLink) -> Unit)
+    : BackgroundWorker<GeneralResult.ResendConfirmationLink> {
 
     override val canBeParallelized = true
     private val apiClient = RecoveryEmailAPIClient(httpClient, activeAccount.jwt)
 
-    override fun catchException(ex: Exception): RecoveryEmailResult.ResendConfirmationLink {
-        if(ex is ServerErrorException) RecoveryEmailResult.ResendConfirmationLink.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
-        return RecoveryEmailResult.ResendConfirmationLink.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
+    override fun catchException(ex: Exception): GeneralResult.ResendConfirmationLink {
+        if(ex is ServerErrorException) GeneralResult.ResendConfirmationLink.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
+        return GeneralResult.ResendConfirmationLink.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())))
     }
 
-    override fun work(reporter: ProgressReporter<RecoveryEmailResult.ResendConfirmationLink>): RecoveryEmailResult.ResendConfirmationLink? {
+    override fun work(reporter: ProgressReporter<GeneralResult.ResendConfirmationLink>): GeneralResult.ResendConfirmationLink? {
         val operation = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(operation)
@@ -50,7 +47,7 @@ class ResendLinkWorker(
 
         return when (finalResult){
             is Result.Success -> {
-                RecoveryEmailResult.ResendConfirmationLink.Success()
+                GeneralResult.ResendConfirmationLink.Success()
             }
             is Result.Failure -> {
                 catchException(finalResult.error)

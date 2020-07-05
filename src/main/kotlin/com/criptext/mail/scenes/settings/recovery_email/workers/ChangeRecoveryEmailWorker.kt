@@ -16,14 +16,10 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.sha256
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
-
-
-/**
- * Created by danieltigse on 28/06/18.
- */
+import org.json.JSONObject
 
 class ChangeRecoveryEmailWorker(
-        private val password: String,
+        private val password: String?,
         private val newEmail: String,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
@@ -39,8 +35,28 @@ class ChangeRecoveryEmailWorker(
     override fun catchException(ex: Exception): RecoveryEmailResult.ChangeRecoveryEmail {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerCodes.MethodNotAllowed ->
-                    RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.recovery_email_change_fail_same, arrayOf(newEmail)))
+                ServerCodes.MethodNotAllowed -> {
+                    val body = ex.body
+                    if(body == null) {
+                        RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                UIMessage(resId = R.string.recovery_email_sign_up_error))
+                    } else {
+                        val json = JSONObject(body)
+                        when (json.getInt("error")){
+                            1 -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                    UIMessage(resId = R.string.recovery_email_sign_up_error_1))
+                            2 -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                    UIMessage(resId = R.string.recovery_email_sign_up_error_2,
+                                            args = arrayOf(json.getJSONObject("data").getInt("max"))))
+                            3 -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                    UIMessage(resId = R.string.recovery_email_sign_up_error_3))
+                            4 -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                    UIMessage(R.string.recovery_email_change_fail_same, arrayOf(newEmail)))
+                            else -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex,
+                                    UIMessage(resId = R.string.recovery_email_sign_up_error))
+                        }
+                    }
+                }
                 ServerCodes.BadRequest -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.password_enter_error))
                 ServerCodes.EnterpriseAccountSuspended -> RecoveryEmailResult.ChangeRecoveryEmail.EnterpriseSuspended()
                 else -> RecoveryEmailResult.ChangeRecoveryEmail.Failure(ex, UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)))
@@ -75,7 +91,7 @@ class ChangeRecoveryEmailWorker(
     }
 
     private fun workOperation() : Result<String, Exception> = Result.of {
-        apiClient.putChangerecoveryEmail(newEmail, password.sha256()).body
+        apiClient.putChangerecoveryEmail(newEmail, password?.sha256()).body
     }
     .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 

@@ -15,14 +15,15 @@ import com.criptext.mail.utils.virtuallist.VirtualList
  */
 
 class FullEmailRecyclerView(
-        val recyclerView: RecyclerView,
+        private val recyclerView: RecyclerView,
         fullEmailEventListener: FullEmailListAdapter.OnFullEmailEventListener?,
-        val fullEmailList: VirtualList<FullEmail>,
-        val fileDetailList: Map<Long, List<FileDetail>>,
+        private val fullEmailList: VirtualList<FullEmail>,
+        fileDetailList: Map<Long, List<FileDetail>>,
         val labels: VirtualList<Label>,
         val isStarred: Boolean,
-        val shouldOpenExpanded: Boolean,
-        val activeAccount: ActiveAccount) {
+        shouldOpenExpanded: Boolean,
+        val activeAccount: ActiveAccount,
+        blockRemoteContentSetting: Boolean) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -32,12 +33,12 @@ class FullEmailRecyclerView(
             fileDetails = fileDetailList,
             labels = labels,
             isStarred = isStarred,
-            shouldOpenExpanded = shouldOpenExpanded,
-            activeAccount = activeAccount)
+            shouldOpenExpanded = shouldOpenExpanded)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = fullEmailListAdapter
+        fullEmailListAdapter.blockRemoteContentSetting = blockRemoteContentSetting
     }
 
     fun notifyFullEmailListChanged() {
@@ -58,6 +59,12 @@ class FullEmailRecyclerView(
 
     fun expandAndNotify(){
         fullEmailListAdapter.isExpanded = true
+        fullEmailListAdapter.notifyDataSetChanged()
+    }
+
+
+    fun changeBlockremoteSetting(block: Boolean){
+        fullEmailListAdapter.blockRemoteContentSetting = block
         fullEmailListAdapter.notifyDataSetChanged()
     }
 

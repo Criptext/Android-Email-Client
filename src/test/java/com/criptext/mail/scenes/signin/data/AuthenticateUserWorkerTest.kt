@@ -76,7 +76,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester",
-                type = AccountTypes.STANDARD, blockRemoteContent = false)
+                type = AccountTypes.STANDARD, blockRemoteContent = true)
                     .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
@@ -112,7 +112,8 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null,
-                type = AccountTypes.STANDARD, blockRemoteContent = false)
+                type = AccountTypes.STANDARD, blockRemoteContent = true)
+        every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
 
@@ -124,9 +125,9 @@ class AuthenticateUserWorkerTest {
         verify {
             storage.putString(KeyValueStorage.StringKey.SignInSession, mockedAuthResponse)
         }
-        verify {
+        verify(inverse = true) {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","domain":"criptext.com","name":"A Tester","recipientId":"tester","id":1,"type":0,"deviceId":2,"refreshToken":"__REFRESH__"}""")
+                    """{"signature":"","jwt":"__JWTOKEN__","domain":"criptext.com","name":"A Tester","recipientId":"tester","id":1,"deviceId":2,"refreshToken":"__REFRESH__","type":0}""")
         }
 
         // request snapshots
@@ -146,7 +147,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester",
-                type = AccountTypes.STANDARD, blockRemoteContent = false)
+                type = AccountTypes.STANDARD, blockRemoteContent = true)
                 .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
@@ -182,7 +183,8 @@ class AuthenticateUserWorkerTest {
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null,
-                blockRemoteContent = false, type = AccountTypes.STANDARD)
+                blockRemoteContent = true, type = AccountTypes.STANDARD)
+        every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
 
@@ -194,9 +196,9 @@ class AuthenticateUserWorkerTest {
         verify {
             storage.putString(KeyValueStorage.StringKey.SignInSession, mockedAuthResponse)
         }
-        verify {
+        verify(inverse = true) {
             storage.putString(KeyValueStorage.StringKey.ActiveAccount,
-                    """{"signature":"","jwt":"__JWTOKEN__","domain":"criptext.com","name":"A Tester","recipientId":"tester","id":1,"type":0,"deviceId":2,"refreshToken":"__REFRESH__"}""")
+                    """{"signature":"","jwt":"__JWTOKEN__","domain":"criptext.com","name":"A Tester","recipientId":"tester","id":1,"deviceId":2,"refreshToken":"__REFRESH__","type":0}""")
         }
 
         // request snapshots

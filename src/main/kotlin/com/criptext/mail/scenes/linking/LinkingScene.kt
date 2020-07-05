@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
+import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
 import com.criptext.mail.utils.DeviceUtils
@@ -50,6 +51,7 @@ interface LinkingScene{
         private val loadingView: View = view.findViewById(R.id.viewAnimation)
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
         private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
+        private val textViewVersion: TextView = view.findViewById(R.id.version_text)
         private val progressBar: BootstrapProgressBar = view.findViewById(R.id.progressBar)
         private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
@@ -61,6 +63,7 @@ interface LinkingScene{
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
             this.linkingUIObserver = linkingUIObserver
             textViewEmail.text = model.incomingAccount.userEmail
+            textViewVersion.text = "v${BuildConfig.VERSION_NAME}"
             when (model.deviceType){
                 DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
                 DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,

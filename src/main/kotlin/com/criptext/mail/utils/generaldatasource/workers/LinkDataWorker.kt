@@ -150,7 +150,7 @@ class LinkDataWorker(private val authorizerId: Int,
                 reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
                 val decryptedFile = File(it)
                 deleteLocalData()
-                dataWriter.createDBFromFile(decryptedFile)
+                dataWriter.createDBFromFile(decryptedFile, storage)
             }}
 
     private fun newRetryWithNewSessionOperation(reporter: ProgressReporter<GeneralResult.LinkData>)

@@ -24,4 +24,5 @@ class EmailDetailSceneModel(var threadId: String,
     var lastTouchedInlineSrc: String? = null
     var waitForAccountSwitch = false
     var exitToMailbox = false
+    var newBlockRemoteContentSetting: Boolean? = null
 }

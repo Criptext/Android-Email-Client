@@ -256,7 +256,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
 
         Voulez-vous continuer ?]]></string>
   <string name="sign_in_warning_dialog_title">Avertissement de connexion</string>
-  <string name="password_warning_dialog_title">Avertissement</string>
+  <string name="password_warning_dialog_title">Avertissement ⚠️</string>
   <string name="password_warning_dialog_message">Si vous vous connectez avec votre mot de passe, votre
         <b>historique de messagerie sur les autres appareils ne sera pas disponible</b> sur cet appareil. Voulez-vous continuer ?</string>
   <string name="slide_1_title">
@@ -716,8 +716,38 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="web_view_no_internet_message">Looks like you have lost connections with Wifi or other Internet connection</string>
   <string name="btn_skip">Skip to Mailbox</string>
   <string name="title_web_view_upgrade_to_plus">Join Plus</string>
-  <string name="foreground_decryption_message">Decrypting Emails</string>
-  <string name="foreground_decryption_notification">Decryption Service Notification</string>
+  <string name="foreground_decryption_message">Getting Emails…</string>
+  <string name="foreground_decryption_message_progress">Getting Emails…%1$d of %2$d</string>
+  <string name="foreground_decryption_notification">Decryption Service</string>
   <string name="plus_dialog_custom_domains_title">Enjoy Custom Domains</string>
   <string name="plus_dialog_aliases_title">Enjoy Aliases</string>
+  <string name="show_images_btn">Show Images</string>
+  <string name="show_always_btn">Show Always</string>
+  <string name="show_images_menu_once">Once</string>
+  <string name="show_images_menu_always">Always show from this sender</string>
+  <string name="show_images_menu_turn_off">Turn off image blocking</string>
+  <string name="privacy_block_images_title">Block Images</string>
+  <string name="privacy_block_images_message">Block images from unauthorized senders.</string>
+  <string name="block_remote_always_message">%1$s marked as trusted</string>
+  <string name="block_remote_turn_off_message">Remote content enabled for account: %1$s</string>
+  <string name="block_remote_turn_off_message_disable">Remote content disabled for account: %1$s</string>
+  <string name="block_remote_dialog_title">Turn Off Image Block</string>
+  <string name="block_remote_dialog_message">Your security is affected by deactivating this function. \n\n You can reactivate this function by going to Settings->Privacy.</string>
+  <string name="download_web_view_started">Your download for has started.</string>
+  <string name="recommend_backup_title">Auto Backup</string>
+  <string name="recommend_backup_message">Auto Backup ensures that your data is never lost.</string>
+  <string name="recommend_backup_ok">Turn on Auto Backup</string>
+  <string name="recommend_backup_not_now"><u>Not now</u></string>
+  <string name="recommend_backup_warning_message">Your emails are exclusively kept on your device, not on Criptext servers. \nThis means that if you delete the app or loose the device you will loose all your emails.</string>
+  <string name="recommend_backup_warning_cancel"><u>I don\'t want backups</u></string>
+  <string name="loading_cloud_backup_settings">Loading cloud backup settings…</string>
+  <string name="recommend_backup_sucess">Backup Activated 📤</string>
+  <string name="recovery_email_sign_up_error">Error with your recovery email.</string>
+  <string name="recovery_email_sign_up_error_1">This address has no verified recovery email.</string>
+  <string name="recovery_email_sign_up_error_2">The recovery email has already been used %1$d times.</string>
+  <string name="recovery_email_sign_up_error_3">Black-listed email provider.</string>
+  <string name="recovery_email_restriction_title">Not so fast 🤨</string>
+  <string name="recovery_email_restriction_message">You need to verify a Recovery Email before being able to send emails.\n\nThis is only so you can regain access to your account if you ever forget your password.</string>
+  <string name="recovery_email_restriction_btn">Verify Recovery Email</string>
+  <string name="recovery_email_restriction_toast">A new confirmation link was sent to your recovery email address: %1$s.</string>
 </resources>

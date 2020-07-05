@@ -1,6 +1,7 @@
 package com.criptext.mail.push.data
 
 import android.graphics.Bitmap
+import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.utils.UIMessage
@@ -17,6 +18,12 @@ sealed class PushResult {
 
             override fun getDestinationMailbox(): Label {
                 return mailboxLabel
+            }
+        }
+
+        data class Progress(val progress: Int, val max: Int): UpdateMailbox() {
+            override fun getDestinationMailbox(): Label {
+                return Label.defaultItems.inbox
             }
         }
 
@@ -47,7 +54,8 @@ sealed class PushResult {
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,
                 val senderImage: Bitmap?,
-                val notificationId: Int): NewEmail()
+                val notificationId: Int,
+                val activeAccount: ActiveAccount): NewEmail()
 
         class SilentSuccess: NewEmail()
 
@@ -57,7 +65,8 @@ sealed class PushResult {
                 val exception: Exception?,
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,
-                val notificationId: Int): NewEmail()
+                val notificationId: Int,
+                val activeAccount: ActiveAccount): NewEmail()
     }
 
     sealed class LinkAccept: PushResult() {

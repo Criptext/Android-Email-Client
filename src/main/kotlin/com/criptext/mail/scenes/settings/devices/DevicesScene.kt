@@ -28,9 +28,6 @@ interface DevicesScene{
                    model: DevicesModel, devicesListItemListener: DevicesListItemListener)
     fun showMessage(message: UIMessage)
     fun showForgotPasswordDialog(email: String)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -62,7 +59,6 @@ interface DevicesScene{
         }
         private val deviceListView: VirtualListView = VirtualRecyclerView(recyclerViewDevices)
 
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingRemoveDeviceDialog = SettingsRemoveDeviceDialog(context)
@@ -104,18 +100,6 @@ interface DevicesScene{
 
         override fun dismissSyncDeviceDialog() {
             syncAuthDialog.dismiss()
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showForgotPasswordDialog(email: String) {

@@ -54,7 +54,7 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
     override fun onClick(p0: View?) {
     }
 
-    fun bindEmailPreview(emailPreview: EmailPreview, account: ActiveAccount) {
+    fun bindEmailPreview(emailPreview: EmailPreview) {
         subjectView.text = if (emailPreview.subject.isEmpty())
             subjectView.context.getString(R.string.nosubject)
         else emailPreview.subject

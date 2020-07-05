@@ -27,9 +27,6 @@ interface AliasesScene{
     fun attachView(aliasesUIObserver: AliasesUIObserver,
                    keyboardManager: KeyboardManager, model: AliasesModel)
     fun showMessage(message: UIMessage)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -100,7 +97,6 @@ interface AliasesScene{
             view.findViewById<ProgressBar>(R.id.aliasLoadProgress)
         }
 
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
@@ -226,18 +222,6 @@ interface AliasesScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showProgressBar(show: Boolean) {

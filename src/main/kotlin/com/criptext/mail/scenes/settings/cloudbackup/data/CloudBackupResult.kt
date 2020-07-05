@@ -8,7 +8,8 @@ sealed class CloudBackupResult{
     sealed class LoadCloudBakcupData : CloudBackupResult() {
         data class Success(val cloudBackupData: CloudBackupData): LoadCloudBakcupData()
         data class Failure(val message: UIMessage,
-                           val exception: Exception?): LoadCloudBakcupData()
+                           val exception: Exception?,
+                           val cloudBackupData: CloudBackupData): LoadCloudBakcupData()
     }
 
     sealed class SetCloudBackupActive : CloudBackupResult() {

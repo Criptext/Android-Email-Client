@@ -45,7 +45,7 @@ class UpdateMailboxWorkerTest {
     protected lateinit var eventDB: EventLocalDB
     private val activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
     private lateinit var db: TestDatabase
@@ -58,7 +58,7 @@ class UpdateMailboxWorkerTest {
         db.accountDao().insert(Account(activeAccount.id, activeAccount.recipientId, activeAccount.deviceId,
                 activeAccount.name, activeAccount.jwt, activeAccount.refreshToken,
                 "_KEY_PAIR_", 0, "", "criptext.com",
-                true, true, type = AccountTypes.STANDARD, blockRemoteContent = false,
+                true, true, type = AccountTypes.STANDARD, blockRemoteContent = true,
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
                 lastTimeBackup = null))
         emailInsertionDao = db.emailInsertionDao()

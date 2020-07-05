@@ -29,9 +29,6 @@ interface LabelsScene{
     fun attachView(labelsUIObserver: LabelsUIObserver, model: LabelsModel)
     fun showMessage(message: UIMessage)
     fun showForgotPasswordDialog(email: String)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -61,7 +58,6 @@ interface LabelsScene{
         private val labelListView: VirtualListView = VirtualRecyclerView(recyclerViewLabels)
 
 
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val settingCustomLabelDialog = SettingsCustomLabelDialog(context)
@@ -101,18 +97,6 @@ interface LabelsScene{
 
         override fun dismissSyncDeviceDialog() {
             syncAuthDialog.dismiss()
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showForgotPasswordDialog(email: String) {

@@ -19,7 +19,6 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
     private val textViewCurrent: TextView
     private val textViewLastActive: TextView
     private val lastActiveLayout: LinearLayout
-    private val deviceLayout: FrameLayout
     private val imageDeviceType: ImageView
     private val imageTrashDevice: ImageView
     private val deviceCheckbox: CheckBox
@@ -32,7 +31,6 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
         textViewCurrent = view.findViewById(R.id.textViewCurrentDevice) as TextView
         textViewLastActive = view.findViewById(R.id.textViewDeviceLastActive) as TextView
         lastActiveLayout = view.findViewById(R.id.lastActivityLayout) as LinearLayout
-        deviceLayout = view.findViewById(R.id.deviceItem) as FrameLayout
         imageDeviceType = view.findViewById(R.id.imageViewDeviceType) as ImageView
         imageTrashDevice = view.findViewById(R.id.imageViewTrashDevice) as ImageView
         deviceCheckbox = view.findViewById(R.id.deviceCheckbox) as CheckBox
@@ -45,7 +43,7 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
                 textViewCurrent.setText(R.string.current_device)
                 imageTrashDevice.visibility = View.GONE
                 textViewCurrent.visibility = View.VISIBLE
-                lastActiveLayout.visibility = View.INVISIBLE
+                lastActiveLayout.visibility = View.GONE
                 deviceCheckbox.visibility = View.VISIBLE
                 deviceCheckbox.isChecked = deviceItem.checked
                 deviceCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -56,7 +54,7 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
                 textViewCurrent.setText(R.string.current_device)
                 imageTrashDevice.visibility = View.GONE
                 textViewCurrent.visibility = View.VISIBLE
-                lastActiveLayout.visibility = View.INVISIBLE
+                lastActiveLayout.visibility = View.GONE
                 deviceCheckbox.visibility = View.GONE
             }
             !deviceItem.isCurrent && deviceItemType == DeviceItem.Companion.Type.Normal -> {

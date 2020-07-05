@@ -5,6 +5,7 @@ import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.utils.UIMessage
@@ -23,6 +24,7 @@ class DataFileCreationWorker(
         private val isFromJob: Boolean,
         private val isLocal: Boolean,
         private val activeAccount: ActiveAccount,
+        private val storage: KeyValueStorage,
         override val publishFn: (
                 CloudBackupResult.DataFileCreation) -> Unit)
     : BackgroundWorker<CloudBackupResult.DataFileCreation> {
@@ -65,7 +67,7 @@ class DataFileCreationWorker(
         val dataWriter = UserDataWriter(db, filesDir)
         reporter.report(CloudBackupResult.DataFileCreation.Progress(15))
         val account = db.accountDao().getAccountById(activeAccount.id) ?: return CloudBackupResult.DataFileCreation.Failure(UIMessage(resId = R.string.failed_to_create_link_device_file))
-        val getFileResult = dataWriter.createFile(account)
+        val getFileResult = dataWriter.createFile(account, storage)
         return if(getFileResult != null){
             reporter.report(CloudBackupResult.DataFileCreation.Progress(35))
             val path = compress(getFileResult)

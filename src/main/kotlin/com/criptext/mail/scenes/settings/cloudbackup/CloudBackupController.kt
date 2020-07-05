@@ -5,7 +5,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -25,9 +24,9 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -48,7 +47,7 @@ class CloudBackupController(
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: CloudBackupDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
 
 
@@ -85,7 +84,7 @@ class CloudBackupController(
         }
     }
 
-    private val uiObserver = object: CloudBackupUIObserver{
+    private val uiObserver = object: CloudBackupUIObserver(generalDataSource, host){
         override fun exportBackupPressed() {
             scene.showEncryptBackupDialog(this)
         }
@@ -120,23 +119,7 @@ class CloudBackupController(
 
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-
-        }
-
         override fun onSnackbarClicked() {
-
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
 
         }
 
@@ -187,7 +170,7 @@ class CloudBackupController(
             ))
         }
 
-        override fun onWifiOnlySwiched(isActive: Boolean) {
+        override fun onWifiOnlySwitched(isActive: Boolean) {
             dataSource.submitRequest(CloudBackupRequest.SetCloudBackupActive(
                     CloudBackupData(
                             hasCloudBackup = model.hasCloudBackup,
@@ -219,7 +202,11 @@ class CloudBackupController(
             host.goToScene(
                     params = SettingsParams(),
                     activityMessage = null,
-                    forceAnimation = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_out_right
+                    ),
                     keep = false
             )
         }
@@ -233,6 +220,7 @@ class CloudBackupController(
         scene.attachView(model = model, cloudBackupUIObserver1 = uiObserver)
         dataSource.listener = dataSourceListener
         generalDataSource.listener = generalDataSourceListener
+        scene.showLoadingSettingsDialog()
         dataSource.submitRequest(CloudBackupRequest.LoadCloudBackupData(model.mDriveService))
         return handleActivityMessage(activityMessage)
     }
@@ -385,6 +373,7 @@ class CloudBackupController(
     }
 
     private fun onLoadCloudBackupData(result: CloudBackupResult.LoadCloudBakcupData){
+        scene.dismissLoadingSettingsDialog()
         when(result){
             is CloudBackupResult.LoadCloudBakcupData.Success -> {
                 model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
@@ -395,6 +384,9 @@ class CloudBackupController(
                 scene.updateCloudBackupData(model)
             }
             is CloudBackupResult.LoadCloudBakcupData.Failure -> {
+                model.autoBackupFrequency = result.cloudBackupData.autoBackupFrequency
+                model.hasCloudBackup = result.cloudBackupData.hasCloudBackup
+                model.wifiOnly = result.cloudBackupData.useWifiOnly
                 scene.updateCloudBackupData(model)
             }
         }

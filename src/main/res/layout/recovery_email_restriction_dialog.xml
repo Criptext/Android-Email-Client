@@ -1,0 +1,72 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewRoot"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/backup_recommend_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/recovery_email_restriction_title"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:id="@+id/backup_recommend_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/recovery_email_restriction_message"
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:gravity="center_horizontal"
+        android:padding="25dp"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/not_now"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:text="@string/recommend_backup_not_now"
+        android:textSize="13sp"
+        android:padding="10dp"
+        android:clickable="true"
+        android:layout_marginTop="10dp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+        <ProgressBar
+            android:id="@+id/verify_progress"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_progress_bar_bg" />
+
+        <Button
+            android:id="@+id/verify_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/label_button_center_bg"
+            android:textColor="@color/azure"
+            android:textAllCaps="false"
+            android:text="@string/recovery_email_restriction_btn"
+            android:textSize="14sp" />
+    </RelativeLayout>
+</LinearLayout>

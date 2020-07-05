@@ -26,7 +26,7 @@ class EmailDetailControllerUIEventsTest: EmailDetailControllerTest(){
     override fun setUp() {
         super.setUp()
         every {
-            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot), true, activeAccount)
+            scene.attachView(capture(fullEmailEventListener), any(), any(), capture(emailDetailUIObserverSlot), true, activeAccount, true)
         } just Runs
 
         listenerSlot = CapturingSlot()

@@ -29,11 +29,9 @@ import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
-import com.criptext.mail.scenes.mailbox.ui.DrawerMenuView
-import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
-import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
-import com.criptext.mail.scenes.mailbox.ui.RestoreBackupDialog
+import com.criptext.mail.scenes.mailbox.ui.*
 import com.criptext.mail.scenes.mailbox.ui.WelcomeTour.WelcomeTourDialog
+import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.apputils.AppRater
 import com.criptext.mail.utils.ui.*
@@ -99,11 +97,8 @@ interface MailboxScene{
     fun setMenuLabels(labels: List<LabelWrapper>)
     fun setMenuAccounts(accounts: List<Account>, badgeCount: List<Int>)
     fun clearMenuActiveLabel()
-    fun dismissConfirmPasswordDialog()
     fun dismissAccountSuspendedDialog()
-    fun showConfirmPasswordDialog(observer: UIObserver)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
-    fun setConfirmPasswordError(message: UIMessage)
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
     fun showUpdateBanner(bannerData: UpdateBannerData)
@@ -126,6 +121,9 @@ interface MailboxScene{
     fun dismissPreparingFileDialog()
     fun hideComposer(shouldHide: Boolean)
     fun checkRating(storage: KeyValueStorage)
+    fun showRecommendBackupDialog()
+    fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean)
+    fun removeFromScheduleCloudBackupJob(accountId: Long)
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -152,13 +150,13 @@ interface MailboxScene{
         private val deleteDialog = DeleteThreadDialog(context)
         private val emptyTrashDialog = EmptyTrashDialog(context)
         private val welcomeDialog = WelcomeTourDialog(context)
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val syncPhonebookDialog = SyncPhonebookDialog(context)
         private val restoreBackupDialog = RestoreBackupDialog(context)
         private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
+        private val recommendBackupDialog = RecommendBackupDialog(context)
 
         private lateinit var drawerMenuView: DrawerMenuView
 
@@ -404,20 +402,22 @@ interface MailboxScene{
             AppRater.appLaunched(context, storage)
         }
 
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
+        override fun showRecommendBackupDialog() {
+            recommendBackupDialog.showDialog(observer)
+        }
+
+        override fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean) {
+            val cloudBackupJobService = CloudBackupJobService()
+            cloudBackupJobService.schedule(context, AccountUtils.getFrequencyPeriod(period), accountId, useWifiOnly)
+        }
+
+        override fun removeFromScheduleCloudBackupJob(accountId: Long) {
+            val cloudBackupJobService = CloudBackupJobService()
+            cloudBackupJobService.cancel(context, accountId)
         }
 
         override fun dismissAccountSuspendedDialog() {
             accountSuspended.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
         }
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {

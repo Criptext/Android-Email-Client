@@ -25,6 +25,12 @@ class MailboxAPIClient(private val httpClient: HttpClient, var token: String): C
                 path =  "/event/$rowId")
     }
 
+    fun getPendingEventCount(cmd: Int): HttpResponseData {
+        return httpClient.get(
+                authToken = token,
+                path =  "/event/$cmd/count")
+    }
+
     fun insertPreKeys(preKeys: Map<Int, String>, excludedKeys: List<Int>): HttpResponseData {
         val jsonObject = JSONObject()
         val preKeyArray = JSONArray()

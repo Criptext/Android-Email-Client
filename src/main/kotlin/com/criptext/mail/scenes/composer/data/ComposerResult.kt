@@ -32,6 +32,7 @@ sealed class ComposerResult {
     sealed class SaveEmail : ComposerResult() {
         data class Success(val emailId: Long, val threadId: String,
                            val composerInputData: ComposerInputData,
+                           val goToRecoveryEmail: Boolean,
                            val onlySave: Boolean, val attachments: List<ComposerAttachment>,
                            val fileKey: String?,
                            val preview: EmailPreview?,
@@ -50,12 +51,23 @@ sealed class ComposerResult {
         data class PayloadTooLarge(val filepath: String, val headers: ResultHeaders, val uuid: String): UploadFile()
         data class Failure(val filepath: String, val message: UIMessage, val uuid: String): UploadFile()
         data class Unauthorized(val message: UIMessage, val uuid: String): UploadFile()
+        class SessionExpired: UploadFile()
         class Forbidden: UploadFile()
-        class EnterpriseSuspended(): UploadFile()
+        class EnterpriseSuspended: UploadFile()
     }
 
     sealed class CheckDomain : ComposerResult() {
         data class Success(val contactDomainCheck: List<ContactDomainCheckData>): CheckDomain()
         data class Failure(val message: UIMessage): CheckDomain()
+    }
+
+    sealed class CheckCanSend : ComposerResult() {
+        data class Success(val composerInputData: ComposerInputData): CheckCanSend()
+        data class Failure(val recoveryEmail: String, val isEmailConfirmed: Boolean): CheckCanSend()
+    }
+
+    sealed class SwitchActiveAccount : ComposerResult() {
+        data class Success(val newAccount: ActiveAccount): SwitchActiveAccount()
+        data class Failure(val message: UIMessage): SwitchActiveAccount()
     }
 }

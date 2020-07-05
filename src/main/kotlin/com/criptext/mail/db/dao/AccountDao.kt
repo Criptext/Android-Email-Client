@@ -92,6 +92,11 @@ interface AccountDao {
     fun updateAccountType(type: AccountTypes, recipientId: String, domain: String)
 
     @Query("""UPDATE account
+            SET blockRemoteContent=:blockRemoteContent
+            where recipientId=:recipientId AND domain=:domain""")
+    fun updateBlockRemoteContent(blockRemoteContent: Boolean, recipientId: String, domain: String)
+
+    @Query("""UPDATE account
             SET jwt=:jwt
             where recipientId=:recipientId AND domain=:domain""")
     fun updateJwt(recipientId: String, domain: String, jwt: String)

@@ -126,4 +126,10 @@ class GeneralAPIClient(private val httpClient: HttpClient, var token: String): C
         json.put("event", event)
         return httpClient.post(path = "/user/event", authToken = token, body = json)
     }
+
+    fun putChangeBlockRemoteContent(newBlockRemoteContent: Boolean): HttpResponseData{
+        val json = JSONObject()
+        json.put("block", newBlockRemoteContent)
+        return httpClient.put(path = "/user/content/remote/block", authToken = token, body = json)
+    }
 }

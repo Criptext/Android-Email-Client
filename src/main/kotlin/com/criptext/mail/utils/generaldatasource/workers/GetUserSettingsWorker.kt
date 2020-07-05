@@ -37,6 +37,8 @@ class GetUserSettingsWorker(
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
                     GeneralResult.GetUserSettings.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                ex.errorCode == ServerCodes.SessionExpired ->
+                    GeneralResult.GetUserSettings.SessionExpired()
                 ex.errorCode == ServerCodes.Forbidden ->
                     GeneralResult.GetUserSettings.Forbidden()
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->

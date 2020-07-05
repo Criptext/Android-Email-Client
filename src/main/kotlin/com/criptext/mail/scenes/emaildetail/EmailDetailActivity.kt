@@ -82,6 +82,7 @@ class  EmailDetailActivity: BaseActivity() {
                 generalDataSource = remoteChangeDataSource,
                 dataSource = EmailDetailDataSource(
                         pendingDao = appDB.pendingEventDao(),
+                        aliasDao = appDB.aliasDao(),
                         runner = AsyncTaskWorkRunner(),
                         emailDao = appDB.emailDao(),
                         emailContactDao = appDB.emailContactDao(),
@@ -113,7 +114,6 @@ class  EmailDetailActivity: BaseActivity() {
             HitTestResult.IMAGE_TYPE,
             HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
                 if(result.extra != null
-                        && result.extra!! !in listOf(WebViewUtils.URI_COLLAPSED_IMG, WebViewUtils.URI_OPENED_IMG)
                         && result.extra!!.startsWith("file://")) {
                     val inflater = menuInflater
                     inflater.inflate(R.menu.web_view_image_menu, menu)

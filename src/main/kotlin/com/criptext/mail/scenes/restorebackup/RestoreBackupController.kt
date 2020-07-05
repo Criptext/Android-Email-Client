@@ -12,7 +12,6 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
@@ -22,6 +21,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.google.api.client.googleapis.media.MediaHttpDownloader
@@ -39,7 +39,7 @@ class RestoreBackupController(
         private val websocketEvents: WebSocketEventPublisher,
         private val dataSource: BackgroundWorkManager<RestoreBackupRequest, RestoreBackupResult>,
         private val generalDataSource: BackgroundWorkManager<GeneralRequest, GeneralResult>)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
 
 
@@ -78,7 +78,11 @@ class RestoreBackupController(
             host.goToScene(
                     params = MailboxParams(),
                     activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
-                    forceAnimation = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = 0
+                    ),
                     keep = false)
         }
 
@@ -137,7 +141,11 @@ class RestoreBackupController(
             host.goToScene(
                     params = MailboxParams(),
                     activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.restore_backup_no_account)),
-                    forceAnimation = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = 0
+                    ),
                     keep = false
             )
 
@@ -326,7 +334,11 @@ class RestoreBackupController(
                     host.goToScene(
                             params = MailboxParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
-                            forceAnimation = true,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = 0,
+                                    exitAnim = 0
+                            ),
                             keep = false
                     )
                 }

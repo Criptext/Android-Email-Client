@@ -4,7 +4,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.bgworker.BackgroundWorkManager
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -24,6 +23,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener
@@ -40,7 +40,7 @@ class ReplyToController(
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: ReplyToDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -59,7 +59,7 @@ class ReplyToController(
         }
     }
 
-    private val replyToUIObserver = object: ReplyToUIObserver{
+    private val replyToUIObserver = object: ReplyToUIObserver(generalDataSource, host) {
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
 
@@ -87,24 +87,8 @@ class ReplyToController(
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
-        }
-
         override fun onSnackbarClicked() {
 
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onTurnOffReplyTo() {
@@ -163,22 +147,6 @@ class ReplyToController(
         return false
     }
 
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
     private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
         when(result) {
             is GeneralResult.ChangeToNextAccount.Success -> {
@@ -200,38 +168,6 @@ class ReplyToController(
         }
     }
 
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
     private fun onReplyEmailChanged(result: ReplyToResult.SetReplyToEmail){
         when(result) {
             is ReplyToResult.SetReplyToEmail.Success -> {
@@ -249,7 +185,7 @@ class ReplyToController(
                 scene.showMessage(result.message)
             }
             is ReplyToResult.SetReplyToEmail.Forbidden -> {
-                scene.showConfirmPasswordDialog(replyToUIObserver)
+                host.showConfirmPasswordDialog(replyToUIObserver)
             }
             is ReplyToResult.SetReplyToEmail.EnterpriseSuspended-> {
                 showSuspendedAccountDialog()
@@ -372,7 +308,7 @@ class ReplyToController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(replyToUIObserver)
+                host.showConfirmPasswordDialog(replyToUIObserver)
             })
         }
 

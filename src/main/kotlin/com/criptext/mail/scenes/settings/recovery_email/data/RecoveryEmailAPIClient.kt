@@ -16,10 +16,10 @@ class RecoveryEmailAPIClient(private val httpClient: HttpClient, var token: Stri
         return httpClient.put(path = "/user/replyto", authToken = token, body = json)
     }
 
-    fun putChangerecoveryEmail(email: String, password: String): HttpResponseData {
+    fun putChangerecoveryEmail(email: String, password: String?): HttpResponseData {
         val json = JSONObject()
         json.put("email", email)
-        json.put("password", password)
+        if(password  != null) json.put("password", password)
         return httpClient.put(path = "/user/recovery/change", authToken = token, body = json)
     }
 

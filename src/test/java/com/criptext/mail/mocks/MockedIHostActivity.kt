@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -18,6 +19,10 @@ import com.criptext.mail.utils.uiobserver.UIObserver
  */
 
 class MockedIHostActivity: IHostActivity{
+    override fun toggleLoad(isLoading: Boolean) {
+
+    }
+
     override fun dismissCriptextPlusDialog() {
 
     }
@@ -35,6 +40,22 @@ class MockedIHostActivity: IHostActivity{
 
     override fun getMailTemplate(type: CriptextMailTemplate.TemplateType): CriptextMailTemplate? {
         return null
+    }
+
+    override fun dismissConfirmPasswordDialog() {
+
+    }
+
+    override fun showConfirmPasswordDialog(observer: UIObserver) {
+
+    }
+
+    override fun setConfirmPasswordError(message: UIMessage) {
+
+    }
+
+    override fun showToastMessage(message: UIMessage) {
+
     }
 
     override fun setAppTheme(themeResource: Int) {
@@ -73,11 +94,11 @@ class MockedIHostActivity: IHostActivity{
     override fun refreshToolbarItems() {
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, forceAnimation: Boolean) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
         if(!keep) isFinished = true
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
         isFinished = true
     }
 

@@ -1,14 +1,12 @@
 package com.criptext.mail.utils
 
-import android.text.Html
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.utils.WebViewUtils.Companion.collapseScript
 import com.criptext.mail.utils.WebViewUtils.Companion.replaceCIDScript
+import com.criptext.mail.utils.WebViewUtils.Companion.replaceSrc
 import com.criptext.mail.utils.WebViewUtils.Companion.resizeImages
-import com.criptext.mail.utils.file.FileUtils
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
-import java.lang.StringBuilder
 import java.util.*
 
 class HTMLUtils {
@@ -17,6 +15,48 @@ class HTMLUtils {
                 .addTags("style", "title", "head")
                 .addAttributes(":all", "class", "style", "bgcolor")
                 .addProtocols("img", "src", "cid", "data")
+
+        fun getThemeColors(isDarkTheme: Boolean): ThreeDotThemeColor {
+            return if(isDarkTheme)ThreeDotThemeColor(
+                    backgroundOpen = "#373a41",
+                    borderOpen = "#44474f",
+                    dotsOpen = "#15171b",
+                    backgroundClosed = "#535761",
+                    borderClosed = "#535761",
+                    dotsClosed = "#e9e9e9"
+            ) else ThreeDotThemeColor(
+                    backgroundOpen = "#afafaf",
+                    borderOpen = "#9e9d9d",
+                    dotsOpen = "#f3f3f3",
+                    backgroundClosed = "#fafafa",
+                    borderClosed = "#e3e3e3",
+                    dotsClosed = "#4a4a4a"
+            )
+        }
+
+        private fun threeDotStyle(theme: ThreeDotThemeColor) = """#dot {
+                                          height: 4px;
+                                          width: 4px;
+                                          background-color: ${theme.dotsOpen};
+                                          border-radius: 50%;
+                                          display: inline-block;
+                                        }
+                                        #dotDiv {
+                                            background-color:${theme.backgroundOpen};
+                                            border-radius:25px;
+                                            border:1px solid ${theme.borderOpen};
+                                            cursor:pointer;
+                                            text-align:center; 
+                                            display: flex; 
+                                            align-items: center; 
+                                            justify-content: space-between; 
+                                            width:20px;
+                                            padding: 6px 5px;
+                                        }
+                                        #dotDiv:active {
+                                            position:relative;
+                                            top:1px;
+                                        }"""
 
         fun html2text(html: String): String {
 
@@ -28,18 +68,23 @@ class HTMLUtils {
             return Jsoup.parse(html).text().isEmpty() && !html.contains("<img")
         }
 
+        fun hasAtLeastOneImage(html: String): Boolean {
+            return html.contains("<img")
+        }
+
         fun sanitizeHtml(html: String):String {
             val body = Jsoup.clean(html, whiteList)
             return Jsoup.parse(body).html()
         }
 
         fun changedHeaderHtml(htmlText: String, isForward: Boolean): String {
-            val style = if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
-            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;} a{color:#009EFF;}</style>"
-            else "<style type=\"text/css\">body{color:#000;background-color:#fff;} </style>"
+            val isDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+            val style = if(isDarkTheme)
+            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;} a{color:#009EFF;} ${threeDotStyle(getThemeColors(isDarkTheme))}</style>"
+            else "<style type=\"text/css\">body{color:#000;background-color:#fff;} ${threeDotStyle(getThemeColors(isDarkTheme))}</style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
-            return head + htmlText + replaceCIDScript() + resizeImages() + collapseScript(isForward) + closedTag
+            return head + htmlText + replaceCIDScript() + replaceSrc() + resizeImages() + collapseScript(isForward) + closedTag
         }
 
         fun headerForPrinting(htmlText: String, printData: PrintHeaderInfo, to: String, at: String,
@@ -106,5 +151,8 @@ class HTMLUtils {
 
     data class PrintHeaderInfo(val subject: String, val toList: String,
                                val fromName: String, val fromMail: String, val date: Date)
+    data class ThreeDotThemeColor(val backgroundOpen: String, val borderOpen: String,
+                                  val dotsOpen: String, val backgroundClosed: String, val borderClosed: String,
+                                  val dotsClosed: String)
 
 }

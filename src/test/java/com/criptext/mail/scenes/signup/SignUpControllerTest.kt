@@ -41,7 +41,8 @@ open class SignUpControllerTest {
                 keyboardManager = keyboardManager,
                 dataSource = dataSource,
                 host =  host,
-                runnableThrottler = throttler
+                runnableThrottler = throttler,
+                storage = mockk(relaxed = true)
         )
     }
 

@@ -24,6 +24,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
@@ -39,7 +40,7 @@ class ChangePasswordController(
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: ChangePasswordDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     val arePasswordsMatching: Boolean
         get() = model.passwordText == model.confirmPasswordText
@@ -57,21 +58,10 @@ class ChangePasswordController(
         }
     }
 
-    private val changePasswordUIObserver = object: ChangePasswordUIObserver{
+    private val changePasswordUIObserver = object: ChangePasswordUIObserver(generalDataSource, host){
 
         override fun onSnackbarClicked() {
 
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -98,17 +88,6 @@ class ChangePasswordController(
 
         override fun onCancelButtonPressed() {
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onForgotPasswordPressed() {
@@ -215,38 +194,6 @@ class ChangePasswordController(
         }
     }
 
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
     private fun onChangeToNextAccount(result: GeneralResult.ChangeToNextAccount){
         when(result) {
             is GeneralResult.ChangeToNextAccount.Success -> {
@@ -269,39 +216,6 @@ class ChangePasswordController(
                         activityMessage = null,
                         keep = false, deletePastIntents = true
                 )
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
             }
         }
     }
@@ -406,7 +320,7 @@ class ChangePasswordController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(changePasswordUIObserver)
+                host.showConfirmPasswordDialog(changePasswordUIObserver)
             })
         }
 

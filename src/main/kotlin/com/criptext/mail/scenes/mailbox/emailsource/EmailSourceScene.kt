@@ -25,9 +25,6 @@ interface EmailSourceScene{
     fun showMessage(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
 
     class Default(val view: View): EmailSourceScene{
         private lateinit var emailSourceUIObserver: EmailSourceUIObserver
@@ -42,7 +39,6 @@ interface EmailSourceScene{
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
 
@@ -57,18 +53,6 @@ interface EmailSourceScene{
                 uiObserver.onBackButtonPressed()
             }
 
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPasswordDialog.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPasswordDialog.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPasswordDialog.setPasswordError(message)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {

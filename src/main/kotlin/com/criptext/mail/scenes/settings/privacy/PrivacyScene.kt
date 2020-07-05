@@ -22,15 +22,15 @@ interface PrivacyScene{
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
     fun dismissSyncDeviceDialog()
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
+
     fun showForgotPasswordDialog(email: String)
     fun updateReadReceipts(isChecked: Boolean)
     fun enableReadReceiptsSwitch(isEnabled: Boolean)
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun enableTwoFASwitch(isEnabled: Boolean)
     fun updateTwoFa(isChecked: Boolean)
+    fun enableBlockRemoteContentSwitch(isEnabled: Boolean)
+    fun updateBlockRemoteContent(isChecked: Boolean)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
 
@@ -48,6 +48,10 @@ interface PrivacyScene{
             view.findViewById<Switch>(R.id.privacy_read_receipts_switch)
         }
 
+        private val blockRemoteContentSwitch: Switch by lazy {
+            view.findViewById<Switch>(R.id.privacy_block_remote_content_switch)
+        }
+
         private val twoFALoading: ProgressBar by lazy {
             view.findViewById<ProgressBar>(R.id.two_fa_loading)
         }
@@ -56,11 +60,14 @@ interface PrivacyScene{
             view.findViewById<ProgressBar>(R.id.read_receipts_loading)
         }
 
+        private val blockRemoteContentLoading: ProgressBar by lazy {
+            view.findViewById<ProgressBar>(R.id.block_remote_content_loading)
+        }
+
         private val backButton: ImageView by lazy {
             view.findViewById<ImageView>(R.id.mailbox_back_button)
         }
 
-        private val confirmPasswordDialog = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
@@ -76,18 +83,6 @@ interface PrivacyScene{
             }
 
             setSwitchListener()
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPasswordDialog.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPasswordDialog.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPasswordDialog.setPasswordError(message)
         }
 
         override fun showForgotPasswordDialog(email: String) {
@@ -112,6 +107,23 @@ interface PrivacyScene{
         override fun updateTwoFa(isChecked: Boolean) {
             twoFASwitch.setOnCheckedChangeListener { _, _ ->  }
             twoFASwitch.isChecked = isChecked
+            setSwitchListener()
+        }
+
+        override fun enableBlockRemoteContentSwitch(isEnabled: Boolean) {
+            blockRemoteContentSwitch.isEnabled = isEnabled
+            if(isEnabled){
+                blockRemoteContentSwitch.visibility = View.VISIBLE
+                blockRemoteContentLoading.visibility = View.GONE
+            } else {
+                blockRemoteContentSwitch.visibility = View.INVISIBLE
+                blockRemoteContentLoading.visibility = View.VISIBLE
+            }
+        }
+
+        override fun updateBlockRemoteContent(isChecked: Boolean) {
+            blockRemoteContentSwitch.setOnCheckedChangeListener { _, _ ->  }
+            blockRemoteContentSwitch.isChecked = isChecked
             setSwitchListener()
         }
 
@@ -147,6 +159,9 @@ interface PrivacyScene{
             }
             twoFASwitch.setOnCheckedChangeListener { _, isChecked ->
                 privacyUIObserver.onTwoFASwitched(isChecked)
+            }
+            blockRemoteContentSwitch.setOnCheckedChangeListener { _, isChecked ->
+                privacyUIObserver.onBlockRemoteContentSwitched(isChecked)
             }
         }
 

@@ -47,4 +47,6 @@ sealed class ActivityMessage {
     data class NonValidatedDomainFound(val customDomain: CustomDomain): ActivityMessage()
     data class DomainRegistered(val customDomain: CustomDomain): ActivityMessage()
     class IsNotPlus(): ActivityMessage()
+    data class BrowserAddAttachment(val uris: Array<Uri>?): ActivityMessage()
+    class RefreshUI: ActivityMessage()
 }

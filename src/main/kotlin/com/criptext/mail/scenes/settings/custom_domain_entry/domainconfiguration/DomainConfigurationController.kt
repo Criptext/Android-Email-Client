@@ -14,13 +14,9 @@ import com.criptext.mail.scenes.params.CustomDomainParams
 import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignInParams
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryDataSource
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryRequest
-import com.criptext.mail.scenes.settings.custom_domain_entry.data.CustomDomainEntryResult
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationDataSource
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationRequest
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.data.DomainConfigurationResult
-import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.workers.DomainValidationWorker
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -30,10 +26,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.validation.AccountDataValidator
-import com.criptext.mail.validation.FormData
-import com.criptext.mail.validation.FormInputState
-import com.criptext.mail.validation.TextInput
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -49,7 +42,7 @@ class DomainConfigurationController(
         private var websocketEvents: WebSocketEventPublisher,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: DomainConfigurationDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -63,7 +56,7 @@ class DomainConfigurationController(
         }
     }
 
-    private val uiObserver = object: DomainConfigurationUIObserver{
+    private val uiObserver = object: DomainConfigurationUIObserver(generalDataSource, host){
         override fun onCopyButtonClicked(text: String) {
             val clipData = ClipData.newPlainText("text", text)
             clipboardManager.primaryClip = clipData
@@ -105,17 +98,6 @@ class DomainConfigurationController(
 
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
-        }
-
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
 
         }
@@ -132,17 +114,6 @@ class DomainConfigurationController(
                     }
                 }
             }
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -238,74 +209,6 @@ class DomainConfigurationController(
             }
             is DomainConfigurationResult.GetMXRecords.Failure -> {
                 scene.enableNextButton(false)
-            }
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true,
-                            deletePastIntents = true,
-                            keep = false
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false,
-                        deletePastIntents = true
-                )
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
             }
         }
     }
@@ -422,7 +325,7 @@ class DomainConfigurationController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             })
         }
 

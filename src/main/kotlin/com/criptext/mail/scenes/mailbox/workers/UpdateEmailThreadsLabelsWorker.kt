@@ -54,7 +54,9 @@ class UpdateEmailThreadsLabelsWorker(
             if(ex is ServerErrorException) {
                 when {
                     ex.errorCode == ServerCodes.Unauthorized ->
-                        MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(UIMessage(R.string.device_removed_remotely_exception))
+                        MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized(createErrorMessage(ex))
+                    ex.errorCode == ServerCodes.SessionExpired ->
+                        MailboxResult.UpdateEmailThreadsLabelsRelations.SessionExpired()
                     ex.errorCode == ServerCodes.Forbidden ->
                         MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden()
                     else -> MailboxResult.UpdateEmailThreadsLabelsRelations.Failure(
@@ -119,6 +121,7 @@ class UpdateEmailThreadsLabelsWorker(
                         val fromContacts = db.resetSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
                         if (fromContacts.isNotEmpty())
                             apiClient.postReportSpam(fromContacts, ContactUtils.ContactReportTypes.notspam, null)
+                        db.updateIsTrusted(fromContacts, true)
                         Result.of { removeCurrentLabelFromEmails(emailIds)}
 
                     }

@@ -32,6 +32,7 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -49,7 +50,7 @@ class ProfileController(
         private var websocketEvents: WebSocketEventPublisher,
         private val dataSource: ProfileDataSource,
         private val generalDataSource: GeneralDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -62,7 +63,7 @@ class ProfileController(
             is GeneralResult.ChangeContactName -> onContactNameChanged(result)
             is GeneralResult.GetRemoteFile -> onGetRemoteFile(result)
             is GeneralResult.DeleteAccount -> onDeleteAccount(result)
-            is GeneralResult.Logout -> onLogout(result)
+            is GeneralResult.Logout -> customOnLogout(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.GetUserSettings -> onGetUserSettings(result)
             is GeneralResult.ActiveAccountUpdateMailbox -> onUpdateMailbox(result)
@@ -76,7 +77,7 @@ class ProfileController(
         }
     }
 
-    private val uiObserver = object: ProfileUIObserver{
+    private val uiObserver = object: ProfileUIObserver(generalDataSource, host) {
         override fun onCriptextFooterSwitched(isChecked: Boolean) {
             val footerData = ProfileFooterData(activeAccount.id, isChecked)
             val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
@@ -171,17 +172,6 @@ class ProfileController(
 
         }
 
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
-        }
-
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
 
         }
@@ -212,24 +202,17 @@ class ProfileController(
             generalDataSource.submitRequest(GeneralRequest.DeviceRemoved(true))
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
-        }
-
         override fun onBackButtonPressed() {
             keyboardManager.hideKeyboard()
             if(model.comesFromMailbox){
                 host.goToScene(
                         params = MailboxParams(),
                         activityMessage = null,
-                        forceAnimation = true,
+                        animationData = TransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = R.anim.slide_out_right
+                        ),
                         deletePastIntents = true,
                         keep = false
                 )
@@ -237,7 +220,11 @@ class ProfileController(
                 host.goToScene(
                         params = SettingsParams(),
                         activityMessage = null,
-                        forceAnimation = true,
+                        animationData = TransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = R.anim.slide_out_right
+                        ),
                         keep = false
                 )
             }
@@ -279,7 +266,7 @@ class ProfileController(
         }
     }
 
-    private fun onLogout(result: GeneralResult.Logout){
+    private fun customOnLogout(result: GeneralResult.Logout){
         when(result) {
             is GeneralResult.Logout.Success -> {
                 scene.dismissMessageAndProgressDialog()
@@ -356,10 +343,13 @@ class ProfileController(
                 scene.showMessage(result.message)
             }
             is GeneralResult.GetUserSettings.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.GetUserSettings.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.GetUserSettings.Forbidden -> {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             }
             is GeneralResult.GetUserSettings.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -413,71 +403,6 @@ class ProfileController(
             }
             is GeneralResult.DeleteAccount.Failure -> {
                 scene.setGeneralDialogWithInputError(result.message)
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
             }
         }
     }
@@ -692,7 +617,7 @@ class ProfileController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(uiObserver)
+                host.showConfirmPasswordDialog(uiObserver)
             })
         }
 

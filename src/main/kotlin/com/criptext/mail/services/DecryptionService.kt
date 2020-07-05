@@ -19,26 +19,19 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
-import com.criptext.mail.push.notifiers.Notifier
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import io.fabric.sdk.android.Fabric
+
 
 class DecryptionService: Service() {
 
     private var pushController: PushController? = null
     private var notificationManager: NotificationManager? = null
-    private var data: HashMap<String, String>? = null
-    private var queue: MutableList<HashMap<String, String>?> = mutableListOf()
+    private var queue: MutableList<() -> Unit?> = mutableListOf()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        startForegroundService()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -49,19 +42,25 @@ class DecryptionService: Service() {
 
             when (intent.action) {
                 ACTION_START_SERVICE -> {
-                    data = intent.extras?.getSerializable("data") as HashMap<String, String>
-                    getPushNotification()
+                    Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, ACTION_START_SERVICE)
+                    notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    startForegroundService()
+                    getEvents()
                 }
-                ACTION_STOP_FOREGROUND_SERVICE -> stopService()
-                ACTION_OPEN_APP -> {
+                ACTION_ADD_NOTIFICATION_TO_QUEUE -> {
+                    Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, ACTION_ADD_NOTIFICATION_TO_QUEUE)
+                    queue.add { getEvents() }
+                }
+                else -> {
+                    Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, "START_NOT_STICKY: ${intent.action}")
                     stopService()
                     return START_NOT_STICKY
                 }
-                ACTION_ADD_NOTIFICATION_TO_QUEUE -> {
-                    queue.add(intent.extras?.getSerializable("data") as HashMap<String, String>)
-                }
             }
 
+        } else {
+            stopService()
+            return START_NOT_STICKY
         }
         return START_STICKY
     }
@@ -76,7 +75,7 @@ class DecryptionService: Service() {
 
     }
 
-    private fun getPushNotification(){
+    private fun getEvents(){
         if(pushController == null){
             val db = com.github.kittinunf.result.Result.of {
                 Fabric.with(applicationContext, Crashlytics())
@@ -94,21 +93,14 @@ class DecryptionService: Service() {
                                 filesDir = applicationContext.filesDir,
                                 cacheDir = applicationContext.cacheDir),
                         host = this,
-                        isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
-                        activeAccount = account,
                         storage = storage)
             }
         }
-        val pushData = data as Map<String, String>
-        if(pushData.isNotEmpty()) {
-            val shouldPostNotification = !MessagingService.isAppOnForeground(applicationContext, applicationContext.packageName)
-            pushController?.parsePushPayload(pushData, shouldPostNotification)
-        } else {
-            pushController = null
-        }
+        pushController?.doGetEvents()
     }
 
     private fun stopService() {
+        Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, ACTION_STOP_FOREGROUND_SERVICE)
         // Stop foreground service and remove the notification.
         stopForeground(true)
         // Stop the foreground service.
@@ -137,6 +129,25 @@ class DecryptionService: Service() {
         IS_RUNNING = true
     }
 
+    fun updateServiceProgress(progress: Int, max: Int){
+        val notification = NotificationCompat.Builder(applicationContext, CriptextNotification.CHANNEL_ID_DECRYPTION_SERVICE)
+                .setSmallIcon(R.drawable.push_icon)
+                .setContentTitle(this.getLocalizedUIMessage(UIMessage(R.string.foreground_decryption_notification)))
+                .setContentText(this.getLocalizedUIMessage(UIMessage(R.string.foreground_decryption_message_progress,
+                        arrayOf(progress, max))))
+                .setOngoing(true)
+                .setGroup(CriptextNotification.ACTION_FOREGROUND_DECRYPT)
+                .setGroupSummary(false)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(this.getLocalizedUIMessage(
+                        UIMessage(R.string.foreground_decryption_message_progress,
+                                arrayOf(progress, max)
+                        )
+                )))
+                .setProgress(max, progress,false)
+                .build()
+        notificationManager?.notify(CriptextNotification.DECRYPTION_SERVICE_ID, notification)
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             var notificationChannel =
@@ -152,23 +163,19 @@ class DecryptionService: Service() {
         }
     }
 
-    fun pushProcessed(){
-        if(queue.isEmpty()) {
-            pushController?.doGetEvents()
-        } else {
-            data = queue.first()
+    fun checkQueuedEvents(){
+        if(queue.isNotEmpty()) {
+            queue.first().let { it() }
             queue.removeAt(0)
-            getPushNotification()
+        } else {
+            endService()
         }
     }
 
-    fun endService(){
+    private fun endService(){
         pushController = null
+        queue.clear()
         stopService()
-    }
-
-    fun notifyPushEvent(notifier: Notifier?){
-        notifier?.notifyPushEvent(applicationContext)
     }
 
     fun cancelPush(notificationId: Int, storage: KeyValueStorage, key: KeyValueStorage.StringKey, headerId: Int){

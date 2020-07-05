@@ -1,12 +1,10 @@
 package com.criptext.mail.scenes.signin
 
-import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -15,18 +13,20 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
+import com.criptext.mail.scenes.params.WebViewParams
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.changepassword.ChangePasswordController
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.validation.AccountDataValidator
@@ -36,6 +36,7 @@ import com.criptext.mail.validation.ProgressButtonState
 import com.criptext.mail.websocket.CriptextWebSocketFactory
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
+import java.util.*
 
 /**
  * Created by sebas on 2/15/18.
@@ -49,7 +50,7 @@ class SignInSceneController(
         private val storage: KeyValueStorage,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: SignInDataSource,
-        private val keyboard: KeyboardManager): SceneController() {
+        private val keyboard: KeyboardManager): SceneController(host, null, storage) {
 
     override val menuResourceId: Int? = R.menu.menu_remove_device_holder
 
@@ -692,7 +693,7 @@ class SignInSceneController(
         }
     }
 
-    private val uiObserver = object : SignInUIObserver {
+    private val uiObserver = object : SignInUIObserver(generalDataSource, host) {
         override fun onSkipClicked() {
             val currentState = model.state as SignInLayoutState.LoginValidation
             val hashedPassword = model.realSecurePassword!!
@@ -722,9 +723,18 @@ class SignInSceneController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        val map = mutableMapOf<String, Any>()
-                        map["auth"] = model.temporalJWT
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+                        host.goToScene(
+                                params = WebViewParams(
+                                        url = "${WebViewSceneController.ADMIN_URL}?token=${model.temporalJWT}&lang=${Locale.getDefault().language}"
+                                ),
+                                activityMessage = null,
+                                keep = true,
+                                animationData = TransitionAnimationData(
+                                        forceAnimation = true,
+                                        enterAnim = R.anim.slide_in_up,
+                                        exitAnim = R.anim.stay
+                                )
+                        )
                     }
                 }
             }
@@ -738,23 +748,7 @@ class SignInSceneController(
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
         override fun onSnackbarClicked() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
@@ -838,7 +832,18 @@ class SignInSceneController(
         }
 
         override fun onContactSupportPressed() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onSubmitButtonClicked() {
@@ -1090,29 +1095,29 @@ class SignInSceneController(
     override fun requestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     }
 
-    interface SignInUIObserver: UIObserver {
-        fun onSubmitButtonClicked()
-        fun toggleUsernameFocusState(isFocused: Boolean)
-        fun onSignUpLabelClicked()
-        fun userLoginReady()
-        fun onCantAccessDeviceClick()
-        fun onRecoveryCodeClicked()
-        fun onSkipClicked()
-        fun onResendDeviceLinkAuth(username: String, domain: String)
-        fun onPasswordChangeListener(newPassword: String)
-        fun onRecoveryCodeChangeListener(newPassword: String)
-        fun onConfirmPasswordChangeListener(confirmPassword: String)
-        fun onUsernameTextChanged(newUsername: String)
-        fun onForgotPasswordClick()
-        fun onBackPressed()
-        fun onXPressed()
-        fun onContactSupportPressed()
-        fun onProgressHolderFinish()
-        fun onRetrySyncOk(result: SignInResult)
-        fun onRetrySyncCancel()
-        fun onSignInWarningContinue(userName: String, domain: String)
-        fun onSetupDevices(devicesListView: VirtualListView)
-        fun onTrashPressed(recipient: String, domain: String)
+    abstract class SignInUIObserver(generalDataSource: GeneralDataSource, host: IHostActivity): UIObserver(generalDataSource, host) {
+        abstract fun onSubmitButtonClicked()
+        abstract fun toggleUsernameFocusState(isFocused: Boolean)
+        abstract fun onSignUpLabelClicked()
+        abstract fun userLoginReady()
+        abstract fun onCantAccessDeviceClick()
+        abstract fun onRecoveryCodeClicked()
+        abstract fun onSkipClicked()
+        abstract fun onResendDeviceLinkAuth(username: String, domain: String)
+        abstract fun onPasswordChangeListener(newPassword: String)
+        abstract fun onRecoveryCodeChangeListener(newPassword: String)
+        abstract fun onConfirmPasswordChangeListener(confirmPassword: String)
+        abstract fun onUsernameTextChanged(newUsername: String)
+        abstract fun onForgotPasswordClick()
+        abstract fun onBackPressed()
+        abstract fun onXPressed()
+        abstract fun onContactSupportPressed()
+        abstract fun onProgressHolderFinish()
+        abstract fun onRetrySyncOk(result: SignInResult)
+        abstract fun onRetrySyncCancel()
+        abstract fun onSignInWarningContinue(userName: String, domain: String)
+        abstract fun onSetupDevices(devicesListView: VirtualListView)
+        abstract fun onTrashPressed(recipient: String, domain: String)
     }
 
     companion object {

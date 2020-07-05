@@ -78,6 +78,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = db,
                     recipientId = params.recipientId,
                     domain = params.domain,
+                    storage = storage,
                     publishFn = { res -> flushResults(res)}
             )
             is GeneralRequest.PostUserData -> PostUserWorker(
@@ -248,6 +249,7 @@ class GeneralDataSource(override val runner: WorkRunner,
                     db = db,
                     filesDir = filesDir,
                     passphrase = params.passphrase,
+                    storage = storage,
                     isLocal = params.isLocal,
                     publishFn = { result ->
                         flushResults(result)
@@ -299,6 +301,23 @@ class GeneralDataSource(override val runner: WorkRunner,
                     publishFn = { result ->
                         flushResults(result)
                     }
+            )
+            is GeneralRequest.ChangeBlockRemoteContentSetting -> ChangeBlockRemoteContentSettingWorker(
+                    activeAccount = activeAccount!!,
+                    accountDao = db.accountDao(),
+                    httpClient = httpClient,
+                    storage = storage,
+                    newBlockRemoteContentSetting = params.newBlockRemoteContent,
+                    publishFn = { result ->
+                        flushResults(result)
+                    }
+            )
+            is GeneralRequest.ResendConfirmationLink -> ResendRecoveryEmailLinkWorker(
+                    accountDao = db.accountDao(),
+                    storage = storage,
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    publishFn = flushResults
             )
         }
     }

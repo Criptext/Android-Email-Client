@@ -5,13 +5,11 @@ import android.view.View
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.services.jobs.CloudBackupJobService
-import com.criptext.mail.services.jobs.CriptextJobCreator
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.MessageAndProgressDialog
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.evernote.android.job.JobManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -45,7 +43,9 @@ interface CloudBackupScene{
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun dismissAccountSuspendedDialog()
     fun showPreparingFileDialog()
+    fun showLoadingSettingsDialog()
     fun dismissPreparingFileDialog()
+    fun dismissLoadingSettingsDialog()
 
     var cloudBackupUIObserver: CloudBackupUIObserver?
 
@@ -123,6 +123,7 @@ interface CloudBackupScene{
         private val encryptPassphraseDialog = EncryptPassphraseDialog(view.context)
         private val accountSuspended = AccountSuspendedDialog(context)
         private val preparingFileDialog = MessageAndProgressDialog(context, UIMessage(R.string.preparing_file))
+        private val loadingSettings = MessageAndProgressDialog(context, UIMessage(R.string.loading_cloud_backup_settings))
 
         private val autoBackupSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -263,11 +264,19 @@ interface CloudBackupScene{
             preparingFileDialog.dismiss()
         }
 
+        override fun showLoadingSettingsDialog() {
+            loadingSettings.showDialog()
+        }
+
+        override fun dismissLoadingSettingsDialog() {
+            loadingSettings.dismiss()
+        }
+
         private fun setWifiOnlySwitchState(isChecked: Boolean) {
             backupOverSwitch.setOnCheckedChangeListener { _,_ -> }
             backupOverSwitch.isChecked = isChecked
             backupOverSwitch.setOnCheckedChangeListener { _, checked ->
-                cloudBackupUIObserver?.onWifiOnlySwiched(checked)
+                cloudBackupUIObserver?.onWifiOnlySwitched(checked)
             }
         }
 

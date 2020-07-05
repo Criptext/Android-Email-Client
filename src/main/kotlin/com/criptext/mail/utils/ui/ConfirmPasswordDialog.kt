@@ -85,6 +85,7 @@ class ConfirmPasswordDialog(val context: Context) {
         progressBar = view.findViewById(R.id.check_password_progress) as ProgressBar
 
         btnOk.setOnClickListener {
+            toggleLoad(true)
             observer?.onOkButtonPressed(password.text.toString())
         }
 

@@ -23,7 +23,7 @@ class SignatureController(
         private val storage: KeyValueStorage,
         private val dataSource: BackgroundWorkManager<SettingsRequest, SettingsResult>,
         private val generalDataSource: GeneralDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = R.menu.menu_signature
 

@@ -54,6 +54,17 @@ interface ContactDao {
     fun updateContactName(email: String, name: String, accountId: Long)
 
     @Query("""UPDATE contact
+            SET isTrusted=:isTrusted
+            where email=:email""")
+    fun updateContactIsTrusted(email: String, isTrusted: Boolean)
+
+
+    @Query("""UPDATE contact
+            SET isTrusted=:isTrusted
+            where email in (:emails)""")
+    fun updateContactsIsTrusted(emails: List<String>, isTrusted: Boolean)
+
+    @Query("""UPDATE contact
             SET spamScore = (spamScore + 1)
             where email in (:emails)
             AND EXISTS

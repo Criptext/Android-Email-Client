@@ -1,22 +1,14 @@
 package com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration
 
-import android.content.ClipboardManager
-import android.graphics.Color
-import android.text.Editable
-import android.text.Layout
-import android.text.TextWatcher
-import androidx.appcompat.widget.AppCompatEditText
 import android.view.View
 import android.widget.*
 import androidx.viewpager.widget.ViewPager
 import com.beardedhen.androidbootstrap.BootstrapProgressBar
-import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.ui.MXRecordsPagerAdapter
 import com.criptext.mail.scenes.settings.custom_domain_entry.domainconfiguration.ui.MXRecordsPagerModel
-import com.criptext.mail.scenes.settings.recovery_email.holders.FormInputViewHolder
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -25,7 +17,6 @@ import com.criptext.mail.utils.ui.*
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
-import com.criptext.mail.validation.FormInputState
 import com.viewpagerindicator.CirclePageIndicator
 
 
@@ -34,9 +25,6 @@ interface DomainConfigurationScene{
     fun attachView(domainConfigurationUIObserver: DomainConfigurationUIObserver,
                    keyboardManager: KeyboardManager, model: DomainConfigurationModel)
     fun showMessage(message: UIMessage)
-    fun showConfirmPasswordDialog(observer: UIObserver)
-    fun dismissConfirmPasswordDialog()
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -77,7 +65,6 @@ interface DomainConfigurationScene{
 
         private var pageArr: List<MXRecordsPagerModel> = listOf()
 
-        private val confirmPassword = ConfirmPasswordDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
@@ -269,18 +256,6 @@ interface DomainConfigurationScene{
 
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
-        }
-
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showMessage(message: UIMessage) {

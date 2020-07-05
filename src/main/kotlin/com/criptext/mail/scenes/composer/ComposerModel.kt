@@ -33,6 +33,8 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
         else -> false
     }
 
+    var attachmentsChanged = false
+
     var to = LinkedList<Contact>()
     var cc = LinkedList<Contact>()
     var bcc = LinkedList<Contact>()
@@ -56,4 +58,7 @@ class ComposerModel(val type: ComposerType, val currentLabel: Label): SceneModel
     var shareActivityMessage: ActivityMessage.AddAttachments? = null
     var fromAddresses = mutableListOf<String>()
     var groupId: String? = null
+    var recoveryEmailAddress = ""
+    var hasRecoveryEmail: Boolean = recoveryEmailAddress.isNotEmpty()
+    var isEmailConfirmed: Boolean = false
 }

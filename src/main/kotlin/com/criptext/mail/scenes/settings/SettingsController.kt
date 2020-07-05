@@ -4,14 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.criptext.mail.BaseActivity
-import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -19,18 +17,19 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.data.SettingsDataSource
 import com.criptext.mail.scenes.settings.data.SettingsRequest
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketController
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketSingleton
+import java.util.*
 
 class SettingsController(
         private val model: SettingsModel,
@@ -42,7 +41,7 @@ class SettingsController(
         private val keyboardManager: KeyboardManager,
         private val generalDataSource: GeneralDataSource,
         private val dataSource: SettingsDataSource)
-    : SceneController(){
+    : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int? = null
 
@@ -53,7 +52,7 @@ class SettingsController(
             is GeneralResult.ConfirmPassword -> onPasswordChangedRemotely(result)
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
-            is GeneralResult.SyncPhonebook -> onSyncPhonebook(result)
+            is GeneralResult.SyncPhonebook -> onSyncPhoneBook(result)
             is GeneralResult.SyncStatus -> onSyncStatus(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
         }
@@ -66,11 +65,15 @@ class SettingsController(
         }
     }
 
-    private val settingsUIObserver = object: SettingsUIObserver{
+    private val settingsUIObserver = object: SettingsUIObserver(generalDataSource, host){
         override fun onBillingClicked() {
-            val map = mutableMapOf<String, Any>()
-            map["auth"] = activeAccount.jwt
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun onAliasesClicked() {
@@ -82,11 +85,23 @@ class SettingsController(
         }
 
         override fun onReportBugClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun onReportAbuseClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun onCloudBackupClicked() {
@@ -116,17 +131,6 @@ class SettingsController(
         override fun onSyncMailboxCanceled() {
             model.isWaitingForSync = false
             generalDataSource.submitRequest(GeneralRequest.SyncCancel())
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onDarkThemeSwitched(isChecked: Boolean) {
@@ -182,15 +186,19 @@ class SettingsController(
                 }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
-                        val map = mutableMapOf<String, Any>()
-                        map["auth"] = activeAccount.jwt
-                        host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+                        host.goToScene(
+                                params = WebViewParams(
+                                        url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                                ),
+                                activityMessage = null,
+                                keep = true
+                        )
                     }
                 }
             }
         }
 
-        override fun onSyncPhonebookContacts() {
+        override fun onSyncPhoneBookContacts() {
             if (host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
                 storage.putBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, true)
@@ -203,17 +211,6 @@ class SettingsController(
 
         override fun onPinLockClicked() {
             host.goToScene(PinLockParams(), false)
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -229,27 +226,29 @@ class SettingsController(
         }
 
         override fun onFAQClicked() {
-            val map = mutableMapOf<String, Any>()
-            map["page"] = "faq"
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
+            openWebViewToCriptextUrl("faq")
         }
 
         override fun onPrivacyPoliciesClicked() {
-            val map = mutableMapOf<String, Any>()
-            map["page"] = "privacy"
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
+            openWebViewToCriptextUrl("privacy")
         }
 
         override fun onTermsOfServiceClicked() {
-            val map = mutableMapOf<String, Any>()
-            map["page"] = "terms"
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
+            openWebViewToCriptextUrl("terms")
         }
 
         override fun onOpenSourceLibrariesClicked() {
-            val map = mutableMapOf<String, Any>()
-            map["page"] = "open-source-android"
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-url", map))
+            openWebViewToCriptextUrl("open-source-android")
+        }
+
+        private fun openWebViewToCriptextUrl(page: String){
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "https://criptext.com/${Locale.getDefault().language}/$page"
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
         }
 
         override fun onBackButtonPressed() {
@@ -337,72 +336,7 @@ class SettingsController(
             generalDataSource.submitRequest(GeneralRequest.SyncPhonebook(resolver))
     }
 
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true
-                    )
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true
-                    )
-                }
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true
-                )
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncPhonebook(resultData: GeneralResult.SyncPhonebook){
+    private fun onSyncPhoneBook(resultData: GeneralResult.SyncPhonebook){
         scene.setSyncContactsProgressVisisble(false)
         when (resultData) {
             is GeneralResult.SyncPhonebook.Success -> {
@@ -415,12 +349,14 @@ class SettingsController(
     }
 
     private fun onSyncBegin(result: SettingsResult.SyncBegin){
-        scene.enableSyncBeginResendButton()
         when(result) {
             is SettingsResult.SyncBegin.Success -> {
+                scene.enableSyncBeginResendButton()
                 generalDataSource.submitRequest(GeneralRequest.SyncStatus())
             }
             is SettingsResult.SyncBegin.Failure -> {
+                scene.dismissSyncBeginDialog()
+                model.isWaitingForSync = false
                 scene.showMessage(result.message)
             }
         }
@@ -587,7 +523,7 @@ class SettingsController(
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(settingsUIObserver)
+                host.showConfirmPasswordDialog(settingsUIObserver)
             })
         }
 

@@ -143,7 +143,7 @@ class LinkDataWorker(private val authorizerId: Int,
             .flatMap { Result.of {
                 reporter.report(SignInResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
                 val decryptedFile = File(it)
-                dataWriter.createDBFromFile(decryptedFile)
+                dataWriter.createDBFromFile(decryptedFile, storage)
             }}
 
     private fun newRetryWithNewSessionOperation(reporter: ProgressReporter<SignInResult.LinkData>)

@@ -10,7 +10,6 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
@@ -31,6 +30,7 @@ import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
@@ -42,9 +42,9 @@ import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
-import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -63,7 +63,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                  private val generalDataSource: GeneralDataSource,
                                  private val dataSource: EmailDetailDataSource,
                                  private var websocketEvents: WebSocketEventPublisher,
-                                 private val keyboard: KeyboardManager) : SceneController() {
+                                 private val keyboard: KeyboardManager) : SceneController(host, activeAccount, storage) {
 
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->
@@ -78,6 +78,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.SetActiveAccountFromPush -> onSetActiveAccountFromPush(result)
             is GeneralResult.GetEmailPreview -> onGetEmailPreview(result)
+            is GeneralResult.ChangeBlockRemoteContentSetting -> onChangeBlockRemoteContent(result)
         }
     }
 
@@ -95,24 +96,14 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is EmailDetailResult.MarkAsReadEmail -> onMarAsReadEmail(result)
             is EmailDetailResult.CopyToDownloads -> onCopyToDownloads(result)
             is EmailDetailResult.DeleteDraft -> onDeleteDraft(result)
+            is EmailDetailResult.UpdateContactIsTrusted -> onUpdateIsTrusted(result)
         }
     }
 
-    private val emailDetailUIObserver = object: EmailDetailUIObserver{
+    private val emailDetailUIObserver = object: EmailDetailUIObserver(generalDataSource, host){
 
         override fun onSnackbarClicked() {
 
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -123,6 +114,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             when(result){
                 is DialogResult.DialogConfirmation -> {
                     when(result.type){
+                        is DialogType.Message -> {
+                            val newSetting = model.newBlockRemoteContentSetting
+                            if(newSetting != null)
+                                generalDataSource.submitRequest(GeneralRequest.ChangeBlockRemoteContentSetting(newSetting))
+                        }
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
@@ -131,17 +127,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     }
                 }
             }
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -157,17 +142,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 model.threadPreview = model.threadPreview.copy(
                         unread = true)
             }
-            if(model.exitToMailbox){
-                host.goToScene(
-                        params = MailboxParams(),
-                        activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                        forceAnimation = true,
-                        deletePastIntents = true,
-                        keep = false
-                )
-            } else {
-                host.finishScene(ActivityMessage.UpdateThreadPreview(model.threadPreview))
-            }
+            host.finishScene(activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_out_right
+                    )
+            )
         }
 
         override fun showStartGuideEmailIsRead(view: View) {
@@ -184,89 +165,6 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                     R.string.start_guide_unsend_button,
                     R.dimen.focal_padding_read_mail
             )
-        }
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(params = SignInParams(), activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true, keep = false)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true)
-                }
-            }
-        }
-    }
-
-    private fun onLogout(result: GeneralResult.Logout){
-        when (result) {
-            is GeneralResult.Logout.Success -> {
-                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true,
-                            deletePastIntents = true,
-                            keep = false)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            deletePastIntents = true,
-                            keep = false)
-                }
-
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showError(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(UIMessage(R.string.password_enter_error))
-            }
-        }
-    }
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount, resultData.deviceId,
-                                resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false,
-                        deletePastIntents = true)
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showError(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
-            }
         }
     }
 
@@ -344,10 +242,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showMessage(result.message)
+            }
+            is GeneralResult.ActiveAccountUpdateMailbox.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
             is GeneralResult.ActiveAccountUpdateMailbox.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -396,13 +297,16 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         keep = false)
             }
             is EmailDetailResult.UpdateUnreadStatus.Failure -> {
-                    scene.showError(UIMessage(R.string.error_updating_status))
+                scene.showError(UIMessage(R.string.error_updating_status))
             }
             is EmailDetailResult.UpdateUnreadStatus.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(UIMessage(R.string.error_updating_status))
+            }
+            is EmailDetailResult.UpdateUnreadStatus.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UpdateUnreadStatus.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -417,13 +321,16 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         keep = false)
             }
             is EmailDetailResult.MoveEmailThread.Failure -> {
-                    scene.showError(UIMessage(R.string.error_moving_emails))
+                scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmailThread.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.MoveEmailThread.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmailThread.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -452,10 +359,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(UIMessage(R.string.error_moving_emails))
             }
             is EmailDetailResult.MoveEmail.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.MoveEmail.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.MoveEmail.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -479,10 +389,13 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showError(result.message)
+            }
+            is EmailDetailResult.UnsendFullEmailFromEmailId.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is EmailDetailResult.UnsendFullEmailFromEmailId.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
         }
     }
@@ -532,7 +445,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 scene.showError(result.message)
             }
             is EmailDetailResult.DownloadFile.Forbidden -> {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             }
             is EmailDetailResult.DownloadFile.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
@@ -603,6 +516,24 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onUpdateIsTrusted(result: EmailDetailResult.UpdateContactIsTrusted){
+        when(result){
+            is EmailDetailResult.UpdateContactIsTrusted.Success -> {
+                val affectedEmails = model.emails.filter { it.from.email == result.fromContact.email}
+                affectedEmails.forEach { fullEmail ->
+                    val position = model.emails.indexOfFirst { it.email.metadataKey == fullEmail.email.metadataKey }
+                    if(position > -1){
+                        val newFrom = model.emails[position].from
+                        newFrom.isTrusted = result.newIsTrusted
+                        model.emails[position] = model.emails[position].copy(from = newFrom)
+                        scene.notifyFullEmailChanged(position + 1)
+                    }
+                }
+                scene.showMessage(UIMessage(R.string.block_remote_always_message, arrayOf(result.fromContact.email)))
+            }
+        }
+    }
+
     private fun updateAttachmentProgress(emailId: Long, filetoken: String, progress: Int){
         val emailIndex = model.emails.indexOfFirst { it.email.id == emailId }
         if (emailIndex < 0) return
@@ -657,10 +588,38 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun openWebView(url: String) {
+            host.goToScene(
+                    params = WebViewParams(
+                            url = url
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
+        }
+
         override fun openBilling() {
-            val map = mutableMapOf<String, Any>()
-            map["auth"] = activeAccount.jwt
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
+        }
+
+        override fun updateShowOnce(fullEmail: FullEmail, position: Int) {
+            fullEmail.isShowingRemoteContent = true
+            scene.notifyFullEmailChanged(position + 1)
+        }
+
+        override fun updateIsTrusted(fromContact: Contact, newIsTrusted: Boolean, metadataKey: Long) {
+            dataSource.submitRequest(EmailDetailRequest.UpdateContactIsTrusted(fromContact, newIsTrusted, metadataKey))
+        }
+
+        override fun updateRemoteContentSetting(newSetting: Boolean) {
+            scene.showRemoteContentDialog()
+            model.newBlockRemoteContentSetting = newSetting
         }
 
         override fun onReportOptionSelected(fullEmail: FullEmail, position: Int) {
@@ -871,6 +830,25 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         }
     }
 
+    private fun onChangeBlockRemoteContent(result: GeneralResult.ChangeBlockRemoteContentSetting){
+        when(result){
+            is GeneralResult.ChangeBlockRemoteContentSetting.Success -> {
+                if(!result.newBlockRemoteContent) {
+                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message,
+                            arrayOf(activeAccount.userEmail)))
+                } else {
+                    scene.showMessage(UIMessage(R.string.block_remote_turn_off_message_disable,
+                            arrayOf(activeAccount.userEmail)))
+                }
+                scene.changeBlockremoteSetting(result.newBlockRemoteContent)
+                scene.notifyFullEmailListChanged()
+            }
+            is GeneralResult.ChangeBlockRemoteContentSetting.Failure -> {
+                scene.showMessage(result.message)
+            }
+        }
+    }
+
     private fun onFullEmailsLoaded(result: EmailDetailResult.LoadFullEmailsFromThreadId){
         when (result) {
             is EmailDetailResult.LoadFullEmailsFromThreadId.Success -> {
@@ -900,7 +878,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                                 observer = emailDetailUIObserver,
                                 shouldOpenExpanded = (fullEmailsList.size < 4
                                 || result.unreadEmails > 1 && fullEmailsList.size >= 4),
-                                activeAccount = activeAccount)
+                                activeAccount = activeAccount,
+                                blockRemoteContentSetting = activeAccount.blockRemoteContent)
 
                         if(result.changeAccountMessage != null)
                             scene.showMessage(result.changeAccountMessage)
@@ -1266,7 +1245,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(emailDetailUIObserver)
+                host.showConfirmPasswordDialog(emailDetailUIObserver)
             })
         }
 

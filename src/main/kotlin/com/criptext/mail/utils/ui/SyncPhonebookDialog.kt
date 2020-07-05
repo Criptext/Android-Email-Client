@@ -61,7 +61,7 @@ class SyncPhonebookDialog(val context: Context) {
         val btnOk = view.findViewById(R.id.link_auth_yes) as Button
 
         btnOk.setOnClickListener {
-            mailboxUIObserver?.onSyncPhonebookYes()
+            mailboxUIObserver?.onSyncPhoneBookYes()
             dialog.dismiss()
         }
 

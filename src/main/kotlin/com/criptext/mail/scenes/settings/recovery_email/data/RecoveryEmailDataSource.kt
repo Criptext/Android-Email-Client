@@ -8,7 +8,6 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.settings.recovery_email.workers.ChangeRecoveryEmailWorker
-import com.criptext.mail.scenes.settings.recovery_email.workers.ResendLinkWorker
 
 class RecoveryEmailDataSource(
         private val accountDao: AccountDao,
@@ -22,13 +21,6 @@ class RecoveryEmailDataSource(
                                         flushResults: (RecoveryEmailResult) -> Unit): BackgroundWorker<*> {
 
         return when(params){
-            is RecoveryEmailRequest.ResendConfirmationLink -> ResendLinkWorker(
-                    accountDao = accountDao,
-                    storage = storage,
-                    activeAccount = activeAccount,
-                    httpClient = httpClient,
-                    publishFn = flushResults
-            )
             is RecoveryEmailRequest.ChangeRecoveryEmail -> ChangeRecoveryEmailWorker(
                     storage = storage,
                     accountDao = accountDao,

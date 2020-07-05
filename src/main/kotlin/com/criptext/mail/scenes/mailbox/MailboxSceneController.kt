@@ -14,6 +14,7 @@ import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
@@ -28,8 +29,14 @@ import com.criptext.mail.scenes.mailbox.ui.EmailThreadAdapter
 import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
+import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
+import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.scenes.webview.WebViewSceneController
+import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
@@ -40,12 +47,14 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
 import com.google.api.services.drive.Drive
 import java.io.File
+import java.util.*
 
 /**
  * Created by sebas on 1/30/18.
@@ -58,7 +67,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                              private val dataSource: MailboxDataSource,
                              private var activeAccount: ActiveAccount,
                              private var websocketEvents: WebSocketEventPublisher,
-                             private val feedController : FeedController) : SceneController() {
+                             private val feedController : FeedController) : SceneController(host, activeAccount, storage) {
 
     private val threadListController = ThreadListController(model, scene.virtualListView)
 
@@ -92,6 +101,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
+            is MailboxResult.SetCloudBackupActive -> dataSourceController.onSetCloudBackupActive(result)
+            is MailboxResult.CheckCloudBackupEnabled -> dataSourceController.onCheckCloudBackupEnabled(result)
         }
     }
 
@@ -162,7 +173,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                 return host.goToScene(params, true)
             }
             host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
-                    currentLabel = model.selectedLabel, threadPreview = emailPreview), true)
+                    currentLabel = model.selectedLabel, threadPreview = emailPreview), true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = 0,
+                            exitAnim = R.anim.slide_left_out
+                    ))
         }
 
         override fun onToggleThreadSelection(thread: EmailPreview, position: Int) {
@@ -215,11 +231,18 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onUpgradePlusOptionClicked() {
-            host.finishScene()
-            val map = mutableMapOf<String, Any>()
-            map["auth"] = activeAccount.jwt
-            map["comesFromMailbox"] = true
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("criptext-billing", map))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "${WebViewSceneController.ADMIN_URL}?token=${activeAccount.jwt}&lang=${Locale.getDefault().language}"
+                    ),
+                    activityMessage = ActivityMessage.ComesFromMailbox(),
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onSettingsOptionClicked() {
@@ -231,7 +254,18 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onSupportOptionClicked() {
-            host.launchExternalActivityForResult(ExternalActivityParams.GoToCriptextUrl("help-desk", mapOf()))
+            host.goToScene(
+                    params = WebViewParams(
+                            url = WebViewSceneController.HELP_DESK_URL
+                    ),
+                    activityMessage = null,
+                    keep = true,
+                    animationData = TransitionAnimationData(
+                            forceAnimation = true,
+                            enterAnim = R.anim.slide_in_up,
+                            exitAnim = R.anim.stay
+                    )
+            )
         }
 
         override fun onNavigationItemClick(navigationMenuOptions: NavigationMenuOptions) {
@@ -262,7 +296,19 @@ class MailboxSceneController(private val scene: MailboxScene,
     val googleSignInListener = object: GoogleSignInObserver {
         override fun signInSuccess(drive: Drive){
             model.mDriveServiceHelper = drive
-            host.goToScene(RestoreBackupParams(), false)
+            if(model.isCreateBackup){
+                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                        CloudBackupData(
+                                hasCloudBackup = true,
+                                autoBackupFrequency = 0,
+                                useWifiOnly = true,
+                                fileSize = 0,
+                                lastModified = null
+                        )
+                ))
+            } else {
+                host.goToScene(RestoreBackupParams(), false)
+            }
         }
 
         override fun signInFailed(){
@@ -284,8 +330,49 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     }
 
+    private fun setHasShowedBackup(hasShowed: Boolean){
+        val hasShowedBackupData = ProfileAskedForBackupData(activeAccount.id, hasShowed)
+        val allShowedBackupData = storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, "")
+        if (allShowedBackupData.isNotEmpty()) {
+            val savedData = ProfileAskedForBackupData.fromJson(allShowedBackupData)
+            val findAccountData = savedData.find { it.accountId == activeAccount.id }
+            if (findAccountData != null) {
+                savedData.remove(findAccountData)
+            }
+            savedData.add(hasShowedBackupData)
+            storage.putString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, ProfileAskedForBackupData.toJSON(savedData).toString())
+        } else {
+            val json = ProfileAskedForBackupData.toJSON(listOf(hasShowedBackupData))
+            storage.putString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, json.toString())
+        }
+    }
+
     private val dataSourceController = DataSourceController(dataSource)
-    private val observer = object : MailboxUIObserver {
+    private val observer = object : MailboxUIObserver(generalDataSource, host) {
+        override fun turnOnAutoBackup() {
+            setHasShowedBackup(true)
+            if(model.mDriveServiceHelper == null) model.mDriveServiceHelper = scene.getGoogleDriveService()
+            if(model.mDriveServiceHelper != null) {
+                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                        CloudBackupData(
+                                hasCloudBackup = true,
+                                autoBackupFrequency = 0,
+                                useWifiOnly = true,
+                                fileSize = 0,
+                                lastModified = null
+                        )
+                ))
+            }else{
+                model.isCreateBackup = true
+                host.launchExternalActivityForResult(ExternalActivityParams.SignOutGoogleDrive())
+                host.launchExternalActivityForResult(ExternalActivityParams.SignInGoogleDrive())
+            }
+        }
+
+        override fun notNowAutoBackup() {
+            setHasShowedBackup(true)
+        }
+
         override fun restoreFromLocalBackupPressed() {
             if(host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -305,17 +392,6 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onSnackbarClicked() {
             scene.scrollTop()
-        }
-
-        override fun onSyncAuthConfirmed(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if(trustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.SyncAccept(trustedDeviceInfo))
-            else
-                scene.showToastMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onSyncAuthDenied(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.SyncDenied(trustedDeviceInfo))
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -344,7 +420,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.showSyncPhonebookDialog(this)
         }
 
-        override fun onSyncPhonebookYes() {
+        override fun onSyncPhoneBookYes() {
             if(host.checkPermissions(BaseActivity.RequestCode.readAccess.ordinal,
                             Manifest.permission.READ_CONTACTS)) {
                 storage.putBool(KeyValueStorage.StringKey.UserHasAcceptedPhonebookSync, true)
@@ -360,17 +436,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 scene.showStartGuideEmail()
                 storage.putBool(KeyValueStorage.StringKey.StartGuideShowEmail, false)
             }
-        }
-
-        override fun onLinkAuthConfirmed(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            if(untrustedDeviceInfo.syncFileVersion == UserDataWriter.FILE_SYNC_VERSION)
-                generalDataSource.submitRequest(GeneralRequest.LinkAccept(untrustedDeviceInfo))
-            else
-                scene.showMessage(UIMessage(R.string.sync_version_incorrect))
-        }
-
-        override fun onLinkAuthDenied(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
-            generalDataSource.submitRequest(GeneralRequest.LinkDenied(untrustedDeviceInfo))
         }
 
         override fun onOkButtonPressed(password: String) {
@@ -474,7 +539,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.updateToolbarTitle(toolbarTitle)
     }
 
-    private fun handleActivityMessage(activityMessage: ActivityMessage?, isFromResume: Boolean = false): Boolean {
+    private fun handleActivityMessage(activityMessage: ActivityMessage?): Boolean {
         return when (activityMessage) {
             is ActivityMessage.SendMail -> {
                 val newRequest = MailboxRequest.SendMail(activityMessage.emailId, activityMessage.threadId,
@@ -565,6 +630,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                 }
                 return true
             }
+            is ActivityMessage.RefreshUI -> {
+                scene.initMailboxAvatar(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                scene.initNavHeader(activeAccount.name, activeAccount.userEmail, activeAccount.type)
+                threadListController.reRenderAll()
+                return true
+            }
             else -> {
                 dataSource.submitRequest(MailboxRequest.ResendEmails())
                 false
@@ -648,12 +719,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                 generalDataSource.submitRequest(GeneralRequest.SetActiveAccountFromPush(extras.account, extras.domain, extras))
             }
         }
-        return handleActivityMessage(activityMessage, true)
+        return handleActivityMessage(activityMessage)
     }
 
     override fun onNeedToSendEvent(event: Int) {
         reloadMailboxThreads()
         generalDataSource.submitRequest(GeneralRequest.UserEvent(event))
+        checkRecommendBackup(model.threads.size)
     }
 
     override fun onPause() {
@@ -774,6 +846,20 @@ class MailboxSceneController(private val scene: MailboxScene,
         scene.showDialogLabelsChooser(LabelDataHandler(this))
     }
 
+    private fun checkRecommendBackup(threadSize: Int){
+        val hasAskedForBackup = when {
+            storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, "").isNotEmpty() -> {
+                val showedBackupData = ProfileAskedForBackupData.fromJson(storage.getString(KeyValueStorage.StringKey.HasBeenAskedRecommendBackup, ""))
+                showedBackupData.find { it.accountId == activeAccount.id }?.hasAskedForBackup ?: false
+            }
+            else -> false
+        }
+        if(threadSize >= 10
+                && !hasAskedForBackup){
+            dataSource.submitRequest(MailboxRequest.CheckCloudBackupEnabled())
+        }
+    }
+
     fun updateEmailThreadsLabelsRelations(selectedLabels: SelectedLabels): Boolean {
         dataSourceController.updateEmailThreadsLabelsRelations(selectedLabels, false)
         return false
@@ -860,9 +946,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.EmptyTrash.Failure ->
                     scene.showMessage(resultData.message)
                 is MailboxResult.EmptyTrash.Unauthorized ->
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
-                is MailboxResult.EmptyTrash.Forbidden ->
-                    scene.showConfirmPasswordDialog(observer)
+                    scene.showMessage(resultData.message)
+                is MailboxResult.EmptyTrash.SessionExpired ->
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
+                is MailboxResult.EmptyTrash.Forbidden -> {
+                    host.showConfirmPasswordDialog(observer)
+                }
             }
         }
 
@@ -905,7 +994,34 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.listener = null
                     host.goToScene(params = MailboxParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            forceAnimation = true, keep = false)
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = 0,
+                                    exitAnim = 0
+                            ), keep = false)
+                }
+            }
+        }
+
+        fun onSetCloudBackupActive(result: MailboxResult.SetCloudBackupActive){
+            when(result){
+                is MailboxResult.SetCloudBackupActive.Success -> {
+                    scene.removeFromScheduleCloudBackupJob(activeAccount.id)
+                    scene.scheduleCloudBackupJob(result.cloudBackupData.autoBackupFrequency, activeAccount.id, result.cloudBackupData.useWifiOnly)
+                    scene.showMessage(UIMessage(R.string.recommend_backup_sucess))
+                }
+                is MailboxResult.SetCloudBackupActive.Failure -> {
+                    scene.showMessage(result.message)
+                }
+            }
+        }
+
+        fun onCheckCloudBackupEnabled(result: MailboxResult.CheckCloudBackupEnabled){
+            when(result){
+                is MailboxResult.CheckCloudBackupEnabled.Success -> {
+                    if(!result.isEnabled) {
+                        scene.showRecommendBackupDialog()
+                    }
                 }
             }
         }
@@ -980,10 +1096,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_labels))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.UpdateEmailThreadsLabelsRelations.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateEmailThreadsLabelsRelations.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1008,10 +1127,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_moving_threads))
                 }
                 is MailboxResult.MoveEmailThread.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.MoveEmailThread.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.MoveEmailThread.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1035,10 +1157,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(result.message)
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.SendMail.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.SendMail.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
                 is MailboxResult.SendMail.EnterpriseSuspended -> {
                     showSuspendedAccountDialog()
@@ -1069,9 +1194,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.setMenuLabels(result.labels.map { LabelWrapper(it) })
                     scene.setMenuAccounts(model.extraAccounts, model.extraAccounts.map { 0 })
                     val position = model.threads.indexOfFirst { it.isSecure }
-                    if(position > -1){
+                    if(position > -1) {
                         val secureLockHasShown = storage.getBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, false)
-                        if(!secureLockHasShown) {
+                        if (!secureLockHasShown) {
                             scene.showSecureLockGuide(position)
                             storage.putBool(KeyValueStorage.StringKey.StartGuideShowSecureEmail, true)
                         }
@@ -1094,10 +1219,13 @@ class MailboxSceneController(private val scene: MailboxScene,
                     scene.showMessage(UIMessage(R.string.error_updating_status))
                 }
                 is MailboxResult.UpdateUnreadStatus.Unauthorized -> {
-                    generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                    scene.showMessage(result.message)
+                }
+                is MailboxResult.UpdateUnreadStatus.SessionExpired -> {
+                    generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
                 }
                 is MailboxResult.UpdateUnreadStatus.Forbidden -> {
-                    scene.showConfirmPasswordDialog(observer)
+                    host.showConfirmPasswordDialog(observer)
                 }
             }
         }
@@ -1109,7 +1237,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     feedController.reloadFeeds()
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
                             currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
-                            doReply = result.doReply), true, activityMessage = result.activityMessage)
+                            doReply = result.doReply), true, activityMessage = result.activityMessage,
+                            animationData = TransitionAnimationData(
+                                    forceAnimation = true,
+                                    enterAnim = 0,
+                                    exitAnim = R.anim.slide_out_right
+                            ))
                 }
                 is GeneralResult.GetEmailPreview.Failure -> {
                     dataSourceController.updateMailbox(model.selectedLabel)
@@ -1321,7 +1454,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
                 }
                 scene.updateBadges(resultData.extraAccountsData)
-
             }
         }
     }
@@ -1354,37 +1486,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                         keep = false,
                         deletePastIntents = true
                 )
-            }
-        }
-    }
-
-
-    private fun onLinkAccept(resultData: GeneralResult.LinkAccept){
-        when (resultData) {
-            is GeneralResult.LinkAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.linkAccount,
-                        resultData.deviceId, resultData.uuid, resultData.deviceType),
-                        activityMessage = null,
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.LinkAccept.Failure -> {
-                scene.showToastMessage(resultData.message)
-            }
-        }
-    }
-
-    private fun onSyncAccept(resultData: GeneralResult.SyncAccept){
-        when (resultData) {
-            is GeneralResult.SyncAccept.Success -> {
-                host.goToScene(
-                        params = LinkingParams(resultData.syncAccount, resultData.deviceId,
-                        resultData.uuid, resultData.deviceType),
-                        activityMessage = ActivityMessage.SyncMailbox(),
-                        keep = false, deletePastIntents = true)
-            }
-            is GeneralResult.SyncAccept.Failure -> {
-                scene.showMessage(resultData.message)
             }
         }
     }
@@ -1432,69 +1533,19 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
-                generalDataSource.submitRequest(GeneralRequest.Logout(false, false))
+                scene.showMessage(resultData.message)
+            }
+            is GeneralResult.ActiveAccountUpdateMailbox.SessionExpired -> {
+                generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Forbidden -> {
-                scene.showConfirmPasswordDialog(observer)
+                host.showConfirmPasswordDialog(observer)
             }
             is GeneralResult.ActiveAccountUpdateMailbox.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
             }
         }
         scene.setEmtpyMailboxBackground(model.selectedLabel)
-    }
-
-    private fun onDeviceRemovedRemotely(result: GeneralResult.DeviceRemoved){
-        when (result) {
-            is GeneralResult.DeviceRemoved.Success -> {
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                            forceAnimation = true, deletePastIntents = true)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            deletePastIntents = true)
-                }
-
-            }
-        }
-    }
-
-    private fun onLogout(result: GeneralResult.Logout){
-        when (result) {
-            is GeneralResult.Logout.Success -> {
-                CloudBackupJobService.cancelJob(storage, result.oldAccountId)
-                if(result.activeAccount == null)
-                    host.goToScene(
-                            params = SignInParams(), keep = false,
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                            forceAnimation = true, deletePastIntents = true)
-                else {
-                    activeAccount = result.activeAccount
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            keep = false, deletePastIntents = true)
-                }
-
-            }
-        }
-    }
-
-    private fun onPasswordChangedRemotely(result: GeneralResult.ConfirmPassword){
-        when (result) {
-            is GeneralResult.ConfirmPassword.Success -> {
-                scene.dismissConfirmPasswordDialog()
-                scene.showMessage(UIMessage(R.string.update_password_success))
-            }
-            is GeneralResult.ConfirmPassword.Failure -> {
-                scene.setConfirmPasswordError(result.message)
-            }
-        }
     }
 
     private fun showSuspendedAccountDialog(){
@@ -1590,7 +1641,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
         override fun onDeviceLocked() {
             host.runOnUiThread(Runnable {
-                scene.showConfirmPasswordDialog(observer)
+                host.showConfirmPasswordDialog(observer)
             })
         }
 

@@ -14,7 +14,7 @@ class ActiveAccountTest {
     fun `serialize to JSON and deserialize from JSON`() {
         val original = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 3,
                 jwt = "gI9Y4mXsww31qT", signature = "", refreshToken = "gI9Y4mXsww31qT", id = 1,
-                domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+                domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
         val serialized = original.toJSON().toString()
         val deserialized = ActiveAccount.fromJSONString(serialized)
 

@@ -1,16 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/rootView"
+<RelativeLayout android:id="@+id/rootView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.criptext.mail.scenes.WebViewActivity">
+    tools:context="com.criptext.mail.scenes.webview.WebViewActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/criptextColorBackground">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/web_view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:id="@+id/mailbox_title_layout"
+                android:layout_marginStart="-10dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:visibility="visible"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/web_view_back_button"
+                    android:src="@drawable/back"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:layout_height="70dp"
+                    android:layout_width="70dp" />
+                <TextView
+                    android:id="@+id/web_view_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_height="match_parent"
+                    android:gravity="left|center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <WebView
         android:id="@+id/webViewCriptext"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/web_view_toolbar"/>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -19,6 +68,7 @@
         android:layout_marginTop="-5dp"
         android:indeterminate="true"
         android:visibility="visible"
+        android:layout_below="@+id/web_view_toolbar"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
 
     <LinearLayout
@@ -42,6 +92,7 @@
             android:gravity="center_horizontal"
             android:text="@string/web_view_no_internet_title"
             android:layout_marginBottom="20dp"
+            android:textColor="?attr/criptextPrimaryTextColor"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"/>
         <TextView
@@ -53,6 +104,7 @@
             android:gravity="center_horizontal"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
+            android:textColor="?attr/criptextSecondaryTextColor"
             android:text="@string/web_view_no_internet_message"/>
     </LinearLayout>
 </RelativeLayout>

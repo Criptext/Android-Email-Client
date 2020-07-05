@@ -51,7 +51,7 @@ class ResendEmailWorkerTest {
     private val keyGenerator = SignalKeyGenerator.Default(DeviceUtils.DeviceType.Android)
     private var activeAccount = ActiveAccount(name = "Tester", recipientId = "tester",
             deviceId = 1, jwt = "__JWTOKEN__", signature = "", refreshToken = "", id = 1,
-            domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+            domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
             isTrusted = false, score = 0, spamScore = 0)
     @Before
@@ -97,7 +97,7 @@ class ResendEmailWorkerTest {
                     attachments = emptyList(), onlySave = false, senderAddress = activeAccount.userEmail,
                     dao = db.emailInsertionDao(), publishFn = {}, fileKey = null, originalId = null,
                     filesDir = mActivityRule.activity.filesDir, currentLabel = Label.defaultItems.inbox,
-                    db = composerLocalDB, activeAccount = activeAccount)
+                    db = composerLocalDB, activeAccount = activeAccount, goToRecoveryEmail = false)
 
     private fun getDecryptedBodyPostEmailRequestBody(recipient: DummyUser): String {
         mockWebServer.takeRequest(0, java.util.concurrent.TimeUnit.HOURS)

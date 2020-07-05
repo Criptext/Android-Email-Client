@@ -43,7 +43,7 @@ class RemoveNotificationWorker(
             return catchException(Exception())
 
 
-        val dbAccount = db.accountDao().getAccount(account!!, domain!!) ?: return catchException(Exception())
+        val dbAccount = db.accountDao().getAccount(account, domain) ?: return catchException(Exception())
         activeAccount = ActiveAccount.loadFromDB(dbAccount)!!
 
         val operationResult = Result.of {

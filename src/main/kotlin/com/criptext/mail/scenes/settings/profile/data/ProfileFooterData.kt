@@ -21,7 +21,8 @@ data class ProfileFooterData(val accountId: Long, val hasFooterEnabled: Boolean)
 
         fun fromJson(jsonString: String): MutableList<ProfileFooterData>{
             val json = JSONObject(jsonString)
-            val jsonArray = json.getJSONArray("profileFooterData")
+            val jsonArray = if(json.has("profileFooterData")) json.getJSONArray("profileFooterData")
+                            else return mutableListOf()
             val length = jsonArray.length()
             val savedDataList = mutableListOf<ProfileFooterData>()
             (0 until length)

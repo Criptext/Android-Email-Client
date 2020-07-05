@@ -53,21 +53,21 @@ interface ComposerScene {
     fun showPayloadTooLargeDialog(filename: String, maxsize: Long)
     fun showMaxFilesExceedsDialog()
     fun showDraftDialog(dialogClickListener: DialogInterface.OnClickListener)
-    fun showConfirmPasswordDialog(observer: UIObserver)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
     fun showAttachmentsBottomDialog(observer: ComposerUIObserver?)
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
     fun notifyAttachmentSetChanged()
-    fun dismissConfirmPasswordDialog()
     fun dismissAccountSuspendedDialog()
     fun showStayInComposerDialog(observer: ComposerUIObserver)
-    fun setConfirmPasswordError(message: UIMessage)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showStartGuideAttachments()
     fun fillFromOptions(list: List<String>)
     fun switchToSimpleFrom(from: String)
     fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>)
+    fun showRecoveryEmailRestrictionDialog()
+    fun loadingRecoveryEmailRestrictionDialog(isLoading: Boolean)
+    fun dismissRecoveryEmailRestrictionDialog()
 
     class Default(view: View, private val keyboard: KeyboardManager): ComposerScene {
 
@@ -78,6 +78,7 @@ interface ComposerScene {
         private val linkAuthDialog = LinkNewDeviceAlertDialog(ctx)
         private val preparingFileDialog = MessageAndProgressDialog(ctx, UIMessage(R.string.preparing_file))
         private val stayInComposerDialog = StayInComposerDialog(ctx)
+        private val recoveryEmailRestrictionDialog = RecoveryEmailRestrictionDialog(ctx)
 
         private val fromAddresses: Spinner by lazy {
             view.findViewById<Spinner>(R.id.spinner_from)
@@ -277,24 +278,12 @@ interface ComposerScene {
             attachmentBottomDialog.showAttachmentsDialog(observer)
         }
 
-        override fun showConfirmPasswordDialog(observer: UIObserver) {
-            confirmPassword.showDialog(observer)
-        }
-
         override fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType) {
             accountSuspended.showDialog(observer, email, dialogType)
         }
 
-        override fun dismissConfirmPasswordDialog() {
-            confirmPassword.dismissDialog()
-        }
-
         override fun dismissAccountSuspendedDialog() {
             accountSuspended.dismissDialog()
-        }
-
-        override fun setConfirmPasswordError(message: UIMessage) {
-            confirmPassword.setPasswordError(message)
         }
 
         override fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo) {
@@ -334,6 +323,18 @@ interface ComposerScene {
 
         override fun showStayInComposerDialog(observer: ComposerUIObserver) {
             stayInComposerDialog.showLinkDeviceAuthDialog(observer)
+        }
+
+        override fun showRecoveryEmailRestrictionDialog() {
+            recoveryEmailRestrictionDialog.showDialog(observer)
+        }
+
+        override fun loadingRecoveryEmailRestrictionDialog(isLoading: Boolean) {
+            recoveryEmailRestrictionDialog.loading(isLoading)
+        }
+
+        override fun dismissRecoveryEmailRestrictionDialog() {
+            recoveryEmailRestrictionDialog.dismiss()
         }
 
         override fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>) {

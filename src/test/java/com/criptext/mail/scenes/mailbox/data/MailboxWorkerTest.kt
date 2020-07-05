@@ -50,7 +50,7 @@ open class MailboxWorkerTest {
         lastResult = null
         activeAccount = ActiveAccount(name = "Gabriel", recipientId = "gabriel", deviceId = 2,
                 jwt = "__JWTOKEN__", signature = "", refreshToken = "__REFRESH__", id = 1,
-                domain = Contact.mainDomain, type = AccountTypes.STANDARD)
+                domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true)
         signalClient = mockk()
         db = mockk()
         appDB = mockk()

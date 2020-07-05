@@ -58,7 +58,9 @@ class ActiveAccountUpdateMailboxWorker(
         if(ex is ServerErrorException) {
             when {
                 ex.errorCode == ServerCodes.Unauthorized ->
-                    GeneralResult.ActiveAccountUpdateMailbox.Unauthorized(label, UIMessage(R.string.device_removed_remotely_exception), ex)
+                    GeneralResult.ActiveAccountUpdateMailbox.Unauthorized(label, createErrorMessage(ex), ex)
+                ex.errorCode == ServerCodes.SessionExpired ->
+                    GeneralResult.ActiveAccountUpdateMailbox.SessionExpired()
                 ex.errorCode == ServerCodes.Forbidden ->
                     GeneralResult.ActiveAccountUpdateMailbox.Forbidden(label, UIMessage(R.string.device_removed_remotely_exception), ex)
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
