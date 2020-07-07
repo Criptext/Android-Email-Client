@@ -66,7 +66,7 @@ sealed class PushResult {
                 val pushData: Map<String, String>,
                 val shouldPostNotification: Boolean,
                 val notificationId: Int,
-                val activeAccount: ActiveAccount): NewEmail()
+                val activeAccount: ActiveAccount?): NewEmail()
     }
 
     sealed class LinkAccept: PushResult() {

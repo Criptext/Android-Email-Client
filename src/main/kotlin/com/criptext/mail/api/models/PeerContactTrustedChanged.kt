@@ -15,9 +15,11 @@ data class PeerContactTrustedChanged(val email: String, val trusted: Boolean){
 
     fun toJSON(): JSONObject {
         val json = JSONObject()
-        json.put("cmd", Event.Cmd.peerContactTrustedChanged)
+        val jsonPut = JSONObject()
+        jsonPut.put("cmd", Event.Cmd.peerContactTrustedChanged)
         json.put("email", email)
         json.put("trusted", trusted)
-        return json
+        jsonPut.put("params", json)
+        return jsonPut
     }
 }

@@ -12,8 +12,7 @@ class HeaderActionService : IntentService("Header Action Service") {
 
     public override fun onHandleIntent(intent: Intent?) {
         val storage = KeyValueStorage.SharedPrefs(this)
-        val activeAccount = ActiveAccount.loadFromStorage(storage)!!
-        val data = getIntentData(intent, activeAccount.recipientId)
+        val data = getIntentData(intent)
 
 
         when (data.action){
@@ -25,15 +24,10 @@ class HeaderActionService : IntentService("Header Action Service") {
         }
     }
 
-    private fun getIntentData(intent: Intent?, activeRecipientId: String): IntentData {
+    private fun getIntentData(intent: Intent?): IntentData {
         val action = intent!!.action ?: ""
-        val notificationId = intent.getIntExtra("notificationId", 0)
-        val metadataKey = intent.getLongExtra("metadataKey", 0)
-        val recipientId = intent.getStringExtra("account") ?: activeRecipientId
-        val domain = intent.getStringExtra("domain") ?: Contact.mainDomain
-        return IntentData(action, metadataKey, notificationId, recipientId, domain)
+        return IntentData(action)
     }
 
-    private data class IntentData(val action: String, val metadataKey: Long, val notificationId: Int,
-                                  val recipientId: String, val domain: String)
+    private data class IntentData(val action: String)
 }

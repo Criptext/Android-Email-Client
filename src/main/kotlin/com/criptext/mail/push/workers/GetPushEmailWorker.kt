@@ -90,7 +90,7 @@ class GetPushEmailWorker(
                 pushData = pushData,
                 shouldPostNotification = shouldPostNotification,
                 notificationId = -1,
-                activeAccount = activeAccount)
+                activeAccount = null)
 
         activeAccount = ActiveAccount.loadFromDB(dbAccount)!!
         setupForAntiPush(pushData)

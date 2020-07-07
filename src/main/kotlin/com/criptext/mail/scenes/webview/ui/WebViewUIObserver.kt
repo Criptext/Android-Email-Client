@@ -10,6 +10,7 @@ abstract class WebViewUIObserver(generalDataSource: GeneralDataSource, host: IHo
     abstract fun onPageStartedLoading(url: String?)
     abstract fun onPageFinishedLoading(url: String)
     abstract fun onJSInterfaceClose()
+    abstract fun onCopyText(text: String)
     abstract fun onBrowserDownload(url: String, contentDisposition: String)
     abstract fun onPageReceiveError()
 }

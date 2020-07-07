@@ -7,6 +7,7 @@ import com.criptext.mail.utils.ContactUtils
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.EmailThreadValidator
 import com.criptext.mail.utils.EmailUtils
+import com.criptext.mail.utils.virtuallist.VirtualList
 import java.io.File
 import java.util.*
 
@@ -249,12 +250,14 @@ interface MailboxLocalDB {
         }
 
         override fun getLabelsFromThreadIds(threadIds: List<String>) : List<Label> {
-            val labelSet = HashSet<Label>()
-            threadIds.forEach {
-                val labels = db.emailLabelDao().getLabelsFromEmailThreadId(it)
-                labelSet.addAll(labels)
+            val labelList = mutableListOf<Label>()
+            threadIds.forEach { threadId ->
+                val labels = db.emailLabelDao().getLabelsFromEmailThreadId(threadId)
+                labels.forEach {
+                    if(!labelList.contains(it)) labelList.add(it)
+                }
             }
-            return labelSet.toList()
+            return labelList
         }
 
         override fun createLabelEmailRelations(emailLabels: List<EmailLabel>){

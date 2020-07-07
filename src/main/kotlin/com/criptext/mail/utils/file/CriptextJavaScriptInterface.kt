@@ -24,7 +24,10 @@ class CriptextJavaScriptInterface(val mContext: Context, val filename: String, v
             "close" -> {
                 observer.onJSInterfaceClose()
             }
+            "copy" -> {
+                val params = json.optJSONObject("params") ?: return
+                observer.onCopyText(params.getString("text"))
+            }
         }
-
     }
 }
