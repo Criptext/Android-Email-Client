@@ -392,7 +392,8 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
         db.emailDao().changeDeliveryTypeByMetadataKey(metadataKey, DeliveryTypes.UNSEND, activeAccount.id)
         db.emailDao().unsendEmailByMetadataKey(metadataKey, "", "",
                 unsentDate, activeAccount.id)
-        db.fileDao().changeFileStatusByEmailid(db.emailDao().getEmailByMetadataKey(metadataKey, activeAccount.id).id, 0)
+        val email = db.emailDao().getEmailByMetadataKey(metadataKey, activeAccount.id) ?: return
+        db.fileDao().changeFileStatusByEmailid(email.id, 0)
         EmailUtils.deleteEmailInFileSystem(
                 filesDir = filesDir,
                 metadataKey = metadataKey,

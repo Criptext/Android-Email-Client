@@ -99,12 +99,12 @@
             android:layout_below="@+id/viewAnimation"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:src="@drawable/check"
             android:padding="8dp"
             android:tint="@color/colorAccent"
             android:background="@drawable/circle_succesed"
-            android:alpha="0.0"/>
+            android:alpha="1"/>
 
         <LinearLayout
             android:layout_width="match_parent"

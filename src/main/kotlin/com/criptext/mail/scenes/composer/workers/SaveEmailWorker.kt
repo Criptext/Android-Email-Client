@@ -96,8 +96,8 @@ class SaveEmailWorker(
                 }) ?: throw Exception()
                 aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
                 dbAccount = db.accountDao.getAccountById(alias.accountId) ?: throw Exception()
-                account = ActiveAccount.loadFromDB(dbAccount)!!
             }
+            account = ActiveAccount.loadFromDB(dbAccount)!!
         } else {
             throw Exception()
         }

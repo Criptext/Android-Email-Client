@@ -48,7 +48,7 @@ class MessagingService : FirebaseMessagingService(){
                     if(result.exception !is EventHelper.NoContentFoundException
                             || result.exception !is EventHelper.AccountNotFoundException)
                         createAndNotifyPush(result.pushData, result.shouldPostNotification,
-                                null, result.notificationId, result.activeAccount,false)
+                                null, result.notificationId, result.activeAccount!!,false)
 
                 }
             }

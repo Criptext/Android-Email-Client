@@ -1,5 +1,6 @@
 package com.criptext.mail.scenes.webview
 
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -47,6 +48,7 @@ class WebViewActivity : BaseActivity() {
                 host = this,
                 storage = storage,
                 activeAccount = activeAccount,
+                clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager,
                 generalDataSource = GeneralDataSource(
                         storage = storage,
                         httpClient = HttpClient.Default(),

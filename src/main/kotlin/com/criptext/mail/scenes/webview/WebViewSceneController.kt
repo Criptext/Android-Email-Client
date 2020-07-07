@@ -1,6 +1,8 @@
 package com.criptext.mail.scenes.webview
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.net.Uri
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -29,7 +31,8 @@ class WebViewSceneController(private val scene: WebViewScene,
                              private val host: IHostActivity,
                              private val activeAccount: ActiveAccount,
                              storage: KeyValueStorage,
-                             private val generalDataSource: GeneralDataSource)
+                             private val generalDataSource: GeneralDataSource,
+                             private val clipboardManager: ClipboardManager)
     : SceneController(host, activeAccount, storage){
 
     override val menuResourceId: Int?
@@ -116,6 +119,11 @@ class WebViewSceneController(private val scene: WebViewScene,
                             exitAnim = R.anim.slide_out_right
                     )
             )
+        }
+
+        override fun onCopyText(text: String) {
+            val clipData = ClipData.newPlainText("text", text)
+            clipboardManager.primaryClip = clipData
         }
 
         override fun onUrlChanged(newUrl: String) {

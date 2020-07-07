@@ -74,23 +74,26 @@ class UpdateMailboxWorker(
         val count = Result.of {
             apiClient.getPendingEventCount(Event.Cmd.newEmail)
         }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
-        when(count){
+        eventHelper = when(count){
             is Result.Success -> {
                 maxEmailCount = JSONObject(count.value.body).getInt("total")
-                eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
+                EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
                         true, false, object : EventHelperListener {
                     override fun emailHasBeenParsed() {
                         parsedEmailCount += 1
                         reporter.report(PushResult.UpdateMailbox.Progress(parsedEmailCount, maxEmailCount))
                     }
                 })
-                eventHelper.setupForMailbox(label)
-                val requestEvents = EventLoader.getEvents(apiClient)
-                shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
-                return requestEvents
             }
-            is Result.Failure -> return Result.of { throw EventHelper.NoContentFoundException() }
+            else -> {
+                EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
+                        true, false)
+            }
         }
+        eventHelper.setupForMailbox(label)
+        val requestEvents = EventLoader.getEvents(apiClient)
+        shouldCallAgain = (requestEvents as? Result.Success)?.value?.second ?: false
+        return requestEvents
     }
 
     override fun work(reporter: ProgressReporter<PushResult.UpdateMailbox>)

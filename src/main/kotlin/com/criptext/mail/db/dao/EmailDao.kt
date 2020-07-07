@@ -55,7 +55,7 @@ import java.util.*
     @Query("""SELECT * FROM email
                 WHERE metadataKey in (:metadataKey)
                 AND accountId = :accountId""")
-    fun getEmailByMetadataKey(metadataKey: Long, accountId: Long) : Email
+    fun getEmailByMetadataKey(metadataKey: Long, accountId: Long) : Email?
 
     @Query("""SELECT * FROM email
                 WHERE id=:id

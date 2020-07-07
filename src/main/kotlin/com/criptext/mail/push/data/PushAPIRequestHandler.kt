@@ -2,6 +2,7 @@ package com.criptext.mail.push.data
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.content.res.Resources
 import android.os.Build
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
@@ -123,7 +124,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         handleNotificationCount(notificationId, KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
         val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
         val operation = Result.of {
-            val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)
+            val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id) ?: throw Resources.NotFoundException()
             email
         }
         .flatMap { Result.of { emailDao.toggleCheckingRead(listOf(it.id), false, activeAccount.id) } }
@@ -160,7 +161,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         else
             emptyList()
 
-        val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)
+        val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id) ?: return
 
         peerEventsApiHandler.enqueueEvent(
                 PeerChangeEmailLabelData(
@@ -169,7 +170,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
         )
 
         val result = Result.of {
-            val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id).id)
+            val emailIds = listOf(emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id)!!.id)
 
             val emailLabels = arrayListOf<EmailLabel>()
             emailIds.flatMap{ emailId ->

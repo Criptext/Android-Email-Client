@@ -429,7 +429,11 @@ class EventHelper(private val db: EventLocalDB,
         val operation = Result.of {
             val metadata = PeerAddressStatusUpdated.fromJSON(event.params)
 
-            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId } ?: throw Exception()
+            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId }
+            if(alias == null){
+                eventsToAcknowldege.add(event.rowid)
+                throw Exception()
+            }
             alias.active = metadata.isActive
             db.updateAliasStatus(alias)
         }
@@ -445,7 +449,11 @@ class EventHelper(private val db: EventLocalDB,
         val operation = Result.of {
             val metadata = PeerAddressDeleted.fromJSON(event.params)
 
-            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId } ?: throw Exception()
+            val alias = db.getAliases(activeAccount.id).find { it.rowId == metadata.addressId }
+            if(alias == null){
+                eventsToAcknowldege.add(event.rowid)
+                throw Exception()
+            }
             db.deleteAlias(alias)
         }
         when(operation){
@@ -480,7 +488,11 @@ class EventHelper(private val db: EventLocalDB,
         val operation = Result.of {
             val metadata = PeerCustomDomainDeleted.fromJSON(event.params)
 
-            val customDomain = db.getCustomDomains(activeAccount.id).find { it.name == metadata.domainName } ?: throw Exception()
+            val customDomain = db.getCustomDomains(activeAccount.id).find { it.name == metadata.domainName }
+            if(customDomain == null){
+                eventsToAcknowldege.add(event.rowid)
+                throw Exception()
+            }
             db.deleteCustomDomain(customDomain)
             db.deleteAliasesByDomain(customDomain.name)
         }

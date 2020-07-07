@@ -681,18 +681,22 @@ class ComposerController(private val storage: KeyValueStorage,
     }
 
     private fun bindWithModel(composerInputData: ComposerInputData, signature: String) {
-        scene.bindWithModel(firstTime = model.firstTime,
-                composerInputData = composerInputData,
-                attachments = model.attachments,
-                signature = signature)
-        scene.notifyAttachmentSetChanged()
-        model.firstTime = false
-        if(model.isReplyOrDraft || model.isSupport){
+        if(model.isReplyOrDraft || model.isSupport ){
             scene.setFocusToComposer()
+            scene.bindWithModel(firstTime = model.firstTime,
+                    composerInputData = composerInputData,
+                    attachments = model.attachments,
+                    signature = signature)
         } else {
+            scene.bindWithModel(firstTime = model.firstTime,
+                    composerInputData = composerInputData,
+                    attachments = model.attachments,
+                    signature = signature)
             if(model.to.isEmpty()) scene.setFocusToTo() else scene.setFocusToComposer()
         }
         if(model.type is ComposerType.MailTo) scene.setFocusToSubject()
+        scene.notifyAttachmentSetChanged()
+        model.firstTime = false
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
