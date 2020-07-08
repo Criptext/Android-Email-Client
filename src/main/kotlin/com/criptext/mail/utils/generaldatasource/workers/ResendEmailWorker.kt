@@ -270,7 +270,7 @@ class ResendEmailWorker(
             }
             val recipientId = aliasMap[intendedRecipientId] ?: intendedRecipientId
             val domain = if(intendedRecipientId == recipientId) intendedDomain else Contact.mainDomain
-            val emailAddress = recipientId.plus("@$domain")
+            val emailAddress = if(recipientId.contains("@")) recipientId else recipientId.plus("@$domain")
             val (alias, aliasDomain) = if(intendedRecipientId == recipientId) Pair(null, null)
             else {
                 if(intendedDomain != Contact.mainDomain)
