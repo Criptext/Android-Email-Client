@@ -10,6 +10,7 @@ import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.models.UserEvent
 import com.criptext.mail.bgworker.BackgroundWorkManager
+import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
@@ -572,6 +573,7 @@ class ComposerController(private val storage: KeyValueStorage,
             val validationError = Validator.validateContacts(data)
             when {
                 validationError != null -> scene.showError(validationError.toUIMessage())
+                activeAccount.type == AccountTypes.ENTERPRISE -> saveEmailAsDraft(data, false, false)
                 else -> dataSource.submitRequest(ComposerRequest.CheckCanSend(data))
             }
         } else if(model.isUploadingAttachments && model.attachments.isNotEmpty()) {
