@@ -34,7 +34,7 @@ class UpdateContactTrustedStatusWorker(
         override val publishFn: (EmailDetailResult.UpdateContactIsTrusted) -> Unit)
     : BackgroundWorker<EmailDetailResult.UpdateContactIsTrusted> {
 
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao,
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao,
             storage, accountDao)
 
     override val canBeParallelized = false

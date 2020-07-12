@@ -38,7 +38,7 @@ class LoadInitialDataWorker(
     override val canBeParallelized = true
 
     private val apiClient = ComposerAPIClient(httpClient, activeAccount.jwt)
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao,
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao,
             storage, db.accountDao)
 
     override fun catchException(ex: Exception): ComposerResult.LoadInitialData {

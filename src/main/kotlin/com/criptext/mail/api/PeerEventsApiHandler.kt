@@ -1,6 +1,5 @@
 package com.criptext.mail.api
 
-import android.content.res.Resources
 import android.media.ResourceBusyException
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.dao.AccountDao
@@ -18,10 +17,17 @@ interface PeerEventsApiHandler {
     fun checkForMorePendingEvents(): Boolean
     fun dispatchEvents(): Result<Unit, Exception>
 
-    class Default(private val httpClient: HttpClient, private val activeAccount: ActiveAccount, pendingEventDao: PendingEventDao,
-                  private val storage: KeyValueStorage, private val accountDao: AccountDao):
+    class Default(private val activeAccount: ActiveAccount, pendingEventDao: PendingEventDao,
+                  private val storage: KeyValueStorage, private val accountDao: AccountDao,
+                  private val httpClientUrl: String = Hosts.restApiBaseUrl):
             PeerEventsApiHandler{
 
+        private val httpClient = HttpClient.Default(
+                authScheme = HttpClient.AuthScheme.jwt,
+                baseUrl = httpClientUrl,
+                connectionTimeout = 14000L,
+                readTimeout = 30000L
+        )
         private val apiClient = PeerAPIClient(httpClient, activeAccount.jwt)
         private val queue = PeerQueue.EventQueue(apiClient, pendingEventDao, activeAccount)
 

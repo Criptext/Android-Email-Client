@@ -30,7 +30,7 @@ class EmptyTrashWorker(
                 MailboxResult.EmptyTrash) -> Unit)
     : BackgroundWorker<MailboxResult.EmptyTrash> {
 
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
             storage, accountDao)
 
     override val canBeParallelized = false

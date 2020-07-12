@@ -25,8 +25,8 @@ class DeleteCustomLabelWorker(
         override val publishFn: (LabelsResult.DeleteCustomLabel) -> Unit)
     : BackgroundWorker<LabelsResult.DeleteCustomLabel> {
 
-    private val peerApiClient = PeerEventsApiHandler.Default(httpClient,
-            activeAccount, settingsLocalDB.pendingEventDao, storage, settingsLocalDB.accountDao)
+    private val peerApiClient = PeerEventsApiHandler.Default(activeAccount, settingsLocalDB.pendingEventDao,
+            storage, settingsLocalDB.accountDao)
 
     override val canBeParallelized = false
 

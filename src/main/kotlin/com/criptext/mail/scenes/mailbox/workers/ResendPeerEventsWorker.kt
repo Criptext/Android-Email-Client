@@ -15,15 +15,14 @@ import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 
 class ResendPeerEventsWorker(
-        private val pendingDao: PendingEventDao,
-        httpClient: HttpClient,
+        pendingDao: PendingEventDao,
         activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         override val publishFn: (MailboxResult.ResendPeerEvents) -> Unit)
     : BackgroundWorker<MailboxResult.ResendPeerEvents> {
 
-    private val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+    private val peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
             storage, accountDao)
 
     override val canBeParallelized = true

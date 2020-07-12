@@ -88,7 +88,7 @@ class DownloadAttachmentWorker(private val fileSize: Long,
                             index * 100 / fileMetadata.chunks))
                 }
 
-                val data = if(fileKey != null) {
+                val data = if(!fileKey.isNullOrEmpty()) {
                     AESUtil(fileKey).decrypt(fileServiceAPIClient
                             .downloadChunk(fileMetadata.fileToken, index + 1))
                 } else

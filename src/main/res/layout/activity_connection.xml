@@ -104,7 +104,7 @@
             android:padding="8dp"
             android:tint="@color/colorAccent"
             android:background="@drawable/circle_succesed"
-            android:alpha="1"/>
+            android:alpha="0"/>
 
         <LinearLayout
             android:layout_width="match_parent"

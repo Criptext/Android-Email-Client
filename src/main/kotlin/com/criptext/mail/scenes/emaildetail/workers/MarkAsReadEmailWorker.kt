@@ -31,7 +31,7 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
                        ) : BackgroundWorker<EmailDetailResult.MarkAsReadEmail> {
 
     override val canBeParallelized = false
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
             storage, accountDao)
 
 

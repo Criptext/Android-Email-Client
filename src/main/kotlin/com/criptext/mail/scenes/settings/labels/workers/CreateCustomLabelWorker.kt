@@ -24,8 +24,8 @@ class CreateCustomLabelWorker(
         override val publishFn: (LabelsResult.CreateCustomLabel) -> Unit)
     : BackgroundWorker<LabelsResult.CreateCustomLabel> {
 
-    private val peerApiClient = PeerEventsApiHandler.Default(httpClient,
-            activeAccount, settingsLocalDB.pendingEventDao, storage, settingsLocalDB.accountDao)
+    private val peerApiClient = PeerEventsApiHandler.Default(activeAccount, settingsLocalDB.pendingEventDao,
+            storage, settingsLocalDB.accountDao)
 
     override val canBeParallelized = false
 

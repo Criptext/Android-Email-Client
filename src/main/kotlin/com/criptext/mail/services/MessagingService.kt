@@ -10,13 +10,11 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushController
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.PushTypes
-import com.criptext.mail.push.data.PushRequest
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.push.workers.GetPushEmailWorker
