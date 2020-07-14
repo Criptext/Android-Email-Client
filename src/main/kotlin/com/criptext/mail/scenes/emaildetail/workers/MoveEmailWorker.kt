@@ -48,7 +48,7 @@ class MoveEmailWorker(
                 EmailDetailResult.MoveEmail) -> Unit)
     : BackgroundWorker<EmailDetailResult.MoveEmail> {
 
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
             storage, accountDao)
 
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)

@@ -35,8 +35,7 @@ class UpdateUnreadStatusWorker(
         override val publishFn: (EmailDetailResult.UpdateUnreadStatus) -> Unit)
     : BackgroundWorker<EmailDetailResult.UpdateUnreadStatus> {
 
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient,
-            activeAccount, pendingDao, storage, accountDao)
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao, storage, accountDao)
 
     override val canBeParallelized = false
 

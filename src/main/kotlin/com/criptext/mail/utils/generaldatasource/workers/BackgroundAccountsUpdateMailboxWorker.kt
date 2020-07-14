@@ -93,7 +93,7 @@ class BackgroundAccountsUpdateMailboxWorker(
         mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
         eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
-        peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingEventDao, storage, accountDao)
+        peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao, storage, accountDao)
         return true
     }
 

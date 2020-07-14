@@ -45,8 +45,8 @@ class UpdateEmailThreadsLabelsWorker(
     private val defaultItems = Label.DefaultItems()
     override val canBeParallelized = false
 
-    private val peerEventHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao,
-            storage, accountDao)
+    private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
+            storage, accountDao, httpClient.baseUrl)
 
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 

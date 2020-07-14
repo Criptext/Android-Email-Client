@@ -176,6 +176,8 @@ class LinkDataWorker(private val authorizerId: Int,
         db.pendingEventDao().nukeTable(activeAccount.id)
         db.labelDao().nukeTable(activeAccount.id)
         db.emailDao().nukeTable(activeAccount.id)
+        db.aliasDao().deleteByAccountId(activeAccount.id)
+        db.customDomainDao().deleteByAccountId(activeAccount.id)
         EmailUtils.deleteEmailsInFileSystem(filesDir, activeAccount.recipientId, activeAccount.domain)
     }
 

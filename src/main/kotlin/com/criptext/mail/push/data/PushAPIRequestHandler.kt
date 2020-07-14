@@ -122,7 +122,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
     fun openEmail(metadataKey: Long, notificationId: Int, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
         handleNotificationCount(notificationId, KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
-        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao, storage, accountDao)
         val operation = Result.of {
             val email = emailDao.getEmailByMetadataKey(metadataKey, activeAccount.id) ?: throw Resources.NotFoundException()
             email
@@ -150,7 +150,7 @@ class PushAPIRequestHandler(private val not: CriptextNotification,
 
     fun trashEmail(metadataKey: Long, notificationId: Int, db: EmailDetailLocalDB, emailDao: EmailDao, pendingDao: PendingEventDao, accountDao: AccountDao){
         handleNotificationCount(notificationId, KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
-        val peerEventsApiHandler = PeerEventsApiHandler.Default(httpClient, activeAccount, pendingDao, storage, accountDao)
+        val peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao, storage, accountDao)
         val chosenLabel = Label.LABEL_TRASH
         val currentLabel = Label.defaultItems.inbox
         val selectedLabels = SelectedLabels()

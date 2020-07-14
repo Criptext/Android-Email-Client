@@ -1,7 +1,5 @@
 package com.criptext.mail.api
 
-import android.os.Build
-import android.util.Log
 import com.criptext.mail.BuildConfig
 import com.criptext.mail.api.models.MultipartFormItem
 import com.criptext.mail.utils.DeviceUtils
@@ -9,7 +7,6 @@ import com.criptext.mail.utils.LoggingInterceptor
 import com.criptext.mail.utils.file.FileUtils
 import okhttp3.*
 import org.json.JSONObject
-import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -19,6 +16,7 @@ import java.util.concurrent.TimeUnit
  */
 
 interface HttpClient {
+    val baseUrl: String
     fun post(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData
     fun put(path: String, authToken: String?, body: Map<String, MultipartFormItem>): HttpResponseData
     fun post(path: String, authToken: String?, body: JSONObject): HttpResponseData
@@ -31,7 +29,7 @@ interface HttpClient {
     fun getFileStream(path: String, authToken: String?, params: Map<String, String>): InputStream
 
     enum class AuthScheme { basic, jwt }
-    class Default(private val baseUrl: String,
+    class Default(override val baseUrl: String,
                   private val authScheme: AuthScheme,
                   private val connectionTimeout: Long,
                   private val readTimeout: Long): HttpClient {

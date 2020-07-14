@@ -270,17 +270,23 @@ object  EmailInsertionSetup {
         val fileKeys = mutableListOf<String>()
 
         metadata.files.forEach {
-            if (metadata.messageType != null && senderId.first != null && it.fileKey.isNotEmpty()) {
-                val encryptedData = SignalEncryptedData(
-                        encryptedB64 = it.fileKey,
-                        type = metadata.messageType)
+            when {
+                metadata.messageType == null -> {
+                    fileKeys.add(it.fileKey)
+                }
+                senderId.first != null && it.fileKey.isNotEmpty() -> {
+                    val encryptedData = SignalEncryptedData(
+                            encryptedB64 = it.fileKey,
+                            type = metadata.messageType)
 
-                fileKeys.add(decryptMessage(signalClient = signalClient,
-                        recipientId = senderId.second, deviceId = senderId.first!!,
-                        encryptedData = encryptedData,
-                        isFromBob = metadata.isExternal == true
-                                && metadata.senderRecipientId == SignalUtils.externalRecipientId))
-            } else fileKeys.add("")
+                    fileKeys.add(decryptMessage(signalClient = signalClient,
+                            recipientId = senderId.second, deviceId = senderId.first!!,
+                            encryptedData = encryptedData,
+                            isFromBob = metadata.isExternal == true
+                                    && metadata.senderRecipientId == SignalUtils.externalRecipientId))
+                }
+                else -> fileKeys.add("")
+            }
         }
         return fileKeys
     }

@@ -170,7 +170,6 @@ class MailboxDataSource(
                     })
             is MailboxRequest.ResendPeerEvents -> ResendPeerEventsWorker(
                     pendingDao = pendingDao,
-                    httpClient = httpClient,
                     activeAccount = activeAccount,
                     accountDao = accountDao,
                     storage = storage,
