@@ -79,7 +79,7 @@ class SignInAPIClient(private val httpClient: HttpClient): CriptextAPIClient(htt
         return httpClient.get("/link/data/ready", authToken = token)
     }
 
-    fun acknowledgeEvents(eventIds: List<Long>, token: String): HttpResponseData {
+    fun acknowledgeEvents(eventIds: List<Any>, token: String): HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("ids", JSONArray(eventIds))
 

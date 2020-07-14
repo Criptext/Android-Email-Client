@@ -36,10 +36,14 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
                     Pair(Pair(
                             JSONObject(it.params).getString("key"),
                             JSONObject(it.params).getString("dataAddress")
-                    ), it.rowid)
+                    ), if(it.docId.isNotEmpty()) it.docId else it.rowid)
                 } }
-                .flatMap { Result.of { apiClient.acknowledgeEvents(listOf(it.second), activeAccount.jwt)
-                it.first} }
+                .flatMap {
+                    Result.of {
+                        apiClient.acknowledgeEvents(listOf(it.second), activeAccount.jwt)
+                        it.first
+                    }
+                }
 
         return when (result) {
             is Result.Success ->{
