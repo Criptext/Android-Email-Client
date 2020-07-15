@@ -20,6 +20,8 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.composer.ui.ComposerUIObserver
 import com.criptext.mail.scenes.params.*
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -296,6 +298,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.SwitchActiveAccount.Success -> {
                 activeAccount = result.newAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
 
                 generalDataSource.listener = null
@@ -321,6 +324,7 @@ class ComposerController(private val storage: KeyValueStorage,
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 scene.dismissAccountSuspendedDialog()
 

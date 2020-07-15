@@ -38,6 +38,8 @@ import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.data.JobIdData
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.IntentUtils
 import com.criptext.mail.utils.UIMessage
@@ -526,7 +528,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.lastSyncBackground = System.currentTimeMillis()
         generalDataSource.submitRequest(GeneralRequest.BackgroundAccountsUpdateMailbox(
                 label = model.selectedLabel,
-                accounts = model.extraAccounts
+                accounts = model.extraAccounts,
+                unableToDecryptLocalized = host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
         ))
     }
 
@@ -938,7 +941,8 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.hideDrawer()
             scene.showRefresh()
             val req = GeneralRequest.ActiveAccountUpdateMailbox(
-                    label = mailboxLabel
+                    label = mailboxLabel,
+                    unableToDecryptLocalized = host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
             )
             generalDataSource.submitRequest(req)
         }
@@ -989,7 +993,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is MailboxResult.SetActiveAccount.Success -> {
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
+                    generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                     dataSource.activeAccount = activeAccount
+                    dataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
 
                     val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                     websocketEvents = if(jwts.isNotEmpty())
@@ -1039,6 +1045,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                 is GeneralResult.SetActiveAccountFromPush.Success -> {
                     activeAccount = resultData.activeAccount
                     generalDataSource.activeAccount = activeAccount
+                    generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                     dataSource.activeAccount = activeAccount
 
                     IntentUtils.handleIntentExtras(resultData.extrasData, generalDataSource, activeAccount,
@@ -1263,7 +1270,9 @@ class MailboxSceneController(private val scene: MailboxScene,
     private fun activateAccount(newActiveAccount: ActiveAccount){
         activeAccount = newActiveAccount
         generalDataSource.activeAccount = activeAccount
+        generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
         dataSource.activeAccount = activeAccount
+        dataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
 
         val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
         websocketEvents = if(jwts.isNotEmpty())

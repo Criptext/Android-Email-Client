@@ -23,6 +23,8 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.profile.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -300,6 +302,7 @@ class ProfileController(
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                 websocketEvents = if(jwts.isNotEmpty())
@@ -601,7 +604,8 @@ class ProfileController(
             if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
                 host.runOnUiThread(Runnable {
                     generalDataSource.submitRequest(
-                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox,
+                                    host.getLocalizedString(UIMessage(R.string.unable_to_decrypt)))
                     )
                 })
             }

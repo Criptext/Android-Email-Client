@@ -22,7 +22,7 @@ import java.io.File
  */
 
 class MailboxDataSource(
-        private val signalClient: SignalClient,
+        var signalClient: SignalClient,
         private val filesDir: File,
         private val storage: KeyValueStorage,
         override val runner: WorkRunner,

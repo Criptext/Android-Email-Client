@@ -172,6 +172,10 @@ class DecryptionService: Service() {
         }
     }
 
+    fun getUnableToDecryptLocalized(): String{
+        return applicationContext.getLocalizedUIMessage(UIMessage(R.string.unable_to_decrypt))
+    }
+
     private fun endService(){
         pushController = null
         queue.clear()

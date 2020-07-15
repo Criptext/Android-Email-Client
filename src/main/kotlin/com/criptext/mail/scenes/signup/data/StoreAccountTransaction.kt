@@ -98,6 +98,6 @@ class StoreAccountTransaction(private val dao: SignUpDao,
     }
 
     fun run(account: Account, keyBundle: SignalKeyGenerator.PrivateBundle, isMultiple: Boolean = false) =
-            run(account, keyBundle, null, isMultiple = isMultiple)
+            run(account, keyBundle, null, isMultiple = isMultiple, keepData = false)
 
 }

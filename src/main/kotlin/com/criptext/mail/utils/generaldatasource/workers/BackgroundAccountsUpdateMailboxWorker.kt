@@ -39,6 +39,7 @@ class BackgroundAccountsUpdateMailboxWorker(
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
+        private val unableToDecryptLocalized: String,
         override val publishFn: (
                 GeneralResult.BackgroundAccountsUpdateMailbox) -> Unit)
     : BackgroundWorker<GeneralResult.BackgroundAccountsUpdateMailbox> {
@@ -92,7 +93,7 @@ class BackgroundAccountsUpdateMailboxWorker(
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
         mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
+        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true, unableToDecryptLocalized)
         peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao, storage, accountDao)
         return true
     }
@@ -177,7 +178,7 @@ class BackgroundAccountsUpdateMailboxWorker(
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
-                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
+                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true, unableToDecryptLocalized)
                 eventHelper.setupForMailbox(label)
                 workOperation()
             }

@@ -25,7 +25,7 @@ class PushController(private val dataSource: PushDataSource, private val host: D
     }
 
     fun doGetEvents(){
-        dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox))
+        dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, host.getUnableToDecryptLocalized()))
     }
 
     fun removeNotification(pushData: Map<String, String>, value: String){
@@ -52,7 +52,7 @@ class PushController(private val dataSource: PushDataSource, private val host: D
     private fun onUpdateMailbox(result: PushResult.UpdateMailbox){
         when(result){
             is PushResult.UpdateMailbox.SuccessAndRepeat -> {
-                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox))
+                dataSource.submitRequest(PushRequest.UpdateMailbox(Label.defaultItems.inbox, host.getUnableToDecryptLocalized()))
                 realProgress += EVENT_BATCH
             }
             is PushResult.UpdateMailbox.Progress -> {

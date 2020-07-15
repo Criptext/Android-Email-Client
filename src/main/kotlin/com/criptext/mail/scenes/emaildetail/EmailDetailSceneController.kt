@@ -33,6 +33,8 @@ import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import com.criptext.mail.utils.file.PathUtil
@@ -197,6 +199,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                 model.waitForAccountSwitch = false
                 activeAccount = resultData.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
 
                 IntentUtils.handleIntentExtras(resultData.extrasData, generalDataSource, activeAccount,
@@ -213,6 +216,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                 websocketEvents = if(jwts.isNotEmpty())
@@ -239,7 +243,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is GeneralResult.ActiveAccountUpdateMailbox.SuccessAndRepeat -> {
                 generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(
-                        model.currentLabel
+                        model.currentLabel,
+                        host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
@@ -1238,7 +1243,8 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onNewEvent(recipientId: String, domain: String) {
             generalDataSource.submitRequest(
                     GeneralRequest.ActiveAccountUpdateMailbox(
-                            model.currentLabel
+                            model.currentLabel,
+                            host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
                     ))
         }
 
