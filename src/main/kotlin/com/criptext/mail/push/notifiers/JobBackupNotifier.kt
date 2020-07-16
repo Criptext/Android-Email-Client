@@ -30,7 +30,7 @@ sealed class JobBackupNotifier(val data: PushData.JobBackup): Notifier {
     }
 
     private fun postHeaderNotification(ctx: Context){
-        val cn = NotificationOpenMailbox(ctx)
+        val cn = NotificationJobBackupProgress(ctx)
         cn.showHeaderNotification(data.title, R.drawable.push_icon,
                 CriptextNotification.ACTION_JOB_BACKUP)
     }

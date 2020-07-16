@@ -36,9 +36,9 @@ class LinkDataReadyWorker(private val activeAccount: ActiveAccount,
                     Pair(Pair(
                             JSONObject(it.params).getString("key"),
                             JSONObject(it.params).getString("dataAddress")
-                    ), it.cmd)
+                    ), it.rowid)
                 } }
-                .flatMap { Result.of { apiClient.acknowledgeEvents(listOf(it.second.toLong()), activeAccount.jwt)
+                .flatMap { Result.of { apiClient.acknowledgeEvents(listOf(it.second), activeAccount.jwt)
                 it.first} }
 
         return when (result) {
