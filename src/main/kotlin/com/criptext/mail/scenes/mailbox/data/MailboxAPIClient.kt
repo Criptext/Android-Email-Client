@@ -50,7 +50,7 @@ class MailboxAPIClient(private val httpClient: HttpClient, var token: String): C
                 path =  "/keybundle/prekeys")
     }
 
-    fun acknowledgeEvents(eventIds: List<Long>): HttpResponseData {
+    fun acknowledgeEvents(eventIds: List<Any>): HttpResponseData {
         val jsonObject = JSONObject()
         jsonObject.put("ids", JSONArray(eventIds))
 

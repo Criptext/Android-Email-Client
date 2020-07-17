@@ -267,7 +267,7 @@ interface HttpClient {
         }
 
         companion object {
-            const val API_VERSION = "9.0.0"
+            const val API_VERSION = "11.0.0"
         }
     }
 }

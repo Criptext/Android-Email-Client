@@ -5,7 +5,7 @@ import org.json.JSONObject
 /**
  * Created by gabriel on 4/26/18.
  */
-data class Event(val rowid: Long, val recipientId: String, val domain: String, val cmd: Int, val params: String) {
+data class Event(val rowid: Long, val docId: String, val recipientId: String, val domain: String, val cmd: Int, val params: String) {
     companion object {
         fun fromJSON(jsonEventString: String): Event {
             val json = JSONObject(jsonEventString)
@@ -13,7 +13,12 @@ data class Event(val rowid: Long, val recipientId: String, val domain: String, v
                                 json.getLong("rowid")
                               else
                                 -1
+            val docId = if(json.has("docid"))
+                                json.getString("docid")
+                              else
+                                ""
             return Event(rowid = rowId,
+                    docId = docId,
                     recipientId = if(json.has("recipientId")) json.getString("recipientId") else "",
                     domain = if(json.has("domain")) json.getString("domain") else "",
                     cmd = json.getInt("cmd"),
