@@ -15,9 +15,9 @@ import java.io.File
 
 class GeneralDataSource(override val runner: WorkRunner,
                         private val filesDir: File,
-                        private val signalClient: SignalClient?,
+                        var signalClient: SignalClient?,
                         private val eventLocalDB: EventLocalDB,
-                        private val db : AppDatabase,
+                        val db : AppDatabase,
                         private val storage: KeyValueStorage,
                         var activeAccount: ActiveAccount?,
                         private val httpClient: HttpClient
@@ -51,16 +51,19 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),
+                    unableToDecryptLocalized = params.unableToDecryptLocalized,
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.ActiveAccountUpdateMailbox -> ActiveAccountUpdateMailboxWorker(
                     db = db,
                     dbEvents = eventLocalDB,
                     httpClient = httpClient,
                     account = activeAccount!!,
+                    signalClient = signalClient!!,
                     label = params.label,
                     storage = storage,
                     accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),
+                    unableToDecryptLocalized = params.unableToDecryptLocalized,
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.LinkAccept -> LinkAuthAcceptWorker(
                     activeAccount = activeAccount!!, httpClient = httpClient, accountDao = db.accountDao(),

@@ -38,6 +38,7 @@ class UpdateMailboxWorker(
         private val storage: KeyValueStorage,
         private val label: Label,
         private val httpClient: HttpClient,
+        private val unableToDecryptLocalized: String,
         override val publishFn: (
                 PushResult.UpdateMailbox) -> Unit)
     : BackgroundWorker<PushResult.UpdateMailbox> {
@@ -78,7 +79,7 @@ class UpdateMailboxWorker(
             is Result.Success -> {
                 maxEmailCount = JSONObject(count.value.body).getInt("total")
                 EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
-                        true, false, object : EventHelperListener {
+                        true, unableToDecryptLocalized, false, object : EventHelperListener {
                     override fun emailHasBeenParsed() {
                         parsedEmailCount += 1
                         reporter.report(PushResult.UpdateMailbox.Progress(parsedEmailCount, maxEmailCount))
@@ -87,7 +88,7 @@ class UpdateMailboxWorker(
             }
             else -> {
                 EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient,
-                        true, false)
+                        true, unableToDecryptLocalized, false)
             }
         }
         eventHelper.setupForMailbox(label)

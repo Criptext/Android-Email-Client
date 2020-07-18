@@ -751,4 +751,5 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="recovery_email_restriction_btn">Verify Recovery Email</string>
   <string name="recovery_email_restriction_toast">A new confirmation link was sent to your recovery email address: %1$s.</string>
   <string name="settings_option_address_manager">Address Manager</string>
+  <string name="unable_to_decrypt">Unable to decrypt message.</string>
 </resources>

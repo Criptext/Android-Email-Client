@@ -213,10 +213,7 @@ object  EmailInsertionSetup {
                     deviceId = deviceId,
                     encryptedData = encryptedData)
         } catch (ex: Exception) {
-            if (ex is DuplicateMessageException) throw ex
-            val loggedException = if(isFromBob) BobDecryptionException() else ex
-            Crashlytics.logException(loggedException)
-            "Unable to decrypt message."
+            if (isFromBob) throw BobDecryptionException() else throw DecryptionException()
         }
     }
 
@@ -230,9 +227,9 @@ object  EmailInsertionSetup {
         return Pair(senderDeviceId, senderRecipientId)
     }
 
-    private fun getDecryptedEmailBody(signalClient: SignalClient,
-                                      body: String,
-                                      metadata: EmailMetadata): String {
+    fun getDecryptedEmailBody(signalClient: SignalClient,
+                              body: String,
+                              metadata: EmailMetadata): String {
         val senderId = getSenderId(metadata)
         return if (metadata.messageType != null && senderId.first != null) {
             val encryptedData = SignalEncryptedData(
@@ -299,7 +296,7 @@ object  EmailInsertionSetup {
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                        dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount,
-                                       filesDir: File, aliases: List<String>) {
+                                       filesDir: File, aliases: List<String>, unDecryptText: String? = null) {
         val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
         val emailAlreadyExists =  foundEmail != null
         if (emailAlreadyExists)
@@ -330,17 +327,29 @@ object  EmailInsertionSetup {
         val body = json.getString("body")
         val headers = json.getString("headers")
 
-        val decryptedBody = HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata))
-        val decryptedHeaders = getDecryptedEmailBody(signalClient, headers, metadata)
-        val decryptedFileKeys = if(metadata.files.isEmpty())
-            listOf()
-        else getDecryptedFileKeys(signalClient, metadata)
-        val decryptedFileKey = if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
-        metadata.files.forEachIndexed { index, crFile ->
-            crFile.fileKey = decryptedFileKeys[index]
-            crFile.cid = if(decryptedBody.contains("cid:${crFile.cid}")
-                    && (FileUtils.isAPicture(crFile.name) || (!crFile.mimeType.isNullOrEmpty()
-                            && crFile.mimeType!!.contains("image/")))) crFile.cid else null
+        val (decryptedBody, decryptedHeaders, decryptedFileKeys) = if(unDecryptText == null) {
+            Triple(
+                    HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata)),
+                    if(headers.isNullOrEmpty()) null else getDecryptedEmailBody(signalClient, headers, metadata),
+                    if(metadata.files.isEmpty())
+                        listOf()
+                    else getDecryptedFileKeys(signalClient, metadata)
+            )
+        } else {
+            Triple(unDecryptText, null, listOf())
+        }
+        val decryptedFileKey = if(unDecryptText == null) {
+            if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
+        } else {
+            null
+        }
+        if(unDecryptText == null) {
+            metadata.files.forEachIndexed { index, crFile ->
+                crFile.fileKey = decryptedFileKeys[index]
+                crFile.cid = if (decryptedBody.contains("cid:${crFile.cid}")
+                        && (FileUtils.isAPicture(crFile.name) || (!crFile.mimeType.isNullOrEmpty()
+                                && crFile.mimeType!!.contains("image/")))) crFile.cid else null
+            }
         }
 
         val finalMetadata = if(metadata.inReplyTo != null) {
@@ -364,7 +373,7 @@ object  EmailInsertionSetup {
                 domain = activeAccount.domain)
 
         val lonReturn = dao.runTransaction {
-            EmailInsertionSetup.exec(dao, finalMetadata.extractDBColumns().copy(
+            exec(dao, finalMetadata.extractDBColumns().copy(
                     unread = if(meAsSender && !meAsRecipient)
                                 false
                              else
@@ -378,4 +387,5 @@ object  EmailInsertionSetup {
     }
 
     class BobDecryptionException: Exception()
+    class DecryptionException: Exception()
 }

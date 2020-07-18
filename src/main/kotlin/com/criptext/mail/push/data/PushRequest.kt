@@ -5,7 +5,8 @@ import com.criptext.mail.db.models.Label
 
 sealed class PushRequest{
 
-    data class UpdateMailbox(val label: Label): PushRequest()
+    data class UpdateMailbox(val label: Label,
+                             val unableToDecryptLocalized: String): PushRequest()
 
     data class NewEmail(
             val label: Label,

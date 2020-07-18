@@ -1,20 +1,24 @@
 package com.criptext.mail.utils.eventhelper
 
+import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.*
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
+import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIUtils
 import com.github.kittinunf.result.Result
 import org.whispersystems.libsignal.DuplicateMessageException
@@ -26,7 +30,8 @@ class EventHelper(private val db: EventLocalDB,
                   private val storage: KeyValueStorage,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
-                  private val acknoledgeEvents: Boolean,
+                  private val acknowledgeEvents: Boolean,
+                  private val unableToDecryptLocalized: String,
                   private val doNotParseEmails: Boolean = false,
                   private val progressListener: EventHelperListener? = null){
 
@@ -97,7 +102,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.AvatarChange(event.cmd))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -125,17 +130,17 @@ class EventHelper(private val db: EventLocalDB,
                 }.filter { it.preKeyId !in remainingKeys }
                 db.insertPreKeys(preKeyList)
 
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     acknowledgeEventsIgnoringErrors(listOf(if(event.docId.isNotEmpty()) event.docId else event.rowid))
             }
         } else {
-            if (acknoledgeEvents)
+            if (acknowledgeEvents)
                 acknowledgeEventsIgnoringErrors(listOf(if(event.docId.isNotEmpty()) event.docId else event.rowid))
         }
     }
 
     private fun processLinkRequestEvents(event: Event) {
-        if (acknoledgeEvents)
+        if (acknowledgeEvents)
             acknowledgeEventsIgnoringErrors(listOf(if(event.docId.isNotEmpty()) event.docId else event.rowid))
         val existingInfo = parsedEvents.find { it.cmd == event.cmd }
         if(existingInfo != null) parsedEvents.remove(existingInfo)
@@ -144,7 +149,7 @@ class EventHelper(private val db: EventLocalDB,
     }
 
     private fun processSyncRequestEvents(event: Event) {
-        if (acknoledgeEvents)
+        if (acknowledgeEvents)
             acknowledgeEventsIgnoringErrors(listOf(if(event.docId.isNotEmpty()) event.docId else event.rowid))
         val existingInfo = parsedEvents.find { it.cmd == event.cmd }
         if(existingInfo != null) parsedEvents.remove(existingInfo)
@@ -158,7 +163,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success ->{
                 shouldNotify = true
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
                 parsedEvents.add(ParsedEvent.BannerData(event.cmd, operation.value))
             }
@@ -169,7 +174,7 @@ class EventHelper(private val db: EventLocalDB,
         val metadata = EmailMetadata.fromJSON(event.params)
         val operation = Result.of {
             val aliases = db.getAliases(activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
-            insertIncomingEmailTransaction(metadata, aliases)
+            insertIncomingEmailTransaction(metadata, aliases, null)
         }
 
         when(operation){
@@ -180,11 +185,12 @@ class EventHelper(private val db: EventLocalDB,
                 if(newPreview != null)
                     parsedEvents.add(ParsedEvent.NewEmail(event.cmd, newPreview))
                 shouldNotify = true
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
             is Result.Failure -> {
-                when(operation.error){
+                val opError = operation.error
+                when(opError){
                     is DuplicateMessageException -> {
                         progressListener?.emailHasBeenParsed()
                         updateExistingEmailTransaction(metadata)
@@ -192,11 +198,51 @@ class EventHelper(private val db: EventLocalDB,
                                 label.id, activeAccount)
                         if(newPreview != null)
                             parsedEvents.add(ParsedEvent.NewEmail(event.cmd, newPreview))
-                        if (acknoledgeEvents)
+
+                        if (acknowledgeEvents)
                             eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
+
+                    }
+                    is EmailInsertionSetup.BobDecryptionException -> {
+                        val reEncryptOp = Result.of {
+                            emailInsertionApiClient.postEmailReEncrypt(
+                                    metadataKey = metadata.metadataKey,
+                                    eventId = if(event.docId.isNotEmpty()) event.docId else event.rowid
+                            )
+                        }
+                        when(reEncryptOp){
+                            is Result.Failure -> {
+                                val error = reEncryptOp.error
+                                when(error){
+                                    is ServerErrorException -> {
+                                        if(error.errorCode == ServerCodes.TooManyRequests){
+                                            Crashlytics.logException(opError)
+                                            insertUnableToDecryptEmail(metadata, event)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is EmailInsertionSetup.DecryptionException -> {
+                        insertUnableToDecryptEmail(metadata, event)
                     }
                 }
             }
+        }
+    }
+
+    private fun insertUnableToDecryptEmail(metadata: EmailMetadata, event: Event){
+        Result.of {
+            val aliases = db.getAliases(activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
+            insertIncomingEmailTransaction(metadata, aliases, unableToDecryptLocalized)
+            progressListener?.emailHasBeenParsed()
+            val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
+                    label.id, activeAccount)
+            if(newPreview != null)
+                parsedEvents.add(ParsedEvent.NewEmail(event.cmd, newPreview))
+            if (acknowledgeEvents)
+                eventsToAcknowledge.add(event.rowid)
         }
     }
 
@@ -208,7 +254,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.ReadThreads(event.cmd, Pair(metadata.threadIds, metadata.unread)))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -222,7 +268,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.ReadEmails(event.cmd, Pair(metadata.metadataKeys, metadata.unread)))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -236,7 +282,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.UnsendEmail(event.cmd, Pair(metadata.metadataKey, metadata.unsendDate)))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -250,7 +296,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.NameChange(event.cmd, metadata.name))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -265,7 +311,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.MoveEmail(event.cmd))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -279,7 +325,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.MoveThread(event.cmd, metadata.threadIds))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -293,7 +339,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.MoveEmail(event.cmd))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -307,7 +353,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 parsedEvents.add(ParsedEvent.MoveThread(event.cmd, metadata.threadIds))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -323,7 +369,7 @@ class EventHelper(private val db: EventLocalDB,
                 val existingInfo = parsedEvents.find { it.cmd == event.cmd }
                 if(existingInfo != null) parsedEvents.remove(existingInfo)
                 parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -339,7 +385,7 @@ class EventHelper(private val db: EventLocalDB,
                 val existingInfo = parsedEvents.find { it.cmd == event.cmd }
                 if(existingInfo != null) parsedEvents.remove(existingInfo)
                 parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -355,7 +401,7 @@ class EventHelper(private val db: EventLocalDB,
                 val existingInfo = parsedEvents.find { it.cmd == event.cmd }
                 if(existingInfo != null) parsedEvents.remove(existingInfo)
                 parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -371,7 +417,7 @@ class EventHelper(private val db: EventLocalDB,
                 val existingInfo = parsedEvents.find { it.cmd == event.cmd }
                 if(existingInfo != null) parsedEvents.remove(existingInfo)
                 parsedEvents.add(ParsedEvent.ChangeToLabels(event.cmd, db.getCustomLabels(activeAccount.id).toMutableList()))
-                if (acknoledgeEvents)
+                if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -391,7 +437,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -419,7 +465,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -439,7 +485,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -458,7 +504,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -478,7 +524,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -498,7 +544,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -513,7 +559,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -526,7 +572,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -545,7 +591,7 @@ class EventHelper(private val db: EventLocalDB,
         when(operation){
             is Result.Success -> {
                 UIUtils.forceCacheClear(storage, db.getCacheDir(), activeAccount)
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -563,7 +609,7 @@ class EventHelper(private val db: EventLocalDB,
         }
         when(operation){
             is Result.Success -> {
-                if(acknoledgeEvents)
+                if(acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
         }
@@ -578,8 +624,8 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>) =
-            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases)
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>, unDecryptText: String?) =
+            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases, unDecryptText)
 
     private fun updateThreadReadStatus(metadata: PeerReadThreadStatusUpdate) =
             db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread, activeAccount.id)
@@ -633,7 +679,7 @@ class EventHelper(private val db: EventLocalDB,
 
     private fun acknowledgeEventsIgnoringErrors(eventIdsToAcknowledge: List<Any>): Boolean {
         try {
-            if(eventIdsToAcknowledge.isNotEmpty() && acknoledgeEvents)
+            if(eventIdsToAcknowledge.isNotEmpty() && acknowledgeEvents)
                 mailboxAPIClient.acknowledgeEvents(eventIdsToAcknowledge)
         } catch (ex: IOException) {
             // if this request fails, just ignore it, we can acknowledge again later

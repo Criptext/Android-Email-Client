@@ -29,6 +29,7 @@ import org.whispersystems.libsignal.DuplicateMessageException
 
 class ActiveAccountUpdateMailboxWorker(
         private val account: ActiveAccount,
+        private val signalClient: SignalClient,
         private val db: AppDatabase,
         private val dbEvents: EventLocalDB,
         val pendingEventDao: PendingEventDao,
@@ -36,6 +37,7 @@ class ActiveAccountUpdateMailboxWorker(
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
+        private val unableToDecryptLocalized: String,
         override val publishFn: (
                 GeneralResult.ActiveAccountUpdateMailbox) -> Unit)
     : BackgroundWorker<GeneralResult.ActiveAccountUpdateMailbox> {
@@ -45,7 +47,6 @@ class ActiveAccountUpdateMailboxWorker(
 
     private lateinit var activeAccount: ActiveAccount
 
-    private lateinit var signalClient: SignalClient.Default
     private lateinit var apiClient: GeneralAPIClient
     private lateinit var mailboxApiClient: MailboxAPIClient
 
@@ -84,11 +85,10 @@ class ActiveAccountUpdateMailboxWorker(
 
     private fun setup(): Boolean {
         activeAccount = account
-        signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount))
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
         mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
+        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true, unableToDecryptLocalized)
         peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao,
                 storage, accountDao)
         return true
@@ -157,7 +157,7 @@ class ActiveAccountUpdateMailboxWorker(
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
-                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
+                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true, unableToDecryptLocalized)
                 eventHelper.setupForMailbox(label)
                 workOperation()
             }

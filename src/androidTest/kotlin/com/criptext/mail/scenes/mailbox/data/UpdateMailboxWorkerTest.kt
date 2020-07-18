@@ -10,12 +10,9 @@ import com.criptext.mail.db.dao.EmailInsertionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.mocks.MockEmailData
 import com.criptext.mail.mocks.MockJSONData
-import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.workers.ActiveAccountUpdateMailboxWorker
-import io.mockk.mockk
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.json.JSONObject
@@ -24,9 +21,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.crashlytics.android.Crashlytics
+import com.criptext.mail.R
 import com.criptext.mail.db.*
+import com.criptext.mail.db.dao.SignUpDao
+import com.criptext.mail.signal.*
+import com.nhaarman.mockito_kotlin.whenever
 import io.fabric.sdk.android.Fabric
-
+import io.mockk.*
 
 
 /**
@@ -63,7 +64,8 @@ class UpdateMailboxWorkerTest {
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
                 lastTimeBackup = null, defaultAddress = null))
         emailInsertionDao = db.emailInsertionDao()
-        signalClient = SignalClient.Default(SignalStoreCriptext(db))
+        //signalClient = SignalClient.Default(SignalStoreCriptext(db))
+        signalClient = mockk(relaxed = true)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         eventDB = EventLocalDB(db, mActivityRule.activity.filesDir, mActivityRule.activity.cacheDir)
 
@@ -81,8 +83,8 @@ class UpdateMailboxWorkerTest {
     private fun newWorker(loadedThreadsCount: Int, label: Label): ActiveAccountUpdateMailboxWorker =
             ActiveAccountUpdateMailboxWorker(label = label,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
-                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(),
-                    db = db, account = activeAccount)
+                    pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), signalClient = signalClient,
+                    db = db, account = activeAccount, unableToDecryptLocalized = mActivityRule.activity.getLocalizedUIMessage(UIMessage(R.string.unable_to_decrypt)))
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 
@@ -224,12 +226,10 @@ class UpdateMailboxWorkerTest {
         latestEmails.forEach { email ->
             email.content.shouldBeEqualTo("<html>\n" +
                     " <head></head>\n" +
-                    " <body>\n" +
-                    "  Unable to decrypt message.\n" +
-                    " </body>\n" +
+                    " <body></body>\n" +
                     "</html>")
             //Email preview should not contain html tags and should be on the character limit of 300.
-            email.preview.shouldBeEqualTo("Unable to decrypt message.")
+            email.preview.shouldBeEqualTo("")
             email.preview.length.shouldBeLessOrEqualTo(300)
         }
     }

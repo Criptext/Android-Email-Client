@@ -18,9 +18,10 @@ sealed class GeneralRequest {
     data class ResetPassword(val recipientId: String, val domain: String): GeneralRequest()
     data class BackgroundAccountsUpdateMailbox(
             val accounts: List<Account>,
-            val label: Label): GeneralRequest()
+            val label: Label,
+            val unableToDecryptLocalized: String): GeneralRequest()
     data class ActiveAccountUpdateMailbox(
-            val label: Label): GeneralRequest()
+            val label: Label, val unableToDecryptLocalized: String): GeneralRequest()
     data class LinkAccept(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     data class LinkDenied(val untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo): GeneralRequest()
     class DataFileCreation(val recipientId: String, val domain: String): GeneralRequest()

@@ -16,6 +16,8 @@ import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.settings.devices.data.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.services.jobs.CloudBackupJobService
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
@@ -176,6 +178,7 @@ class DevicesController(
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                 websocketEvents = if(jwts.isNotEmpty())

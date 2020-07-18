@@ -21,6 +21,8 @@ import com.criptext.mail.scenes.settings.labels.data.LabelsDataSource
 import com.criptext.mail.scenes.settings.labels.data.LabelsRequest
 import com.criptext.mail.scenes.settings.labels.data.LabelsResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
@@ -177,6 +179,7 @@ class LabelsController(
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                 websocketEvents = if(jwts.isNotEmpty())
@@ -362,7 +365,8 @@ class LabelsController(
             if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
                 host.runOnUiThread(Runnable {
                     generalDataSource.submitRequest(
-                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox,
+                                    host.getLocalizedString(UIMessage(R.string.unable_to_decrypt)))
                     )
                 })
             }

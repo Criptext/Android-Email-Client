@@ -14,6 +14,8 @@ import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailDataSo
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailRequest
 import com.criptext.mail.scenes.settings.recovery_email.data.RecoveryEmailResult
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.signal.SignalClient
+import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.ServerCodes
@@ -247,6 +249,7 @@ class RecoveryEmailController(
             is GeneralResult.ChangeToNextAccount.Success -> {
                 activeAccount = result.activeAccount
                 generalDataSource.activeAccount = activeAccount
+                generalDataSource.signalClient = SignalClient.Default(SignalStoreCriptext(generalDataSource.db, activeAccount))
                 dataSource.activeAccount = activeAccount
                 val jwts = storage.getString(KeyValueStorage.StringKey.JWTS, "")
                 websocketEvents = if(jwts.isNotEmpty())

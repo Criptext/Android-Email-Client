@@ -55,7 +55,7 @@ class MailboxControllerDataSourceEventsTest: MailboxControllerTest() {
 
         // verify ActiveAccountUpdateMailbox request sent
         verify {
-            generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(label = model.selectedLabel))
+            generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(label = model.selectedLabel, unableToDecryptLocalized = "test"))
         }
     }
 
