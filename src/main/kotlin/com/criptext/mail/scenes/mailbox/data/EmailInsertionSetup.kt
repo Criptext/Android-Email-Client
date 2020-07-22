@@ -1,8 +1,6 @@
 package com.criptext.mail.scenes.mailbox.data
 
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.EmailInsertionAPIClient
-import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.EmailMetadata
 import com.criptext.mail.db.ContactTypes
 import com.criptext.mail.db.DeliveryTypes
@@ -245,6 +243,28 @@ object  EmailInsertionSetup {
             body
     }
 
+    fun getDecryptedEmailHeaders(signalClient: SignalClient,
+                                 headers: String,
+                                 metadata: EmailMetadata): String {
+        val senderId = getSenderId(metadata)
+        return if (metadata.messageType != null && senderId.first != null) {
+            val encryptedData = SignalEncryptedData(
+                    encryptedB64 = headers,
+                    type = metadata.messageType)
+
+            try {
+                decryptMessage(signalClient = signalClient,
+                        recipientId = senderId.second, deviceId = senderId.first!!,
+                        encryptedData = encryptedData,
+                        isFromBob = metadata.isExternal == true
+                                && metadata.senderRecipientId == SignalUtils.externalRecipientId)
+            } catch (e: Exception){
+                headers
+            }
+        } else
+            headers
+    }
+
     private fun getDecryptedFileKey(signalClient: SignalClient,
                                       metadata: EmailMetadata): String? {
         val senderId = getSenderId(metadata)
@@ -325,12 +345,12 @@ object  EmailInsertionSetup {
 
         val json = JSONObject(apiClient.getBodyFromEmail(metadata.metadataKey).body)
         val body = json.getString("body")
-        val headers = json.getString("headers")
+        val headers = json.optString("headers")
 
         val (decryptedBody, decryptedHeaders, decryptedFileKeys) = if(unDecryptText == null) {
             Triple(
                     HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata)),
-                    if(headers.isNullOrEmpty()) null else getDecryptedEmailBody(signalClient, headers, metadata),
+                    if(headers.isNullOrEmpty()) null else getDecryptedEmailHeaders(signalClient, headers, metadata),
                     if(metadata.files.isEmpty())
                         listOf()
                     else getDecryptedFileKeys(signalClient, metadata)
