@@ -2,8 +2,10 @@ package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signup.data.SignUpRequest
+import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.validation.ProgressButtonState
 import com.criptext.mail.validation.TextInput
 import io.mockk.*
 import org.amshove.kluent.`should equal`
@@ -17,12 +19,13 @@ import org.junit.Test
 class SignUpControllerUiObserverTest: SignUpControllerTest() {
 
     private val uiObserverSlot = CapturingSlot<SignUpSceneController.SignUpUIObserver>()
+    private val modelSlot = CapturingSlot<SignUpSceneModel>()
 
     @Before
     override fun setUp() {
         super.setUp()
         // mock SignInScene capturing the UI Observer
-        every { scene.initListeners(capture(uiObserverSlot)) } just Runs
+        every { scene.initLayout(capture(modelSlot), capture(uiObserverSlot)) } just Runs
         controller.onStart(null)
         clearMocks(scene)
     }
@@ -59,7 +62,7 @@ class SignUpControllerUiObserverTest: SignUpControllerTest() {
 
         val expectedState = FormInputState.Error(UIMessage(R.string.username_invalid_error))
         verify {
-            scene.setUsernameState(expectedState)
+            scene.setInputState(any(), expectedState)
         }
         model.username `should equal` TextInput(value = "tes#", state = expectedState)
 
@@ -81,13 +84,11 @@ class SignUpControllerUiObserverTest: SignUpControllerTest() {
 
     @Test
     fun `after typing matching passwords should show password success`() {
+        clearMocks(scene)
+        model.state = SignUpLayoutState.Password("")
         uiObserverSlot.captured.onPasswordChangedListener("securepassword123")
 
-        clearMocks(scene)
-
-        uiObserverSlot.captured.onConfirmPasswordChangedListener("securepassword123")
-
-        verify { scene.togglePasswordSuccess(true) }
+        verify { scene.setPasswordCheck(true, true) }
     }
 
     @Test
@@ -95,9 +96,10 @@ class SignUpControllerUiObserverTest: SignUpControllerTest() {
         uiObserverSlot.captured.onPasswordChangedListener("securepassword123")
 
         clearMocks(scene)
+        model.state = SignUpLayoutState.ConfirmPassword("")
 
         uiObserverSlot.captured.onConfirmPasswordChangedListener("securepassword12")
 
-        verify { scene.setPasswordError(UIMessage(R.string.password_mismatch_error)) }
+        verify { scene.setConfirmPasswordCheck(FormInputState.Error(UIMessage(R.string.password_mismatch_error))) }
     }
 }

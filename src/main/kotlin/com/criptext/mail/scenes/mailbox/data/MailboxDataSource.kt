@@ -176,12 +176,6 @@ class MailboxDataSource(
                     publishFn = { result ->
                         flushResults(result)
                     })
-            is MailboxRequest.SetCloudBackupActive -> SetCloudBackupActiveWorker(
-                    activeAccount = activeAccount,
-                    cloudBackupData = params.cloudBackupData,
-                    accountDao = db.accountDao(),
-                    publishFn = { res -> flushResults(res) }
-            )
             is MailboxRequest.CheckCloudBackupEnabled -> CheckCloudBackupEnableWorker(
                     activeAccount = activeAccount,
                     accountDao = db.accountDao(),

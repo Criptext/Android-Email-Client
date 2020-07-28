@@ -46,7 +46,8 @@ class SearchActivity : BaseActivity() {
                         eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),
                         filesDir = this.filesDir,
                         runner = AsyncTaskWorkRunner(),
-                        signalClient = null
+                        signalClient = null,
+                        cacheDir = this.cacheDir
                 ))
     }
 }

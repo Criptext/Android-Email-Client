@@ -90,6 +90,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is GeneralResult.ActiveAccountUpdateMailbox -> onActiveAccountUpdateMailbox(result)
             is GeneralResult.GetEmailPreview -> dataSourceController.onGetEmailPreview(result)
             is GeneralResult.SetActiveAccountFromPush -> dataSourceController.onSetActiveAccountFromPush(result)
+            is GeneralResult.SetCloudBackupActive -> dataSourceController.onSetCloudBackupActive(result)
         }
     }
 
@@ -105,7 +106,6 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
-            is MailboxResult.SetCloudBackupActive -> dataSourceController.onSetCloudBackupActive(result)
             is MailboxResult.CheckCloudBackupEnabled -> dataSourceController.onCheckCloudBackupEnabled(result)
         }
     }
@@ -307,7 +307,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         override fun signInSuccess(drive: Drive){
             model.mDriveServiceHelper = drive
             if(model.isCreateBackup){
-                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                generalDataSource.submitRequest(GeneralRequest.SetCloudBackupActive(
                         CloudBackupData(
                                 hasCloudBackup = true,
                                 autoBackupFrequency = 0,
@@ -363,7 +363,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             setHasShowedBackup(true)
             if(model.mDriveServiceHelper == null) model.mDriveServiceHelper = scene.getGoogleDriveService()
             if(model.mDriveServiceHelper != null) {
-                dataSource.submitRequest(MailboxRequest.SetCloudBackupActive(
+                generalDataSource.submitRequest(GeneralRequest.SetCloudBackupActive(
                         CloudBackupData(
                                 hasCloudBackup = true,
                                 autoBackupFrequency = 0,
@@ -695,11 +695,6 @@ class MailboxSceneController(private val scene: MailboxScene,
                 if(model.askForRestoreBackup){
                     model.askForRestoreBackup = false
                     scene.showRestoreBackupDialog(observer)
-                } else {
-                    if (storage.getBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, true)) {
-                        scene.showSyncPhonebookDialog(observer)
-                        storage.putBool(KeyValueStorage.StringKey.ShowSyncPhonebookDialog, false)
-                    }
                 }
             }
 
@@ -1017,14 +1012,14 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
         }
 
-        fun onSetCloudBackupActive(result: MailboxResult.SetCloudBackupActive){
+        fun onSetCloudBackupActive(result: GeneralResult.SetCloudBackupActive){
             when(result){
-                is MailboxResult.SetCloudBackupActive.Success -> {
+                is GeneralResult.SetCloudBackupActive.Success -> {
                     scene.removeFromScheduleCloudBackupJob(activeAccount.id)
                     scene.scheduleCloudBackupJob(result.cloudBackupData.autoBackupFrequency, activeAccount.id, result.cloudBackupData.useWifiOnly)
                     scene.showMessage(UIMessage(R.string.recommend_backup_sucess))
                 }
-                is MailboxResult.SetCloudBackupActive.Failure -> {
+                is GeneralResult.SetCloudBackupActive.Failure -> {
                     scene.showMessage(result.message)
                 }
             }

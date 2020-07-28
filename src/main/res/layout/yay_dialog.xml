@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/label_chooser_shape"
+    android:layout_height="wrap_content"
+    >
+
+    <RelativeLayout
+        android:layout_marginTop="39dp"
+        android:id="@+id/pin_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/pro_image"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_width="198dp"
+            android:layout_height="172dp"
+            android:src="@drawable/img_yaycustom" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="104.3dp"
+            android:layout_height="104.3dp"
+            android:src="@drawable/img_profile"
+            android:layout_centerInParent="true" />
+
+        <ProgressBar
+            android:padding="36dp"
+            android:id="@+id/profile_picture_progress"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginTop="43.7dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:text="@string/yay_dialog_title"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:gravity="center_horizontal"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="20sp"/>
+
+    <TextView
+        fontPath="fonts/NunitoSans-Regular.ttf"
+        android:id="@+id/email"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:textSize="13sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+
+    <LinearLayout
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/label_buttons"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/azure"
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:id="@+id/btn_ok"
+            android:stateListAnimator="@null"
+            android:background="@drawable/label_button_bg"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="@string/customize_yay_btn" />
+
+    </LinearLayout>
+</LinearLayout>

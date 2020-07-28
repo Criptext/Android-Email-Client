@@ -149,7 +149,7 @@ interface MailboxScene{
         private val moveToDialog = MoveToDialog(context)
         private val deleteDialog = DeleteThreadDialog(context)
         private val emptyTrashDialog = EmptyTrashDialog(context)
-        private val welcomeDialog = WelcomeTourDialog(context)
+        private var welcomeDialog: YayDialog? = null
         private val accountSuspended = AccountSuspendedDialog(context)
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
@@ -225,6 +225,7 @@ interface MailboxScene{
                 onDrawerMenuItemListener: DrawerMenuItemListener,
                 observer: MailboxUIObserver,
                 threadList: VirtualEmailThreadList, activeAccount: ActiveAccount) {
+            welcomeDialog = YayDialog(context, activeAccount.userEmail)
 
             drawerMenuView = DrawerMenuView(leftNavigationView, onDrawerMenuItemListener)
 
@@ -378,7 +379,7 @@ interface MailboxScene{
         }
 
         override fun showWelcomeDialog(observer: MailboxUIObserver) {
-            welcomeDialog.showWelcomeTourDialog(observer)
+            welcomeDialog?.showDialog(observer)
         }
 
         override fun showRestoreBackupDialog(observer: MailboxUIObserver) {

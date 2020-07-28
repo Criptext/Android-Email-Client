@@ -4,13 +4,6 @@ import com.criptext.mail.utils.UIMessage
 
 sealed class ProfileResult{
 
-    sealed class SetProfilePicture : ProfileResult() {
-        class Success: SetProfilePicture()
-        data class Failure(val message: UIMessage,
-                           val exception: Exception?): SetProfilePicture()
-        class EnterpriseSuspended: SetProfilePicture()
-    }
-
     sealed class DeleteProfilePicture : ProfileResult() {
         class Success: DeleteProfilePicture()
         data class Failure(val message: UIMessage,

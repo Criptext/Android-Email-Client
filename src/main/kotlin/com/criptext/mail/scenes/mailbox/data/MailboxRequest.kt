@@ -64,5 +64,4 @@ sealed class MailboxRequest{
     class ResendPeerEvents: MailboxRequest()
 
     class CheckCloudBackupEnabled: MailboxRequest()
-    data class SetCloudBackupActive(val cloudBackupData: CloudBackupData): MailboxRequest()
 }

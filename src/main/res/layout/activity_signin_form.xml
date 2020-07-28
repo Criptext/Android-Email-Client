@@ -47,10 +47,9 @@ android:focusableInTouchMode="true" >
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:src="@drawable/logo_splash"
-                    android:tint="@color/white"
+                    android:src="@drawable/footer_beta"
                     android:layout_gravity="center"
-                    android:layout_width="80dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="80dp"/>
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"

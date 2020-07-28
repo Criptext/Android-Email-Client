@@ -25,14 +25,14 @@ import com.criptext.mail.utils.getLocalizedUIMessage
 
 class SignUpFormHolder(val view: View) {
 
-    private val createAccount: Button = view.findViewById(R.id.create_account)
+    private val createAccount: Button = view.findViewById(R.id.next_button)
 
     private val username: AppCompatEditText = view.findViewById(R.id.username)
     private val usernameInput: FormInputViewHolder = FormInputViewHolder(
             textInputLayout = view.findViewById(R.id.input_username),
             editText = username,
-            validView = view.findViewById(R.id.success_username),
-            errorView = view.findViewById(R.id.error_username),
+            validView = null,
+            errorView = null,
             disableSubmitButton = { -> createAccount.isEnabled = false })
 
     private val fullName: AppCompatEditText = view.findViewById(R.id.full_name)

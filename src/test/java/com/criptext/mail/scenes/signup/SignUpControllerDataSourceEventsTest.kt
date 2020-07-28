@@ -1,7 +1,9 @@
 package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.R
+import com.criptext.mail.scenes.params.CustomizeParams
 import com.criptext.mail.scenes.signup.data.SignUpResult
+import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.utils.UIMessage
 import io.mockk.*
@@ -45,23 +47,31 @@ class SignUpControllerDataSourceEventsTest: SignUpControllerTest() {
 
         // no errors!
         verify(inverse = true) { scene.showError(any()) }
-        model.signUpSucceed `should be` true
+        verify { host.goToScene(
+                params = CustomizeParams(model.recoveryEmail.value),
+                keep = false,
+                deletePastIntents = true,
+                activityMessage = null
+        ) }
     }
 
     @Test
     fun `when check username availability succeeds with isAvailable=true, sets username as valid`() {
+        model.state = SignUpLayoutState.EmailHandle("tester")
 
         listenerSlot.captured(SignUpResult.CheckUsernameAvailability.Success(isAvailable = true))
 
-        verify { scene.setUsernameState(FormInputState.Valid()) }
+        verify { scene.setInputState(SignUpLayoutState.EmailHandle("tester"), FormInputState.Valid()) }
     }
 
     @Test
     fun `when check username availability succeeds with isAvailable=false, sets username as error`() {
 
+        model.state = SignUpLayoutState.EmailHandle("tester")
+
         listenerSlot.captured(SignUpResult.CheckUsernameAvailability.Success(isAvailable = false))
 
-        verify { scene.setUsernameState(FormInputState.Error(UIMessage(R.string.taken_username_error))) }
+        verify { scene.setInputState(SignUpLayoutState.EmailHandle("tester"), FormInputState.Error(UIMessage(R.string.taken_username_error))) }
 
         model.username.state `should be instance of`  FormInputState.Error::class.java
     }
