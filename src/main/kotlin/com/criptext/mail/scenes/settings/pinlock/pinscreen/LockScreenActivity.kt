@@ -107,7 +107,8 @@ class LockScreenActivity: AppLockActivity(){
                 db = db, runner = AsyncTaskWorkRunner(),
                 eventLocalDB = EventLocalDB(db, this.filesDir, this.cacheDir), httpClient = HttpClient.Default(),
                 signalClient = SignalClient.Default(SignalStoreCriptext(db, activeAccount!!)),
-                filesDir = this.filesDir).also {
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir).also {
             it.listener = dataSourceListener
         }
     }

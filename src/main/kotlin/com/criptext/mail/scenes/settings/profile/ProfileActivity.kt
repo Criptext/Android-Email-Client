@@ -57,7 +57,8 @@ class ProfileActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         val dataSource = ProfileDataSource(
                 cacheDir = cacheDir,

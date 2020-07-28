@@ -9,12 +9,14 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.utils.generaldatasource.workers.SetCloudBackupActiveWorker
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.generaldatasource.workers.*
 import java.io.File
 
 class GeneralDataSource(override val runner: WorkRunner,
                         private val filesDir: File,
+                        private val cacheDir: File,
                         var signalClient: SignalClient?,
                         private val eventLocalDB: EventLocalDB,
                         val db : AppDatabase,
@@ -321,6 +323,21 @@ class GeneralDataSource(override val runner: WorkRunner,
                     activeAccount = activeAccount!!,
                     httpClient = httpClient,
                     publishFn = flushResults
+            )
+            is GeneralRequest.SetProfilePicture -> SetProfilePictureWorker(
+                    cacheDir = cacheDir,
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    activeAccount = activeAccount!!,
+                    httpClient = httpClient,
+                    image = params.image,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.SetCloudBackupActive -> SetCloudBackupActiveWorker(
+                    activeAccount = activeAccount!!,
+                    cloudBackupData = params.cloudBackupData,
+                    accountDao = db.accountDao(),
+                    publishFn = { res -> flushResults(res) }
             )
         }
     }

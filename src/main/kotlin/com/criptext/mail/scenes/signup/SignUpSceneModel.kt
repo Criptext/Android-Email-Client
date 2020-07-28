@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.signup
 
 import com.criptext.mail.scenes.SceneModel
+import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.validation.TextInput
 
@@ -20,4 +21,5 @@ class SignUpSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var recoveryEmail: TextInput = TextInput.blank()
     var checkTermsAndConditions : Boolean = false
     var signUpSucceed: Boolean = false
+    var state: SignUpLayoutState = SignUpLayoutState.Name("")
 }

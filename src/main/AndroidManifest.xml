@@ -139,6 +139,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".scenes.settings.aliases.AliasesActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".scenes.signup.customize.CustomizeActivity" />
 
         <service
             android:name=".services.InstanceIdService"

@@ -52,7 +52,8 @@ class ReplyToActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         return ReplyToController(
                 model = model,

@@ -37,6 +37,13 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.get("/user/available?username=$username", null)
     }
 
+    fun isRecoveryEmailAvailable(username: String, recoveryEmail: String): HttpResponseData {
+        val jsonObject = JSONObject()
+        jsonObject.put("email", recoveryEmail)
+        jsonObject.put("username", username)
+        return httpClient.post("/user/recovery/check", null, jsonObject)
+    }
+
     fun postForgotPassword(recipientId: String, domain: String): HttpResponseData{
         val jsonPut = JSONObject()
         jsonPut.put("recipientId", recipientId)

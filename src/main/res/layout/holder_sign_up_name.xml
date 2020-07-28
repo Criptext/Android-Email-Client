@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="@string/love_criptext"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="24sp"
+            android:layout_marginTop="35dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lets_get_started"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="18sp"
+            android:layout_marginTop="44dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="38dp">
+
+            <FrameLayout
+                android:id="@+id/container_inputFullname"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/full_name_input"
+                    android:textColorHint="@color/azure"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/full_name"
+                        android:textSize="15sp"
+                        app:backgroundTint="@color/azure"
+                        android:textColor="?attr/criptextPrimaryTextColor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:hint="@string/fullname_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:id="@+id/next_button_progress"
+                android:visibility="gone"
+                android:layout_marginTop="55dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                android:indeterminateTint="@color/white"
+                android:background="@drawable/btn_log_in"/>
+
+            <Button
+                android:id="@+id/next_button"
+                android:layout_marginTop="55dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"
+                android:textColor="@drawable/btn_sign_in"
+                android:enabled="false"
+                android:text="@string/btn_next"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:visibility="visible"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

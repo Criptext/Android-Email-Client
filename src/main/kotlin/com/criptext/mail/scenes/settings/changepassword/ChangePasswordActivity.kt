@@ -54,7 +54,8 @@ class ChangePasswordActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         return ChangePasswordController(
                 activeAccount = activeAccount,
