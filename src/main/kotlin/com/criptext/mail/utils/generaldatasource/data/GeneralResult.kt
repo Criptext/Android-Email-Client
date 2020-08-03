@@ -9,15 +9,14 @@ import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.data.UserSettingsData
+import com.criptext.mail.scenes.settings.profile.data.ProfileResult
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.eventhelper.EventHelperResultData
 import com.criptext.mail.utils.UIMessage
 
-/**
- * Created by gabriel on 5/1/18.
- */
 sealed class GeneralResult {
     sealed class DeviceRemoved: GeneralResult()  {
         data class Success(val activeAccount: ActiveAccount?): DeviceRemoved()
@@ -315,5 +314,20 @@ sealed class GeneralResult {
     sealed class ResendConfirmationLink: GeneralResult() {
         class Success: ResendConfirmationLink()
         data class Failure(val message: UIMessage): ResendConfirmationLink()
+    }
+
+
+    sealed class SetProfilePicture : GeneralResult() {
+        class Success: SetProfilePicture()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?): SetProfilePicture()
+        class EnterpriseSuspended: SetProfilePicture()
+    }
+
+    sealed class SetCloudBackupActive : GeneralResult() {
+        data class Success(val cloudBackupData: CloudBackupData): SetCloudBackupActive()
+        data class Failure(val message: UIMessage,
+                           val exception: Exception?,
+                           val cloudBackupData: CloudBackupData): SetCloudBackupActive()
     }
 }

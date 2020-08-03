@@ -69,12 +69,12 @@ class ProfileController(
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
             is GeneralResult.GetUserSettings -> onGetUserSettings(result)
             is GeneralResult.ActiveAccountUpdateMailbox -> onUpdateMailbox(result)
+            is GeneralResult.SetProfilePicture -> onProfilePictureSet(result)
         }
     }
 
     private val dataSourceListener: (ProfileResult) -> Unit = { result ->
         when(result) {
-            is ProfileResult.SetProfilePicture -> onProfilePictureSet(result)
             is ProfileResult.DeleteProfilePicture -> onProfilePictureDeleted(result)
         }
     }
@@ -425,20 +425,20 @@ class ProfileController(
         }
     }
 
-    private fun onProfilePictureSet(result: ProfileResult.SetProfilePicture){
+    private fun onProfilePictureSet(result: GeneralResult.SetProfilePicture){
         when(result) {
-            is ProfileResult.SetProfilePicture.Success -> {
+            is GeneralResult.SetProfilePicture.Success -> {
                 Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.recipientId}"))
                 Picasso.get().invalidate(Hosts.restApiBaseUrl.plus("/user/avatar/${activeAccount.domain}/${activeAccount.recipientId}"))
                 scene.hideProfilePictureProgress()
                 scene.showMessage(UIMessage(R.string.profile_picture_updated))
             }
-            is ProfileResult.SetProfilePicture.Failure -> {
+            is GeneralResult.SetProfilePicture.Failure -> {
                 scene.resetProfilePicture(model.userData.name)
                 scene.hideProfilePictureProgress()
                 scene.showMessage(result.message)
             }
-            is ProfileResult.SetProfilePicture.EnterpriseSuspended -> {
+            is GeneralResult.SetProfilePicture.EnterpriseSuspended -> {
                 showSuspendedAccountDialog()
             }
         }
@@ -503,7 +503,7 @@ class ProfileController(
             }
             val rotatedBitmap = Bitmap.createBitmap(bitmapImage, 0, 0,
                     bitmapImage.width, bitmapImage.height, matrix, true)
-            dataSource.submitRequest(ProfileRequest.SetProfilePicture(rotatedBitmap))
+            generalDataSource.submitRequest(GeneralRequest.SetProfilePicture(rotatedBitmap))
             scene.updateProfilePicture(rotatedBitmap)
         }
     }

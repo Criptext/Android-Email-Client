@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.profile.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import android.graphics.Bitmap
 import com.criptext.mail.R
@@ -20,6 +20,7 @@ import com.github.kittinunf.result.mapError
 import java.io.File
 import android.R.attr.bitmap
 import com.criptext.mail.utils.file.FileUtils
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import java.io.FileOutputStream
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -33,25 +34,25 @@ class SetProfilePictureWorker(val httpClient: HttpClient,
                               private val accountDao: AccountDao,
                               private val image: Bitmap,
                               private val cacheDir: File,
-                              override val publishFn: (ProfileResult) -> Unit)
-    : BackgroundWorker<ProfileResult.SetProfilePicture> {
+                              override val publishFn: (GeneralResult) -> Unit)
+    : BackgroundWorker<GeneralResult.SetProfilePicture> {
 
     private val apiClient = ProfileAPIClient(httpClient, activeAccount.jwt)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): ProfileResult.SetProfilePicture {
+    override fun catchException(ex: Exception): GeneralResult.SetProfilePicture {
         return if(ex is ServerErrorException) {
             when(ex.errorCode) {
-                ServerCodes.EnterpriseAccountSuspended -> ProfileResult.SetProfilePicture.EnterpriseSuspended()
-                else -> ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
+                ServerCodes.EnterpriseAccountSuspended -> GeneralResult.SetProfilePicture.EnterpriseSuspended()
+                else -> GeneralResult.SetProfilePicture.Failure(UIMessage(R.string.server_bad_status, arrayOf(ex.errorCode)), ex)
             }
         }else {
-            ProfileResult.SetProfilePicture.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), ex)
+            GeneralResult.SetProfilePicture.Failure(UIMessage(R.string.unknown_error, arrayOf(ex.toString())), ex)
         }
     }
 
-    override fun work(reporter: ProgressReporter<ProfileResult.SetProfilePicture>): ProfileResult.SetProfilePicture? {
+    override fun work(reporter: ProgressReporter<GeneralResult.SetProfilePicture>): GeneralResult.SetProfilePicture? {
         val result =  workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
@@ -62,7 +63,7 @@ class SetProfilePictureWorker(val httpClient: HttpClient,
             result
 
         return when (finalResult) {
-            is Result.Success -> ProfileResult.SetProfilePicture.Success()
+            is Result.Success -> GeneralResult.SetProfilePicture.Success()
 
             is Result.Failure -> catchException(finalResult.error)
         }

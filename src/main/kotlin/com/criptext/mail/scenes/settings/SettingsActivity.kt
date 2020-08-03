@@ -53,7 +53,8 @@ class SettingsActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         return SettingsController(
                 model = model,

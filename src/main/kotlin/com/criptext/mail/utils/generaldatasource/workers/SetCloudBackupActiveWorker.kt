@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.mailbox.workers
+package com.criptext.mail.utils.generaldatasource.workers
 
 import com.criptext.mail.R
 import com.criptext.mail.api.ServerErrorException
@@ -9,26 +9,27 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.github.kittinunf.result.Result
 
 
 class SetCloudBackupActiveWorker(val activeAccount: ActiveAccount,
                                  private val cloudBackupData: CloudBackupData,
                                  private val accountDao: AccountDao,
-                                 override val publishFn: (MailboxResult) -> Unit)
-    : BackgroundWorker<MailboxResult.SetCloudBackupActive> {
+                                 override val publishFn: (GeneralResult) -> Unit)
+    : BackgroundWorker<GeneralResult.SetCloudBackupActive> {
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.SetCloudBackupActive {
+    override fun catchException(ex: Exception): GeneralResult.SetCloudBackupActive {
         return if(ex is ServerErrorException) {
-            MailboxResult.SetCloudBackupActive.Failure(UIMessage(R.string.server_bad_status), ex, cloudBackupData)
+            GeneralResult.SetCloudBackupActive.Failure(UIMessage(R.string.server_bad_status), ex, cloudBackupData)
         }else {
-            MailboxResult.SetCloudBackupActive.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())), ex, cloudBackupData)
+            GeneralResult.SetCloudBackupActive.Failure(UIMessage(R.string.local_error, arrayOf(ex.toString())), ex, cloudBackupData)
         }
     }
 
-    override fun work(reporter: ProgressReporter<MailboxResult.SetCloudBackupActive>): MailboxResult.SetCloudBackupActive? {
+    override fun work(reporter: ProgressReporter<GeneralResult.SetCloudBackupActive>): GeneralResult.SetCloudBackupActive? {
         val result =  Result.of {
             accountDao.setGoogleDriveActive(activeAccount.id,
                     wifiOnly = cloudBackupData.useWifiOnly,
@@ -37,7 +38,7 @@ class SetCloudBackupActiveWorker(val activeAccount: ActiveAccount,
         }
 
         return when (result) {
-            is Result.Success -> MailboxResult.SetCloudBackupActive.Success(
+            is Result.Success -> GeneralResult.SetCloudBackupActive.Success(
                     cloudBackupData = cloudBackupData
             )
 

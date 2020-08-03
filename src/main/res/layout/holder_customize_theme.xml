@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginTop="165dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="19dp"
+            android:text="@string/customize_step_2"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_marginTop="9dp"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="@string/customize_theme_title"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:layout_marginTop="51dp"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:text="@string/customize_theme_message"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="18sp"/>
+
+
+        <RelativeLayout
+            android:id="@+id/theme_switch"
+            android:layout_marginTop="51dp"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/custom_theme_switch"
+            android:clickable="true"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/switch_button"
+                android:layout_width="160dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="false"
+                android:orientation="horizontal"
+                android:background="@drawable/btn_white_background">
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_centerInParent="true">
+                <TextView
+                    android:layout_width="83dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/customize_light_option"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:layout_weight="0.7"/>
+                <TextView
+                    android:layout_width="83dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/customize_dark_option"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:layout_weight="0.4"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+        <ProgressBar
+            android:id="@+id/next_button_progress"
+            android:visibility="gone"
+            android:layout_marginTop="96dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="true"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="@color/white"
+            android:background="@drawable/btn_log_in"/>
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_marginTop="96dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_log_in"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/btn_next"
+            android:textSize="16sp"
+            android:textAllCaps="false"/>
+
+        <TextView
+            android:id="@+id/skip"
+            android:layout_marginTop="14dp"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:text="@string/btn_skip"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -170,7 +170,8 @@ class MailboxActivity : BaseActivity() {
                     runner = AsyncTaskWorkRunner(),
                     activeAccount = activeAccount,
                     httpClient = HttpClient.Default(),
-                    filesDir = activity.filesDir
+                    filesDir = activity.filesDir,
+                    cacheDir = activity.cacheDir
             )
 
             return MailboxSceneController(
@@ -232,6 +233,9 @@ class MailboxActivity : BaseActivity() {
         }
     }
 
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        controller.requestPermissionResult(requestCode, permissions, grantResults)
+    }
 
 }

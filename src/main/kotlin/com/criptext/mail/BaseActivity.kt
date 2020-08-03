@@ -67,6 +67,7 @@ import com.criptext.mail.scenes.settings.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel
+import com.criptext.mail.scenes.signup.customize.CustomizeSceneModel
 import com.criptext.mail.scenes.webview.WebViewSceneModel
 import com.criptext.mail.services.DecryptionService
 import com.criptext.mail.services.MessagingInstance
@@ -460,6 +461,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
+            is CustomizeParams -> CustomizeSceneModel(params.recoveryEmail)
             is WebViewParams -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
                 val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)

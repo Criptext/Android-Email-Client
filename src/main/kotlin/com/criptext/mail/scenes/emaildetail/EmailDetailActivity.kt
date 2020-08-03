@@ -68,7 +68,8 @@ class  EmailDetailActivity: BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = httpClient,
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
 
         return  EmailDetailSceneController(

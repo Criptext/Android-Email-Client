@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:id="@+id/rootView">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:orientation="vertical"
+        android:background="?attr/criptextColorBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/viewPhotoLibrary"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/attachment_photolibrary"
+                    android:layout_marginRight="5dp"
+                    android:tint="?attr/criptextAttachmentDialogTextColor"/>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/photo_library"
+                    android:textSize="16sp"
+                    android:textColor="?attr/criptextAttachmentDialogTextColor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/viewCamera"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/attachment_camera"
+                    android:layout_marginRight="5dp"
+                    android:tint="?attr/criptextAttachmentDialogTextColor"/>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/camera"
+                    android:textSize="16sp"
+                    android:textColor="?attr/criptextAttachmentDialogTextColor" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@android:color/darker_gray"
+            android:alpha="0.3"/>
+
+    </LinearLayout>
+</LinearLayout>
+
