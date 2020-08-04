@@ -486,11 +486,12 @@ class ComposerController(private val storage: KeyValueStorage,
                     fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
                 }
                 model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
+                val selectedIndex = if(model.selectedAddress.isNotEmpty()) model.fromAddresses.indexOfFirst { it.contains(model.selectedAddress) } else 0
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
                         || (model.accounts.size == 1 && result.aliases.isEmpty())){
                     scene.switchToSimpleFrom(model.selectedAddress)
                 } else {
-                    scene.fillFromOptions(fromAddresses)
+                    scene.fillFromOptions(fromAddresses, if(selectedIndex >= 0) selectedIndex else 0)
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
@@ -718,7 +719,7 @@ class ComposerController(private val storage: KeyValueStorage,
         if (model.initialized) {
             if(model.type is ComposerType.Empty && model.firstTime)
                 generalDataSource.submitRequest(GeneralRequest.UserEvent(UserEvent.newComposerOpen))
-            model.selectedAddress = activeAccount.userEmail
+            if(model.selectedAddress.isEmpty()) model.selectedAddress = activeAccount.userEmail
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
         } else {
             loadInitialData()

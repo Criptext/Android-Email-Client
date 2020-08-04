@@ -65,12 +65,13 @@ class WebViewUtils {
             sb.append("dotSpan1.setAttribute(\"id\", \"dot\");")
             sb.append("dotSpan2.setAttribute(\"id\", \"dot\");")
             sb.append("dotSpan3.setAttribute(\"id\", \"dot\");")
-            sb.append("replybody.style.display = \"$display\";")
             sb.append("newNode.setAttribute(\"id\", \"dotDiv\");")
             sb.append("newNode.setAttribute(\"collapse_state\", \"${if (isForward) "open" else "close"}\");")
             sb.append("newNode.appendChild(dotSpan1);")
             sb.append("newNode.appendChild(dotSpan2);")
             sb.append("newNode.appendChild(dotSpan3);")
+            sb.append("if(replybody !== null) {")
+            sb.append("replybody.style.display = \"$display\";")
             sb.append("replybody.parentElement.insertBefore(newNode, replybody);")
             sb.append("""
                 newNode.addEventListener("click", 
@@ -99,6 +100,7 @@ class WebViewUtils {
                                             CriptextSecureEmail.toggleButton();
                                         });
             """.trimIndent())
+            sb.append("}")
             sb.append("</script>")
 
             return sb.toString()
@@ -139,7 +141,7 @@ class WebViewUtils {
         fun resizeImages() : String{
             val sb = StringBuilder()
             sb.append("<script>")
-            sb.append("function replace(cid, filePath)")
+            sb.append("function resizeImages()")
             sb.append("{")
             sb.append("var images = document.getElementsByTagName('img');")
             sb.append("for (var i = 0; i < images.length; ++i) {")

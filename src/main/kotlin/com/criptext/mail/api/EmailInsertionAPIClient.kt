@@ -1,5 +1,6 @@
 package com.criptext.mail.api
 
+import com.criptext.mail.utils.ContactUtils
 import org.json.JSONObject
 
 /**
@@ -16,5 +17,13 @@ class EmailInsertionAPIClient(private val httpClient: HttpClient, private val to
         json.put("metadataKey", metadataKey)
         json.put("eventid", eventId)
         return httpClient.post("/email/reencrypt", token, json)
+    }
+
+    fun postReportSpam(emails: List<String>, type: ContactUtils.ContactReportTypes, data: String?): HttpResponseData{
+        val json = JSONObject()
+        json.put("emails", emails.toJSONStringArray())
+        json.put("type", type.name)
+        json.put("headers", data)
+        return httpClient.post(path = "/contact/report", authToken = token, body = json)
     }
 }

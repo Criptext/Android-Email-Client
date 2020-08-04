@@ -168,6 +168,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                             type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this),
                             currentLabel = Label.fromJSON(savedInstanceState.getString("currentLabel")!!, activeAccount.id)
                     )
+                    composerModel.selectedAddress = savedInstanceState.getString("from")!!
                     composerModel.subject = savedInstanceState.getString("subject")!!
                     composerModel.body = savedInstanceState.getString("body")!!
                     composerModel.to = LinkedList(Contact.fromJSONArray(savedInstanceState.getString("to")!!))
@@ -352,6 +353,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ComposerModel -> {
                 outState.putString("type", COMPOSER_MODEL)
+                outState.putString("from", currentModel.selectedAddress)
                 outState.putString("composerType", ComposerType.toJSON(currentModel.type))
                 outState.putString("currentLabel", Label.toJSON(currentModel.currentLabel).toString())
                 outState.putString("subject", currentModel.subject)
