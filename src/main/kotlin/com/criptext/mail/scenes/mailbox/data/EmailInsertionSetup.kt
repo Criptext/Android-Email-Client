@@ -9,10 +9,7 @@ import com.criptext.mail.db.models.*
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalEncryptedData
 import com.criptext.mail.signal.SignalUtils
-import com.criptext.mail.utils.DateAndTimeUtils
-import com.criptext.mail.utils.EmailAddressUtils
-import com.criptext.mail.utils.EmailUtils
-import com.criptext.mail.utils.HTMLUtils
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.file.FileUtils
 import org.json.JSONObject
 import org.whispersystems.libsignal.DuplicateMessageException
@@ -335,12 +332,18 @@ object  EmailInsertionSetup {
 
         if(!meAsSender) {
             val fromContact = dao.findContactsByEmail(listOf(metadata.fromContact.email)).firstOrNull()
-            if (fromContact != null) {
-                if (fromContact.spamScore >= SPAM_COUNTER)
+            when {
+                metadata.isSpam -> {
                     labels.add(Label.defaultItems.spam)
+                }
+                fromContact != null -> {
+                    if(fromContact.spamScore >= SPAM_COUNTER){
+                        labels.add(Label.defaultItems.spam)
+                        apiClient.postReportSpam(listOf(fromContact.email),
+                                ContactUtils.ContactReportTypes.spam, null)
+                    }
+                }
             }
-
-            if (metadata.isSpam) labels.add(Label.defaultItems.spam)
         }
 
         val json = JSONObject(apiClient.getBodyFromEmail(metadata.metadataKey).body)

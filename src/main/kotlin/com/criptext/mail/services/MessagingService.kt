@@ -1,15 +1,18 @@
 package com.criptext.mail.services
 
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import com.criptext.mail.R
+import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.ProgressReporter
 import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.EventLocalDB
+import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.PushController
@@ -18,6 +21,7 @@ import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.PushResult
 import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.push.workers.GetPushEmailWorker
+import com.criptext.mail.push.workers.RemoveNotificationWorker
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.eventhelper.EventHelper
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -99,13 +103,17 @@ class MessagingService : FirebaseMessagingService(){
                         "delete_new_email" -> {
                             val metadataKeys = pushData["metadataKeys"]?.split(",")
                             metadataKeys?.forEach {
-                                pushController?.removeNotification(pushData, it)
+                                val removeNotificationWorker = newRemoveNotificationWorker(pushData, AppDatabase.getAppDatabase(this), it)
+                                val result = removeNotificationWorker.work(reporter)
+                                onRemoveNotification(result)
                             }
                         }
                         "delete_sync_link" -> {
                             val randomId = pushData["randomId"] ?: ""
                             if(randomId.isNotEmpty()) {
-                                pushController?.removeNotification(pushData, randomId)
+                                val removeNotificationWorker = newRemoveNotificationWorker(pushData, AppDatabase.getAppDatabase(this), randomId)
+                                val result = removeNotificationWorker.work(reporter)
+                                onRemoveNotification(result)
                             }
                         }
                     }
@@ -117,10 +125,42 @@ class MessagingService : FirebaseMessagingService(){
         }
     }
 
+    private fun onRemoveNotification(result: PushResult.RemoveNotification?){
+        when(result){
+            is PushResult.RemoveNotification.Success -> {
+                when(result.antiPushSubtype) {
+                    "delete_new_email" -> {
+                        cancelPush(result.notificationId,
+                                KeyValueStorage.StringKey.NewMailNotificationCount, CriptextNotification.INBOX_ID)
+                    }
+                    "delete_sync_link" -> {
+                        cancelPush(result.notificationId,
+                                KeyValueStorage.StringKey.SyncNotificationCount, CriptextNotification.LINK_DEVICE_ID)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun cancelPush(notificationId: Int, key: KeyValueStorage.StringKey, headerId: Int){
+        val manager = applicationContext
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val storage = KeyValueStorage.SharedPrefs(applicationContext)
+        val notCount = storage.getInt(key, 0)
+        manager.cancel(notificationId)
+        if((notCount - 1) <= 0) {
+            manager.cancel(headerId)
+        }
+        storage.putInt(key, if(notCount <= 0) 0 else notCount - 1)
+    }
+
     private fun newPushWorker(pushData: Map<String, String>, filesDir: File, db: AppDatabase, shouldPostNotification: Boolean): GetPushEmailWorker =
             GetPushEmailWorker(db = db, publishFn = {}, httpClient = HttpClient.Default(),
                     shouldPostNotification = shouldPostNotification, dbEvents = EventLocalDB(db, filesDir, cacheDir),
                     label = Label.defaultItems.inbox, pushData = pushData)
+    private fun newRemoveNotificationWorker(pushData: Map<String, String>, db: AppDatabase, value: String): RemoveNotificationWorker =
+            RemoveNotificationWorker(db = db, publishFn = {}, pushData = pushData,
+                    notificationValue = value)
 
     private val reporter = object: ProgressReporter<PushResult> {
         override fun report(progressPercentage: PushResult) {

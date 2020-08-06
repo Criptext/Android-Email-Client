@@ -276,36 +276,44 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     override fun bindFullMail(fullEmail: FullEmail, blockRemoteContentSetting: Boolean) {
         val isEmailEmpty = HTMLUtils.isHtmlEmpty(fullEmail.email.content)
         val hasAtLeastOneImage = HTMLUtils.hasAtLeastOneImage(fullEmail.email.content)
+        var showRemoteContent: Boolean = false
         when {
             fullEmail.isFromMe -> {
-                remoteContentShow(true)
+                showRemoteContent = true
+                remoteContentShow(showRemoteContent)
                 showImagesButton.visibility = View.GONE
             }
             fullEmail.labels.contains(Label.defaultItems.draft)
                     || fullEmail.labels.contains(Label.defaultItems.sent)
                     || (fullEmail.isShowingRemoteContent && fullEmail.labels.contains(Label.defaultItems.spam))
                     || isEmailEmpty -> {
-                remoteContentShow(true)
+                showRemoteContent = true
+                remoteContentShow(showRemoteContent)
                 showImagesButton.visibility = View.GONE
             }
             !hasAtLeastOneImage -> {
-                remoteContentShow(true)
+                showRemoteContent = true
+                remoteContentShow(showRemoteContent)
                 showImagesButton.visibility = View.GONE
             }
             fullEmail.labels.contains(Label.defaultItems.spam)
                     && hasAtLeastOneImage -> {
-                remoteContentShow(false)
+                showRemoteContent = false
+                remoteContentShow(showRemoteContent)
             }
             fullEmail.isShowingRemoteContent -> {
+                showRemoteContent = true
                 showImagesText.text = context.getLocalizedUIMessage(UIMessage(R.string.show_always_btn))
-                remoteContentShow(true)
+                remoteContentShow(showRemoteContent)
             }
             !blockRemoteContentSetting -> {
-                remoteContentShow(true)
+                showRemoteContent = true
+                remoteContentShow(showRemoteContent)
                 showImagesButton.visibility = View.GONE
             }
             blockRemoteContentSetting && hasAtLeastOneImage -> {
-                remoteContentShow(fullEmail.from.isTrusted)
+                showRemoteContent = fullEmail.from.isTrusted
+                remoteContentShow(showRemoteContent)
                 showImagesButton.visibility = if(fullEmail.from.isTrusted) View.GONE
                 else View.VISIBLE
             }
@@ -320,6 +328,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     changedHeaderHtml(content, EmailUtils.checkIfItsForward(fullEmail.email.subject)), "text/html", "utf-8", "")
             bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             setDefaultBackgroundColors()
+            if(showRemoteContent)
+                bodyWebView.evaluateJavascript("replaceSrc();", null)
         }
         else {
             val unsentDate = fullEmail.email.unsentDate
@@ -372,7 +382,6 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         if(show){
             bodyWebView.settings.loadsImagesAutomatically = true
             bodyWebView.settings.blockNetworkImage = false
-            bodyWebView.evaluateJavascript("replaceSrc();", null)
         } else {
             bodyWebView.settings.loadsImagesAutomatically = false
             bodyWebView.settings.blockNetworkImage = true

@@ -62,7 +62,7 @@ interface ComposerScene {
     fun showStayInComposerDialog(observer: ComposerUIObserver)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showStartGuideAttachments()
-    fun fillFromOptions(list: List<String>)
+    fun fillFromOptions(list: List<String>, selectedItem: Int = 0)
     fun switchToSimpleFrom(from: String)
     fun contactsInputUpdate(to: List<Contact>, ccContacts: List<Contact>, bccContacts: List<Contact>)
     fun showRecoveryEmailRestrictionDialog()
@@ -240,12 +240,13 @@ interface ComposerScene {
                     R.drawable.arrowdown).into(imageViewArrow)
         }
 
-        override fun fillFromOptions(list: List<String>) {
+        override fun fillFromOptions(list: List<String>, selectedItem: Int) {
             val adapter = ArrayAdapter<String>(
                     ctx, R.layout.support_simple_spinner_dropdown_item, list
             )
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
             fromAddresses.adapter = adapter
+            fromAddresses.setSelection(selectedItem)
             fromAddresses.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     observer?.onSenderSelectedItem(p2)
