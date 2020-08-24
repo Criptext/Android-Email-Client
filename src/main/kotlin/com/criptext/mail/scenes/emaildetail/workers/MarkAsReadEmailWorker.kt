@@ -14,6 +14,7 @@ import com.criptext.mail.db.dao.PendingEventDao
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.emaildetail.data.EmailDetailResult
 import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerReadEmailData
 import com.github.kittinunf.result.Result
 
@@ -47,7 +48,9 @@ class MarkAsReadEmailWorker(private val dao: EmailDao,
                     .filter { it.delivered !in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING)}
             if(peerEmail.isEmpty())
                 throw Exception()
-            peerEventHandler.enqueueEvent(PeerReadEmailData(metadataKeys, unread).toJSON())
+            metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
+                peerEventHandler.enqueueEvent(PeerReadEmailData(batch, unread).toJSON())
+            }
             dao.toggleReadByMetadataKey(metadataKeys = metadataKeys,
                     unread = unread, accountId = activeAccount.id)
         }
