@@ -35,6 +35,7 @@ import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.apputils.AppRater
 import com.criptext.mail.utils.ui.*
+import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
@@ -124,6 +125,7 @@ interface MailboxScene{
     fun showRecommendBackupDialog()
     fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean)
     fun removeFromScheduleCloudBackupJob(accountId: Long)
+    fun showUpdateNowDialog()
 
     class MailboxSceneView(private val mailboxView: View, val hostActivity: IHostActivity)
         : MailboxScene {
@@ -282,6 +284,19 @@ interface MailboxScene{
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
             else if(syncAuthDialog.isShowing() == null)
                 syncAuthDialog.showLinkDeviceAuthDialog(observer, trustedDeviceInfo)
+        }
+
+        override fun showUpdateNowDialog() {
+            val dialog = GeneralDialogConfirmation(
+                    context = context,
+                    data = DialogData.DialogConfirmationData(
+                            type = DialogType.UpdateApp(),
+                            title = UIMessage(R.string.password_warning_dialog_title),
+                            message = listOf(UIMessage(R.string.version_not_supported_dialog_message)),
+                            confirmButtonText = R.string.update_btn
+                    )
+            )
+            dialog.showDialog(observer)
         }
 
         override fun dismissLinkDeviceDialog() {

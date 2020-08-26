@@ -19,6 +19,7 @@ object ServerCodes{
     const val SessionExpired = 419
     const val PreConditionRequired = 428
     const val TooManyRequests = 429
+    const val VersionNotSupported = 430
     const val TooManyDevices = 439
     const val EnterpriseAccountSuspended = 451
     const val AuthenticationPending = 491

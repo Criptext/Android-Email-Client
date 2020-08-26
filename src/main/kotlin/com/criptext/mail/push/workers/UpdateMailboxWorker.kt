@@ -57,18 +57,22 @@ class UpdateMailboxWorker(
         return PushResult.UpdateMailbox.Failure(label, message, ex)
     }
 
-    private fun processFailure(failure: Result.Failure<EventHelperResultData,
+    private fun  processFailure(failure: Result.Failure<EventHelperResultData,
             Exception>): PushResult.UpdateMailbox {
-        return if (failure.error is EventHelper.NothingNewException)
-            PushResult.UpdateMailbox.Success(
-                    mailboxLabel = label,
-                    isManual = true,
-                    senderImage = null)
-        else
-            PushResult.UpdateMailbox.Failure(
-                    mailboxLabel = label,
-                    message = createErrorMessage(failure.error),
-                    exception = failure.error)
+        return when(failure.error){
+            is EventHelper.NothingNewException -> {
+                PushResult.UpdateMailbox.Success(
+                        mailboxLabel = label,
+                        isManual = true,
+                        senderImage = null)
+            }
+            else -> {
+                PushResult.UpdateMailbox.Failure(
+                        mailboxLabel = label,
+                        message = createErrorMessage(failure.error),
+                        exception = failure.error)
+            }
+        }
     }
 
     private fun setup(reporter: ProgressReporter<PushResult.UpdateMailbox>): Result<Pair<List<Event>, Boolean>, Exception>{
