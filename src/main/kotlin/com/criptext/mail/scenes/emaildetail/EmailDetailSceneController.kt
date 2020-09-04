@@ -757,6 +757,11 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             host.goToScene(ComposerParams(type, model.currentLabel), false)
         }
 
+        override fun onTurnOnLights(fullEmail: FullEmail, position: Int) {
+            fullEmail.hasLightsTurnedOn = !fullEmail.hasLightsTurnedOn
+            scene.notifyFullEmailChanged(position + 1)
+        }
+
         override fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean) {
             val type = ComposerType.Forward(originalId = fullEmail.email.id,
                     threadPreview = model.threadPreview, currentLabel = model.currentLabel,

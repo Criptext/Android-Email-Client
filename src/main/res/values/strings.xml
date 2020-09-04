@@ -350,6 +350,8 @@
   <string name="button_confirm">Confirm</string>
   <string name="forgot_password">Forgot password?</string>
   <string name="reply">Reply</string>
+  <string name="turn_on_lights">Turn on the lights</string>
+  <string name="turn_off_lights">Turn off the lights</string>
   <string name="mark_as_read">Mark as read</string>
   <string name="mark_as_spam">Mark as Spam</string>
   <string name="print">Print</string>

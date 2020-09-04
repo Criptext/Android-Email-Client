@@ -472,7 +472,6 @@ class ComposerController(private val storage: KeyValueStorage,
             is ComposerResult.GetAllFromAddresses.Success -> {
                 model.accounts = result.accounts.map { ActiveAccount.loadFromDB(it)!! }
                 val fromAddresses = mutableListOf<String>()
-                model.fromAddresses = result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList()
                 val defaultAlias = if(activeAccount.defaultAddress != null) result.aliases.find { it.rowId == activeAccount.defaultAddress } else null
                 if(defaultAlias != null){
                     val defaultAliasAddress = defaultAlias.name.plus(
@@ -480,18 +479,21 @@ class ComposerController(private val storage: KeyValueStorage,
                     fromAddresses.add(defaultAliasAddress)
                     fromAddresses.addAll(model.fromAddresses)
                     fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") }.filter { it != defaultAliasAddress })
+                    fromAddresses.addAll(result.accounts.map { it.recipientId.plus("@${it.domain}") }.toMutableList())
+                    model.selectedAddress = defaultAliasAddress
                 } else {
                     fromAddresses.add(activeAccount.userEmail)
-                    fromAddresses.addAll(model.fromAddresses.filter { it != activeAccount.userEmail })
+                    fromAddresses.addAll(result.accounts.sortedBy { !it.isActive }.map { it.recipientId.plus("@${it.domain}") }.toMutableList())
                     fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
+                    model.selectedAddress = activeAccount.userEmail
                 }
-                model.fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain}") })
+                model.fromAddresses = fromAddresses
                 val selectedIndex = if(model.selectedAddress.isNotEmpty()) model.fromAddresses.indexOfFirst { it.contains(model.selectedAddress) } else 0
                 if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
                         || (model.accounts.size == 1 && result.aliases.isEmpty())){
                     scene.switchToSimpleFrom(model.selectedAddress)
                 } else {
-                    scene.fillFromOptions(fromAddresses, if(selectedIndex >= 0) selectedIndex else 0)
+                    scene.fillFromOptions(model.fromAddresses, if(selectedIndex >= 0) selectedIndex else 0)
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {
@@ -558,6 +560,14 @@ class ComposerController(private val storage: KeyValueStorage,
         }
         val threadPreview = getThreadPreview()
 
+
+        val indexStart = model.selectedAddress.lastIndexOf("(")
+        val indexEnd = model.selectedAddress.lastIndexOf(")")
+        val trueSelectedAddress = if(indexStart != -1 && indexEnd != -1)
+                                    model.selectedAddress.removeRange(indexStart, indexEnd + 1).trim()
+                                else
+                                    model.selectedAddress
+
         dataSource.submitRequest(ComposerRequest.SaveEmailAsDraft(
                 threadId = threadPreview?.threadId,
                 emailId = draftId,
@@ -565,7 +575,7 @@ class ComposerController(private val storage: KeyValueStorage,
                 composerInputData = composerInputData,
                 goToRecoveryEmail = goToRecoveryEmail,
                 onlySave = onlySave, attachments = model.attachments, fileKey = model.fileKey,
-                senderEmail = model.selectedAddress,
+                senderEmail = trueSelectedAddress,
                 currentLabel = model.currentLabel))
 
     }
@@ -719,7 +729,6 @@ class ComposerController(private val storage: KeyValueStorage,
         if (model.initialized) {
             if(model.type is ComposerType.Empty && model.firstTime)
                 generalDataSource.submitRequest(GeneralRequest.UserEvent(UserEvent.newComposerOpen))
-            if(model.selectedAddress.isEmpty()) model.selectedAddress = activeAccount.userEmail
             bindWithModel(ComposerInputData.fromModel(model), activeAccount.signature)
         } else {
             loadInitialData()

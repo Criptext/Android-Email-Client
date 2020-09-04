@@ -22,6 +22,7 @@ class FullEmailListAdapter(private val mContext : Context,
                            private val fileDetails: Map<Long, List<FileDetail>>,
                            private val labels: VirtualList<Label>,
                            private val isStarred: Boolean,
+                           private val isDarkTheme: Boolean,
                            private val shouldOpenExpanded: Boolean)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -119,7 +120,8 @@ class FullEmailListAdapter(private val mContext : Context,
                         adapter = this,
                         emailListener = fullEmailListener,
                         position = newPosition,
-                        fileDetails = fileDetails[fullEmail.email.id] ?: emptyList())
+                        fileDetails = fileDetails[fullEmail.email.id] ?: emptyList(),
+                        isDarkTheme = isDarkTheme)
                 if(!isExpanded){
                     if(position == 1) {
                         holder.setBottomMargin(0)
@@ -249,6 +251,7 @@ class FullEmailListAdapter(private val mContext : Context,
         fun onStarredButtonPressed(isStarred: Boolean)
         fun onForwardOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
         fun onReplyAllOptionSelected(fullEmail: FullEmail, position: Int, all: Boolean)
+        fun onTurnOnLights(fullEmail: FullEmail, position: Int)
         fun onContinueDraftOptionSelected(fullEmail: FullEmail)
         fun onDeleteDraftOptionSelected(fullEmail: FullEmail)
         fun onAttachmentSelected(emailPosition: Int, attachmentPosition: Int)

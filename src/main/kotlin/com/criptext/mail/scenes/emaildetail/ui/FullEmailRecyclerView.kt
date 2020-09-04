@@ -23,7 +23,8 @@ class FullEmailRecyclerView(
         val isStarred: Boolean,
         shouldOpenExpanded: Boolean,
         val activeAccount: ActiveAccount,
-        blockRemoteContentSetting: Boolean) {
+        blockRemoteContentSetting: Boolean,
+        isDarkTheme: Boolean) {
 
     val ctx: Context = recyclerView.context
     private val fullEmailListAdapter = FullEmailListAdapter(
@@ -33,7 +34,8 @@ class FullEmailRecyclerView(
             fileDetails = fileDetailList,
             labels = labels,
             isStarred = isStarred,
-            shouldOpenExpanded = shouldOpenExpanded)
+            shouldOpenExpanded = shouldOpenExpanded,
+            isDarkTheme = isDarkTheme)
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(ctx)

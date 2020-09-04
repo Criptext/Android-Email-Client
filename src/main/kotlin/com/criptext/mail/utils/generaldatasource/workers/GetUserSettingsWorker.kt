@@ -90,6 +90,12 @@ class GetUserSettingsWorker(
                     accountDao.updateAccountType(settings.customerType, activeAccount.recipientId, activeAccount.domain)
                     activeAccount.updateAccountType(storage, settings.customerType)
                 }
+                val defaultAddress = settings.aliases.findLast { it.isDefault }
+                if(defaultAddress != null && defaultAddress.rowId != activeAccount.defaultAddress){
+                    accountDao.updateDefaultAddress(activeAccount.recipientId, activeAccount.domain,
+                            defaultAddress.rowId)
+                    activeAccount.updateAccountDefaultAddress(storage, defaultAddress.rowId)
+                }
                 settings
             } }
 

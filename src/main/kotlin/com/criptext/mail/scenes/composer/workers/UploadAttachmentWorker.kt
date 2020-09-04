@@ -2,6 +2,7 @@ package com.criptext.mail.scenes.composer.workers
 
 import android.accounts.NetworkErrorException
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.CriptextAPIClient
@@ -152,7 +153,11 @@ class UploadAttachmentWorker(private val filesSize: Long,
         when (ex) {
             is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             is NetworkErrorException -> UIMessage(resId = R.string.general_network_error_exception)
-            else -> UIMessage(resId = R.string.unable_to_upload, args = arrayOf(filepath))
+            else -> {
+                Crashlytics.setString("file_name", filepath)
+                Crashlytics.logException(ex)
+                UIMessage(resId = R.string.unable_to_upload, args = arrayOf(filepath))
+            }
         }
     }
     override fun cancel() {

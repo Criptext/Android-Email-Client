@@ -367,6 +367,8 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="button_confirm">Confirmer</string>
   <string name="forgot_password">Mot de passe oublié ?</string>
   <string name="reply">Répondre</string>
+  <string name="turn_on_lights">Turn on the lights</string>
+  <string name="turn_off_lights">Turn off the lights</string>
   <string name="mark_as_read">Marquer comme lu</string>
   <string name="mark_as_spam">Marquer comme indésirable</string>
   <string name="print">Imprimer</string>

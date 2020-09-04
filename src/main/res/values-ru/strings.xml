@@ -370,6 +370,8 @@
   <string name="button_confirm">Подтвердить</string>
   <string name="forgot_password">Забыли пароль?</string>
   <string name="reply">Ответить</string>
+  <string name="turn_on_lights">Turn on the lights</string>
+  <string name="turn_off_lights">Turn off the lights</string>
   <string name="mark_as_read">Пометить как прочитанное</string>
   <string name="mark_as_spam">Пометить как спам</string>
   <string name="print">Печатать</string>
@@ -382,7 +384,7 @@
   <string name="failed_empty_trash">Не удалось удалить электронное сообщение(-я). Повторите попытку позже.</string>
   <string name="nothing_to_update">Обновлять нечего.</string>
   <string name="failed_searching_emails">Не удалось извлечь электронные сообщения. Повторите попытку позже.</string>
-  <string name="updating_mailbox">Идет обновление почтового ящика...</string>
+  <string name="updating_mailbox">Идет обновление почтового ящика…</string>
   <string name="email_already_decrypted">Почтовый ящик уже обновлен!</string>
   <string name="failed_to_create_link_device_file">Произошел сбой процесса подключения устройства. Повторите попытку позже.</string>
   <string name="server_error_exception">Ошибка сервера. Повторите попытку позже.</string>

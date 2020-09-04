@@ -374,6 +374,8 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="button_confirm">Bestätigen</string>
   <string name="forgot_password">Passwort vergessen?</string>
   <string name="reply">Antworten</string>
+  <string name="turn_on_lights">Turn on the lights</string>
+  <string name="turn_off_lights">Turn off the lights</string>
   <string name="mark_as_read">als gelesen markieren</string>
   <string name="mark_as_spam">Als Spam markieren</string>
   <string name="print">Drucken</string>
