@@ -11,4 +11,5 @@ sealed class DialogType{
     class DeleteLabel: DialogType()
     class EditLabel: DialogType()
     class CriptextPlus: DialogType()
+    class UpdateApp: DialogType()
 }

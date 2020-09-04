@@ -94,6 +94,7 @@ class GeneralDialogConfirmation(val context: Context, val data: DialogData.Dialo
             is DialogType.ManualSyncConfirmation,
             is DialogType.SignIn,
             is DialogType.Message,
+            is DialogType.UpdateApp,
             is DialogType.SwitchAccount ->
                 DialogResult.DialogConfirmation(data.type)
             is DialogType.CriptextPlus ->

@@ -8,6 +8,7 @@ import android.provider.ContactsContract
 import android.view.View
 import com.criptext.mail.*
 import com.criptext.mail.api.Hosts
+import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
@@ -40,10 +41,7 @@ import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
-import com.criptext.mail.utils.AccountUtils
-import com.criptext.mail.utils.IntentUtils
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.UIUtils
+import com.criptext.mail.utils.*
 import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -412,6 +410,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result){
                 is DialogResult.DialogConfirmation -> {
                     when(result.type){
+                        is DialogType.UpdateApp -> {
+                            host.launchExternalActivityForResult(ExternalActivityParams.OpenGooglePlay())
+                        }
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
@@ -1543,11 +1544,16 @@ class MailboxSceneController(private val scene: MailboxScene,
                 dataSourceController.updateMailbox(model.selectedLabel)
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Failure -> {
-                scene.showMessage(resultData.message)
-                if(shouldSyncBackground){
-                    updateBackgroundAccounts()
+                if(resultData.exception is ServerErrorException
+                        && resultData.exception.errorCode == ServerCodes.VersionNotSupported) {
+                    scene.showUpdateNowDialog()
+                } else {
+                    scene.showMessage(resultData.message)
+                    if(shouldSyncBackground){
+                        updateBackgroundAccounts()
+                    }
+                    dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
                 }
-                dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
                 scene.showMessage(resultData.message)

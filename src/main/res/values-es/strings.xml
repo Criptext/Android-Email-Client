@@ -731,4 +731,6 @@
   <string name="recovery_email_restriction_toast">Un nuevo enlace de confirmación fue enviado a tu corre de recuperación: %1$s.</string>
   <string name="settings_option_address_manager">Administrador de Direcciones</string>
   <string name="unable_to_decrypt">El mensaje no se pudo desencriptar.</string>
+  <string name="update_btn">Actualizar</string>
+  <string name="version_not_supported_dialog_message">Esta versión de Criptext ya no está soportada. Por favor actualiza a la última versión para poder ver tus nuevos correos.</string>
 </resources>
