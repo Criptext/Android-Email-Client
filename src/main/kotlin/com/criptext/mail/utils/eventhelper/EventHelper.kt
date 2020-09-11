@@ -14,7 +14,8 @@ import com.criptext.mail.db.models.signal.CRPreKey
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
-import com.criptext.mail.scenes.mailbox.data.UpdateBannerEventData
+import com.criptext.mail.api.models.UpdateBannerEventData
+import com.criptext.mail.scenes.mailbox.data.ActionRequiredData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DeviceUtils
@@ -63,6 +64,7 @@ class EventHelper(private val db: EventLocalDB,
                     Event.Cmd.deviceAuthRequest -> processLinkRequestEvents(it)
                     Event.Cmd.syncBeginRequest -> processSyncRequestEvents(it)
                     Event.Cmd.updateBannerEvent -> processUpdateBannerData(it)
+                    Event.Cmd.requiredAction -> processRequiredActionData(it)
                     Event.Cmd.newEmail -> if(!doNotParseEmails) processNewEmails(it)
                     Event.Cmd.peerEmailThreadReadStatusUpdate -> processThreadReadStatusChanged(it)
                     Event.Cmd.peerEmailReadStatusUpdate -> processEmailReadStatusChanged(it)
@@ -166,6 +168,17 @@ class EventHelper(private val db: EventLocalDB,
                 if (acknowledgeEvents)
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
                 parsedEvents.add(ParsedEvent.BannerData(event.cmd, operation.value))
+            }
+        }
+    }
+
+    private fun processRequiredActionData(event: Event) {
+        val actionData = ActionRequiredEventData.fromJSON(event.params)
+        val operation = getImageFromCdn(actionData)
+        when(operation){
+            is Result.Success ->{
+                shouldNotify = true
+                parsedEvents.add(ParsedEvent.ActionRequired(event.cmd, operation.value))
             }
         }
     }
@@ -621,6 +634,15 @@ class EventHelper(private val db: EventLocalDB,
                     metadata.messageCode,
                     Locale.getDefault().toString().toLowerCase()).body
             ).copy(version = metadata.version, operator = metadata.operator)
+        }
+    }
+
+    private fun getImageFromCdn(metadata: ActionRequiredEventData): Result<ActionRequiredData, java.lang.Exception> {
+        return Result.of {
+            ActionRequiredData.fromJSON(newsClient.getUpdateBannerData(
+                    metadata.messageCode,
+                    Locale.getDefault().toString().toLowerCase()).body
+            )
         }
     }
 
