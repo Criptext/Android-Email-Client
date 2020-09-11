@@ -73,7 +73,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
 
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                      emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
-                     adapter: FullEmailListAdapter, position: Int) {
+                     adapter: FullEmailListAdapter, position: Int, isDarkTheme: Boolean) {
         listener = emailListener
 
         view.setOnClickListener {
@@ -84,7 +84,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     viewOpen = false)
         }
         threePointsView.setOnClickListener {
-            displayPopMenu(emailListener, fullEmail, position - 1)
+            displayPopMenu(emailListener, fullEmail, position - 1, isDarkTheme)
         }
 
         moreButton.setOnClickListener {
@@ -165,7 +165,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         }
     }
 
-    private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?, fullEmail: FullEmail, position: Int){
+    private fun displayPopMenu(emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
+                               fullEmail: FullEmail, position: Int, isDarkTheme: Boolean){
         val popupMenu = createPopupMenu(fullEmail)
         if(fullEmail.email.delivered == DeliveryTypes.NONE && fullEmail.email.boundary != null)
             popupMenu.menu.findItem(R.id.source).isVisible = true
@@ -173,8 +174,26 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         if(fullEmail.email.delivered in listOf(DeliveryTypes.FAIL, DeliveryTypes.SENDING))
             popupMenu.menu.findItem(R.id.retry)?.isVisible = true
 
+        if(isDarkTheme) {
+            val menuItemTurnLights = popupMenu.menu.findItem(R.id.turn_on_lights)
+            if(menuItemTurnLights != null) {
+                menuItemTurnLights.isVisible = true
+                if (fullEmail.hasLightsTurnedOn) {
+                    menuItemTurnLights.setTitle(R.string.turn_off_lights)
+                } else {
+                    menuItemTurnLights.setTitle(R.string.turn_on_lights)
+                }
+            }
+        }
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.turn_on_lights -> {
+                    emailListener?.onTurnOnLights(
+                            fullEmail = fullEmail,
+                            position = position
+                    )
+                }
                 R.id.reply_all ->
                     emailListener?.onReplyAllOptionSelected(
                             fullEmail = fullEmail,
@@ -325,8 +344,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                 fullEmail.email.content
             }
             bodyWebView.loadDataWithBaseURL("", HTMLUtils.
-                    changedHeaderHtml(content, EmailUtils.checkIfItsForward(fullEmail.email.subject)), "text/html", "utf-8", "")
-            bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
+                    changedHeaderHtml(content, EmailUtils.checkIfItsForward(fullEmail.email.subject), fullEmail.hasLightsTurnedOn), "text/html", "utf-8", "")
+            if(!fullEmail.hasLightsTurnedOn) bodyWebView.setBackgroundColor(context.getColorFromAttr(R.attr.criptextColorBackground))
             setDefaultBackgroundColors()
             if(showRemoteContent)
                 bodyWebView.evaluateJavascript("replaceSrc();", null)

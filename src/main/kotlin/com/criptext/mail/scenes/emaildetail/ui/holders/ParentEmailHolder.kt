@@ -31,7 +31,7 @@ abstract class ParentEmailHolder(val view: View) : RecyclerView.ViewHolder(view)
     abstract fun bindFullMail(fullEmail: FullEmail, blockRemoteContentSetting: Boolean)
     abstract fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
                               emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
-                              adapter: FullEmailListAdapter, position: Int)
+                              adapter: FullEmailListAdapter, position: Int, isDarkTheme: Boolean = false)
     abstract fun setBackground(drawable: Drawable)
     abstract fun setBottomMargin(marginBottom: Int)
 }

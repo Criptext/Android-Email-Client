@@ -46,7 +46,8 @@ open class PartialEmailHolder(view: View) : ParentEmailHolder(view) {
     }
 
     override fun setListeners(fullEmail: FullEmail, fileDetails: List<FileDetail>,
-                              emailListener: FullEmailListAdapter.OnFullEmailEventListener?, adapter: FullEmailListAdapter, position: Int) {
+                              emailListener: FullEmailListAdapter.OnFullEmailEventListener?,
+                              adapter: FullEmailListAdapter, position: Int, isDarkTheme: Boolean) {
         view.setOnClickListener {
             emailListener?.ontoggleViewOpen(
                     fullEmail = fullEmail,

@@ -5,6 +5,7 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.RecyclerView
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
@@ -125,7 +126,8 @@ interface EmailDetailScene {
                     isStarred,
                     shouldOpenExpanded,
                     activeAccount,
-                    blockRemoteContentSetting)
+                    blockRemoteContentSetting,
+                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
 
             fullEmailsRecyclerView?.scrollToLast()
 

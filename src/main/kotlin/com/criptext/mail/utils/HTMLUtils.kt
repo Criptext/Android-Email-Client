@@ -77,11 +77,11 @@ class HTMLUtils {
             return Jsoup.parse(body).html()
         }
 
-        fun changedHeaderHtml(htmlText: String, isForward: Boolean): String {
+        fun changedHeaderHtml(htmlText: String, isForward: Boolean, hasLightsOn: Boolean = false): String {
             val isDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-            val style = if(isDarkTheme)
-            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;} a{color:#009EFF;} ${threeDotStyle(getThemeColors(isDarkTheme))}</style>"
-            else "<style type=\"text/css\">body{color:#000;background-color:#fff;} ${threeDotStyle(getThemeColors(isDarkTheme))}</style>"
+            val style = if(isDarkTheme && !hasLightsOn)
+            "<style type=\"text/css\">body{color:#FFFFFF;background-color:#34363c;} a{color:#009EFF;} ${threeDotStyle(getThemeColors(isDarkTheme && !hasLightsOn))}</style>"
+            else "<style type=\"text/css\">body{color:#000;background-color:#fff;} ${threeDotStyle(getThemeColors(isDarkTheme && !hasLightsOn))}</style>"
             val head = "<head>$style<meta name=\"viewport\" content=\"width=device-width\"></head><body>"
             val closedTag = "</body></html>"
             return head + htmlText + replaceCIDScript() + replaceSrc() + resizeImages() + collapseScript(isForward) + closedTag

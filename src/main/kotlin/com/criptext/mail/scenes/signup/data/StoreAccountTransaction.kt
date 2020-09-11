@@ -54,10 +54,6 @@ class StoreAccountTransaction(private val dao: SignUpDao,
                 val aliasDataAndDomains = AliasData.fromJSONArray(addressesJsonArray, dbAccount.id)
                 if(aliasDataAndDomains.second.isNotEmpty()) {
                     aliasDao.insertAll(aliasDataAndDomains.second.map {
-                        if(it.isDefault){
-                            accountDao.updateDefaultAddress(dbAccount.recipientId, dbAccount.domain, it.rowId)
-                            dbAccount.defaultAddress = it.rowId
-                        }
                         Alias(
                                 id = 0,
                                 name = it.name,
@@ -67,6 +63,12 @@ class StoreAccountTransaction(private val dao: SignUpDao,
                                 accountId = dbAccount.id
                         )
                     })
+                    val defaultAlias = aliasDataAndDomains.second.findLast { it.isDefault }
+                    if(defaultAlias != null) {
+                        accountDao.updateDefaultAddress(dbAccount.recipientId, dbAccount.domain,
+                                defaultAlias.rowId)
+                        dbAccount.defaultAddress = defaultAlias.rowId
+                    }
                 }
                 if(aliasDataAndDomains.first.isNotEmpty()) {
                     customDomainDao.insertAll(aliasDataAndDomains.first.filter { it.name != Contact.mainDomain }.map {

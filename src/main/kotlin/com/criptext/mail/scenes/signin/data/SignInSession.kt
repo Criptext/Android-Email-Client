@@ -24,7 +24,9 @@ data class SignInSession(val token: String, val deviceId: Int, val name: String,
                 token = jsonObject.getString("token"),
                 deviceId = jsonObject.getInt("deviceId"),
                 name = jsonObject.getString("name"),
-                type = AccountTypes.fromInt(jsonObject.getInt("customerType")),
+                type = if(jsonObject.has("customerType"))
+                            AccountTypes.fromInt(jsonObject.getInt("customerType"))
+                else AccountTypes.ENTERPRISE,
                 blockRemoteContent = jsonObject.getInt("blockRemoteContent") == 1
         )
     }
