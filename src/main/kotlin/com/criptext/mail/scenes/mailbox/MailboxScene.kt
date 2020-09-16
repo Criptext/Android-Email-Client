@@ -27,6 +27,7 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.label_chooser.LabelChooserDialog
 import com.criptext.mail.scenes.label_chooser.LabelDataHandler
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
+import com.criptext.mail.scenes.mailbox.data.ActionRequiredData
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.scenes.mailbox.holders.ToolbarHolder
 import com.criptext.mail.scenes.mailbox.ui.*
@@ -103,9 +104,12 @@ interface MailboxScene{
     fun showEmptyTrashBanner()
     fun hideEmptyTrashBanner()
     fun showUpdateBanner(bannerData: UpdateBannerData)
+    fun showActionRequired(actionData: ActionRequiredData)
     fun hideUpdateBanner()
     fun setUpdateBannerClick()
+    fun setActionRequiredClick()
     fun clearUpdateBannerClick()
+    fun clearActionRequiredClick()
     fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -213,6 +217,10 @@ interface MailboxScene{
 
         private val updateBanner: LinearLayout by lazy {
             mailboxView.findViewById<LinearLayout>(R.id.update_banner)
+        }
+
+        private val actionRequired: LinearLayout by lazy {
+            mailboxView.findViewById<LinearLayout>(R.id.action_required)
         }
 
         private val updateBannerXButton: ImageView by lazy {
@@ -467,6 +475,14 @@ interface MailboxScene{
             UIUtils.expand(updateBanner)
         }
 
+        override fun showActionRequired(actionData: ActionRequiredData) {
+            actionRequired.findViewById<TextView>(R.id.action_title).text = actionData.title
+            actionRequired.findViewById<TextView>(R.id.action_message).text = actionData.message
+            Picasso.get().load(actionData.image)
+                    .into(actionRequired.findViewById<ImageView>(R.id.action_image))
+            UIUtils.expand(actionRequired)
+        }
+
         override fun hideUpdateBanner() {
             UIUtils.collapse(updateBanner)
         }
@@ -480,10 +496,24 @@ interface MailboxScene{
             }
         }
 
+        override fun setActionRequiredClick() {
+            val actionMessage = actionRequired.findViewById<TextView>(R.id.action_message)
+            actionMessage.isClickable = true
+            actionMessage.setOnClickListener {
+                observer?.openAdminWebsite()
+            }
+        }
+
         override fun clearUpdateBannerClick() {
             val bannerMessage = updateBanner.findViewById<TextView>(R.id.banner_message)
             bannerMessage.setOnClickListener { }
             bannerMessage.isClickable = false
+        }
+
+        override fun clearActionRequiredClick() {
+            val actionMessage = actionRequired.findViewById<TextView>(R.id.action_message)
+            actionMessage.setOnClickListener { }
+            actionMessage.isClickable = false
         }
 
         override fun setEmtpyMailboxBackground(label: Label) {

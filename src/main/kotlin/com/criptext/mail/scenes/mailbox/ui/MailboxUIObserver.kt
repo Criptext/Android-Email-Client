@@ -27,4 +27,5 @@ abstract class MailboxUIObserver(generalDataSource: GeneralDataSource, host: IHo
     abstract fun turnOnAutoBackup()
     abstract fun notNowAutoBackup()
     abstract fun restoreFromLocalBackupPressed()
+    abstract fun openAdminWebsite()
 }

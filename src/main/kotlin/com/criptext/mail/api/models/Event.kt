@@ -73,6 +73,7 @@ data class Event(val rowid: Long, val docId: String, val recipientId: String, va
 
             //Update Banner
             const val updateBannerEvent = 401
+            const val requiredAction = 404
 
             const val openEmail = 500
 

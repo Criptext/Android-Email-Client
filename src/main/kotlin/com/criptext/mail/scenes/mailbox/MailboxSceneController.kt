@@ -12,11 +12,11 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.Event
 import com.criptext.mail.api.models.SyncStatusData
+import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
 import com.criptext.mail.db.DeliveryTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.scenes.ActivityMessage
@@ -32,13 +32,7 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.mailbox.ui.MailboxUIObserver
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupRequest
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
-import com.criptext.mail.scenes.settings.cloudbackup.data.SavedCloudData
-import com.criptext.mail.scenes.settings.profile.data.ProfileFooterData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.scenes.webview.WebViewSceneController
-import com.criptext.mail.services.data.JobIdData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
@@ -357,6 +351,17 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val dataSourceController = DataSourceController(dataSource)
     private val observer = object : MailboxUIObserver(generalDataSource, host) {
+        override fun openAdminWebsite() {
+            host.goToScene(
+                    params = WebViewParams(
+                            url = Hosts.ADMIN_URL,
+                            title = null
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
+        }
+
         override fun turnOnAutoBackup() {
             setHasShowedBackup(true)
             if(model.mDriveServiceHelper == null) model.mDriveServiceHelper = scene.getGoogleDriveService()
@@ -1311,6 +1316,10 @@ class MailboxSceneController(private val scene: MailboxScene,
                         val bannerEvent = it as ParsedEvent.BannerData
                         handleBanner(bannerEvent.updateBannerData)
                     }
+                    Event.Cmd.requiredAction -> {
+                        val actionEvent = it as ParsedEvent.ActionRequired
+                        handleActionRequired(actionEvent.actionRequiredData)
+                    }
                     Event.Cmd.newEmail -> {
                         val newEmailEvent = it as ParsedEvent.NewEmail
                         threadListController.addNew(newEmailEvent.preview)
@@ -1393,6 +1402,12 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             feedController.reloadFeeds()
         }
+    }
+
+    private fun handleActionRequired(actionRequiredData: ActionRequiredData){
+        scene.clearActionRequiredClick()
+        scene.showActionRequired(actionRequiredData)
+        scene.setActionRequiredClick()
     }
 
     private fun handleBanner(updateBannerData: UpdateBannerData){
