@@ -1,6 +1,5 @@
 package com.criptext.mail.utils.eventhelper
 
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
 import com.criptext.mail.api.HttpClient
@@ -11,17 +10,17 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.*
 import com.criptext.mail.db.models.signal.CRPreKey
+import com.criptext.mail.scenes.mailbox.data.ActionRequiredData
 import com.criptext.mail.scenes.mailbox.data.EmailInsertionSetup
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.scenes.mailbox.data.UpdateBannerData
-import com.criptext.mail.api.models.UpdateBannerEventData
-import com.criptext.mail.scenes.mailbox.data.ActionRequiredData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalKeyGenerator
 import com.criptext.mail.utils.DeviceUtils
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIUtils
 import com.github.kittinunf.result.Result
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.whispersystems.libsignal.DuplicateMessageException
 import java.io.IOException
 import java.util.*
@@ -32,7 +31,6 @@ class EventHelper(private val db: EventLocalDB,
                   private val activeAccount: ActiveAccount,
                   private val signalClient: SignalClient,
                   private val acknowledgeEvents: Boolean,
-                  private val unableToDecryptLocalized: String,
                   private val doNotParseEmails: Boolean = false,
                   private val progressListener: EventHelperListener? = null){
 
@@ -187,7 +185,7 @@ class EventHelper(private val db: EventLocalDB,
         val metadata = EmailMetadata.fromJSON(event.params)
         val operation = Result.of {
             val aliases = db.getAliases(activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
-            insertIncomingEmailTransaction(metadata, aliases, null)
+            insertIncomingEmailTransaction(metadata, aliases)
         }
 
         when(operation){
@@ -202,8 +200,7 @@ class EventHelper(private val db: EventLocalDB,
                     eventsToAcknowledge.add(if(event.docId.isNotEmpty()) event.docId else event.rowid)
             }
             is Result.Failure -> {
-                val opError = operation.error
-                when(opError){
+                when(val opError = operation.error){
                     is DuplicateMessageException -> {
                         progressListener?.emailHasBeenParsed()
                         updateExistingEmailTransaction(metadata)
@@ -225,12 +222,10 @@ class EventHelper(private val db: EventLocalDB,
                         }
                         when(reEncryptOp){
                             is Result.Failure -> {
-                                val error = reEncryptOp.error
-                                when(error){
+                                when(val error = reEncryptOp.error){
                                     is ServerErrorException -> {
                                         if(error.errorCode == ServerCodes.TooManyRequests){
-                                            Crashlytics.logException(opError)
-                                            insertUnableToDecryptEmail(metadata, event)
+                                            FirebaseCrashlytics.getInstance().recordException(opError)
                                         }
                                     }
                                 }
@@ -248,7 +243,7 @@ class EventHelper(private val db: EventLocalDB,
     private fun insertUnableToDecryptEmail(metadata: EmailMetadata, event: Event){
         Result.of {
             val aliases = db.getAliases(activeAccount.id).map { it.name.plus("@${it.domain ?: Contact.mainDomain}") }
-            insertIncomingEmailTransaction(metadata, aliases, unableToDecryptLocalized)
+            insertIncomingEmailTransaction(metadata, aliases)
             progressListener?.emailHasBeenParsed()
             val newPreview = db.getEmailPreviewByMetadataKey(metadata.metadataKey, label.text,
                     label.id, activeAccount)
@@ -646,8 +641,8 @@ class EventHelper(private val db: EventLocalDB,
         }
     }
 
-    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>, unDecryptText: String?) =
-            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases, unDecryptText)
+    private fun insertIncomingEmailTransaction(metadata: EmailMetadata, aliases: List<String>) =
+            db.insertIncomingEmail(signalClient, emailInsertionApiClient, metadata, activeAccount, aliases)
 
     private fun updateThreadReadStatus(metadata: PeerReadThreadStatusUpdate) =
             db.updateUnreadStatusByThreadId(metadata.threadIds, metadata.unread, activeAccount.id)

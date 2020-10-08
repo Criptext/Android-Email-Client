@@ -141,7 +141,6 @@ class EmailDetailDataSource(override val runner: WorkRunner,
                         flushResults(result)
                     })
             is EmailDetailRequest.MarkAsReadEmail -> MarkAsReadEmailWorker(
-                    httpClient = httpClient,
                     dao = emailDao,
                     pendingDao = pendingDao,
                     activeAccount = activeAccount,

@@ -51,7 +51,6 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),
-                    unableToDecryptLocalized = params.unableToDecryptLocalized,
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.ActiveAccountUpdateMailbox -> ActiveAccountUpdateMailboxWorker(
                     db = db,
@@ -63,7 +62,6 @@ class GeneralDataSource(override val runner: WorkRunner,
                     storage = storage,
                     accountDao = db.accountDao(),
                     pendingEventDao = db.pendingEventDao(),
-                    unableToDecryptLocalized = params.unableToDecryptLocalized,
                     publishFn = { res -> flushResults(res) })
             is GeneralRequest.LinkAccept -> LinkAuthAcceptWorker(
                     activeAccount = activeAccount!!, httpClient = httpClient, accountDao = db.accountDao(),

@@ -1,5 +1,6 @@
 package com.criptext.mail
 
+import android.R
 import androidx.multidex.MultiDexApplication
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
@@ -13,18 +14,21 @@ import com.evernote.android.job.JobManager
 import com.facebook.stetho.Stetho
 import com.github.omadahealth.lollipin.lib.managers.AppLockActivity
 import com.github.omadahealth.lollipin.lib.managers.LockManager
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig
+import io.github.inflationx.calligraphy3.CalligraphyConfig
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor
+import io.github.inflationx.viewpump.ViewPump
 
 
 class CriptextApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/NunitoSans-Regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        )
+        ViewPump.init(ViewPump.builder()
+                .addInterceptor(CalligraphyInterceptor(
+                        CalligraphyConfig.Builder()
+                                .setDefaultFontPath("fonts/NunitoSans-Regular.ttf")
+                                .build()))
+                .build())
         if(BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
         val activeAccount = ActiveAccount.loadFromStorage(applicationContext)
         JobManager.create(this).addJobCreator(CriptextJobCreator())

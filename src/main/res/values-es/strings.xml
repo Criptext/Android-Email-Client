@@ -735,4 +735,10 @@
   <string name="unable_to_decrypt">El mensaje no se pudo desencriptar.</string>
   <string name="update_btn">Actualizar</string>
   <string name="version_not_supported_dialog_message">Esta versión de Criptext ya no está soportada. Por favor actualiza a la última versión para poder ver tus nuevos correos.</string>
+  <string name="empty_spam_message">Esto borrará permanentemente todos los correos que se encuentren en tu carpeta de Spam</string>
+  <string name="empty_spam">Vaciar Spam</string>
+  <string name="empty_spam_warning">¿Seguro que quieres eliminar los correos de la carpeta de Spam PERMANENTEMENTE?</string>
+  <string name="email_cannot_be_decrypted">Este correo no pudo ser encriptado. </string>
+  <string name="email_cannot_be_decrypted_learn_more">Conocer más</string>
+  <string name="spam_is_now_empty">Spam ahora está vacío.</string>
 </resources>

@@ -14,7 +14,7 @@ class TestSharedPrefs(ctx: Context): KeyValueStorage {
     }
 
     override fun getString(file: String, key: KeyValueStorage.StringKey, default: String): String {
-        return prefs.getString("_test_" + key.stringKey, default)
+        return prefs.getString("_test_" + key.stringKey, default) ?: ""
     }
 
     override fun putString(file: String, key: KeyValueStorage.StringKey, value: String) {
@@ -54,7 +54,7 @@ class TestSharedPrefs(ctx: Context): KeyValueStorage {
     }
 
     override fun getString(key: KeyValueStorage.StringKey, default: String): String =
-            prefs.getString("_test_" + key.stringKey, default)
+            prefs.getString("_test_" + key.stringKey, default) ?: ""
 
     override fun putString(key: KeyValueStorage.StringKey, value: String) {
         withApply { editor -> editor.putString("_test_" + key.stringKey, value) }

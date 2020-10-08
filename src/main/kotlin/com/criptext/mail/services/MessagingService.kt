@@ -41,8 +41,10 @@ class MessagingService : FirebaseMessagingService(){
                 && shouldPostNotification) {
             val getPushWorker = newPushWorker(remoteMessage.data, filesDir, AppDatabase.getAppDatabase(this), shouldPostNotification)
             val result = getPushWorker.work(reporter)
+            var account: ActiveAccount? = null
             when(result){
                 is PushResult.NewEmail.Success -> {
+                    account = result.activeAccount
                     createAndNotifyPush(result.pushData, result.shouldPostNotification,
                             result.senderImage, result.notificationId, result.activeAccount, true)
                 }
@@ -50,7 +52,7 @@ class MessagingService : FirebaseMessagingService(){
                     if(result.exception !is EventHelper.NoContentFoundException
                             || result.exception !is EventHelper.AccountNotFoundException)
                         createAndNotifyPush(result.pushData, result.shouldPostNotification,
-                                null, result.notificationId, result.activeAccount!!,false)
+                                null, result.notificationId, null,false)
 
                 }
             }
@@ -60,6 +62,8 @@ class MessagingService : FirebaseMessagingService(){
             } else {
                 intent.action = DecryptionService.ACTION_ADD_NOTIFICATION_TO_QUEUE
             }
+            if(account != null)
+                intent.putExtra("account", account.toJSON().toString())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent)
             } else {
@@ -70,14 +74,14 @@ class MessagingService : FirebaseMessagingService(){
     }
 
     private fun createAndNotifyPush(pushData: Map<String, String>, shouldPostNotification: Boolean,
-                                    senderImage: Bitmap?, notificationId: Int, activeAccount: ActiveAccount,
+                                    senderImage: Bitmap?, notificationId: Int, activeAccount: ActiveAccount?,
                                     isSuccess: Boolean){
         val action = pushData["action"]
         if (action != null) {
             val notifier =  when (PushTypes.fromActionString(action)) {
                 PushTypes.newMail -> {
                     if(isSuccess) {
-                        val data = PushData.NewMail.parseNewMailPush(pushData, shouldPostNotification, senderImage, isPostNougat, activeAccount.userEmail)
+                        val data = PushData.NewMail.parseNewMailPush(pushData, shouldPostNotification, senderImage, isPostNougat, activeAccount!!.userEmail)
                         NewMailNotifier.Single(data, notificationId)
                     } else {
                         val data = PushData.Error(UIMessage(R.string.push_email_update_mailbox_title),

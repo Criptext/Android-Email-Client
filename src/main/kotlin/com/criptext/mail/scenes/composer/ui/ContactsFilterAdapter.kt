@@ -35,7 +35,7 @@ class ContactsFilterAdapter(context : Context, private val objects : List<Contac
         }
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return createViewFromResource(LayoutInflater.from(context), position, convertView, parent, R.layout.autocomplete_item);
     }
 

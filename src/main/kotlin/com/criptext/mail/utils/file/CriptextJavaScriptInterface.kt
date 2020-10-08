@@ -12,9 +12,6 @@ import com.criptext.mail.scenes.webview.WebViewActivity
 import com.criptext.mail.scenes.webview.ui.WebViewUIObserver
 import org.json.JSONObject
 
-/**
- * Created by hirobreak on 02/08/17.
- */
 class CriptextJavaScriptInterface(val mContext: Context, val filename: String, val observer: WebViewUIObserver) {
 
     @JavascriptInterface

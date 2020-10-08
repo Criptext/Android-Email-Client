@@ -56,7 +56,7 @@ class GetEmailPreviewWorkerTest{
                 date = "2018-02-21 14:00:00", threadId = "thread#1",
                 subject = "__SUBJECT__", unread = true, metadataKey = 100L, status = DeliveryTypes.NONE,
                 unsentDate = "2018-02-21 14:00:00", secure = true, trashDate = "2018-02-21 14:00:00",
-                boundary = null, replyTo = null)
+                boundary = null, replyTo = null, isNewsletter = null)
         val decryptedBody = "Hello, this is message"
         val labels = listOf(Label.defaultItems.inbox)
         EmailUtils.saveEmailInFileSystem(

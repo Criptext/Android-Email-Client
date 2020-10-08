@@ -23,7 +23,7 @@ import com.criptext.mail.utils.*
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import io.github.inflationx.calligraphy3.TypefaceUtils
 import java.lang.Exception
 
 /**

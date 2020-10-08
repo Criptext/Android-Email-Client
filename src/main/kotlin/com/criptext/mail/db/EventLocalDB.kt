@@ -411,11 +411,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
     }
 
     fun insertIncomingEmail(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
-                            metadata: EmailMetadata, activeAccount: ActiveAccount, aliases: List<String>,
-                            unDecryptText: String?) {
+                            metadata: EmailMetadata, activeAccount: ActiveAccount, aliases: List<String>) {
         EmailInsertionSetup.insertIncomingEmailTransaction(signalClient = signalClient,
                 dao = db.emailInsertionDao(), apiClient = apiClient, metadata = metadata,
-                activeAccount = activeAccount, filesDir = filesDir, aliases = aliases, unDecryptText = unDecryptText)
+                activeAccount = activeAccount, filesDir = filesDir, aliases = aliases)
     }
 
     fun getEmailThreadFromEmail(email: Email, selectedLabel: String,

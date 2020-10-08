@@ -94,7 +94,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             is MailboxResult.MoveEmailThread -> dataSourceController.onMoveEmailThread(result)
             is MailboxResult.GetMenuInformation -> dataSourceController.onGetMenuInformation(result)
             is MailboxResult.UpdateUnreadStatus -> dataSourceController.onUpdateUnreadStatus(result)
-            is MailboxResult.EmptyTrash -> dataSourceController.onEmptyTrash(result)
+            is MailboxResult.EmptyJunk -> dataSourceController.onEmptyJunk(result)
             is MailboxResult.ResendPeerEvents -> dataSourceController.onResendPeerEvents(result)
             is MailboxResult.SetActiveAccount -> dataSourceController.onSetActiveAccount(result)
             is MailboxResult.SetCloudBackupActive -> dataSourceController.onSetCloudBackupActive(result)
@@ -477,7 +477,8 @@ class MailboxSceneController(private val scene: MailboxScene,
         }
 
         override fun onEmptyTrashPressed() {
-            scene.showEmptyTrashWarningDialog(onEmptyTrashListener)
+            scene.showEmptyTrashWarningDialog(onEmptyTrashListener,
+                    model.selectedLabel.uuid == Label.defaultItems.spam.uuid)
         }
 
         override fun onRefreshMails() {
@@ -534,8 +535,7 @@ class MailboxSceneController(private val scene: MailboxScene,
         model.lastSyncBackground = System.currentTimeMillis()
         generalDataSource.submitRequest(GeneralRequest.BackgroundAccountsUpdateMailbox(
                 label = model.selectedLabel,
-                accounts = model.extraAccounts,
-                unableToDecryptLocalized = host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
+                accounts = model.extraAccounts
         ))
     }
 
@@ -908,7 +908,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
     private val onEmptyTrashListener = object : OnEmptyTrashListener {
         override fun onDeleteConfirmed() {
-            dataSource.submitRequest(MailboxRequest.EmptyTrash())
+            dataSource.submitRequest(MailboxRequest.EmptyJunk(model.selectedLabel.uuid == Label.defaultItems.spam.uuid))
             reloadMailboxThreads()
         }
     }
@@ -947,27 +947,28 @@ class MailboxSceneController(private val scene: MailboxScene,
             scene.hideDrawer()
             scene.showRefresh()
             val req = GeneralRequest.ActiveAccountUpdateMailbox(
-                    label = mailboxLabel,
-                    unableToDecryptLocalized = host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
+                    label = mailboxLabel
             )
             generalDataSource.submitRequest(req)
         }
 
-        fun onEmptyTrash(resultData: MailboxResult.EmptyTrash) {
+        fun onEmptyJunk(resultData: MailboxResult.EmptyJunk) {
             when (resultData) {
-                is MailboxResult.EmptyTrash.Success ->
+                is MailboxResult.EmptyJunk.Success ->
                 {
                     scene.hideEmptyTrashBanner()
-                    scene.showMessage(UIMessage(R.string.trash_is_now_empty))
+                    scene.showMessage(UIMessage(
+                        if(resultData.isSpam) R.string.spam_is_now_empty else R.string.trash_is_now_empty
+                    ))
                     reloadMailboxThreads()
                 }
-                is MailboxResult.EmptyTrash.Failure ->
+                is MailboxResult.EmptyJunk.Failure ->
                     scene.showMessage(resultData.message)
-                is MailboxResult.EmptyTrash.Unauthorized ->
+                is MailboxResult.EmptyJunk.Unauthorized ->
                     scene.showMessage(resultData.message)
-                is MailboxResult.EmptyTrash.SessionExpired ->
+                is MailboxResult.EmptyJunk.SessionExpired ->
                     generalDataSource.submitRequest(GeneralRequest.Logout(true, false))
-                is MailboxResult.EmptyTrash.Forbidden -> {
+                is MailboxResult.EmptyJunk.Forbidden -> {
                     host.showConfirmPasswordDialog(observer)
                 }
             }
@@ -1094,9 +1095,9 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
 
                     generalDataSource.submitRequest(GeneralRequest.TotalUnreadEmails(model.selectedLabel.text))
-                    if(result.mailboxLabel == Label.LABEL_TRASH &&
+                    if((result.mailboxLabel == Label.LABEL_TRASH || result.mailboxLabel == Label.LABEL_SPAM) &&
                             (result.emailPreviews.isNotEmpty() || model.threads.isNotEmpty())){
-                        scene.showEmptyTrashBanner()
+                        scene.showEmptyTrashBanner(result.mailboxLabel == Label.LABEL_SPAM)
                     }else{
                         scene.hideEmptyTrashBanner()
                     }

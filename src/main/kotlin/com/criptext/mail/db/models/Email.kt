@@ -72,6 +72,10 @@ data class Email(
         @Nullable
         var trashDate: Date?,
 
+        @ColumnInfo(name = "isNewsletter")
+        @Nullable
+        var isNewsletter: Boolean?,
+
         @ColumnInfo(name = "accountId")
         @NonNull
         var accountId : Long
@@ -97,6 +101,7 @@ data class Email(
                         delivered = DeliveryTypes.fromInt(json.getInt("status")),
                         date = com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("date"), null),
+                        isNewsletter = if(json.has("isNewsletter")) json.getBoolean("isNewsletter") else null,
                         metadataKey = json.getLong("key"),
                         unsentDate = if(json.has("unsentDate")) com.criptext.mail.utils.DateAndTimeUtils.getDateFromString(
                                 json.getString("unsentDate"), null) else null,

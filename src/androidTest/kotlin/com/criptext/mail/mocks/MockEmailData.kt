@@ -23,7 +23,8 @@ object MockEmailData {
                             date = Date(dateMilis + number), metadataKey = number + 100L,
                             unsentDate = Date(dateMilis + number),
                             trashDate = Date(dateMilis + number), boundary = null,
-                            fromAddress = fromContact.email, replyTo = null, accountId = accountId)
+                            fromAddress = fromContact.email, replyTo = null, accountId = accountId,
+                            isNewsletter =  null)
 
     fun createNewEmail(number: Int, accountId: Long) = createNewEmail(System.currentTimeMillis(), number, accountId)
 
@@ -39,7 +40,7 @@ object MockEmailData {
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$it",
                     subject = "Test #$it", unread = true, metadataKey = it + 100L,
                     status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds", secure = true,
-                    trashDate = "2018-02-21 14:00:$seconds", replyTo = null, boundary = null)
+                    trashDate = "2018-02-21 14:00:$seconds", replyTo = null, boundary = null, isNewsletter = null)
             val decryptedBody = "Hello, this is message #$it"
             EmailUtils.saveEmailInFileSystem(
                     filesDir = filesDir,

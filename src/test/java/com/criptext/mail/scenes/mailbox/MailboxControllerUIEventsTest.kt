@@ -137,7 +137,7 @@ class MailboxControllerUIEventsTest : MailboxControllerTest() {
         verify { scene.showRefresh() }
 
         val sentRequest = sentGeneralRequests
-        sentRequest `should contain` GeneralRequest.ActiveAccountUpdateMailbox(label = model.selectedLabel, unableToDecryptLocalized = "test")
+        sentRequest `should contain` GeneralRequest.ActiveAccountUpdateMailbox(label = model.selectedLabel)
     }
 
     @Test

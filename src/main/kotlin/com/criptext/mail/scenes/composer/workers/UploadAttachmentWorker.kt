@@ -2,7 +2,6 @@ package com.criptext.mail.scenes.composer.workers
 
 import android.accounts.NetworkErrorException
 import android.util.Log
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.CriptextAPIClient
@@ -24,6 +23,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -154,8 +154,9 @@ class UploadAttachmentWorker(private val filesSize: Long,
             is ServerErrorException -> UIMessage(resId = R.string.server_bad_status, args = arrayOf(ex.errorCode))
             is NetworkErrorException -> UIMessage(resId = R.string.general_network_error_exception)
             else -> {
-                Crashlytics.setString("file_name", filepath)
-                Crashlytics.logException(ex)
+                val crashlytics = FirebaseCrashlytics.getInstance()
+                crashlytics.setCustomKey("file_name", filepath)
+                crashlytics.recordException(ex)
                 UIMessage(resId = R.string.unable_to_upload, args = arrayOf(filepath))
             }
         }

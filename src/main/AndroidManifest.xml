@@ -168,10 +168,6 @@
             android:exported="false" />
         <service android:name=".services.CloudBackupForegroundService" />
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="3b4ddc55293ff0e9bf22a8927dc076a5ac0b17ec" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"

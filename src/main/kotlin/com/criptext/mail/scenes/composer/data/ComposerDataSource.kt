@@ -88,7 +88,6 @@ class ComposerDataSource(
                     newAccountAddress = params.new,
                     oldAccountAddress = params.old,
                     storage = storage,
-                    httpClient = HttpClient.Default(),
                     activeAccount = activeAccount,
                     publishFn = { res -> flushResults(res) }
             )

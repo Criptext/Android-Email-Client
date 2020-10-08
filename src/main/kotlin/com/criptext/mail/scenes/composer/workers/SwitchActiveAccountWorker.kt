@@ -30,8 +30,7 @@ import com.github.kittinunf.result.Result
 import org.json.JSONObject
 
 
-class SwitchActiveAccountWorker(httpClient: HttpClient,
-                                private val db: ComposerLocalDB,
+class SwitchActiveAccountWorker(private val db: ComposerLocalDB,
                                 private val activeAccount: ActiveAccount,
                                 private val oldAccountAddress: String,
                                 private val newAccountAddress: String,
@@ -89,7 +88,7 @@ class SwitchActiveAccountWorker(httpClient: HttpClient,
         TODO("not implemented")
     }
 
-    private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
+    private val createErrorMessage: (ex: Exception) -> UIMessage = { _ ->
         UIMessage(resId = R.string.error_updating_account)
     }
 }

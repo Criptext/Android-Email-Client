@@ -101,7 +101,7 @@ interface MailboxScene{
     fun clearMenuActiveLabel()
     fun dismissAccountSuspendedDialog()
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
-    fun showEmptyTrashBanner()
+    fun showEmptyTrashBanner(isSpam: Boolean)
     fun hideEmptyTrashBanner()
     fun showUpdateBanner(bannerData: UpdateBannerData)
     fun showActionRequired(actionData: ActionRequiredData)
@@ -110,7 +110,7 @@ interface MailboxScene{
     fun setActionRequiredClick()
     fun clearUpdateBannerClick()
     fun clearActionRequiredClick()
-    fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener)
+    fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener, isSpam: Boolean)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
     fun dismissLinkDeviceDialog()
@@ -209,6 +209,10 @@ interface MailboxScene{
 
         private val trashBanner: RelativeLayout by lazy {
             mailboxView.findViewById<RelativeLayout>(R.id.empty_trash_banner)
+        }
+
+        private val trashBannerMessage: TextView by lazy {
+            mailboxView.findViewById<TextView>(R.id.banner_message)
         }
 
         private val emptyTrashButton: TextView by lazy {
@@ -396,8 +400,8 @@ interface MailboxScene{
             }
         }
 
-        override fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener) {
-            emptyTrashDialog.showEmptyTrashDialog(onEmptyTrashListener)
+        override fun showEmptyTrashWarningDialog(onEmptyTrashListener: OnEmptyTrashListener, isSpam: Boolean) {
+            emptyTrashDialog.showEmptyTrashDialog(onEmptyTrashListener, isSpam)
         }
 
         override fun showWelcomeDialog(observer: MailboxUIObserver) {
@@ -455,8 +459,17 @@ interface MailboxScene{
             trashBanner.visibility = View.GONE
         }
 
-        override fun showEmptyTrashBanner() {
+        override fun showEmptyTrashBanner(isSpam: Boolean) {
             trashBanner.visibility = View.VISIBLE
+            if(isSpam){
+                trashBannerMessage.text =
+                        context.getLocalizedUIMessage(UIMessage(R.string.empty_spam_message))
+                emptyTrashButton.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_spam))
+            } else {
+                trashBannerMessage.text =
+                        context.getLocalizedUIMessage(UIMessage(R.string.empty_trash_banner))
+                emptyTrashButton.text = context.getLocalizedUIMessage(UIMessage(R.string.empty_trash))
+            }
         }
 
         override fun showPreparingFileDialog() {

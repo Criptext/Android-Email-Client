@@ -53,7 +53,7 @@ interface SignUpDao {
     fun insertNewAccountData(account: Account, preKeyList: List<CRPreKey>,
                              signedPreKey: CRSignedPreKey, defaultLabels: List<Label>,
                              extraRegistrationSteps: Runnable, accountDao: AccountDao,
-                             isMultiple: Boolean = false) {
+                             isMultiple: Boolean) {
         saveAccount(account)
         val savedAccount = accountDao.getLoggedInAccount()!!
         preKeyList.forEach { it.accountId = savedAccount.id }

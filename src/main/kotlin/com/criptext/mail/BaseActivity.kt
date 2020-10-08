@@ -94,7 +94,7 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import java.io.File
 import java.util.*
 
@@ -243,7 +243,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         notificationManager.cancel(CriptextNotification.ERROR_ID)
         notificationManager.cancel(CriptextNotification.LINK_DEVICE_ID)
         notificationManager.cancel(CriptextNotification.DECRYPTION_SERVICE_ID)
-        Result.of {
+        Result.of<Unit> {
             val stopIntent = Intent(this, DecryptionService::class.java)
             stopIntent.action = DecryptionService.ACTION_OPEN_APP
             startService(stopIntent)
@@ -433,7 +433,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
     }
 
     private fun createNewSceneFromParams(params: SceneParams): Any {
@@ -465,7 +465,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is WebViewParams -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
                 val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-                val browserName = resolveInfo.loadLabel(packageManager).toString()
+                val browserName = resolveInfo?.loadLabel(packageManager).toString()
                 WebViewSceneModel(params.title, params.url, browserName)
             }
             else -> throw IllegalArgumentException("Don't know how to create a model from ${params.javaClass}")

@@ -92,7 +92,7 @@ class LoadInitialDataWorkerTest {
                     date = "2018-02-21 14:00:00", threadId = "__THREAD_ID__",
                     subject = subject, unread = true, metadataKey = 100L,
                     status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:00", secure = true,
-                    trashDate = "2018-02-21 14:00:00", replyTo = null, boundary = null)
+                    trashDate = "2018-02-21 14:00:00", replyTo = null, boundary = null, isNewsletter = null)
             val labels = if (isDraft) listOf(Label.defaultItems.inbox)
                         else listOf(Label.defaultItems.draft)
 

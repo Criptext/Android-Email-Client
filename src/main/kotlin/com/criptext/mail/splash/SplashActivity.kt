@@ -6,16 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.EmailDetailLocalDB
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.scenes.emaildetail.EmailDetailActivity
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.github.omadahealth.lollipin.lib.managers.LockManager
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.lang.ref.WeakReference
 
 
@@ -36,7 +33,7 @@ class SplashActivity: AppCompatActivity(), WelcomeTimeout.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Fabric.with(this, Crashlytics())
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
         val lockManager = LockManager.getInstance()
         if(lockManager.appLock != null && lockManager.appLock.isPasscodeSet && lockManager.isAppLockEnabled
                 && storage.getBool(KeyValueStorage.StringKey.HasLockPinActive, false)){

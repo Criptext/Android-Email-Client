@@ -46,7 +46,6 @@ class PushDataSource(
                     storage = storage,
                     activeAccount = activeAccount,
                     label = params.label,
-                    unableToDecryptLocalized = params.unableToDecryptLocalized,
                     publishFn = { result ->
                         flushResults(result)
                     })

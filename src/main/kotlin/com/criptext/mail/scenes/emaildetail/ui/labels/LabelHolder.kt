@@ -1,7 +1,7 @@
 package com.criptext.mail.scenes.emaildetail.ui.labels
 
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.*
+import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
@@ -30,7 +30,13 @@ class LabelHolder(val view: View): RecyclerView.ViewHolder(view) {
         val drawableBackground = ContextCompat.getDrawable(
                 context,
                 R.drawable.email_detail_label)
-        drawableBackground?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawableBackground?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_IN)
+        } else {
+            @Suppress("DEPRECATION")
+            drawableBackground?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        }
         labelView.background = drawableBackground
     }
 

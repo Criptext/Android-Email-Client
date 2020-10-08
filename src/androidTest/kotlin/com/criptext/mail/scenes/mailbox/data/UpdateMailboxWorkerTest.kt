@@ -20,13 +20,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.crashlytics.android.Crashlytics
-import com.criptext.mail.R
 import com.criptext.mail.db.*
-import com.criptext.mail.db.dao.SignUpDao
 import com.criptext.mail.signal.*
-import com.nhaarman.mockito_kotlin.whenever
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.mockk.*
 
 
@@ -76,7 +72,7 @@ class UpdateMailboxWorkerTest {
         storage = mockk(relaxed = true)
         httpClient = HttpClient.Default(authScheme = HttpClient.AuthScheme.jwt,
                 baseUrl = mockWebServerUrl, connectionTimeout = 1000L, readTimeout = 1000L)
-        Fabric.with(mActivityRule.activity, Crashlytics())
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
     }
 
 
@@ -84,7 +80,7 @@ class UpdateMailboxWorkerTest {
             ActiveAccountUpdateMailboxWorker(label = label,
                     publishFn = {}, httpClient = httpClient, dbEvents = eventDB, storage = storage,
                     pendingEventDao = db.pendingEventDao(), accountDao = db.accountDao(), signalClient = signalClient,
-                    db = db, account = activeAccount, unableToDecryptLocalized = mActivityRule.activity.getLocalizedUIMessage(UIMessage(R.string.unable_to_decrypt)))
+                    db = db, account = activeAccount)
 
     private val hasDeliveryTypeRead: (Email) -> Boolean  = { it.delivered == DeliveryTypes.READ }
 

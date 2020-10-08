@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.criptext.mail.R
 import com.criptext.mail.utils.getColorFromAttr
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import io.github.inflationx.calligraphy3.TypefaceUtils
 
 class ItemDecorator(private val context: Context,
                     private val totalNewFeeds: Int)

@@ -80,7 +80,7 @@ class FeedControllerTest {
             delivered = DeliveryTypes.NONE, messageId = "__THREAD_ID__",
             metadataKey = 1, preview = "__PREVIEW__", secure = false, unsentDate = Date(), trashDate = null,
             replyTo = null, fromAddress = "Mayer Mizrachi <mayer@jigl.com>",
-            boundary = null, accountId = 1)
+            boundary = null, accountId = 1, isNewsletter = null)
 
     private fun createFeedItems(size: Int): List<ActivityFeedItem> {
         return (1..size).map {

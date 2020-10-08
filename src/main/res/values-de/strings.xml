@@ -763,4 +763,10 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="unable_to_decrypt">Unable to decrypt message.</string>
   <string name="update_btn">Update Now</string>
   <string name="version_not_supported_dialog_message">This version of the Criptext app is no longer supported, please update now to receive new emails</string>
+  <string name="empty_spam_message">This will delete all emails on your spam folder</string>
+  <string name="empty_spam">Empty Spam</string>
+  <string name="empty_spam_warning">Are you sure you want to delete email(s) in Spam PERMANENTLY?</string>
+  <string name="email_cannot_be_decrypted">This email couldn\'t be decrypted. </string>
+  <string name="email_cannot_be_decrypted_learn_more">Learn more</string>
+  <string name="spam_is_now_empty">Spam is now empty.</string>
 </resources>

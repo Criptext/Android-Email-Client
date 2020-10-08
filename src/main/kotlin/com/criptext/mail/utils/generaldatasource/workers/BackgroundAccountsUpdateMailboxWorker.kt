@@ -39,7 +39,6 @@ class BackgroundAccountsUpdateMailboxWorker(
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
-        private val unableToDecryptLocalized: String,
         override val publishFn: (
                 GeneralResult.BackgroundAccountsUpdateMailbox) -> Unit)
     : BackgroundWorker<GeneralResult.BackgroundAccountsUpdateMailbox> {
@@ -93,7 +92,7 @@ class BackgroundAccountsUpdateMailboxWorker(
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
         mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true, unableToDecryptLocalized)
+        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
         peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao, storage, accountDao)
         return true
     }
@@ -178,22 +177,12 @@ class BackgroundAccountsUpdateMailboxWorker(
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
-                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true, unableToDecryptLocalized)
+                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
                 eventHelper.setupForMailbox(label)
                 workOperation()
             }
             is Result.Failure -> {
                 Result.of { throw refreshOperation.error }
-            }
-        }
-    }
-
-    private fun checkTrashDates(){
-        val emailIds = dbEvents.getEmailIdsFromTrashExpiredEmails(activeAccount.id)
-        if(emailIds.isNotEmpty()){
-            Result.of { dbEvents.updateDeleteEmailPermanentlyByIds(emailIds, activeAccount) }
-            emailIds.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
-                peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
             }
         }
     }
