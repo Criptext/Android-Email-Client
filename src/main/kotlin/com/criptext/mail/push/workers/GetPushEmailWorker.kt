@@ -1,7 +1,6 @@
 package com.criptext.mail.push.workers
 
 import android.os.Build
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.api.EmailInsertionAPIClient
 import com.criptext.mail.api.Hosts
@@ -27,6 +26,7 @@ import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.eventhelper.EventHelper
 import com.github.kittinunf.result.Result
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.picasso.Picasso
 import org.whispersystems.libsignal.DuplicateMessageException
 
@@ -189,7 +189,7 @@ class GetPushEmailWorker(
                     encryptedData = encryptedData)
         } catch (ex: Exception) {
             if (ex is DuplicateMessageException) throw ex
-            Crashlytics.logException(if(isFromBob) EmailInsertionSetup.BobDecryptionException() else ex)
+            FirebaseCrashlytics.getInstance().recordException(if(isFromBob) EmailInsertionSetup.BobDecryptionException() else ex)
             ""
         }
     }

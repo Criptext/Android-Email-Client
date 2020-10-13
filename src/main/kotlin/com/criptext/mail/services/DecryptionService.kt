@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.HttpClient
@@ -21,7 +20,7 @@ import com.criptext.mail.push.PushController
 import com.criptext.mail.push.data.PushDataSource
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 
 class DecryptionService: Service() {
@@ -45,11 +44,21 @@ class DecryptionService: Service() {
                     Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, ACTION_START_SERVICE)
                     notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     startForegroundService()
-                    getEvents()
+                    val jsonString = intent.getStringExtra("account")
+                    if(jsonString != null)
+                        getEvents(ActiveAccount.fromJSONString(jsonString))
+                    else
+                        getEvents(null)
                 }
                 ACTION_ADD_NOTIFICATION_TO_QUEUE -> {
                     Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, ACTION_ADD_NOTIFICATION_TO_QUEUE)
-                    queue.add { getEvents() }
+                    val jsonString = intent.getStringExtra("account")
+                    queue.add {
+                        if(jsonString != null)
+                            getEvents(ActiveAccount.fromJSONString(jsonString))
+                        else
+                            getEvents(null)
+                    }
                 }
                 else -> {
                     Log.d(CriptextNotification.ACTION_FOREGROUND_DECRYPT, "START_NOT_STICKY: ${intent.action}")
@@ -75,15 +84,15 @@ class DecryptionService: Service() {
 
     }
 
-    private fun getEvents(){
+    private fun getEvents(activeAccount: ActiveAccount?){
         if(pushController == null){
             val db = com.github.kittinunf.result.Result.of {
-                Fabric.with(applicationContext, Crashlytics())
+                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
                 AppDatabase.getAppDatabase(applicationContext)
             }
             if(db is com.github.kittinunf.result.Result.Success) {
                 val storage = KeyValueStorage.SharedPrefs(applicationContext)
-                val account = ActiveAccount.loadFromStorage(applicationContext) ?: return
+                val account = activeAccount ?: ActiveAccount.loadFromStorage(applicationContext) ?: return
                 pushController = PushController(
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),
@@ -170,10 +179,6 @@ class DecryptionService: Service() {
         } else {
             endService()
         }
-    }
-
-    fun getUnableToDecryptLocalized(): String{
-        return applicationContext.getLocalizedUIMessage(UIMessage(R.string.unable_to_decrypt))
     }
 
     private fun endService(){

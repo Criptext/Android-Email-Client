@@ -8,16 +8,24 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.criptext.mail.R
+import com.criptext.mail.utils.UIMessage
+import com.criptext.mail.utils.getLocalizedUIMessage
 
 class EmptyTrashDialog(val context: Context) {
     private var deleteDialog: AlertDialog? = null
     private val res = context.resources
 
-    fun showEmptyTrashDialog(onEmptyTrashListener: OnEmptyTrashListener) {
+    fun showEmptyTrashDialog(onEmptyTrashListener: OnEmptyTrashListener, isSpam: Boolean) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.empty_trash_warning_dialog, null)
+        dialogView.findViewById<TextView>(R.id.message).text = if(isSpam) {
+            context.getLocalizedUIMessage(UIMessage(R.string.empty_spam_warning))
+        } else {
+            context.getLocalizedUIMessage(UIMessage(R.string.empty_trash_warning))
+        }
 
         dialogBuilder.setView(dialogView)
 

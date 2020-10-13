@@ -51,12 +51,12 @@ class UserDataWriterTest {
             delivered = DeliveryTypes.DELIVERED, messageId = "id_1", metadataKey = 123,
             preview = "cont", secure = true, subject = "subject 1", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
-            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id, isNewsletter = null)
     private val emailTwo = Email(id = 2, content = "contents 2", date = nowDate,
             delivered = DeliveryTypes.DELIVERED, messageId = "id_2", metadataKey = 456,
             preview = "cont", secure = true, subject = "subject 2", threadId = "", unread = true, unsentDate = nowDate,
             trashDate = nowDate,
-            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id)
+            fromAddress = "bob@criptext.com", replyTo = null, boundary = null, accountId = activeAccount.id, isNewsletter = null)
 
     private val fileOne = CRFile(id = 1, date = nowDate, emailId = 1, name = "this.txt",
             size = 12, status = 0, token = "txt", shouldDuplicate = false, fileKey = "__FILE_KEY__",

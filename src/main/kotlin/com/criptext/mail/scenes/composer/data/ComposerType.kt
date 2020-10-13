@@ -37,25 +37,25 @@ sealed class ComposerType {
             return when(json.getInt("type")){
                 Type.DRAFT.ordinal -> {
                     Draft(draftId = json.getLong("draftId"),
-                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id))
+                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel"), activeAccount.id))
                 }
                 Type.REPLY.ordinal -> {
                     Reply(originalId = json.getLong("originalId"),
-                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
+                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel"), activeAccount.id),
                             template = REMailTemplate(context))
                 }
                 Type.REPLYALL.ordinal -> {
                     ReplyAll(originalId = json.getLong("originalId"),
-                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
+                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel"), activeAccount.id),
                             template = REMailTemplate(context))
                 }
                 Type.FORWARD.ordinal -> {
                     Forward(originalId = json.getLong("draftId"),
-                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")!!),
-                            currentLabel = Label.fromJSON(json.getString("currentLabel")!!, activeAccount.id),
+                            threadPreview = EmailPreview.emailPreviewFromJSON(json.getString("threadPreview")),
+                            currentLabel = Label.fromJSON(json.getString("currentLabel"), activeAccount.id),
                             template = FWMailTemplate(context))
                 }
                 Type.SUPPORT.ordinal -> {

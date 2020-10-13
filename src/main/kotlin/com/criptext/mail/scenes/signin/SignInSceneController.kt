@@ -885,7 +885,7 @@ class SignInSceneController(
         }
 
         override fun userLoginReady() {
-            host.goToScene(MailboxParams(), false, true)
+            host.goToScene(MailboxParams(), false, true, ActivityMessage.RefreshUI())
         }
 
         override fun toggleUsernameFocusState(isFocused: Boolean) {

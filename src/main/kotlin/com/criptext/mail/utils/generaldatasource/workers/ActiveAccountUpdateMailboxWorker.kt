@@ -13,7 +13,6 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.mailbox.data.MailboxAPIClient
 import com.criptext.mail.signal.SignalClient
-import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.eventhelper.EventHelper
 import com.criptext.mail.utils.eventhelper.EventHelperResultData
@@ -37,7 +36,6 @@ class ActiveAccountUpdateMailboxWorker(
         private val httpClient: HttpClient,
         private val storage: KeyValueStorage,
         private val accountDao: AccountDao,
-        private val unableToDecryptLocalized: String,
         override val publishFn: (
                 GeneralResult.ActiveAccountUpdateMailbox) -> Unit)
     : BackgroundWorker<GeneralResult.ActiveAccountUpdateMailbox> {
@@ -88,7 +86,7 @@ class ActiveAccountUpdateMailboxWorker(
         apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
         mailboxApiClient = MailboxAPIClient(httpClient, activeAccount.jwt)
 
-        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true, unableToDecryptLocalized)
+        eventHelper = EventHelper(dbEvents, httpClient, storage, activeAccount, signalClient, true)
         peerEventsApiHandler = PeerEventsApiHandler.Default(activeAccount, pendingEventDao,
                 storage, accountDao)
         return true
@@ -157,7 +155,7 @@ class ActiveAccountUpdateMailboxWorker(
                 apiClient.token = account.jwt
                 mailboxApiClient.token = account.jwt
 
-                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true, unableToDecryptLocalized)
+                eventHelper = EventHelper(dbEvents, httpClient, storage, account, signalClient, true)
                 eventHelper.setupForMailbox(label)
                 workOperation()
             }

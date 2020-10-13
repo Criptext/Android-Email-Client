@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.crashlytics.android.Crashlytics
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.androidui.CriptextNotification.Companion.CHANNEL_ID_JOB_BACKUP
@@ -40,7 +39,6 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
-import io.fabric.sdk.android.Fabric
 import java.io.File
 import java.io.IOException
 import java.util.*

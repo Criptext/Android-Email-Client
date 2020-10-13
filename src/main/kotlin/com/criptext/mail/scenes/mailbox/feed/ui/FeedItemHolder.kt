@@ -14,7 +14,7 @@ import com.criptext.mail.scenes.mailbox.feed.data.ActivityFeedItem
 import com.criptext.mail.utils.DateAndTimeUtils
 import com.criptext.mail.utils.getColorFromAttr
 import com.squareup.picasso.Picasso
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import io.github.inflationx.calligraphy3.TypefaceUtils
 
 /**
  * Created by danieltigse on 2/7/18.

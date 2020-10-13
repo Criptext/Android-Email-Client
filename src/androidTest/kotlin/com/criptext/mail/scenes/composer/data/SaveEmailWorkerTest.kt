@@ -102,7 +102,7 @@ class SaveEmailWorkerTest {
                 delivered = DeliveryTypes.NONE, date = Date(), secure = false,
                 threadId = "__MESSAGE_ID__", metadataKey = 1246275862L, unsentDate = Date(),
                 trashDate = Date(), boundary = null, replyTo = null, fromAddress = "tester@criptext.com",
-                accountId = activeAccount.id)
+                accountId = activeAccount.id, isNewsletter = null)
         val draftId = db.emailDao().insert(previousDraft)
 
 

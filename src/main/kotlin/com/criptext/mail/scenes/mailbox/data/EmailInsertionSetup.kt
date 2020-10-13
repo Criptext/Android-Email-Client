@@ -44,7 +44,8 @@ object  EmailInsertionSetup {
             content = "",
             metadataKey = metadata.metadataKey,
             trashDate = null,
-            accountId = accountId
+            accountId = accountId,
+            isNewsletter = metadata.isNewsletter
         )
     }
 
@@ -313,7 +314,7 @@ object  EmailInsertionSetup {
      */
     fun insertIncomingEmailTransaction(signalClient: SignalClient, apiClient: EmailInsertionAPIClient,
                                        dao: EmailInsertionDao, metadata: EmailMetadata, activeAccount: ActiveAccount,
-                                       filesDir: File, aliases: List<String>, unDecryptText: String? = null) {
+                                       filesDir: File, aliases: List<String>) {
         val foundEmail = dao.findEmailByMetadataKey(metadata.metadataKey, activeAccount.id)
         val emailAlreadyExists =  foundEmail != null
         if (emailAlreadyExists)
@@ -350,7 +351,7 @@ object  EmailInsertionSetup {
         val body = json.getString("body")
         val headers = json.optString("headers")
 
-        val (decryptedBody, decryptedHeaders, decryptedFileKeys) = if(unDecryptText == null) {
+        val (decryptedBody, decryptedHeaders, decryptedFileKeys) =
             Triple(
                     HTMLUtils.sanitizeHtml(getDecryptedEmailBody(signalClient, body, metadata)),
                     if(headers.isNullOrEmpty()) null else getDecryptedEmailHeaders(signalClient, headers, metadata),
@@ -358,22 +359,16 @@ object  EmailInsertionSetup {
                         listOf()
                     else getDecryptedFileKeys(signalClient, metadata)
             )
-        } else {
-            Triple(unDecryptText, null, listOf())
+
+        val decryptedFileKey = if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
+
+        metadata.files.forEachIndexed { index, crFile ->
+            crFile.fileKey = decryptedFileKeys[index]
+            crFile.cid = if (decryptedBody.contains("cid:${crFile.cid}")
+                    && (FileUtils.isAPicture(crFile.name) || (!crFile.mimeType.isNullOrEmpty()
+                            && crFile.mimeType!!.contains("image/")))) crFile.cid else null
         }
-        val decryptedFileKey = if(unDecryptText == null) {
-            if(decryptedFileKeys.isNotEmpty()) decryptedFileKeys[0] else getDecryptedFileKey(signalClient, metadata)
-        } else {
-            null
-        }
-        if(unDecryptText == null) {
-            metadata.files.forEachIndexed { index, crFile ->
-                crFile.fileKey = decryptedFileKeys[index]
-                crFile.cid = if (decryptedBody.contains("cid:${crFile.cid}")
-                        && (FileUtils.isAPicture(crFile.name) || (!crFile.mimeType.isNullOrEmpty()
-                                && crFile.mimeType!!.contains("image/")))) crFile.cid else null
-            }
-        }
+
 
         val finalMetadata = if(metadata.inReplyTo != null) {
             val emailByMessageId = dao.findEmailByMessageId(metadata.inReplyTo, activeAccount.id)

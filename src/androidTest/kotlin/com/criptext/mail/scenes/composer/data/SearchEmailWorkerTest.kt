@@ -41,7 +41,8 @@ class SearchEmailWorkerTest{
                     date = "2018-02-21 14:00:$seconds", threadId = "thread#$id",
                     subject = "Test #$id", unread = true, metadataKey = id + 100L,
                     status = DeliveryTypes.NONE, unsentDate = "2018-02-21 14:00:$seconds", secure = true,
-                    trashDate = "2018-02-21 14:00:$seconds", replyTo = null, boundary = null)
+                    trashDate = "2018-02-21 14:00:$seconds", replyTo = null, boundary = null,
+                    isNewsletter = null)
     }
     @Before
     fun setup() {

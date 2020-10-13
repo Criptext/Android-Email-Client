@@ -12,7 +12,6 @@ import com.criptext.mail.db.models.Label
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.label_chooser.data.LabelWrapper
-import com.criptext.mail.scenes.params.LinkingParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SettingsParams
 import com.criptext.mail.scenes.params.SignInParams
@@ -28,11 +27,10 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -365,8 +363,7 @@ class LabelsController(
             if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
                 host.runOnUiThread(Runnable {
                     generalDataSource.submitRequest(
-                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox,
-                                    host.getLocalizedString(UIMessage(R.string.unable_to_decrypt)))
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
                     )
                 })
             }

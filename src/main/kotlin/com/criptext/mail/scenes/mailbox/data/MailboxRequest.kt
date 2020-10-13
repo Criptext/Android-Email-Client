@@ -57,7 +57,7 @@ sealed class MailboxRequest{
                                   val updateUnreadStatus: Boolean,
                                   val currentLabel: Label): MailboxRequest()
 
-    class EmptyTrash: MailboxRequest()
+    data class EmptyJunk(val isSpam: Boolean): MailboxRequest()
 
     class ResendEmails: MailboxRequest()
 

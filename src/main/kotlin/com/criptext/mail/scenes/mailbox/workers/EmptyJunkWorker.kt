@@ -19,39 +19,40 @@ import com.criptext.mail.utils.batch
 import com.criptext.mail.utils.peerdata.PeerDeleteEmailData
 import com.github.kittinunf.result.Result
 
-class EmptyTrashWorker(
+class EmptyJunkWorker(
         private val db: MailboxLocalDB,
         private val pendingDao: PendingEventDao,
+        private val isSpam: Boolean,
         httpClient: HttpClient,
         private val activeAccount: ActiveAccount,
         storage: KeyValueStorage,
         accountDao: AccountDao,
         override val publishFn: (
-                MailboxResult.EmptyTrash) -> Unit)
-    : BackgroundWorker<MailboxResult.EmptyTrash> {
+                MailboxResult.EmptyJunk) -> Unit)
+    : BackgroundWorker<MailboxResult.EmptyJunk> {
 
     private val peerEventHandler = PeerEventsApiHandler.Default(activeAccount, pendingDao,
             storage, accountDao)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): MailboxResult.EmptyTrash =
+    override fun catchException(ex: Exception): MailboxResult.EmptyJunk =
             if(ex is ServerErrorException) {
                 when {
                     ex.errorCode == ServerCodes.Unauthorized ->
-                        MailboxResult.EmptyTrash.Unauthorized(createErrorMessage(ex))
+                        MailboxResult.EmptyJunk.Unauthorized(createErrorMessage(ex))
                     ex.errorCode == ServerCodes.SessionExpired ->
-                        MailboxResult.EmptyTrash.SessionExpired()
+                        MailboxResult.EmptyJunk.SessionExpired()
                     ex.errorCode == ServerCodes.Forbidden ->
-                        MailboxResult.EmptyTrash.Forbidden()
-                    else -> MailboxResult.EmptyTrash.Failure(createErrorMessage(ex))
+                        MailboxResult.EmptyJunk.Forbidden()
+                    else -> MailboxResult.EmptyJunk.Failure(createErrorMessage(ex))
                 }
             }
-            else MailboxResult.EmptyTrash.Failure(createErrorMessage(ex))
+            else MailboxResult.EmptyJunk.Failure(createErrorMessage(ex))
 
-    override fun work(reporter: ProgressReporter<MailboxResult.EmptyTrash>)
-            : MailboxResult.EmptyTrash? {
-        val metadataKeys = db.getEmailMetadataKeysFromLabel(Label.LABEL_TRASH, activeAccount.id)
+    override fun work(reporter: ProgressReporter<MailboxResult.EmptyJunk>)
+            : MailboxResult.EmptyJunk? {
+        val metadataKeys = db.getEmailMetadataKeysFromLabel(if(isSpam) Label.LABEL_SPAM else Label.LABEL_TRASH, activeAccount.id)
         val result =  Result.of { db.deleteEmail(metadataKeys, activeAccount.id) }
 
         return when (result) {
@@ -59,7 +60,7 @@ class EmptyTrashWorker(
                 metadataKeys.asSequence().batch(PeerEventsApiHandler.BATCH_SIZE).forEach { batch ->
                     peerEventHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
                 }
-                MailboxResult.EmptyTrash.Success()
+                MailboxResult.EmptyJunk.Success(isSpam)
             }
             is Result.Failure -> {
                 catchException(result.error)

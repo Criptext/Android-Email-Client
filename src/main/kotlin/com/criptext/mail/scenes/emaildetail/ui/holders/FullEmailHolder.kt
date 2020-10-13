@@ -61,6 +61,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
     private val readView: ImageView
     private val contactInfoPopUp: EmailContactInfoPopup
     private val bodyWebView: WebView
+    private val contentUnencryptedLayout: LinearLayout
+    private val contentUnencryptedLink: TextView
     private val bodyContainer : LinearLayout
     private val zoomLayout: MyZoomLayout
     private val attachmentsRecyclerView: RecyclerView
@@ -129,6 +131,10 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
                     fullEmail = fullEmail,
                     position = position,
                     all = false)
+        }
+
+        contentUnencryptedLink.setOnClickListener {
+            emailListener?.learnMoreClicked()
         }
 
         isSecure.visibility = if(fullEmail.email.secure) View.VISIBLE else View.GONE
@@ -296,6 +302,14 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         val isEmailEmpty = HTMLUtils.isHtmlEmpty(fullEmail.email.content)
         val hasAtLeastOneImage = HTMLUtils.hasAtLeastOneImage(fullEmail.email.content)
         var showRemoteContent: Boolean = false
+        when(fullEmail.email.isNewsletter){
+            true -> {
+                contentUnencryptedLayout.visibility = View.GONE
+                showRemoteContent = true
+            }
+            false -> contentUnencryptedLayout.visibility = View.VISIBLE
+            else -> contentUnencryptedLayout.visibility = View.GONE
+        }
         when {
             fullEmail.isFromMe -> {
                 showRemoteContent = true
@@ -556,7 +570,7 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             }
 
             private fun checkForBilling(url: String): Boolean {
-                return url.contains(Hosts.ADMIN_URL)
+                return url.contains(Hosts.ACCOUNT_URL)
             }
         }
 
@@ -665,6 +679,8 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
         bodyWebView = view.findViewById(R.id.email_body)
         bodyWebView.webChromeClient = setupWeChromeClient()
         bodyContainer = view.findViewById(R.id.body_container)
+        contentUnencryptedLayout = view.findViewById(R.id.content_unencrypted)
+        contentUnencryptedLink = view.findViewById(R.id.learn_more_link)
         rootView = view.findViewById(R.id.cardview)
         attachmentsRecyclerView = view.findViewById(R.id.attachments_recycler_view)
         leftImageView = view.findViewById(R.id.mail_item_left_name)

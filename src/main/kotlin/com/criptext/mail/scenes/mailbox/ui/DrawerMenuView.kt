@@ -22,7 +22,7 @@ import com.criptext.mail.utils.virtuallist.VirtualList
 import com.criptext.mail.utils.virtuallist.VirtualRecyclerView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import io.github.inflationx.calligraphy3.TypefaceUtils
 
 /**
  * Created by danieltigse on 2/7/18.

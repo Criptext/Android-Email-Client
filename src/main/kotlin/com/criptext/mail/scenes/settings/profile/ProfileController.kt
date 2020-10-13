@@ -30,7 +30,7 @@ import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
+import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
@@ -604,8 +604,7 @@ class ProfileController(
             if(recipientId == activeAccount.recipientId && domain == activeAccount.domain) {
                 host.runOnUiThread(Runnable {
                     generalDataSource.submitRequest(
-                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox,
-                                    host.getLocalizedString(UIMessage(R.string.unable_to_decrypt)))
+                            GeneralRequest.ActiveAccountUpdateMailbox(Label.defaultItems.inbox)
                     )
                 })
             }

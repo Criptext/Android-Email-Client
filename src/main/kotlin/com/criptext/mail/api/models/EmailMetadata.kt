@@ -35,6 +35,7 @@ data class EmailMetadata(
         val secure: Boolean,
         val isSpam: Boolean,
         val isExternal: Boolean?,
+        val isNewsletter: Boolean?,
         val boundary: String?,
         val inReplyTo: String?) {
 
@@ -42,7 +43,7 @@ data class EmailMetadata(
             DBColumns(to = to, cc = cc, bcc = bcc, messageId = messageId, threadId = threadId,
                     metadataKey = metadataKey, subject = subject, date = date, unsentDate = null,
                     fromContact = fromContact, unread = true, status = DeliveryTypes.NONE, secure = secure,
-                    trashDate = null, replyTo = replyTo, boundary = boundary)
+                    trashDate = null, replyTo = replyTo, boundary = boundary, isNewsletter = isNewsletter)
 
     companion object {
         fun fromJSON(metadataJsonString: String): EmailMetadata {
@@ -51,6 +52,10 @@ data class EmailMetadata(
             // TODO make this more robust
             val isExternal = if(emailData.has("external"))
                 emailData.getBoolean("external")
+            else
+                null
+            val isNewsletter = if(emailData.has("isNewsletter"))
+                emailData.getBoolean("isNewsletter")
             else
                 null
             val fromEmail = EmailAddressUtils.extractEmailAddress(from)
@@ -89,6 +94,7 @@ data class EmailMetadata(
                     secure = secure,
                     isSpam = checkSpam(emailData),
                     isExternal = isExternal,
+                    isNewsletter = isNewsletter,
                     inReplyTo = if(emailData.has("inReplyTo")) emailData.getString("inReplyTo") else null
             )
 
@@ -178,6 +184,7 @@ data class EmailMetadata(
         val unread: Boolean,
         val status: DeliveryTypes,
         val secure: Boolean,
+        val isNewsletter: Boolean?,
         val trashDate: String?,
         val boundary: String?)
 }

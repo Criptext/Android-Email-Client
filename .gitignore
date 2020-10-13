@@ -10,6 +10,8 @@
 # Java class files
 *.class
 
+*.hprof
+
 # Generated files
 bin/
 gen/

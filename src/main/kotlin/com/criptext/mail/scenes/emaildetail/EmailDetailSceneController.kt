@@ -31,8 +31,6 @@ import com.criptext.mail.scenes.mailbox.OnMoveThreadsListener
 import com.criptext.mail.scenes.mailbox.data.EmailThread
 import com.criptext.mail.scenes.params.*
 import com.criptext.mail.scenes.signin.data.LinkStatusData
-import com.criptext.mail.scenes.webview.WebViewSceneController
-import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
@@ -41,7 +39,6 @@ import com.criptext.mail.utils.file.PathUtil
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
@@ -243,8 +240,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             }
             is GeneralResult.ActiveAccountUpdateMailbox.SuccessAndRepeat -> {
                 generalDataSource.submitRequest(GeneralRequest.ActiveAccountUpdateMailbox(
-                        model.currentLabel,
-                        host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
+                        model.currentLabel
                 ))
             }
             is GeneralResult.ActiveAccountUpdateMailbox.Unauthorized -> {
@@ -594,6 +590,17 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
     }
 
     private val emailHolderEventListener = object : FullEmailListAdapter.OnFullEmailEventListener{
+        override fun learnMoreClicked() {
+            host.goToScene(
+                    params = WebViewParams(
+                            url = "https://criptext.atlassian.net/wiki/spaces/CRIPTEXT/pages/511377409/Content+Unencrypted+Learn+More",
+                            title = null
+                    ),
+                    activityMessage = null,
+                    keep = true
+            )
+        }
+
         override fun openWebView(url: String) {
             host.goToScene(
                     params = WebViewParams(
@@ -1248,8 +1255,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun onNewEvent(recipientId: String, domain: String) {
             generalDataSource.submitRequest(
                     GeneralRequest.ActiveAccountUpdateMailbox(
-                            model.currentLabel,
-                            host.getLocalizedString(UIMessage(R.string.unable_to_decrypt))
+                            model.currentLabel
                     ))
         }
 

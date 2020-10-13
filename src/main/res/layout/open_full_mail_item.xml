@@ -204,6 +204,33 @@
             android:layout_marginRight="20dp"
             android:background="?attr/criptextColorBackground">
 
+            <LinearLayout
+                android:id="@+id/content_unencrypted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#F5F7FF"
+                android:padding="9dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                >
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_marginStart="13.5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:text="@string/email_cannot_be_decrypted"/>
+                <TextView
+                    fontPath="fonts/NunitoSans-Regular.ttf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/learn_more_link"
+                    android:clickable="true"
+                    android:text="@string/email_cannot_be_decrypted_learn_more"
+                    android:textColor="@color/azure"/>
+            </LinearLayout>
+
             <com.criptext.mail.utils.ui.MyZoomLayout
                 android:id="@+id/zoomLayout"
                 android:layout_width="match_parent"

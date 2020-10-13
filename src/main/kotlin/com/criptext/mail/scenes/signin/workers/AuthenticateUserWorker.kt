@@ -79,13 +79,14 @@ class AuthenticateUserWorker(
         if(lastLoggedUsers.isNotEmpty()) {
             if(!shouldKeepData){
                 if(isMultiple) {
+                    db.deleteDatabase(lastLoggedUsers)
                     keyValueStorage.remove(listOf(
                             KeyValueStorage.StringKey.LastLoggedUser
                     ))
                 } else {
+                    db.deleteDatabase()
                     keyValueStorage.clearAll()
                 }
-                db.deleteDatabase(lastLoggedUsers)
                 lastLoggedUsers.clear()
             }
             storedValue = ""
@@ -95,7 +96,6 @@ class AuthenticateUserWorker(
         val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticatedUser else storedValue
         val jsonObject = JSONObject(jsonString)
         return SignInSession.fromJSON(jsonObject)
-
     }
 
     private fun signInOperation(): Result<SignInSession, Exception> =

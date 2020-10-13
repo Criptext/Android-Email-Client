@@ -13,7 +13,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.mocks.MockEmailData
-import com.criptext.mail.scenes.mailbox.workers.EmptyTrashWorker
+import com.criptext.mail.scenes.mailbox.workers.EmptyJunkWorker
 import com.criptext.mail.utils.MockedResponse
 import com.criptext.mail.utils.enqueueResponses
 import io.mockk.mockk
@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class EmptyTrashWorkerTest{
+class EmptyJunkWorkerTest{
 
     @get:Rule
     val mActivityRule = ActivityTestRule(TestActivity::class.java)
@@ -61,13 +61,14 @@ class EmptyTrashWorkerTest{
                 defaultAddress = null))
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         storage = mockk(relaxed = true)
-        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),
-                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
-                domain = activeAccount.domain)
     }
 
     @Test
     fun should_delete_permanently_all_emails_in_trash(){
+
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.trash),
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
 
         mockWebServer.enqueueResponses(listOf(
                 MockedResponse.Ok("")
@@ -79,9 +80,9 @@ class EmptyTrashWorkerTest{
         ).size shouldBe 2
 
 
-        val worker = newWorker()
+        val worker = newWorker(false)
 
-        worker.work(mockk()) as MailboxResult.EmptyTrash.Success
+        worker.work(mockk()) as MailboxResult.EmptyJunk.Success
 
         mailboxLocalDB.getThreadsIdsFromLabel(
                 labelName = Label.defaultItems.trash.text,
@@ -90,15 +91,44 @@ class EmptyTrashWorkerTest{
 
     }
 
-    private fun newWorker(): EmptyTrashWorker =
+    @Test
+    fun should_delete_permanently_all_emails_in_spam(){
 
-            EmptyTrashWorker(
+        MockEmailData.insertEmailsNeededForTests(db, listOf(Label.defaultItems.spam),
+                mActivityRule.activity.filesDir, activeAccount.recipientId, accountId = activeAccount.id,
+                domain = activeAccount.domain)
+
+        mockWebServer.enqueueResponses(listOf(
+                MockedResponse.Ok("")
+        ))
+
+        mailboxLocalDB.getThreadsIdsFromLabel(
+                labelName = Label.defaultItems.spam.text,
+                accountId = activeAccount.id
+        ).size shouldBe 2
+
+
+        val worker = newWorker(true)
+
+        worker.work(mockk()) as MailboxResult.EmptyJunk.Success
+
+        mailboxLocalDB.getThreadsIdsFromLabel(
+                labelName = Label.defaultItems.spam.text,
+                accountId = activeAccount.id
+        ).size shouldBe 0
+
+    }
+
+    private fun newWorker(isSpam: Boolean): EmptyJunkWorker =
+
+            EmptyJunkWorker(
                     db = mailboxLocalDB,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     pendingDao = db.pendingEventDao(),
                     publishFn = {},
                     accountDao = db.accountDao(),
+                    isSpam = isSpam,
                     storage = storage)
 
     @After

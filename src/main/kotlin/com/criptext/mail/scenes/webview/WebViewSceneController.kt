@@ -123,7 +123,7 @@ class WebViewSceneController(private val scene: WebViewScene,
 
         override fun onCopyText(text: String) {
             val clipData = ClipData.newPlainText("text", text)
-            clipboardManager.primaryClip = clipData
+            clipboardManager.setPrimaryClip(clipData)
         }
 
         override fun onUrlChanged(newUrl: String) {
@@ -157,7 +157,7 @@ class WebViewSceneController(private val scene: WebViewScene,
     }
 
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
-        model.isOnAdmin = model.mUrl?.contains(Hosts.ADMIN_URL) ?: false
+        model.isOnAdmin = model.mUrl?.contains(Hosts.ACCOUNT_URL) ?: false
         scene.attachView(
                 observer, activeAccount, model, chromeClient
         )

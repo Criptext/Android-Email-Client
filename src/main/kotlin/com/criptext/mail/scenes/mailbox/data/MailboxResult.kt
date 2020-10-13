@@ -4,10 +4,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.push.data.IntentExtrasData
-import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
-import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupResult
 import com.criptext.mail.utils.UIMessage
 
 /**
@@ -95,12 +92,12 @@ sealed class MailboxResult {
         class Forbidden: UpdateUnreadStatus()
     }
 
-    sealed class EmptyTrash: MailboxResult() {
-        class Success: EmptyTrash()
-        class Failure(val message: UIMessage): EmptyTrash()
-        class Unauthorized(val message: UIMessage): EmptyTrash()
-        class SessionExpired: EmptyTrash()
-        class Forbidden: EmptyTrash()
+    sealed class EmptyJunk: MailboxResult() {
+        data class Success(val isSpam: Boolean): EmptyJunk()
+        class Failure(val message: UIMessage): EmptyJunk()
+        class Unauthorized(val message: UIMessage): EmptyJunk()
+        class SessionExpired: EmptyJunk()
+        class Forbidden: EmptyJunk()
     }
 
     sealed class ResendEmails: MailboxResult() {

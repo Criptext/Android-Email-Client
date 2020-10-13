@@ -13,7 +13,8 @@ object Hosts {
     const val fileServiceAuthToken = "cXluaHR5empyc2hhenhxYXJrcHk6bG9mamtzZWRieHV1Y2RqanBuYnk="
     const val HELP_DESK_URL = "https://criptext.atlassian.net/servicedesk/customer/portals"
     const val ADMIN_URL = "https://admin.criptext.com/"
+    const val ACCOUNT_URL = "https://account.criptext.com/"
 
-    fun billing(jwt: String, language: String) = "${ADMIN_URL}?#/account/billing?token=$jwt&lang=$language"
-    fun addressManager(jwt: String, language: String) = "${ADMIN_URL}?#/addresses??token=$jwt&lang=$language"
+    fun billing(jwt: String, language: String) = "${ACCOUNT_URL}?#/account/billing?token=$jwt&lang=$language"
+    fun addressManager(jwt: String, language: String) = "${ACCOUNT_URL}?#/addresses??token=$jwt&lang=$language"
 }

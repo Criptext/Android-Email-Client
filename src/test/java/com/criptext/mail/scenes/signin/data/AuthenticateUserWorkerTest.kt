@@ -101,7 +101,7 @@ class AuthenticateUserWorkerTest {
         every {
             signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any(), accountDao = any())
+                    defaultLabels = any(), accountDao = any(), isMultiple = any())
         } answers { extraStepsSlot.captured.run() }
 
         every { accountDao.updateJwt("tester", Contact.mainDomain,"__JWTOKEN__") } just Runs
@@ -172,18 +172,20 @@ class AuthenticateUserWorkerTest {
         every {
             signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any(), accountDao = any())
+                    defaultLabels = any(), accountDao = any(), isMultiple = any())
         } answers { extraStepsSlot.captured.run() }
 
-        every { accountDao.updateJwt("tester", Contact.mainDomain,"__JWTOKEN__") } just Runs
-        every { accountDao.updateRefreshToken("tester", Contact.mainDomain,"__REFRESH__") } just Runs
-        every { accountDao.updateActiveInAccount() } just Runs
-        every { accountDao.getLoggedInAccount() } returns Account(id = 1, recipientId = "tester", deviceId = 2,
+        val account = Account(id = 1, recipientId = "tester", deviceId = 2,
                 name = "A Tester", registrationId = 1,
                 identityKeyPairB64 = "_IDENTITY_", jwt = "__JWTOKEN__",
                 signature = "", refreshToken = "__REFRESH__", isActive = true, domain = "criptext.com", isLoggedIn = true,
                 lastTimeBackup = null, wifiOnly = true, hasCloudBackup = false, autoBackupFrequency = 0, backupPassword = null,
                 blockRemoteContent = true, type = AccountTypes.STANDARD, defaultAddress = null)
+
+        every { accountDao.updateJwt("tester", Contact.mainDomain,"__JWTOKEN__") } just Runs
+        every { accountDao.updateRefreshToken("tester", Contact.mainDomain,"__REFRESH__") } just Runs
+        every { accountDao.updateActiveInAccount() } just Runs
+        every { accountDao.getLoggedInAccount() } returns account
         every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
@@ -238,7 +240,7 @@ class AuthenticateUserWorkerTest {
         every {
             signUpDao.insertNewAccountData(account = any(), preKeyList = any(),
                     signedPreKey = any(), extraRegistrationSteps = capture(extraStepsSlot),
-                    defaultLabels = any(), accountDao = any())
+                    defaultLabels = any(), accountDao = any(), isMultiple = any())
         } answers { extraStepsSlot.captured.run() }
 
         val result = worker.work(mockk())

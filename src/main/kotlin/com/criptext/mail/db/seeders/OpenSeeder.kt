@@ -31,7 +31,7 @@ class OpenSeeder {
             when (iteration) {
                 1 -> op = Open( id = 1 ,
                         fileId = "XXXXXXXXXX2312XXXXX1",
-                        date = sdf.parse("1992-05-23 20:12:58"),
+                        date = sdf.parse("1992-05-23 20:12:58") ?: Date(),
                         type = 1,
                         location = "pc")
             }

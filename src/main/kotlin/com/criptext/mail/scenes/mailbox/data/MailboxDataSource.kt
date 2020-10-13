@@ -146,13 +146,14 @@ class MailboxDataSource(
                         flushResults(result)
                     }
             )
-            is MailboxRequest.EmptyTrash -> EmptyTrashWorker(
+            is MailboxRequest.EmptyJunk -> EmptyJunkWorker(
                     db = mailboxLocalDB,
                     pendingDao = pendingDao,
                     httpClient = httpClient,
                     activeAccount = activeAccount,
                     storage = storage,
                     accountDao = accountDao,
+                    isSpam = params.isSpam,
                     publishFn = { result ->
                         flushResults(result)
                     })

@@ -151,7 +151,8 @@ class SaveEmailWorker(
                 secure = isSecure(),
                 replyTo = null,
                 trashDate = DateAndTimeUtils.printDateWithServerFormat(Date()),
-                boundary = null)
+                boundary = null,
+                isNewsletter = null)
     }
 
     private fun meAsRecipient(): Boolean {
