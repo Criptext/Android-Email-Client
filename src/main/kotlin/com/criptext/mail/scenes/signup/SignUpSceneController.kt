@@ -369,12 +369,8 @@ class SignUpSceneController(
     override fun onBackPressed(): Boolean {
         return when (model.state) {
             is SignUpLayoutState.Name -> {
-                if(model.isMultiple) {
-                    host.finishScene()
-                    false
-                } else {
-                    true
-                }
+                host.finishScene()
+                false
             }
             is SignUpLayoutState.EmailHandle -> {
                 model.state = SignUpLayoutState.Name(model.fullName.value)

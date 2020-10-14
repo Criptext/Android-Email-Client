@@ -50,32 +50,61 @@ android:focusableInTouchMode="true" >
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/signin_button"
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="55dp"
                 android:layout_marginStart="56dp"
                 android:layout_marginEnd="56dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/btn_log_in"
-                android:textColor="@drawable/btn_sign_in"
-                android:text="@string/login"
-                android:textAllCaps="false"
-                android:layout_marginTop="200dp"/>
+                android:layout_marginTop="200dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/signin_button"
+                <ProgressBar
+                    android:id="@+id/signin_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:indeterminateTint="@color/white"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"/>
+
+                <Button
+                    android:id="@+id/signin_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"
+                    android:textColor="@drawable/btn_sign_in"
+                    android:text="@string/login"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:orientation="vertical"
                 android:layout_marginStart="56dp"
                 android:layout_marginEnd="56dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/btn_white_background"
-                android:textColor="?attr/criptextPrimaryTextColor"
-                android:text="@string/btn_create_account"
-                android:enabled="false"
-                android:textAllCaps="false"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp">
+                <ProgressBar
+                    android:id="@+id/create_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:indeterminateTint="@color/black_transparent"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_white_background"/>
+                <Button
+                    android:id="@+id/create_account_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_white_background"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:text="@string/btn_create_account"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/contact_support"
@@ -104,11 +133,11 @@ android:focusableInTouchMode="true" >
             android:textColor="?attr/criptextSecondaryTextColor"
             android:textSize="14sp" />
         <TextView
+            android:id="@+id/version_text"
             fontPath="fonts/NunitoSans-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="@string/versionName"
             android:textColor="?attr/criptextSecondaryTextColor"
             android:textSize="14sp" />
     </LinearLayout>
