@@ -593,7 +593,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
         override fun learnMoreClicked() {
             host.goToScene(
                     params = WebViewParams(
-                            url = "https://criptext.atlassian.net/wiki/spaces/CRIPTEXT/pages/511377409/Content+Unencrypted+Learn+More",
+                            url = "https://criptext.atlassian.net/l/c/10NeN7ZM",
                             title = null
                     ),
                     activityMessage = null,
