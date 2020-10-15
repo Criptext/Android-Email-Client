@@ -59,6 +59,8 @@
         <item name="criptextSearchImage">@drawable/search_happy</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="criptextPinGradient">@drawable/login_background</item>
+        <item name="criptextStartLogo">@drawable/img_logo</item>
+        <item name="criptextStartMotto">@drawable/img_subtitle</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -117,6 +119,8 @@
         <item name="criptextSearchImage">@drawable/searchdark</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="criptextPinGradient">@drawable/pin_background_dark</item>
+        <item name="criptextStartLogo">@drawable/img_logo_dm</item>
+        <item name="criptextStartMotto">@drawable/img_subtitle_dm</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

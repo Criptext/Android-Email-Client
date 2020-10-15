@@ -51,6 +51,7 @@
     <color name="non_criptext_email_send_text_line_focus">#0091ff</color>
     <color name="non_criptext_email_send_eye">#dcdcdc</color>
     <color name="login_password_eye">#5cc3fe</color>
+    <color name="sign_up_password_eye">#9aa1ab</color>
     <color name="non_criptext_email_send_detail_text">#8d8d8d</color>
     <color name="bell">#FF3366</color>
     <color name="attachmentGray">#cecece</color>

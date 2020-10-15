@@ -10,12 +10,10 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.CustomizeParams
 import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.WebViewParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
 import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
-import com.criptext.mail.scenes.webview.WebViewSceneController
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.*
@@ -68,7 +66,8 @@ class SignUpSceneController(
                 }
                 is SignUpLayoutState.RecoveryEmail -> {
                     model.state = SignUpLayoutState.TermsAndConditions()
-                    resetLayout()
+                    resetLayout(ProgressButtonState.waiting)
+                    dataSource.submitRequest(SignUpRequest.GetCaptcha())
                 }
                 is SignUpLayoutState.TermsAndConditions -> {
                     scene.showGeneratingKeys(true)
@@ -160,9 +159,18 @@ class SignUpSceneController(
             scene.setInputState(model.state, newRecoveryEmail.state)
         }
 
+        override fun onCaptchaTextChange(text: String) {
+            model.captchaAnswer = text
+            if(model.captchaAnswer.isNotEmpty() && model.checkTermsAndConditions){
+                scene.setSubmitButtonState(ProgressButtonState.enabled)
+            } else {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+            }
+        }
+
         override fun onCheckedOptionChanged(state: Boolean) {
             model.checkTermsAndConditions = state
-            if(state){
+            if(state && model.captchaAnswer.isNotEmpty()){
                 scene.setSubmitButtonState(ProgressButtonState.enabled)
             } else {
                 scene.setSubmitButtonState(ProgressButtonState.disabled)
@@ -183,6 +191,11 @@ class SignUpSceneController(
                             exitAnim = R.anim.stay
                     )
             )
+        }
+
+        override fun onCaptchaRefresh() {
+            dataSource.submitRequest(SignUpRequest.GetCaptcha())
+            resetLayout(ProgressButtonState.waiting)
         }
 
         override fun onContactSupportClick() {
@@ -259,6 +272,7 @@ class SignUpSceneController(
             is SignUpResult.RegisterUser -> onUserRegistered(result)
             is SignUpResult.CheckUsernameAvailability -> onCheckedUsernameAvailability(result)
             is SignUpResult.CheckRecoveryEmailAvailability -> onCheckedRecoveryEmailAvailability(result)
+            is SignUpResult.GetCaptcha -> onGetCaptcha(result)
         }
     }
 
@@ -284,6 +298,21 @@ class SignUpSceneController(
         }
     }
 
+    private fun onGetCaptcha(result: SignUpResult.GetCaptcha) {
+        when (result) {
+            is SignUpResult.GetCaptcha.Success -> {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+                model.captchaKey = result.captchaKey
+                scene.setCaptcha(result.captcha)
+            }
+            is SignUpResult.GetCaptcha.Failure -> {
+                val newState = FormInputState.Error(result.message)
+                scene.setInputState(model.state, newState)
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+            }
+        }
+    }
+
     private fun onCheckedRecoveryEmailAvailability(result: SignUpResult.CheckRecoveryEmailAvailability) {
         when (result) {
             is SignUpResult.CheckRecoveryEmailAvailability.Success -> {
@@ -300,8 +329,17 @@ class SignUpSceneController(
     }
 
     private fun handleRegisterUserFailure(result: SignUpResult.RegisterUser.Failure) {
-        scene.showGeneratingKeys(false)
-        scene.showError(result.message)
+        if(result.exception is ServerErrorException && result.exception.errorCode == ServerCodes.Conflict){
+            scene.showGeneratingKeys(false)
+            scene.setInputState(
+                    layoutState = model.state,
+                    state = FormInputState.Error(result.message)
+            )
+            model.captchaAnswer = ""
+        } else {
+            scene.showGeneratingKeys(false)
+            scene.showError(result.message)
+        }
     }
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
@@ -324,7 +362,9 @@ class SignUpSceneController(
                 name = model.fullName.value,
                 password = hashedPassword,
                 deviceId = 1,
-                recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null
+                recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null,
+                captchaAnswer = model.captchaAnswer,
+                captchaKey = model.captchaKey
         )
 
         val req = SignUpRequest.RegisterUser(
@@ -395,6 +435,7 @@ class SignUpSceneController(
             is SignUpLayoutState.TermsAndConditions -> {
                 model.state = SignUpLayoutState.RecoveryEmail(model.recoveryEmail.value)
                 resetLayout(ProgressButtonState.enabled)
+                model.captchaAnswer = ""
                 false
             }
         }
@@ -415,8 +456,10 @@ class SignUpSceneController(
         fun onUsernameChangedListener(text: String)
         fun onFullNameTextChangeListener(text: String)
         fun onRecoveryEmailTextChangeListener(text: String)
+        fun onCaptchaTextChange(text: String)
         fun onCheckedOptionChanged(state: Boolean)
         fun onTermsAndConditionsClick()
+        fun onCaptchaRefresh()
         fun onNextButtonPressed()
         fun onContactSupportClick()
         fun onBackPressed()

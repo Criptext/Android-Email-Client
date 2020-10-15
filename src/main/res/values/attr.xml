@@ -49,4 +49,6 @@
     <attr name="criptextSearchImage" format="reference"/>
     <attr name="criptextSelectableItemBackground" format="reference|color"/>
     <attr name="criptextPinGradient" format="reference"/>
+    <attr name="criptextStartLogo" format="reference"/>
+    <attr name="criptextStartMotto" format="reference"/>
 </resources>

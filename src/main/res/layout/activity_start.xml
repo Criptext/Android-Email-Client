@@ -37,14 +37,14 @@ android:focusableInTouchMode="true" >
                 android:layout_marginStart="70dp">
 
                 <ImageView
-                    android:src="@drawable/img_logo"
+                    android:src="?attr/criptextStartLogo"
                     android:layout_gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="62.9dp"/>
                 <ImageView
                     android:layout_width="220dp"
                     android:layout_height="37dp"
-                    android:src="@drawable/img_subtitle"
+                    android:src="?attr/criptextStartMotto"
                     android:layout_gravity="center"/>
 
 

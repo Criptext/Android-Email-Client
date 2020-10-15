@@ -24,6 +24,8 @@
     "deviceName": "__TEST__",
     "identityPublicKey": "__IDENTITY_PUBLIC_KEY__"
   },
+  "captchaKey": "CAPTCHA_KEY",
+  "captchaAnswer": "CAPTCHA_ANSWER",
   "name": "A Tester",
   "recipientId": "tester",
   "recoveryEmail": "tester@gmail.com"

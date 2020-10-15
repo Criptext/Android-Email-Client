@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signup.customize.holder.CustomizeAccountCreatedHolder
+import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.holders.*
 import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.utils.UIMessage
@@ -23,6 +24,7 @@ interface SignUpScene {
     fun setPasswordCheck(isNotUsername: Boolean, isAtLeastEightChars: Boolean)
     fun setConfirmPasswordCheck(passwordMatches: FormInputState)
     fun setSubmitButtonState(state : ProgressButtonState)
+    fun setCaptcha(captcha: String)
     fun showGeneratingKeys(show: Boolean)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver?
@@ -105,6 +107,10 @@ interface SignUpScene {
                     val currentHolder = holder as SignUpRecoveryEmailHolder
                     currentHolder.setState(state)
                 }
+                is SignUpLayoutState.TermsAndConditions -> {
+                    val currentHolder = holder as SignUpTermsAndConditionsHolder
+                    currentHolder.setState(state)
+                }
             }
         }
 
@@ -120,6 +126,11 @@ interface SignUpScene {
 
         override fun setSubmitButtonState(state: ProgressButtonState) {
             holder.setSubmitButtonState(state)
+        }
+
+        override fun setCaptcha(captcha: String) {
+            val currentHolder = holder as? SignUpTermsAndConditionsHolder
+            currentHolder?.setCaptcha(captcha)
         }
 
         override fun showGeneratingKeys(show: Boolean) {

@@ -47,6 +47,10 @@ class SignUpDataSource(override val runner: WorkRunner,
                     email = params.email,
                     publishFn = { result -> flushResults(result)
             })
+            is SignUpRequest.GetCaptcha -> GetCaptchaWorker(
+                    httpClient = httpClient,
+                    publishFn = { result -> flushResults(result)
+            })
         }
     }
 }

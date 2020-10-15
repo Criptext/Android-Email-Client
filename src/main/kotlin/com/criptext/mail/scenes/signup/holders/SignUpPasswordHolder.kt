@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
@@ -23,6 +24,7 @@ class SignUpPasswordHolder(
     private val nextButton: Button = view.findViewById(R.id.next_button)
     private val nextButtonProgress: ProgressBar = view.findViewById(R.id.next_button_progress)
     private val backButton: View = view.findViewById(R.id.icon_back)
+    private val passwordInput: TextInputLayout = view.findViewById(R.id.password_input)
     private val password: AppCompatEditText = view.findViewById(R.id.password)
     private val firstCheck: ImageView = view.findViewById(R.id.password_check_1)
     private val secondCheck: ImageView = view.findViewById(R.id.password_check_2)
@@ -31,6 +33,9 @@ class SignUpPasswordHolder(
 
     init {
         password.text = SpannableStringBuilder(passwordText)
+        passwordInput.isPasswordVisibilityToggleEnabled = true
+        passwordInput.setPasswordVisibilityToggleTintList(
+                AppCompatResources.getColorStateList(view.context, R.color.sign_up_password_eye))
         setListeners()
     }
 

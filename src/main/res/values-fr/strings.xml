@@ -797,4 +797,6 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="yay_dialog_title">Your new secure inbox \nis ready to go! 🎉</string>
   <string name="recovery_email_warning_dialog_title">Woah there 🖐</string>
   <string name="recovery_email_warning_dialog_message">You won\'t be able to send emails until you verify your recovery email. This is for you security in case you ever forget your password.</string>
+  <string name="captcha_message">Prove you are not a robot</string>
+  <string name="captcha_error">Sorry, the code entered was incorrect. Please try again.</string>
 </resources>

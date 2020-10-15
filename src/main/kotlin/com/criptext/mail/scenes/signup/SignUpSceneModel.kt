@@ -22,4 +22,7 @@ class SignUpSceneModel(val isMultiple: Boolean = false) : SceneModel {
     var checkTermsAndConditions : Boolean = false
     var signUpSucceed: Boolean = false
     var state: SignUpLayoutState = SignUpLayoutState.Name("")
+
+    var captchaKey: String = ""
+    var captchaAnswer: String = ""
 }
