@@ -595,6 +595,7 @@
   <string name="invalid_temp_token">La sesión temporal ha expirado. Por favor intenatlo nuevamente.</string>
   <string name="profile_footer_option">Mostrar \"Enviado con Criptext\"</string>
   <string name="job_backup_notification">Notificación de Servicio de Backup</string>
+  <string name="fail_to_send_notification">Notificación de Envio Fallido</string>
   <string name="uploading_to_google_drive">Subiendo Respaldo a Google Drive…</string>
   <string name="upload_to_google_drive_success">¡Respaldo subido exitosamente!</string>
   <string name="login_fail_try_again_error_with_exception">Fallo al autenticar usuario. Error: %1$s.</string>
@@ -778,4 +779,8 @@
   <string name="recovery_email_warning_dialog_message">No podrás enviar correos hasta que verifiques tu correo de recuperación. Esto es por tu seguridad en caso de que olvides tu contraseña.</string>
   <string name="captcha_message">Demuestra que no eres un robot</string>
   <string name="captcha_error">El código ingresado es incorrecto. Por favor inténtalo nuevamente.</string>
+  <string name="fail_to_send">⚠️ El correo no se pudo enviar</string>
+  <string name="dismiss_notification">Dismiss</string>
+  <string name="fail_to_send_notification_message">No se ha podido enviar el correo a %1$s</string>
+  <string name="fail_to_send_notification_title">Fallo al Enviar Correo</string>
 </resources>

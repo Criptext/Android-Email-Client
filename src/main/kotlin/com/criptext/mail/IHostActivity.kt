@@ -1,9 +1,12 @@
 package com.criptext.mail
 
 import android.content.ContentResolver
+import android.graphics.Bitmap
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.push.PushData
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
@@ -44,6 +47,8 @@ interface IHostActivity {
     fun getContentResolver(): ContentResolver?
     fun getHandler(): Handler?
     fun setAppTheme(themeResource: Int)
+
+    fun createAndNotifyPush(pushData: PushData, activeAccount: ActiveAccount)
 
     fun contextMenuRegister(view: View)
     /**

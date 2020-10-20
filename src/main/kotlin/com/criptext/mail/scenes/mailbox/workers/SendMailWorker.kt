@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.mailbox.workers
 
 import android.accounts.NetworkErrorException
+import android.os.Build
 import com.criptext.mail.R
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.api.*
@@ -15,6 +16,7 @@ import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
 import com.criptext.mail.db.dao.signal.RawSessionDao
 import com.criptext.mail.db.models.*
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.PushData
 import com.criptext.mail.scenes.composer.data.*
 import com.criptext.mail.scenes.mailbox.data.MailboxResult
 import com.criptext.mail.scenes.mailbox.data.SentMailData
@@ -25,6 +27,7 @@ import com.criptext.mail.utils.file.FileUtils
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.mapError
+import com.squareup.picasso.Picasso
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -228,15 +231,44 @@ class SendMailWorker(private val signalClient: SignalClient,
                 ex.errorCode == ServerCodes.Forbidden ->
                     MailboxResult.SendMail.Forbidden()
                 ex.errorCode == ServerCodes.TooManyRequests ->
-                    MailboxResult.SendMail.Failure(UIMessage(R.string.send_limit_reached))
+                    MailboxResult.SendMail.Failure(null, UIMessage(R.string.send_limit_reached))
                 ex.errorCode == ServerCodes.EnterpriseAccountSuspended ->
                     MailboxResult.SendMail.EnterpriseSuspended()
 
-                else -> MailboxResult.SendMail.Failure(createErrorMessage(ex))
+                else -> {
+                    MailboxResult.SendMail.Failure(createPushData(), createErrorMessage(ex))
+                }
             }
         }else {
             val message = createErrorMessage(ex)
-            MailboxResult.SendMail.Failure(message)
+            MailboxResult.SendMail.Failure(createPushData(), message)
+        }
+    }
+
+    private fun createPushData(): PushData.FailToSendEmail? {
+        val fullEmail = db.getFullEmailById(emailId, activeAccount)
+        return if(fullEmail == null){
+            null
+        } else {
+            val toContacts = fullEmail.to + fullEmail.cc + fullEmail.bcc
+            val email = toContacts.first().email
+            val bm = try {
+                if(EmailAddressUtils.isFromCriptextDomain(email)) {
+                    val domain = EmailAddressUtils.extractEmailAddressDomain(email)
+                    Picasso.get().load(Hosts.restApiBaseUrl
+                            .plus("/user/avatar/$domain/${EmailAddressUtils.extractRecipientIdFromAddress(email, domain)}")).get()
+                } else
+                    null
+            } catch (ex: Exception){
+                null
+            }
+            PushData.FailToSendEmail(
+                    name = toContacts.first().name,
+                    activeEmail = activeAccount.userEmail,
+                    isPostNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N,
+                    senderImage = bm,
+                    shouldPostNotification = true
+            )
         }
     }
 

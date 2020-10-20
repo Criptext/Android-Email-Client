@@ -4,29 +4,30 @@ import android.app.Notification
 import android.content.Context
 import com.criptext.mail.R
 import com.criptext.mail.androidui.CriptextNotification
+import com.criptext.mail.androidui.criptextnotification.NotificationFailToSendEmail
 import com.criptext.mail.androidui.criptextnotification.NotificationNewMail
 import com.criptext.mail.push.ActivityIntentFactory
 import com.criptext.mail.push.PushData
 import com.criptext.mail.push.PushTypes
 
-sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
+sealed class FailToSendNotifier(val data: PushData.FailToSendEmail): Notifier {
     companion object {
-        private val type = PushTypes.newMail
+        private val type = PushTypes.failedEmail
     }
 
 
     private fun postNotification(ctx: Context) {
-        val cn = NotificationNewMail(ctx)
+        val cn = NotificationFailToSendEmail(ctx)
         val notification = buildNotification(ctx, cn)
-        cn.notify(notification.first, notification.second, CriptextNotification.ACTION_INBOX)
+        cn.notify(notification.first, notification.second, CriptextNotification.ACTION_FAILED_EMAIL)
     }
 
     private fun postHeaderNotification(ctx: Context){
-        val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, PushTypes.openActivity,
-                data.threadId, data.isPostNougat)
-        val cn = NotificationNewMail(ctx)
+        val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, PushTypes.failedEmail,
+                null, data.isPostNougat)
+        val cn = NotificationFailToSendEmail(ctx)
         cn.showHeaderNotification(data.name, R.drawable.push_icon,
-                CriptextNotification.ACTION_INBOX, pendingIntent)
+                CriptextNotification.ACTION_FAILED_EMAIL, pendingIntent)
     }
 
     protected abstract fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification>
@@ -44,11 +45,11 @@ sealed class NewMailNotifier(val data: PushData.NewMail): Notifier {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    class Single(data: PushData.NewMail, private val notificationId: Int): NewMailNotifier(data) {
+    class Single(data: PushData.FailToSendEmail, private val notificationId: Int): FailToSendNotifier(data) {
 
         override fun buildNotification(ctx: Context, cn: CriptextNotification): Pair<Int, Notification> {
             val pendingIntent = ActivityIntentFactory.buildSceneActivityPendingIntent(ctx, type,
-                    data.threadId, data.isPostNougat, data.account, data.domain)
+                    null, data.isPostNougat, null, null)
 
             return Pair(notificationId, cn.createNotification(clickIntent = pendingIntent, data = data,
                     notificationId = notificationId))
