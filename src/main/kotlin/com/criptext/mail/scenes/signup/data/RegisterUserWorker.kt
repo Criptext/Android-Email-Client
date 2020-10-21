@@ -126,6 +126,9 @@ class RegisterUserWorker(
                             }
                         }
                     }
+                    ex.errorCode == ServerCodes.Conflict -> {
+                        UIMessage(resId = R.string.captcha_error)
+                    }
                     ex.errorCode == ServerCodes.TooManyRequests -> {
                         val timeLeft = DateAndTimeUtils.getTimeInHoursAndMinutes(ex.headers?.getLong("Retry-After"))
                         if(timeLeft != null) {

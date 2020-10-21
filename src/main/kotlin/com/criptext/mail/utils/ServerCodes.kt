@@ -13,6 +13,7 @@ object ServerCodes{
     const val Unauthorized = 401
     const val Forbidden = 403
     const val MethodNotAllowed = 405
+    const val Conflict = 409
     const val Gone = 410
     const val PreconditionFail = 412
     const val PayloadTooLarge = 413

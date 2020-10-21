@@ -12,4 +12,6 @@ sealed class SignUpRequest{
                             val isMultiple: Boolean
                        ): SignUpRequest()
     data class CheckUserAvailability(val username: String): SignUpRequest()
+    data class CheckRecoveryEmailAvailability(val username: String, val email: String): SignUpRequest()
+    class GetCaptcha: SignUpRequest()
 }

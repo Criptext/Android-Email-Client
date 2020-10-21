@@ -7,6 +7,8 @@
     <color name="multiModeTint">#8e8f95</color>
     <color name="textColorPrimary">#000000</color>
     <color name="colorBackground">#ffffff</color>
+    <color name="switchBackground">#dfe2e7</color>
+    <color name="switchBackgroundDark">#14171d</color>
     <color name="colorSecondaryBackground">#fcfcfc</color>
     <color name="colorNavBodyBackground">#f7f7f7</color>
     <color name="colorHighlight">#0091ff</color>
@@ -49,6 +51,7 @@
     <color name="non_criptext_email_send_text_line_focus">#0091ff</color>
     <color name="non_criptext_email_send_eye">#dcdcdc</color>
     <color name="login_password_eye">#5cc3fe</color>
+    <color name="sign_up_password_eye">#9aa1ab</color>
     <color name="non_criptext_email_send_detail_text">#8d8d8d</color>
     <color name="bell">#FF3366</color>
     <color name="attachmentGray">#cecece</color>
@@ -105,4 +108,6 @@
     <color name="fan_badge">#6EA2CD</color>
     <color name="hero_badge">#7876F3</color>
     <color name="legend_badge">#E3A344</color>
+    <color name="check_success_green">#3CA954</color>
+    <color name="error_color">#FF5555</color>
 </resources>

@@ -41,6 +41,16 @@ class SignUpDataSource(override val runner: WorkRunner,
                     username = params.username,
                     publishFn = { result -> flushResults(result)
             })
+            is SignUpRequest.CheckRecoveryEmailAvailability -> CheckRecoveryEmailAvailabilityWorker(
+                    httpClient = httpClient,
+                    username = params.username,
+                    email = params.email,
+                    publishFn = { result -> flushResults(result)
+            })
+            is SignUpRequest.GetCaptcha -> GetCaptchaWorker(
+                    httpClient = httpClient,
+                    publishFn = { result -> flushResults(result)
+            })
         }
     }
 }

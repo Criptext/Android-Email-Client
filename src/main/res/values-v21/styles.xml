@@ -13,6 +13,7 @@
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextSelectableItemBackground">#cecece</item>
         <item name="criptextColorBackground">@color/colorBackground</item>
+        <item name="criptextSwitchBackground">@color/switchBackground</item>
         <item name="criptextLeftMenuHeader">@color/colorNavBodyBackground</item>
         <item name="criptextLeftMenuBackground">@color/colorSecondaryBackground</item>
         <item name="criptextLeftMenuSelected">@color/menu_selected</item>
@@ -58,6 +59,8 @@
         <item name="criptextSearchImage">@drawable/search_happy</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="criptextPinGradient">@drawable/login_background</item>
+        <item name="criptextStartLogo">@drawable/img_logo</item>
+        <item name="criptextStartMotto">@drawable/img_subtitle</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -70,6 +73,7 @@
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="criptextSelectableItemBackground">@color/mail_item_not_selected</item>
         <item name="criptextColorBackground">@color/settings_bg_color_dark</item>
+        <item name="criptextSwitchBackground">@color/switchBackgroundDark</item>
         <item name="criptextLeftMenuHeader">@color/menu_header_dark</item>
         <item name="criptextLeftMenuBackground">@color/menu_body_dark</item>
         <item name="criptextLeftMenuSelected">@color/menu_selected_dark</item>
@@ -115,6 +119,8 @@
         <item name="criptextSearchImage">@drawable/searchdark</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="criptextPinGradient">@drawable/pin_background_dark</item>
+        <item name="criptextStartLogo">@drawable/img_logo_dm</item>
+        <item name="criptextStartMotto">@drawable/img_subtitle_dm</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -170,12 +176,12 @@
     </style>
 
     <style name="textinputlayout_login_error" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:textColorHint">@android:color/black</item>
-        <item name="android:textSize">12sp</item>
-        <item name="colorAccent">@android:color/black</item>
-        <item name="colorControlNormal">@android:color/black</item>
-        <item name="colorControlActivated">@android:color/black</item>
+        <item name="android:textColor">@color/error_color</item>
+        <item name="android:textColorHint">@color/error_color</item>
+        <item name="android:textSize">14sp</item>
+        <item name="colorAccent">@color/error_color</item>
+        <item name="colorControlNormal">@color/error_color</item>
+        <item name="colorControlActivated">@color/error_color</item>
     </style>
 
     <style name="NormalTextAppearenceUsernameInput">

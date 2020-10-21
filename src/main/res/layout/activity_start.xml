@@ -1,0 +1,145 @@
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:background="?attr/criptextColorBackground"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/viewRoot"
+android:focusableInTouchMode="true" >
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:src="@drawable/ic_arrow"
+        android:visibility="gone"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="228dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="70dp"
+                android:layout_marginStart="70dp">
+
+                <ImageView
+                    android:src="?attr/criptextStartLogo"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="62.9dp"/>
+                <ImageView
+                    android:layout_width="220dp"
+                    android:layout_height="37dp"
+                    android:src="?attr/criptextStartMotto"
+                    android:layout_gravity="center"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginEnd="56dp"
+                android:layout_marginTop="200dp"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/signin_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:indeterminateTint="@color/white"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"/>
+
+                <Button
+                    android:id="@+id/signin_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"
+                    android:textColor="@drawable/btn_sign_in"
+                    android:text="@string/login"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:orientation="vertical"
+                android:layout_marginStart="56dp"
+                android:layout_marginEnd="56dp"
+                android:layout_marginTop="10dp">
+                <ProgressBar
+                    android:id="@+id/create_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:indeterminateTint="@color/black_transparent"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_white_background"/>
+                <Button
+                    android:id="@+id/create_account_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_white_background"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:text="@string/btn_create_account"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/contact_support"
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/contact_support"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:layout_gravity="center"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/criptext_version"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/version_text"
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</RelativeLayout>

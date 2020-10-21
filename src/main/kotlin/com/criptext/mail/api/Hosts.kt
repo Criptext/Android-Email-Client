@@ -15,6 +15,6 @@ object Hosts {
     const val ADMIN_URL = "https://admin.criptext.com/"
     const val ACCOUNT_URL = "https://account.criptext.com/"
 
-    fun billing(jwt: String, language: String) = "${ACCOUNT_URL}?#/account/billing?token=$jwt&lang=$language"
+    fun billing(jwt: String, language: String) = "${ACCOUNT_URL}?#/billing?token=$jwt&lang=$language"
     fun addressManager(jwt: String, language: String) = "${ACCOUNT_URL}?#/addresses??token=$jwt&lang=$language"
 }

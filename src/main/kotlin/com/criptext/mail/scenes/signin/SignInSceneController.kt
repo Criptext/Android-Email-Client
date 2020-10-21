@@ -96,7 +96,7 @@ class SignInSceneController(
         if(activeAccount == null){
             val currentState = model.state as? SignInLayoutState.LoginValidation
             if(currentState != null) {
-                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(currentState.username, firstTime = false)
                 resetLayout()
                 if(canceledByMe)
                     generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
@@ -152,8 +152,7 @@ class SignInSceneController(
     private fun onDeviceRemoved(result: GeneralResult.DeviceRemoved){
         when(result){
             is GeneralResult.DeviceRemoved.Success -> {
-                val currentState = model.state as SignInLayoutState.Connection
-                model.state = SignInLayoutState.Start(currentState.username, firstTime = false)
+                model.state = SignInLayoutState.Start(false)
                 resetLayout()
             }
         }
@@ -230,8 +229,7 @@ class SignInSceneController(
     }
 
     private fun returnToStart(message: UIMessage){
-        val currentState = model.state as SignInLayoutState.LoginValidation
-        model.state = SignInLayoutState.Start(currentState.username, false)
+        model.state = SignInLayoutState.Start(false)
         scene.initLayout(model, uiObserver)
         scene.showError(message)
     }
@@ -515,7 +513,7 @@ class SignInSceneController(
         }
     }
 
-    private fun onSignInButtonClicked(currentState: SignInLayoutState.Start) {
+    private fun onSignInButtonClicked(currentState: SignInLayoutState.LoginUsername) {
         val userInput = AccountDataValidator.validateUsername(currentState.username)
         when (userInput) {
             is FormData.Valid -> {
@@ -852,7 +850,11 @@ class SignInSceneController(
         override fun onSubmitButtonClicked() {
             val state = model.state
             when (state) {
-                is SignInLayoutState.Start -> onSignInButtonClicked(state)
+                is SignInLayoutState.Start -> {
+                    model.state = SignInLayoutState.LoginUsername("", state.firstTime)
+                    scene.initLayout(model, this)
+                }
+                is SignInLayoutState.LoginUsername -> onSignInButtonClicked(state)
                 is SignInLayoutState.InputPassword -> {
                     if(model.hasTwoFA){
                         val currentState = model.state as SignInLayoutState.InputPassword
@@ -939,14 +941,14 @@ class SignInSceneController(
         }
 
         override fun onUsernameTextChanged(newUsername: String) {
-            model.state = SignInLayoutState.Start(username = newUsername, firstTime = false)
+            model.state = SignInLayoutState.LoginUsername(username = newUsername, firstTime = false)
             val buttonState = if (newUsername.isNotEmpty()) ProgressButtonState.enabled
                               else ProgressButtonState.disabled
             scene.setSubmitButtonState(buttonState)
         }
 
         override fun onSignUpLabelClicked() {
-            host.goToScene(SignUpParams(model.isMultiple), false)
+            host.goToScene(SignUpParams(model.isMultiple), true)
         }
     }
 
@@ -1018,11 +1020,18 @@ class SignInSceneController(
                 } else
                     true
             }
+            is SignInLayoutState.LoginUsername -> {
+                model.state = SignInLayoutState.Start(currentState.firstTime)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
+                resetLayout()
+                false
+            }
             is SignInLayoutState.LoginValidation -> {
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
@@ -1033,7 +1042,7 @@ class SignInSceneController(
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
@@ -1044,7 +1053,7 @@ class SignInSceneController(
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
@@ -1054,7 +1063,7 @@ class SignInSceneController(
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
                 resetLayout()
                 false
             }
@@ -1065,7 +1074,7 @@ class SignInSceneController(
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.Start(username, firstTime = false)
+                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()

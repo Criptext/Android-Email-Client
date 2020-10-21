@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginTop="165dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="@string/terms_and_conditions_title"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="17dp"
+            android:text="@string/captcha_message"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="18sp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="50dp"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/mx_records_border">
+            <ProgressBar
+                android:id="@+id/captcha_load"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:visibility="visible"
+                android:indeterminate="true"
+                android:progressTint="@color/azure"
+                android:layout_weight="0.33"/>
+            <WebView
+                android:id="@+id/captcha"
+                android:layout_width="200dp"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_weight="0.33"/>
+            <View
+                android:layout_width="0.5dp"
+                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:background="?attr/criptextLeftMenuSeparator"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="22dp"/>
+
+            <ImageView
+                android:id="@+id/refresh_captcha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="15dp"
+                android:src="@drawable/shuffle_ic_copy_2"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_margin="15dp"
+                android:textColorHint="@color/signup_hint_color"
+                android:hint="@string/reply_to_email_hint"
+                app:errorEnabled="true"
+                app:errorTextAppearance="@style/textinputlayout_error_non_criptext_email_send"
+                app:hintTextAppearance="@style/NormalTextAppearence">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="48dp">
+
+            <CheckBox
+                android:id="@+id/chkTermsAndConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:buttonTint="@drawable/signup_chk"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:text="@string/sign_up_terms_and_conditions_start"
+                    android:id="@+id/textViewConditions"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/azure"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:text="@string/sign_up_terms_and_conditions_end"
+                    android:id="@+id/txt_terms_and_conditions"
+                    fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_marginTop="35dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_log_in"
+            android:textColor="@drawable/btn_sign_in"
+            android:enabled="false"
+            android:text="@string/btn_create_account"
+            android:textSize="16sp"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/creating_account_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/criptextColorBackground"
+        android:alpha="0.5"
+        android:orientation="horizontal"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="?attr/criptextSecondaryTextColor"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="@string/creating_keys"
+        android:id="@+id/creatingKeysTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="26dp"
+        android:visibility="gone"/>
+
+
+    <ProgressBar
+        android:id="@+id/progress_horizontal"
+        android:indeterminateOnly="true"
+        android:indeterminate="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:visibility="gone"/>
+
+</RelativeLayout>

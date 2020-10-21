@@ -1,6 +1,7 @@
 package com.criptext.mail.utils.generaldatasource.data
 
 import android.content.ContentResolver
+import android.graphics.Bitmap
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
@@ -8,6 +9,7 @@ import com.criptext.mail.db.models.CustomDomain
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.data.AliasData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.ContactUtils
@@ -55,4 +57,6 @@ sealed class GeneralRequest {
     data class UpdateLocalDomainAndAliasData(val customDomains: List<CustomDomain>, val aliases: List<AliasData>) : GeneralRequest()
     data class ChangeBlockRemoteContentSetting(val newBlockRemoteContent: Boolean) : GeneralRequest()
     class ResendConfirmationLink: GeneralRequest()
+    data class SetProfilePicture(val image: Bitmap): GeneralRequest()
+    data class SetCloudBackupActive(val cloudBackupData: CloudBackupData): GeneralRequest()
 }

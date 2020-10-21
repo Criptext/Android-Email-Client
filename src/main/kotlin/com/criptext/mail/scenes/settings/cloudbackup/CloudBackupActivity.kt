@@ -73,7 +73,8 @@ class CloudBackupActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         val controller = CloudBackupController(
                 model = model,

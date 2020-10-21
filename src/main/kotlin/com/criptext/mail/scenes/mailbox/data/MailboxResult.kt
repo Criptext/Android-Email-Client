@@ -112,13 +112,6 @@ sealed class MailboxResult {
         data class ServerFailure(val message: UIMessage, val queueIsEmpty: Boolean): ResendPeerEvents()
     }
 
-    sealed class SetCloudBackupActive : MailboxResult() {
-        data class Success(val cloudBackupData: CloudBackupData): SetCloudBackupActive()
-        data class Failure(val message: UIMessage,
-                           val exception: Exception?,
-                           val cloudBackupData: CloudBackupData): SetCloudBackupActive()
-    }
-
     sealed class CheckCloudBackupEnabled : MailboxResult() {
         data class Success(val isEnabled: Boolean): CheckCloudBackupEnabled()
         data class Failure(val message: UIMessage,

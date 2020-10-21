@@ -4,8 +4,6 @@ import com.criptext.mail.api.HttpClient
 import com.criptext.mail.api.HttpResponseData
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.scenes.signup.IncompleteAccount
-import com.criptext.mail.utils.DeviceUtils
-import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -23,6 +21,8 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         jsonObject.put("password", account.password)
         jsonObject.put("recipientId", account.username)
         jsonObject.put("keybundle", keyBundle.toJSON())
+        jsonObject.put("captchaKey", account.captchaKey)
+        jsonObject.put("captchaAnswer", account.captchaAnswer)
         if (account.recoveryEmail != null)
             jsonObject.put("recoveryEmail", account.recoveryEmail)
 
@@ -35,6 +35,13 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
 
     fun isUsernameAvailable(username: String): HttpResponseData {
         return httpClient.get("/user/available?username=$username", null)
+    }
+
+    fun isRecoveryEmailAvailable(username: String, recoveryEmail: String): HttpResponseData {
+        val jsonObject = JSONObject()
+        jsonObject.put("email", recoveryEmail)
+        jsonObject.put("username", username)
+        return httpClient.post("/user/recovery/check", null, jsonObject)
     }
 
     fun postForgotPassword(recipientId: String, domain: String): HttpResponseData{
@@ -86,5 +93,9 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
 
     fun postKeybundle(bundle: PreKeyBundleShareData.UploadBundle, jwt: String): HttpResponseData {
         return httpClient.post(path = "/keybundle", body = bundle.toJSON(), authToken = jwt)
+    }
+
+    fun getCaptcha(): HttpResponseData {
+        return httpClient.get(path = "/user/captcha", authToken = null)
     }
 }

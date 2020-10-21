@@ -81,7 +81,8 @@ class RegisterUserWorkerTest {
         every { db.customDomainDao() } returns customDomainDao
 
         val newAccount = IncompleteAccount(username ="tester", name = "A Tester", deviceId = 1,
-                password = "secretPassword", recoveryEmail = "tester@gmail.com")
+                password = "secretPassword", recoveryEmail = "tester@gmail.com", captchaAnswer = "CAPTCHA_ANSWER",
+                captchaKey = "CAPTCHA_KEY")
         val worker = newWorker(newAccount)
 
         worker.work(mockk()) `should be instance of` SignUpResult.RegisterUser.Success::class.java

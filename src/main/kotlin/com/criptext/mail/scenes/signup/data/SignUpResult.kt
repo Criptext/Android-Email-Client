@@ -26,5 +26,15 @@ sealed class SignUpResult {
         data class Success(val isAvailable: Boolean): CheckUsernameAvailability()
         class Failure: CheckUsernameAvailability()
     }
+
+    sealed class CheckRecoveryEmailAvailability: SignUpResult() {
+        class Success: CheckRecoveryEmailAvailability()
+        data class Failure(val errorMessage: UIMessage): CheckRecoveryEmailAvailability()
+    }
+
+    sealed class GetCaptcha: SignUpResult() {
+        data class Success(val captchaKey: String, val captcha: String): GetCaptcha()
+        data class Failure(val message: UIMessage): GetCaptcha()
+    }
 }
 

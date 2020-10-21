@@ -8,18 +8,15 @@ import com.criptext.mail.bgworker.RunnableThrottler
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.params.CustomizeParams
 import com.criptext.mail.scenes.params.MailboxParams
-import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.WebViewParams
 import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
-import com.criptext.mail.scenes.webview.WebViewSceneController
+import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.ui.data.TransitionAnimationData
-import com.criptext.mail.validation.AccountDataValidator
-import com.criptext.mail.validation.FormData
-import com.criptext.mail.validation.FormInputState
-import com.criptext.mail.validation.TextInput
+import com.criptext.mail.validation.*
 import java.util.*
 
 /**
@@ -47,32 +44,47 @@ class SignUpSceneController(
     private val isCheckedTermsAndConditions: Boolean
         get() = model.checkTermsAndConditions
 
-    private fun shouldCreateButtonBeEnabled(): Boolean {
-        return model.username.value.isNotEmpty()
-                && model.username.state !is FormInputState.Error
-                &&  model.passwordState is FormInputState.Valid
-                && model.recoveryEmail.value.isNotEmpty()
-                && model.recoveryEmail.state !is FormInputState.Error
-                && isCheckedTermsAndConditions
-    }
-
-    private fun toggleCreateAccountButton() {
-        if(shouldCreateButtonBeEnabled()) {
-            scene.enableCreateAccountButton()
-        } else {
-            scene.disableCreateAccountButton()
+    private val uiObserver: SignUpUIObserver = object : SignUpUIObserver {
+        override fun onNextButtonPressed() {
+            scene.setSubmitButtonState(ProgressButtonState.waiting)
+            when (model.state) {
+                is SignUpLayoutState.Name -> {
+                    model.state = SignUpLayoutState.EmailHandle(model.username.value)
+                    resetLayout()
+                }
+                is SignUpLayoutState.EmailHandle -> {
+                    model.state = SignUpLayoutState.Password(model.password)
+                    resetLayout()
+                }
+                is SignUpLayoutState.Password -> {
+                    model.state = SignUpLayoutState.ConfirmPassword(model.confirmPassword)
+                    resetLayout()
+                }
+                is SignUpLayoutState.ConfirmPassword -> {
+                    model.state = SignUpLayoutState.RecoveryEmail(model.recoveryEmail.value)
+                    resetLayout()
+                }
+                is SignUpLayoutState.RecoveryEmail -> {
+                    model.state = SignUpLayoutState.TermsAndConditions()
+                    resetLayout(ProgressButtonState.waiting)
+                    dataSource.submitRequest(SignUpRequest.GetCaptcha())
+                }
+                is SignUpLayoutState.TermsAndConditions -> {
+                    scene.showGeneratingKeys(true)
+                    submitCreateUser()
+                }
+            }
         }
 
-    }
-
-    private val uiObserver: SignUpUIObserver = object : SignUpUIObserver {
         override fun onUsernameChangedListener(text: String) {
             val newUsername = if (text.isEmpty()) {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
                 model.username.copy(state = FormInputState.Unknown())
             } else {
                 val userInput = AccountDataValidator.validateUsernameOnly(text)
                 when (userInput) {
                     is FormData.Valid -> {
+                        scene.setSubmitButtonState(ProgressButtonState.waiting)
                         runnableThrottler.push(Runnable {
                             val newRequest = SignUpRequest.CheckUserAvailability(userInput.value)
                             dataSource.submitRequest(newRequest)
@@ -84,68 +96,84 @@ class SignUpSceneController(
                     }
 
                     is FormData.Error -> {
+                        scene.setSubmitButtonState(ProgressButtonState.disabled)
                         model.username.copy(value = text,
                                             state = FormInputState.Error(userInput.message))
                     }
                 }
             }
             model.username = newUsername
-            scene.setUsernameState(newUsername.state)
-            toggleCreateAccountButton()
+            scene.setInputState(model.state, newUsername.state)
         }
 
         override fun onFullNameTextChangeListener(text: String){
             val newFullName = if (text.isEmpty()) {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
                 model.fullName.copy(state = FormInputState.Unknown())
             } else {
                 val userInput = AccountDataValidator.validateFullName(text)
                 when (userInput) {
                     is FormData.Valid -> {
+                        scene.setSubmitButtonState(ProgressButtonState.enabled)
                         model.fullName.copy(value = userInput.value,
                                             state = FormInputState.Valid())
                     }
 
                     is FormData.Error -> {
+                        scene.setSubmitButtonState(ProgressButtonState.disabled)
                         model.fullName.copy(value = text,
                                             state = FormInputState.Error(userInput.message))
                     }
                 }
             }
             model.fullName = newFullName
-            scene.setFullNameState(newFullName.state)
-            toggleCreateAccountButton()
+            scene.setInputState(model.state, newFullName.state)
         }
 
         override fun onRecoveryEmailTextChangeListener(text: String) {
             val newRecoveryEmail = if (text.isEmpty()) {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
                 TextInput(value = text, state = FormInputState.Unknown())
             } else {
                 val userInput = AccountDataValidator.validateEmailAddress(text)
                 when (userInput) {
                     is FormData.Valid -> {
+                        scene.setSubmitButtonState(ProgressButtonState.waiting)
+                        runnableThrottler.push(Runnable {
+                            val newRequest = SignUpRequest.CheckRecoveryEmailAvailability(model.username.value, userInput.value)
+                            dataSource.submitRequest(newRequest)
+                        })
+
                         TextInput(value = userInput.value,
-                                state = FormInputState.Valid())
+                                state = FormInputState.Unknown())
                     }
 
                     is FormData.Error -> {
+                        scene.setSubmitButtonState(ProgressButtonState.disabled)
                         TextInput(value = text,
                                 state = FormInputState.Error(userInput.message))
                     }
                 }
             }
             model.recoveryEmail = newRecoveryEmail
-            scene.setRecoveryEmailState(newRecoveryEmail.state)
-            toggleCreateAccountButton()
+            scene.setInputState(model.state, newRecoveryEmail.state)
+        }
+
+        override fun onCaptchaTextChange(text: String) {
+            model.captchaAnswer = text
+            if(model.captchaAnswer.isNotEmpty() && model.checkTermsAndConditions){
+                scene.setSubmitButtonState(ProgressButtonState.enabled)
+            } else {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+            }
         }
 
         override fun onCheckedOptionChanged(state: Boolean) {
             model.checkTermsAndConditions = state
-            if (model.checkTermsAndConditions) {
-                if (shouldCreateButtonBeEnabled()) {
-                    scene.enableCreateAccountButton()
-                }
+            if(state && model.captchaAnswer.isNotEmpty()){
+                scene.setSubmitButtonState(ProgressButtonState.enabled)
             } else {
-                scene.disableCreateAccountButton()
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
             }
         }
 
@@ -165,6 +193,11 @@ class SignUpSceneController(
             )
         }
 
+        override fun onCaptchaRefresh() {
+            dataSource.submitRequest(SignUpRequest.GetCaptcha())
+            resetLayout(ProgressButtonState.waiting)
+        }
+
         override fun onContactSupportClick() {
             host.goToScene(
                     params = WebViewParams(
@@ -182,29 +215,29 @@ class SignUpSceneController(
         }
 
         private fun checkPasswords(passwords: Pair<String, String>) {
-            if (arePasswordsMatching && passwords.first.length >= minimumPasswordLength) {
-                scene.setPasswordError(null)
-                scene.togglePasswordSuccess(show = true)
-                model.passwordState = FormInputState.Valid()
-                if (shouldCreateButtonBeEnabled())
-                    scene.enableCreateAccountButton()
-            } else if (arePasswordsMatching && passwords.first.isEmpty()) {
-                    scene.setPasswordError(null)
-                    scene.togglePasswordSuccess(show = false)
-                    model.passwordState = FormInputState.Unknown()
-                    scene.disableCreateAccountButton()
-            } else if (arePasswordsMatching && passwords.first.length < minimumPasswordLength) {
-                    scene.togglePasswordSuccess(show = false)
-                    val errorMessage = UIMessage(R.string.password_length_error)
-                    model.passwordState = FormInputState.Error(errorMessage)
-                    scene.setPasswordError(errorMessage)
-                    scene.disableCreateAccountButton()
-            } else {
-                    val errorMessage = UIMessage(R.string.password_mismatch_error)
-                    model.passwordState = FormInputState.Error(errorMessage)
-                    scene.setPasswordError(errorMessage)
-                    scene.togglePasswordSuccess(show = false)
-                    scene.disableCreateAccountButton()
+            when(model.state){
+                is SignUpLayoutState.Password -> {
+                    scene.setPasswordCheck(
+                            isNotUsername = model.username.value != passwords.first,
+                            isAtLeastEightChars = passwords.first.length >= minimumPasswordLength
+                    )
+                }
+                is SignUpLayoutState.ConfirmPassword -> {
+                    val inputState = when {
+                        passwords.first.isEmpty() -> {
+                            FormInputState.Unknown()
+                        }
+                        passwords.first == passwords.second -> {
+                            FormInputState.Valid()
+                        }
+                        else -> {
+                            FormInputState.Error(UIMessage(R.string.password_mismatch_error))
+                        }
+                    }
+                    scene.setConfirmPasswordCheck(
+                            passwordMatches = inputState
+                    )
+                }
             }
         }
 
@@ -215,15 +248,12 @@ class SignUpSceneController(
 
         override fun onPasswordChangedListener(text: String) {
             model.password = text
-            if(model.confirmPassword.isNotEmpty())
-                checkPasswords(Pair(model.password, model.confirmPassword))
+            checkPasswords(Pair(model.password, model.confirmPassword))
         }
 
         override fun onCreateAccountClick() {
-            if(shouldCreateButtonBeEnabled()) {
-                keyboardManager.hideKeyboard()
-                this@SignUpSceneController.submitCreateUser()
-            }
+            keyboardManager.hideKeyboard()
+            this@SignUpSceneController.submitCreateUser()
         }
 
         override fun onBackPressed() {
@@ -241,6 +271,8 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser -> onUserRegistered(result)
             is SignUpResult.CheckUsernameAvailability -> onCheckedUsernameAvailability(result)
+            is SignUpResult.CheckRecoveryEmailAvailability -> onCheckedRecoveryEmailAvailability(result)
+            is SignUpResult.GetCaptcha -> onGetCaptcha(result)
         }
     }
 
@@ -248,68 +280,91 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.CheckUsernameAvailability.Success -> {
                 if (result.isAvailable) {
-                    scene.setUsernameState(FormInputState.Valid())
-                    toggleCreateAccountButton()
+                    scene.setInputState(model.state, FormInputState.Valid())
+                    scene.setSubmitButtonState(ProgressButtonState.enabled)
                 } else {
                     val newState = FormInputState.Error(UIMessage(R.string.taken_username_error))
                     model.username = model.username.copy(state = newState)
-                    scene.setUsernameState(newState)
+                    scene.setInputState(model.state, newState)
+                    scene.setSubmitButtonState(ProgressButtonState.disabled)
                 }
             }
             is SignUpResult.CheckUsernameAvailability.Failure -> {
                 val newState = FormInputState.Error(UIMessage(R.string.taken_username_error))
                 model.username = model.username.copy(state = newState)
-                scene.setUsernameState(newState)
+                scene.setInputState(model.state, newState)
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+            }
+        }
+    }
+
+    private fun onGetCaptcha(result: SignUpResult.GetCaptcha) {
+        when (result) {
+            is SignUpResult.GetCaptcha.Success -> {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+                model.captchaKey = result.captchaKey
+                scene.setCaptcha(result.captcha)
+            }
+            is SignUpResult.GetCaptcha.Failure -> {
+                val newState = FormInputState.Error(result.message)
+                scene.setInputState(model.state, newState)
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
+            }
+        }
+    }
+
+    private fun onCheckedRecoveryEmailAvailability(result: SignUpResult.CheckRecoveryEmailAvailability) {
+        when (result) {
+            is SignUpResult.CheckRecoveryEmailAvailability.Success -> {
+                scene.setInputState(model.state, FormInputState.Valid())
+                scene.setSubmitButtonState(ProgressButtonState.enabled)
+            }
+            is SignUpResult.CheckRecoveryEmailAvailability.Failure -> {
+                val newState = FormInputState.Error(result.errorMessage)
+                model.username = model.username.copy(state = newState)
+                scene.setInputState(model.state, newState)
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
             }
         }
     }
 
     private fun handleRegisterUserFailure(result: SignUpResult.RegisterUser.Failure) {
-        scene.initListeners(uiObserver)
-        scene.showError(result.message)
-        resetWidgetsFromModel()
-        when(result.exception)
-        {
-            is ServerErrorException -> {
-                when(result.exception.errorCode){
-                    ServerCodes.BadRequest -> {
-                        val newState = FormInputState.Error(result.message)
-                        model.username = model.username.copy(state = newState)
-
-                        scene.setUsernameState(newState)
-                        scene.disableCreateAccountButton()
-                    }
-                    ServerCodes.TooManyRequests -> {
-                        scene.showError(result.message)
-                        host.goToScene(
-                                params = SignInParams(),
-                                activityMessage = null,
-                                keep = false,
-                                deletePastIntents = true)
-                    }
-                }
-            }
+        if(result.exception is ServerErrorException && result.exception.errorCode == ServerCodes.Conflict){
+            scene.showGeneratingKeys(false)
+            scene.setInputState(
+                    layoutState = model.state,
+                    state = FormInputState.Error(result.message)
+            )
+            model.captchaAnswer = ""
+        } else {
+            scene.showGeneratingKeys(false)
+            scene.showError(result.message)
         }
     }
     private fun onUserRegistered(result: SignUpResult.RegisterUser) {
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
-                model.signUpSucceed = true
+                host.goToScene(
+                    params = CustomizeParams(model.recoveryEmail.value),
+                    keep = false,
+                    deletePastIntents = true,
+                    activityMessage = null
+                )
             }
             is SignUpResult.RegisterUser.Failure -> handleRegisterUserFailure(result)
         }
     }
 
     private fun submitCreateUser() {
-        scene.showKeyGenerationHolder()
-
         val hashedPassword = model.password.sha256()
         val newAccount = IncompleteAccount(
                 username = model.username.value,
                 name = model.fullName.value,
                 password = hashedPassword,
                 deviceId = 1,
-                recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null
+                recoveryEmail = if (isSetRecoveryEmail) model.recoveryEmail.value else null,
+                captchaAnswer = model.captchaAnswer,
+                captchaKey = model.captchaKey
         )
 
         val req = SignUpRequest.RegisterUser(
@@ -320,43 +375,12 @@ class SignUpSceneController(
         dataSource.submitRequest(req)
     }
 
-    private fun resetWidgetsFromModel() {
-        scene.resetSceneWidgetsFromModel(
-                username = model.username,
-                recoveryEmail = model.recoveryEmail,
-                password = model.password,
-                confirmPassword = model.confirmPassword,
-                fullName = model.fullName,
-                isChecked = model.checkTermsAndConditions
-        )
-    }
-
-    val onRecoveryEmailWarningListener = object : OnRecoveryEmailWarningListener {
-        override fun willAssignRecoverEmail() {
-        }
-
-        override fun denyWillAssignRecoverEmail() {
-            this@SignUpSceneController.submitCreateUser()
-        }
-    }
-
     override fun onStart(activityMessage: ActivityMessage?): Boolean {
         dataSource.listener = dataSourceListener
-        scene.showFormHolder()
-        if(model.username.value.isNotEmpty()) {
-            scene.resetSceneWidgetsFromModel(model.username, model.fullName, model.password,
-                    model.confirmPassword, model.recoveryEmail, model.checkTermsAndConditions)
-            uiObserver.onUsernameChangedListener(model.username.value)
-            uiObserver.onFullNameTextChangeListener(model.fullName.value)
-            uiObserver.onPasswordChangedListener(model.password)
-            uiObserver.onConfirmPasswordChangedListener(model.confirmPassword)
-            uiObserver.onCheckedOptionChanged(model.checkTermsAndConditions)
-            toggleCreateAccountButton()
-        }
-        scene.initListeners(
-                uiObserver = uiObserver
+        scene.initLayout(
+                model,
+                uiObserver
         )
-        scene.disableCreateAccountButton()
         return false
     }
 
@@ -377,12 +401,44 @@ class SignUpSceneController(
         return
     }
 
+    private fun resetLayout(buttonState: ProgressButtonState = ProgressButtonState.disabled) {
+        scene.setSubmitButtonState(buttonState)
+        scene.initLayout(model, uiObserver)
+    }
+
     override fun onBackPressed(): Boolean {
-        host.goToScene(
-                params = SignInParams(),
-                activityMessage = null,
-                keep = false)
-        return false
+        return when (model.state) {
+            is SignUpLayoutState.Name -> {
+                host.finishScene()
+                false
+            }
+            is SignUpLayoutState.EmailHandle -> {
+                model.state = SignUpLayoutState.Name(model.fullName.value)
+                resetLayout(ProgressButtonState.enabled)
+                false
+            }
+            is SignUpLayoutState.Password -> {
+                model.state = SignUpLayoutState.EmailHandle(model.username.value)
+                resetLayout(ProgressButtonState.enabled)
+                false
+            }
+            is SignUpLayoutState.ConfirmPassword -> {
+                model.state = SignUpLayoutState.Password(model.password)
+                resetLayout(ProgressButtonState.enabled)
+                false
+            }
+            is SignUpLayoutState.RecoveryEmail -> {
+                model.state = SignUpLayoutState.ConfirmPassword(model.confirmPassword)
+                resetLayout(ProgressButtonState.enabled)
+                false
+            }
+            is SignUpLayoutState.TermsAndConditions -> {
+                model.state = SignUpLayoutState.RecoveryEmail(model.recoveryEmail.value)
+                resetLayout(ProgressButtonState.enabled)
+                model.captchaAnswer = ""
+                false
+            }
+        }
     }
 
     override fun onMenuChanged(menu: IHostActivity.IActivityMenu) {}
@@ -400,8 +456,11 @@ class SignUpSceneController(
         fun onUsernameChangedListener(text: String)
         fun onFullNameTextChangeListener(text: String)
         fun onRecoveryEmailTextChangeListener(text: String)
+        fun onCaptchaTextChange(text: String)
         fun onCheckedOptionChanged(state: Boolean)
         fun onTermsAndConditionsClick()
+        fun onCaptchaRefresh()
+        fun onNextButtonPressed()
         fun onContactSupportClick()
         fun onBackPressed()
         fun onProgressHolderFinish()

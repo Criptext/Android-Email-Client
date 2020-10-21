@@ -14,7 +14,7 @@ import com.criptext.mail.validation.FormInputState
  * Created by sebas on 2/23/18.
  */
 class SignInSceneModel(val isMultiple: Boolean = false) : SceneModel {
-    var state: SignInLayoutState = SignInLayoutState.Start(username = "", firstTime = true)
+    var state: SignInLayoutState = SignInLayoutState.Start(firstTime = true)
     var ephemeralJwt: String = ""
     var hasTwoFA = false
     var realSecurePassword: String? = null

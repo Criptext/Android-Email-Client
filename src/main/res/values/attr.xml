@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="criptextColorBackground" format="reference|color"/>
+    <attr name="criptextSwitchBackground" format="reference|color"/>
     <attr name="criptextSettingsDividerBackground" format="reference|color"/>
     <attr name="criptextLeftMenuBackground" format="reference|color"/>
     <attr name="criptextLeftMenuHeader" format="reference|color"/>
@@ -48,4 +49,6 @@
     <attr name="criptextSearchImage" format="reference"/>
     <attr name="criptextSelectableItemBackground" format="reference|color"/>
     <attr name="criptextPinGradient" format="reference"/>
+    <attr name="criptextStartLogo" format="reference"/>
+    <attr name="criptextStartMotto" format="reference"/>
 </resources>

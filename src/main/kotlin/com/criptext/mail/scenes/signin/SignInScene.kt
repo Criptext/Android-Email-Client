@@ -17,7 +17,6 @@ import com.criptext.mail.utils.ui.RetrySyncAlertDialogNewDevice
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.validation.ProgressButtonState
-import kotlin.math.max
 
 /**
  * Created by sebas on 2/15/18.
@@ -101,8 +100,8 @@ interface SignInScene {
         init {
             val signInLayout = View.inflate(
                     view.context,
-                    R.layout.activity_signin_form, viewGroup)
-            holder = SignInStartHolder(signInLayout, "", true, false)
+                    R.layout.activity_start, viewGroup)
+            holder = SignInStartHolder(signInLayout,  true, false)
         }
 
 
@@ -146,8 +145,14 @@ interface SignInScene {
                 is SignInLayoutState.Start -> {
                     val newLayout = View.inflate(
                             view.context,
+                            R.layout.activity_start, viewGroup)
+                    SignInStartHolder(newLayout, state.firstTime, model.isMultiple)
+                }
+                is SignInLayoutState.LoginUsername -> {
+                    val newLayout = View.inflate(
+                            view.context,
                             R.layout.activity_signin_form, viewGroup)
-                    SignInStartHolder(newLayout, state.username, state.firstTime, model.isMultiple)
+                    LoginUsernameHolder(newLayout, state.username, state.firstTime, model.isMultiple)
                 }
                 is SignInLayoutState.RemoveDevices -> {
                     val newLayout = View.inflate(
@@ -198,7 +203,7 @@ interface SignInScene {
             val currentHolder = holder
             when (currentHolder) {
                 is PasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
-                is SignInStartHolder -> currentHolder.setSubmitButtonState(state)
+                is LoginUsernameHolder -> currentHolder.setSubmitButtonState(state)
                 is ChangePasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
             }
         }
@@ -214,7 +219,7 @@ interface SignInScene {
         override fun drawInputError(error: UIMessage) {
             val currentHolder = holder
             when (currentHolder) {
-                is SignInStartHolder -> currentHolder.drawError(error)
+                is LoginUsernameHolder -> currentHolder.drawError(error)
             }
         }
 

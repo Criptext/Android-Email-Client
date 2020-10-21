@@ -135,6 +135,40 @@ class HTMLUtils {
             return head + printHeader + htmlText[0] + concatOtherMails.toString() + collapseScript(isForward) + closedTag
         }
 
+        fun createCaptchaHtml(captcha: String): String {
+            return """<html>
+                          <head>
+                              <meta name=\"viewport\" content="width=device-width, initial-scale=1.0">
+                              <style>
+                                  body {
+                                      width: 100%;
+                                      height: 100%;
+                                      margin: 0px;
+                                      padding: 0px;
+                                  }
+                                  .captcha-svg {
+                                      flex-grow: 1;
+                                      display: flex;
+                                      justify-content: center;
+                                      align-items: center;
+                                      background-color: white;
+                                      width= 100%;
+                                      height= 100%;
+                                  }
+                        
+                                  svg {
+                                      witdh: 100%;
+                                  }
+                              </style>
+                          </head>
+                          <body>
+                              <div class="captcha-svg">
+                                  $captcha
+                              </div>
+                          </body>
+                        </html>"""
+        }
+
         fun createEmailPreview(emailBody: String): String {
             val bodyWithoutHTML = HTMLUtils.html2text(emailBody)
             return if (bodyWithoutHTML.length > 300 )

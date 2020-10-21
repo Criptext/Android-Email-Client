@@ -134,7 +134,7 @@ um fortzufahren</string>
   <string name="separator_support">SUPPORT</string>
   <string name="status_not_confirmed">(nicht verifiziert)</string>
   <string name="status_confirmed">(verifiziert)</string>
-  <string name="criptext_version">Criptext Beta</string>
+  <string name="criptext_version">Version</string>
   <string name="password_enter_error">Das Passwort ist falsch.</string>
   <string name="change_password_success">Das Passwort wurde geändert.</string>
   <string name="old_password">Altes Passwort eingeben</string>
@@ -225,7 +225,7 @@ Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
   <string name="subtitle_expiration_dialog">Verschlüsselte E-Mails an Nicht-Criptext-Empfänger verfallen in 10 Tagen</string>
   <string name="unsent">zurückgerufen</string>
   <string name="password_length_error">Das Passwort muss aus mindestens 8 Zeichen bestehen.</string>
-  <string name="password_mismatch_error">Die Passwörter stimmen nicht überein.</string>
+  <string name="password_mismatch_error">Passwörter sollten übereinstimmen.</string>
   <string name="taken_username_error">Dieser Benutzername ist nicht verfügbar.</string>
   <string name="username_doesnt_exist">der Benutzername existiert nicht</string>
   <string name="username_invalid_error">Ungültiger Benutzername.</string>
@@ -249,7 +249,7 @@ schwarze Liste gesetzt wird</string>
 </string>
   <string name="title_failed">Anmeldung abgelehnt</string>
   <string name="login_rejected">Gerät abgelehnt.</string>
-  <string name="creating_keys">Schlüssel erstellen</string>
+  <string name="creating_keys">Schlüssel erstellen…</string>
   <string name="too_many_login_attempts">Zu viele Anmeldeversuche, versuchen Sie es später noch einmal.</string>
   <string name="too_many_devices">Zu viele Geräte sind bereits angemeldet.</string>
   <string name="no_devices_available">Keine Geräte zur Authentifizierung dieses Geräts verfügbar.</string>
@@ -278,7 +278,7 @@ schwarze Liste gesetzt wird</string>
   <string name="slide_3_text">Sie erstellen Informationen, wir glauben, dass Sie das Recht haben, diese zu besitzen.</string>
   <string name="new_secure_email">Neue sichere E-Mail</string>
   <string name="password">Passwort</string>
-  <string name="confirm_password">Passwort bestätigen</string>
+  <string name="confirm_password">Passwort bestätigen 🙉</string>
   <string name="sending_email">E-Mail wird gesendet...</string>
   <string name="documents">Dokumente</string>
   <string name="photo_library">Fotobibliothek</string>
@@ -723,7 +723,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="billing_settings_title">Billing</string>
   <string name="web_view_no_internet_title">Connection Lost</string>
   <string name="web_view_no_internet_message">Looks like you have lost connections with Wifi or other Internet connection</string>
-  <string name="btn_skip">Skip to Mailbox</string>
+  <string name="btn_skip"><u>Skip</u></string>
   <string name="title_web_view_upgrade_to_plus">Join Plus</string>
   <string name="foreground_decryption_message">Getting Emails…</string>
   <string name="foreground_decryption_message_progress">Getting Emails…%1$d of %2$d</string>
@@ -755,6 +755,7 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="recovery_email_sign_up_error_1">This address has no verified recovery email.</string>
   <string name="recovery_email_sign_up_error_2">The recovery email has already been used %1$d times.</string>
   <string name="recovery_email_sign_up_error_3">Black-listed email provider.</string>
+  <string name="recovery_email_sign_up_error_5">The recovery email used cannot be the same email address of the user.</string>
   <string name="recovery_email_restriction_title">Not so fast 🤨</string>
   <string name="recovery_email_restriction_message">You need to verify a Recovery Email before being able to send emails.\n\nThis is only so you can regain access to your account if you ever forget your password.</string>
   <string name="recovery_email_restriction_btn">Verify Recovery Email</string>
@@ -769,4 +770,40 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="email_cannot_be_decrypted">This email couldn\'t be decrypted. </string>
   <string name="email_cannot_be_decrypted_learn_more">Learn more</string>
   <string name="spam_is_now_empty">Spam is now empty.</string>
+  <string name="love_criptext">You\'re gonna love Criptext!</string>
+  <string name="lets_get_started">Let\'s get you started. Start off with your name 🤓</string>
+  <string name="pick_username">Now pick a username</string>
+  <string name="new_address">This will be your new email address</string>
+  <string name="new_password_title">Now add a password 🙈</string>
+  <string name="new_password_check_1">Shouldn\'t be your username</string>
+  <string name="new_recovery_email_title">Lastly, add a recovery email</string>
+  <string name="new_recovery_email_message">This will allow you to regain access if you ever forget your password</string>
+  <string name="new_recovery_email_btn">Set Recovery Email</string>
+  <string name="terms_and_conditions_title">You\'re almost there! 💪</string>
+  <string name="mom_promise_check">I promise to call mom more \noften</string>
+  <string name="account_created_title">Account created!\nLet’s make it yours 😎</string>
+  <string name="customize_profile_picture_title">Add a Profile Picture</string>
+  <string name="customize_contacts_title">Turn me on for a better \nexperience</string>
+  <string name="customize_contacts_message">📒 Allow Contacts</string>
+  <string name="customize_contacts_success">(Awesome 🤠)</string>
+  <string name="customize_cloud_backup_title">Turn on Drive backup ☁️</string>
+  <string name="customize_cloud_backup_message">For your privacy your emails are only kept on your device. It\'s best you turn on Drive backup to avoid losing your emails if you lose or change devices.️</string>
+  <string name="customize_recovery_email_title">Verify your recovery \nemail 📩</string>
+  <string name="customize_recovery_email_message">Verification link sent to:</string>
+  <string name="customize_theme_title">Choose a Style</string>
+  <string name="customize_theme_message">Tip: Dark will actually save you \nbattery life</string>
+  <string name="customize_step_1">Step 1 of 5</string>
+  <string name="customize_step_2">Step 2 of 5</string>
+  <string name="customize_step_3">Step 3 of 5</string>
+  <string name="customize_step_4">Step 4 of 5</string>
+  <string name="customize_step_5">Step 5 of 5</string>
+  <string name="btn_add">Add</string>
+  <string name="customize_light_option">Light 🌞</string>
+  <string name="customize_dark_option">Dark 🌛</string>
+  <string name="customize_yay_btn">Yay!</string>
+  <string name="yay_dialog_title">Your new secure inbox \nis ready to go! 🎉</string>
+  <string name="recovery_email_warning_dialog_title">Woah there 🖐</string>
+  <string name="recovery_email_warning_dialog_message">You won\'t be able to send emails until you verify your recovery email. This is for you security in case you ever forget your password.</string>
+  <string name="captcha_message">Prove you are not a robot</string>
+  <string name="captcha_error">Sorry, the code entered was incorrect. Please try again.</string>
 </resources>

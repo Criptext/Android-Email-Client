@@ -48,9 +48,9 @@ android:focusableInTouchMode="true" >
 
                 <ImageView
                     android:src="@drawable/logo_splash"
-                    android:tint="@color/white"
                     android:layout_gravity="center"
-                    android:layout_width="80dp"
+                    android:tint="@color/white"
+                    android:layout_width="wrap_content"
                     android:layout_height="80dp"/>
                 <TextView
                     fontPath="fonts/NunitoSans-Regular.ttf"
@@ -142,39 +142,9 @@ android:focusableInTouchMode="true" >
                     </LinearLayout>
 
                 </RelativeLayout>
-
-                <LinearLayout
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:focusable="true">
-                    <TextView
-                        fontPath="fonts/NunitoSans-Regular.ttf"
-                        android:layout_height="50dp"
-                        android:text="@string/not_registered"
-                        android:gravity="end"
-                        android:textColor="@color/white"
-                        android:layout_width="wrap_content"
-                        android:textSize="14sp"/>
-                    <Space
-                        android:layout_height="20dp"
-                        android:layout_width="10dp" />
-
-                    <TextView
-                        android:id="@+id/signup_textview"
-                        android:layout_height="50dp"
-                        android:text="@string/sign_up"
-                        android:gravity="start"
-                        android:textColor="@color/white"
-                        android:layout_width="wrap_content"
-                        android:textSize="14sp"
-                        fontPath="fonts/NunitoSans-Bold.ttf"/>
-
-                </LinearLayout>
             </LinearLayout>
             <TextView
+                android:layout_marginTop="40dp"
                 android:id="@+id/contact_support"
                 fontPath="fonts/NunitoSans-Regular.ttf"
                 android:layout_width="wrap_content"

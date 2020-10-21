@@ -14,7 +14,9 @@ data class IncompleteAccount(
         val deviceId: Int,
         val name: String,
         val password: String,
-        val recoveryEmail: String?
+        val recoveryEmail: String?,
+        val captchaKey: String,
+        val captchaAnswer: String
         ) {
 
         fun complete(privateBundle: SignalKeyGenerator.PrivateBundle, jwt: String, refreshToken: String) =

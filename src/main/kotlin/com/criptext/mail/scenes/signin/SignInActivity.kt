@@ -43,7 +43,8 @@ class SignInActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = null,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         return SignInSceneController(
                 webSocketFactory = CriptextWebSocketFactory(),

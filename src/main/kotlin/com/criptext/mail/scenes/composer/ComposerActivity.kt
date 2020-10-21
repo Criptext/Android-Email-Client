@@ -57,7 +57,8 @@ class ComposerActivity : BaseActivity() {
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = activeAccount,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         val dataSource = ComposerDataSource(
                 filesDir = this.filesDir,

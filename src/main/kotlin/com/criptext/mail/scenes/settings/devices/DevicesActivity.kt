@@ -53,7 +53,8 @@ class DevicesActivity: BaseActivity(){
                 runner = AsyncTaskWorkRunner(),
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 httpClient = HttpClient.Default(),
-                filesDir = this.filesDir
+                filesDir = this.filesDir,
+                cacheDir = this.cacheDir
         )
         return DevicesController(
                 model = model,

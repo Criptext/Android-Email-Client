@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="@string/pick_username"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="24sp"
+            android:layout_marginTop="35dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_address"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:textSize="18sp"
+            android:layout_marginTop="44dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="38dp">
+
+            <FrameLayout
+                android:id="@+id/container_inputUsername"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_username"
+                    android:layout_width="195dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:textColorHint="@color/azure"
+                    app:hintTextAppearance="@style/NormalTextAppearence"
+                    app:errorTextAppearance="@style/textinputlayout_login_error"
+                    app:errorEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/username"
+                        android:textSize="15sp"
+                        android:backgroundTint="@color/azure"
+                        android:textColor="?attr/criptextPrimaryTextColor"
+                        android:layout_width="195dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:hint="@string/username_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:text="@string/criptext_com"
+                    android:gravity="bottom"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:layout_gravity="right"/>
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+        <ProgressBar
+            android:id="@+id/next_button_progress"
+            android:visibility="gone"
+            android:layout_marginTop="55dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="true"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="@color/white"
+            android:background="@drawable/btn_log_in"/>
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_marginTop="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_log_in"
+            android:textColor="@drawable/btn_sign_in"
+            android:enabled="false"
+            android:text="@string/btn_next"
+            android:textSize="16sp"
+            android:textAllCaps="false"/>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
