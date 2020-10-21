@@ -7,7 +7,6 @@ import com.criptext.mail.utils.UIMessage
 
 /**
  * POJOs used by PushController
- * Created by gabriel on 8/21/17.
  */
 
 sealed class PushData {
@@ -40,6 +39,7 @@ sealed class PushData {
             }
         }
     }
+
     data class OpenMailbox(val title: String, val body: String, val recipientId: String, val subject: String,
                            val isPostNougat: Boolean, val shouldPostNotification:Boolean, val domain: String): PushData(){
         companion object{
@@ -116,4 +116,22 @@ sealed class PushData {
     data class JobBackup(val title: String, val body: String, val isPostNougat: Boolean,
                          val shouldPostNotification:Boolean, val recipientId: String,
                          val domain: String, val progress: Int): PushData()
+
+    data class FailToSendEmail(val name: String, val isPostNougat: Boolean,
+                               val shouldPostNotification:Boolean, val activeEmail: String,
+                               val senderImage: Bitmap?): PushData(){
+        companion object{
+            fun parseFailedMailPush(pushData: Map<String, String>,
+                                 shouldPostNotification: Boolean, senderImage: Bitmap?,
+                                 isPostNougat: Boolean,
+                                 activeEmail: String): FailToSendEmail {
+                val name = pushData["name"] ?: ""
+                val email = pushData["email"] ?: ""
+
+                return FailToSendEmail(name = name, shouldPostNotification = shouldPostNotification,
+                        isPostNougat = isPostNougat, activeEmail = activeEmail,
+                        senderImage = senderImage)
+            }
+        }
+    }
 }

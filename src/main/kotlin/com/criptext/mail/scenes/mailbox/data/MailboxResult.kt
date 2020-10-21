@@ -4,6 +4,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.PushData
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.utils.UIMessage
 
@@ -66,7 +67,7 @@ sealed class MailboxResult {
 
     sealed class SendMail: MailboxResult() {
         class Success(val newEmailPreview: EmailPreview?, val currentLabel: Label, val isSecure: Boolean): SendMail()
-        data class Failure(val message: UIMessage): SendMail()
+        data class Failure(val pushData: PushData.FailToSendEmail?, val message: UIMessage): SendMail()
         data class Unauthorized(val message: UIMessage): SendMail()
         class SessionExpired: SendMail()
         class Forbidden: SendMail()

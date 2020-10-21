@@ -99,6 +99,7 @@ class ActiveAccountUpdateMailboxWorker(
         val operationResult = workOperation()
 
         checkTrashDates()
+        checkSendingStatus()
         UIUtils.checkForCacheCleaning(storage, dbEvents.getCacheDir(), activeAccount)
 
 
@@ -173,6 +174,10 @@ class ActiveAccountUpdateMailboxWorker(
                 peerEventsApiHandler.enqueueEvent(PeerDeleteEmailData(batch).toJSON())
             }
         }
+    }
+
+    private fun checkSendingStatus(){
+        db.emailDao().updateAllSendingToFail()
     }
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->

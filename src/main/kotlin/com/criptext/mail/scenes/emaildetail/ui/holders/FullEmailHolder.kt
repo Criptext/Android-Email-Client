@@ -483,11 +483,11 @@ class FullEmailHolder(view: View) : ParentEmailHolder(view) {
             DeliveryTypes.UNSEND -> {
                 readView.visibility = View.GONE
             }
-            DeliveryTypes.FAIL -> {
-                setIconAndColor(R.drawable.x_rounded, R.color.unsent_content)
-            }
             DeliveryTypes.SENDING -> {
                 setIconAndColor(R.drawable.clock, R.color.sent)
+            }
+            DeliveryTypes.FAIL -> {
+                readView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.img_resend))
             }
             DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)

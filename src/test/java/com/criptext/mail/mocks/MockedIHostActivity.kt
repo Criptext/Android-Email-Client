@@ -5,6 +5,8 @@ import android.os.Handler
 import android.view.View
 import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
+import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.push.PushData
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.params.SceneParams
@@ -60,6 +62,10 @@ class MockedIHostActivity: IHostActivity{
 
     override fun setAppTheme(themeResource: Int) {
         
+    }
+
+    override fun createAndNotifyPush(pushData: PushData, activeAccount: ActiveAccount) {
+
     }
 
     override fun getHandler(): Handler? {

@@ -597,6 +597,7 @@
   <string name="invalid_temp_token">The temporal session has expired. Please try again.</string>
   <string name="profile_footer_option">Show \"Sent with Criptext\"</string>
   <string name="job_backup_notification">Background Backup Service Notification</string>
+  <string name="fail_to_send_notification">Fail to Send Email Notification</string>
   <string name="uploading_to_google_drive">Uploading to Google Drive…</string>
   <string name="upload_to_google_drive_success">Upload Successful!</string>
   <string name="login_fail_try_again_error_with_exception">Failed to authenticate user. Error: %1$s.</string>
@@ -780,4 +781,8 @@
   <string name="recovery_email_warning_dialog_message">You won\'t be able to send emails until you verify your recovery email. This is for you security in case you ever forget your password.</string>
   <string name="captcha_message">Prove you are not a robot</string>
   <string name="captcha_error">Sorry, the code entered was incorrect. Please try again.</string>
+  <string name="fail_to_send">⚠️ Failed to send email</string>
+  <string name="dismiss_notification">Dismiss</string>
+  <string name="fail_to_send_notification_message">Email to %1$s couldn\'t be sent</string>
+  <string name="fail_to_send_notification_title">Fail to Send</string>
 </resources>

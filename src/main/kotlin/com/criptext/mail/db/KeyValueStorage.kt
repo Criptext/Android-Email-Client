@@ -50,6 +50,7 @@ interface KeyValueStorage {
         SavedJobs("SavedJobs"),
         ShowCriptextFooter("ShowCriptextFooter"),
         CloudBackupNotificationCount("CloudBackupNotificationCount"),
+        FailToSendNotificationCount("FailToSendNotificationCount"),
         RateDontShowAgain("RateDontShowAgain"),
         RateLaunchCount("RateLaunchCount"),
         RateDateFirstLaunch("RateDateFirstLaunch"),

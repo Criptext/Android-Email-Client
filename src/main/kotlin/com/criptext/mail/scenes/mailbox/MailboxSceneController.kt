@@ -19,6 +19,7 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.PushData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -1171,7 +1172,12 @@ class MailboxSceneController(private val scene: MailboxScene,
                     }
                 }
                 is MailboxResult.SendMail.Failure -> {
-                    scene.showMessage(result.message)
+                    if(result.pushData != null){
+                        scene.showMessage(UIMessage(R.string.fail_to_send))
+                        host.createAndNotifyPush(result.pushData, activeAccount)
+                    } else {
+                        scene.showMessage(result.message)
+                    }
                 }
                 is MailboxResult.SendMail.Unauthorized -> {
                     scene.showMessage(result.message)

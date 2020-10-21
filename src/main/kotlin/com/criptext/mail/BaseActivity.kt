@@ -6,8 +6,10 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
@@ -25,12 +27,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.models.UserEvent
+import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
+import com.criptext.mail.push.PushData
+import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.IntentExtrasData
+import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.push.services.LinkDeviceActionService
 import com.criptext.mail.push.services.NewMailActionService
 import com.criptext.mail.push.services.SyncDeviceActionService
@@ -492,6 +498,16 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         if(animationData != null && animationData.forceAnimation) {
             overridePendingTransition(animationData.enterAnim, animationData.exitAnim)
         }
+    }
+
+    override fun createAndNotifyPush(pushData: PushData, activeAccount: ActiveAccount) {
+        val notifier = when (pushData) {
+            is PushData.FailToSendEmail -> {
+                FailToSendNotifier.Single(pushData, CriptextNotification.FAIL_TO_SEND_ID)
+            }
+            else -> null
+        }
+        notifier?.notifyPushEvent(applicationContext)
     }
 
     override fun showStartGuideView(view: View, title: Int, dimension: Int) {

@@ -168,6 +168,7 @@
             android:enabled="true"
             android:exported="false" />
         <service android:name=".services.CloudBackupForegroundService" />
+        <service android:name=".push.services.FailToSendEmailActionService" />
 
 
         <provider

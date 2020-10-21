@@ -28,6 +28,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val ACTION_ERROR = "error"
         const val ACTION_JOB_BACKUP = "job_backup"
         const val ACTION_FOREGROUND_DECRYPT = "decryption_service"
+        const val ACTION_FAILED_EMAIL = "failed_to_send_email"
 
         //Channel Id's for the Notifications
         const val CHANNEL_ID_NEW_EMAIL = "new_email_channel"// The id of the channel.
@@ -37,6 +38,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val CHANNEL_ID_ERROR = "error_channel"// The id of the channel.
         const val CHANNEL_ID_JOB_BACKUP = "job_backup_service_channel"// The id of the channel.
         const val CHANNEL_ID_DECRYPTION_SERVICE = "decryption_service_channel"// The id of the channel.
+        const val CHANNEL_ID_FAIL_TO_SEND_EMAIL = "fail_to_send_channel"// The id of the channel.
 
         //Notification ID
         const val OPEN_ID = 0
@@ -46,6 +48,7 @@ abstract class CriptextNotification(open val ctx: Context) {
         const val ERROR_ID = 3
         const val DECRYPTION_SERVICE_ID = 42
         const val JOB_BACKUP_ID = 100
+        const val FAIL_TO_SEND_ID = 200
 
         fun getChannelId(action: String): String {
             return when(action){
@@ -56,6 +59,7 @@ abstract class CriptextNotification(open val ctx: Context) {
                 ACTION_ERROR -> CHANNEL_ID_ERROR
                 ACTION_JOB_BACKUP -> CHANNEL_ID_JOB_BACKUP
                 ACTION_FOREGROUND_DECRYPT -> CHANNEL_ID_DECRYPTION_SERVICE
+                ACTION_FAILED_EMAIL -> CHANNEL_ID_FAIL_TO_SEND_EMAIL
                 else -> "DEFAULT_CHANNEL"
             }
         }
@@ -69,6 +73,7 @@ abstract class CriptextNotification(open val ctx: Context) {
                 ACTION_ERROR -> ERROR_ID
                 ACTION_JOB_BACKUP -> JOB_BACKUP_ID
                 ACTION_FOREGROUND_DECRYPT -> DECRYPTION_SERVICE_ID
+                ACTION_FAILED_EMAIL -> FAIL_TO_SEND_ID
                 else -> -1
             }
         }
@@ -118,6 +123,7 @@ abstract class CriptextNotification(open val ctx: Context) {
             ACTION_SYNC_DEVICE -> notManager.notify(LINK_DEVICE_ID, finalNotification)
             ACTION_ERROR -> notManager.notify(ERROR_ID, finalNotification)
             ACTION_JOB_BACKUP -> notManager.notify(JOB_BACKUP_ID, finalNotification)
+            ACTION_FAILED_EMAIL -> notManager.notify(FAIL_TO_SEND_ID, finalNotification)
         }
 
     }
@@ -155,6 +161,11 @@ abstract class CriptextNotification(open val ctx: Context) {
             }
             ACTION_JOB_BACKUP -> {
                 val channelInfo = Pair(CHANNEL_ID_JOB_BACKUP, ctx.getString(R.string.job_backup_notification))
+                val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_LOW)
+                not
+            }
+            ACTION_FAILED_EMAIL -> {
+                val channelInfo = Pair(CHANNEL_ID_FAIL_TO_SEND_EMAIL, ctx.getString(R.string.job_backup_notification))
                 val not = NotificationChannel(channelInfo.first, channelInfo.second, NotificationManager.IMPORTANCE_LOW)
                 not
             }

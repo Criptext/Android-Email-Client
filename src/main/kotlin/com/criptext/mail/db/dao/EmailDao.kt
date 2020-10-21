@@ -488,4 +488,7 @@ import java.util.*
     @Query("DELETE FROM email WHERE accountId = :accountId")
     fun nukeTable(accountId: Long)
 
+    @Query("UPDATE email SET delivered = 0 WHERE delivered = 3")
+    fun updateAllSendingToFail()
+
 }

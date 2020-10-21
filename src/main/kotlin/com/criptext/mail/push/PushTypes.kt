@@ -1,7 +1,7 @@
 package com.criptext.mail.push
 
 enum class PushTypes {
-    newMail, openActivity,linkDevice, syncDevice, antiPush, jobBackup;
+    newMail, openActivity,linkDevice, syncDevice, antiPush, jobBackup, failedEmail;
 
     fun actionCode(): String = when (this) {
         newMail -> "open_thread"
@@ -10,6 +10,7 @@ enum class PushTypes {
         syncDevice -> "sync_device"
         antiPush -> "anti_push"
         jobBackup -> "job_backup"
+        failedEmail -> "open_thread"
     }
 
     fun requestCodeRandom(): Int = this.ordinal + System.currentTimeMillis().toInt()

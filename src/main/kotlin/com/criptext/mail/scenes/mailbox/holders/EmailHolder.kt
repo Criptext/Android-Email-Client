@@ -179,9 +179,11 @@ class EmailHolder(val view: View) : RecyclerView.ViewHolder(view), View.OnClickL
             DeliveryTypes.UNSEND -> {
                 check.visibility = View.GONE
             }
-            DeliveryTypes.SENDING,
-            DeliveryTypes.FAIL -> {
+            DeliveryTypes.SENDING -> {
                 setIconAndColor(R.drawable.clock, R.color.sent)
+            }
+            DeliveryTypes.FAIL -> {
+                check.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.img_resend))
             }
             DeliveryTypes.READ -> {
                 setIconAndColor(R.drawable.read, R.color.azure)
