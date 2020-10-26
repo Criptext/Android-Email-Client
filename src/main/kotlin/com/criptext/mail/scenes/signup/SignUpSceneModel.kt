@@ -25,4 +25,5 @@ class SignUpSceneModel(val isMultiple: Boolean = false) : SceneModel {
 
     var captchaKey: String = ""
     var captchaAnswer: String = ""
+    var captcha: String = ""
 }

@@ -44,6 +44,9 @@ class SignUpSceneController(
     private val isCheckedTermsAndConditions: Boolean
         get() = model.checkTermsAndConditions
 
+    private val isTermsNextButtonEnabled: Boolean
+        get() = model.captchaAnswer.isNotEmpty() && model.checkTermsAndConditions
+
     private val uiObserver: SignUpUIObserver = object : SignUpUIObserver {
         override fun onNextButtonPressed() {
             scene.setSubmitButtonState(ProgressButtonState.waiting)
@@ -66,7 +69,8 @@ class SignUpSceneController(
                 }
                 is SignUpLayoutState.RecoveryEmail -> {
                     model.state = SignUpLayoutState.TermsAndConditions()
-                    resetLayout(ProgressButtonState.waiting)
+                    resetLayout()
+                    scene.setSubmitButtonState(ProgressButtonState.waiting)
                     dataSource.submitRequest(SignUpRequest.GetCaptcha())
                 }
                 is SignUpLayoutState.TermsAndConditions -> {
@@ -161,7 +165,7 @@ class SignUpSceneController(
 
         override fun onCaptchaTextChange(text: String) {
             model.captchaAnswer = text
-            if(model.captchaAnswer.isNotEmpty() && model.checkTermsAndConditions){
+            if(isTermsNextButtonEnabled){
                 scene.setSubmitButtonState(ProgressButtonState.enabled)
             } else {
                 scene.setSubmitButtonState(ProgressButtonState.disabled)
@@ -170,7 +174,7 @@ class SignUpSceneController(
 
         override fun onCheckedOptionChanged(state: Boolean) {
             model.checkTermsAndConditions = state
-            if(state && model.captchaAnswer.isNotEmpty()){
+            if(isTermsNextButtonEnabled){
                 scene.setSubmitButtonState(ProgressButtonState.enabled)
             } else {
                 scene.setSubmitButtonState(ProgressButtonState.disabled)
@@ -194,8 +198,9 @@ class SignUpSceneController(
         }
 
         override fun onCaptchaRefresh() {
+            model.captcha = ""
             dataSource.submitRequest(SignUpRequest.GetCaptcha())
-            resetLayout(ProgressButtonState.waiting)
+            scene.setSubmitButtonState(ProgressButtonState.waiting)
         }
 
         override fun onContactSupportClick() {
@@ -299,16 +304,16 @@ class SignUpSceneController(
     }
 
     private fun onGetCaptcha(result: SignUpResult.GetCaptcha) {
+        scene.setSubmitButtonState(ProgressButtonState.disabled)
         when (result) {
             is SignUpResult.GetCaptcha.Success -> {
-                scene.setSubmitButtonState(ProgressButtonState.disabled)
                 model.captchaKey = result.captchaKey
-                scene.setCaptcha(result.captcha)
+                model.captcha = result.captcha
+                scene.setCaptcha(model.captcha)
             }
             is SignUpResult.GetCaptcha.Failure -> {
                 val newState = FormInputState.Error(result.message)
                 scene.setInputState(model.state, newState)
-                scene.setSubmitButtonState(ProgressButtonState.disabled)
             }
         }
     }
@@ -385,6 +390,16 @@ class SignUpSceneController(
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
+        if(model.state is SignUpLayoutState.TermsAndConditions) {
+            if (model.captcha.isNotEmpty()) {
+                scene.setCaptcha(model.captcha)
+                if (isTermsNextButtonEnabled) {
+                    scene.setSubmitButtonState(ProgressButtonState.enabled)
+                } else {
+                    scene.setSubmitButtonState(ProgressButtonState.disabled)
+                }
+            }
+        }
         return false
     }
 
@@ -436,6 +451,8 @@ class SignUpSceneController(
                 model.state = SignUpLayoutState.RecoveryEmail(model.recoveryEmail.value)
                 resetLayout(ProgressButtonState.enabled)
                 model.captchaAnswer = ""
+                model.captcha = ""
+                model.captchaKey = ""
                 false
             }
         }

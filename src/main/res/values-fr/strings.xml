@@ -800,6 +800,7 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="recovery_email_warning_dialog_message">You won\'t be able to send emails until you verify your recovery email. This is for you security in case you ever forget your password.</string>
   <string name="captcha_message">Prove you are not a robot</string>
   <string name="captcha_error">Sorry, the code entered was incorrect. Please try again.</string>
+  <string name="captcha_hint">Enter the characters you see</string>
   <string name="fail_to_send">⚠️ Failed to send email</string>
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">Email to %1$s couldn\'t be sent</string>
