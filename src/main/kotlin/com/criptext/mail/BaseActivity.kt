@@ -235,6 +235,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     signUpModel.recoveryEmail.copy(value = recoveryEmail,
                             state = FormInputState.Unknown())
                     signUpModel.checkTermsAndConditions = savedInstanceState.getBoolean("checkTermsAndConditions")
+                    signUpModel.captchaAnswer = savedInstanceState.getString("captchaAnswer")!!
+                    signUpModel.captchaKey = savedInstanceState.getString("captchaKey")!!
+                    signUpModel.captcha = savedInstanceState.getString("captcha")!!
                     signUpModel
                 }
                 else -> null
@@ -415,6 +418,9 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                 outState.putString("confirmPassword", currentModel.confirmPassword)
                 outState.putString("recoveryEmail", currentModel.recoveryEmail.value)
                 outState.putBoolean("checkTermsAndConditions", currentModel.checkTermsAndConditions)
+                outState.putString("captchaAnswer", currentModel.captchaAnswer)
+                outState.putString("captchaKey", currentModel.captchaKey)
+                outState.putString("captcha", currentModel.captcha)
             }
         }
     }

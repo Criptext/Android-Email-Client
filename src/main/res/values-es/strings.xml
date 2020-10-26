@@ -779,6 +779,7 @@
   <string name="recovery_email_warning_dialog_message">No podrás enviar correos hasta que verifiques tu correo de recuperación. Esto es por tu seguridad en caso de que olvides tu contraseña.</string>
   <string name="captcha_message">Demuestra que no eres un robot</string>
   <string name="captcha_error">El código ingresado es incorrecto. Por favor inténtalo nuevamente.</string>
+  <string name="captcha_hint">Ingresa los caracteres de la imagen</string>
   <string name="fail_to_send">⚠️ El correo no se pudo enviar</string>
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">No se ha podido enviar el correo a %1$s</string>

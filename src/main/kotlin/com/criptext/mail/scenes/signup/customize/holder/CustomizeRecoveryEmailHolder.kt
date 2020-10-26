@@ -72,6 +72,7 @@ class CustomizeRecoveryEmailHolder(
 
     fun changeNextButton(){
         nextButton.setText(R.string.btn_next)
+        nextButton.isEnabled = true
         skipButton.visibility = View.GONE
     }
 
@@ -80,20 +81,16 @@ class CustomizeRecoveryEmailHolder(
             ProgressButtonState.disabled -> {
                 skipButton.isEnabled = true
                 nextButton.visibility = View.VISIBLE
-                nextButton.isEnabled = false
                 nextButtonProgress.visibility = View.GONE
             }
             ProgressButtonState.enabled -> {
                 skipButton.isEnabled = true
                 nextButton.visibility = View.VISIBLE
-                nextButton.isEnabled = true
                 nextButtonProgress.visibility = View.GONE
             }
             ProgressButtonState.waiting -> {
                 skipButton.isEnabled = false
                 nextButton.visibility = View.GONE
-                nextButton.isEnabled = false
-                nextButtonProgress.visibility = View.VISIBLE
             }
         }
     }
