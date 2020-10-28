@@ -48,7 +48,7 @@ class SignUpControllerDataSourceEventsTest: SignUpControllerTest() {
         // no errors!
         verify(inverse = true) { scene.showError(any()) }
         verify { host.goToScene(
-                params = CustomizeParams(model.recoveryEmail.value),
+                params = CustomizeParams(model.recoveryEmail.value, model.isMultiple),
                 keep = false,
                 deletePastIntents = true,
                 activityMessage = null

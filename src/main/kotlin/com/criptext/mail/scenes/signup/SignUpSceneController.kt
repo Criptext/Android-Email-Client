@@ -71,6 +71,7 @@ class SignUpSceneController(
                     model.state = SignUpLayoutState.TermsAndConditions()
                     resetLayout()
                     scene.setSubmitButtonState(ProgressButtonState.waiting)
+                    scene.captchaIsLoading()
                     dataSource.submitRequest(SignUpRequest.GetCaptcha())
                 }
                 is SignUpLayoutState.TermsAndConditions -> {
@@ -199,6 +200,7 @@ class SignUpSceneController(
 
         override fun onCaptchaRefresh() {
             model.captcha = ""
+            scene.captchaIsLoading()
             dataSource.submitRequest(SignUpRequest.GetCaptcha())
             scene.setSubmitButtonState(ProgressButtonState.waiting)
         }
@@ -350,7 +352,7 @@ class SignUpSceneController(
         when (result) {
             is SignUpResult.RegisterUser.Success -> {
                 host.goToScene(
-                    params = CustomizeParams(model.recoveryEmail.value),
+                    params = CustomizeParams(model.recoveryEmail.value, model.isMultiple),
                     keep = false,
                     deletePastIntents = true,
                     activityMessage = null

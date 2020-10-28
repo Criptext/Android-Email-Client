@@ -61,6 +61,7 @@
         <item name="criptextPinGradient">@drawable/login_background</item>
         <item name="criptextStartLogo">@drawable/img_logo</item>
         <item name="criptextStartMotto">@drawable/img_subtitle</item>
+        <item name="criptextAccountCreatedCard">@drawable/img_card</item>
     </style>
 
     <style name="DarkAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -121,6 +122,7 @@
         <item name="criptextPinGradient">@drawable/pin_background_dark</item>
         <item name="criptextStartLogo">@drawable/img_logo_dm</item>
         <item name="criptextStartMotto">@drawable/img_subtitle_dm</item>
+        <item name="criptextAccountCreatedCard">@drawable/img_card_dm</item>
     </style>
 
     <style name="AppThemeWithActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

@@ -475,7 +475,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
-            is CustomizeParams -> CustomizeSceneModel(params.recoveryEmail)
+            is CustomizeParams -> CustomizeSceneModel(params.recoveryEmail, params.isMultiple)
             is WebViewParams -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
                 val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)

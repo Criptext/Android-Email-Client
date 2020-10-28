@@ -25,6 +25,7 @@ interface SignUpScene {
     fun setConfirmPasswordCheck(passwordMatches: FormInputState)
     fun setSubmitButtonState(state : ProgressButtonState)
     fun setCaptcha(captcha: String)
+    fun captchaIsLoading()
     fun showGeneratingKeys(show: Boolean)
 
     var uiObserver: SignUpSceneController.SignUpUIObserver?
@@ -126,6 +127,11 @@ interface SignUpScene {
 
         override fun setSubmitButtonState(state: ProgressButtonState) {
             holder.setSubmitButtonState(state)
+        }
+
+        override fun captchaIsLoading() {
+            val currentHolder = holder as? SignUpTermsAndConditionsHolder
+            currentHolder?.captchaIsLoading()
         }
 
         override fun setCaptcha(captcha: String) {

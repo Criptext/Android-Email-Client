@@ -3,7 +3,7 @@ package com.criptext.mail.scenes.params
 import com.criptext.mail.scenes.signup.customize.CustomizeActivity
 
 
-class CustomizeParams(val recoveryEmail: String): SceneParams() {
+class CustomizeParams(val recoveryEmail: String, val isMultiple: Boolean): SceneParams() {
     override val activityClass = CustomizeActivity::class.java
 
     override fun equals(other: Any?): Boolean {

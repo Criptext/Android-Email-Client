@@ -158,7 +158,11 @@ class CustomizeSceneController(
                 }
                 is CustomizeLayoutState.ProfilePicture -> {
                     if(model.hasSetPicture){
-                        model.state = CustomizeLayoutState.DarkTheme()
+                        if(model.isMultiple) {
+                            model.state = CustomizeLayoutState.VerifyRecoveryEmail(model.recoveryEmail)
+                        } else {
+                            model.state = CustomizeLayoutState.DarkTheme()
+                        }
                         resetLayout(ProgressButtonState.enabled)
                     } else {
                         if (host.checkPermissions(BaseActivity.RequestCode.writeAccess.ordinal,
@@ -209,7 +213,11 @@ class CustomizeSceneController(
         override fun onSkipButtonPressed() {
             when (model.state) {
                 is CustomizeLayoutState.ProfilePicture -> {
-                    model.state = CustomizeLayoutState.DarkTheme()
+                    if(model.isMultiple) {
+                        model.state = CustomizeLayoutState.VerifyRecoveryEmail(model.recoveryEmail)
+                    } else {
+                        model.state = CustomizeLayoutState.DarkTheme()
+                    }
                     resetLayout(ProgressButtonState.enabled)
                 }
                 is CustomizeLayoutState.DarkTheme -> {
@@ -344,7 +352,11 @@ class CustomizeSceneController(
                 false
             }
             is CustomizeLayoutState.VerifyRecoveryEmail -> {
-                model.state = CustomizeLayoutState.Contacts(model.hasAllowedContacts)
+                if(model.isMultiple) {
+                    model.state = CustomizeLayoutState.ProfilePicture(activeAccount.name)
+                } else {
+                    model.state = CustomizeLayoutState.Contacts(model.hasAllowedContacts)
+                }
                 resetLayout(if(model.hasAllowedContacts) ProgressButtonState.enabled else ProgressButtonState.disabled)
                 false
             }
