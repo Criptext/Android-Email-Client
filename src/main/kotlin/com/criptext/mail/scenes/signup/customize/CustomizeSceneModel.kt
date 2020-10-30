@@ -7,7 +7,7 @@ import com.criptext.mail.validation.FormInputState
 import com.criptext.mail.validation.TextInput
 import com.google.api.services.drive.Drive
 
-class CustomizeSceneModel(val recoveryEmail: String) : SceneModel {
+class CustomizeSceneModel(val recoveryEmail: String, val isMultiple: Boolean = false) : SceneModel {
     var isRecoveryEmailVerified = false
     var hasAllowedContacts = false
     var hasDarkTheme: Boolean = false

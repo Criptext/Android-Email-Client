@@ -81,7 +81,14 @@ class SignUpTermsAndConditionsHolder(
         captchaTextLayout.setState(state)
     }
 
+    fun captchaIsLoading(){
+        captchaProgressBar.visibility = View.VISIBLE
+        captchaWebView.visibility = View.GONE
+    }
+
     fun setCaptcha(captcha: String){
+        captchaProgressBar.visibility = View.GONE
+        captchaWebView.visibility = View.VISIBLE
         captchaWebView.loadDataWithBaseURL(null, HTMLUtils.createCaptchaHtml(captcha), "text/html", "UTF-8", null);
     }
 
@@ -90,19 +97,13 @@ class SignUpTermsAndConditionsHolder(
             ProgressButtonState.disabled -> {
                 nextButton.visibility = View.VISIBLE
                 nextButton.isEnabled = false
-                captchaProgressBar.visibility = View.GONE
-                captchaWebView.visibility = View.VISIBLE
             }
             ProgressButtonState.enabled -> {
                 nextButton.visibility = View.VISIBLE
                 nextButton.isEnabled = true
-                captchaProgressBar.visibility = View.GONE
-                captchaWebView.visibility = View.VISIBLE
             }
             ProgressButtonState.waiting -> {
                 nextButton.isEnabled = false
-                captchaProgressBar.visibility = View.VISIBLE
-                captchaWebView.visibility = View.GONE
             }
         }
     }

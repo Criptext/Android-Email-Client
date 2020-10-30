@@ -33,7 +33,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/img_card"
+                android:src="?attr/criptextAccountCreatedCard"
                 />
 
             <LinearLayout
@@ -44,7 +44,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:textColor="?attr/criptextSecondaryTextColor"
+                    android:textColor="?attr/criptextPrimaryTextColor"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="20sp"
@@ -54,7 +54,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:textColor="@color/azure"
+                    android:textColor="?attr/criptextPrimaryTextColor"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:layout_marginTop="5dp"

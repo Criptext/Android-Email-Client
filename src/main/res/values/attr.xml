@@ -51,4 +51,5 @@
     <attr name="criptextPinGradient" format="reference"/>
     <attr name="criptextStartLogo" format="reference"/>
     <attr name="criptextStartMotto" format="reference"/>
+    <attr name="criptextAccountCreatedCard" format="reference"/>
 </resources>

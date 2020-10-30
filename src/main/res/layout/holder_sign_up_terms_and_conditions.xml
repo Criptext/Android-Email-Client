@@ -182,10 +182,9 @@
     <LinearLayout
         android:id="@+id/creating_account_overlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="?attr/criptextColorBackground"
-        android:alpha="0.5"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:visibility="gone">
@@ -197,8 +196,8 @@
             android:textSize="14sp"
             android:text="@string/creating_keys"
             android:id="@+id/creatingKeysTextView"
-
-            android:layout_marginBottom="26dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
             android:visibility="gone"/>
 
 
