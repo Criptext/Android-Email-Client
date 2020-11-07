@@ -9,7 +9,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
+import com.criptext.mail.scenes.syncing.SyncBeginDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage

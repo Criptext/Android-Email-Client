@@ -18,6 +18,8 @@ object AccountDataValidator {
     // dots cant be at the beginning.
     private val validCriptextUserPattern = Pattern.compile("(?=^([a-z0-9]([._-]{0,2}[a-z0-9])+)\$)(?:^.{3,64}\$)\$")
 
+    val minimumPasswordLength = 8
+
     fun validateUsername(username: String): FormData<String> {
         val sanitizedValue = username.trim().toLowerCase()
 

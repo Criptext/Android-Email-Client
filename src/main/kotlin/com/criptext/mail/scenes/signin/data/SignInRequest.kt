@@ -8,14 +8,16 @@ import com.criptext.mail.db.AccountTypes
 
 sealed class SignInRequest{
     class AuthenticateUser(val userData: UserData,
-                           val isMultiple: Boolean
+                           val isMultiple: Boolean,
+                           val tempToken: String? = null
     ): SignInRequest()
 
     data class CheckUserAvailability(val username: String, val domain: String): SignInRequest()
 
     data class ForgotPassword(val username: String, val domain: String): SignInRequest()
 
-    data class RecoveryCode(val recipientId: String, val domain: String, val tempToken: String, val isMultiple: Boolean, val code: String? = null): SignInRequest()
+    data class RecoveryCode(val recipientId: String, val domain: String, val tempToken: String,
+                            val isMultiple: Boolean, val needToRemoveDevices: Boolean, val code: String? = null): SignInRequest()
 
     data class LinkBegin(val username: String, val domain: String): SignInRequest()
 
@@ -29,7 +31,7 @@ sealed class SignInRequest{
 
     class LinkDataReady: SignInRequest()
 
-    data class FindDevices(val userData: UserData): SignInRequest()
+    data class FindDevices(val temporalJwt: String): SignInRequest()
 
     data class GetMaxDevices(val tempToken: String): SignInRequest()
 

@@ -26,8 +26,7 @@ import com.criptext.mail.websocket.CriptextWebSocketFactory
 
 class SignInActivity : BaseActivity() {
     override val layoutId: Int = R.layout.activity_sign_in
-    override val toolbarId: Int?
-        get() = R.id.remove_device_toolbar
+    override val toolbarId: Int? = null
 
     override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {
         val appCtx = this.applicationContext

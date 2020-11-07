@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp">
+
+        <TextView
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:text="@string/login_two_fa_title"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:layout_gravity="center"/>
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_two_fa_message_1"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:id="@+id/textViewEmail"
+            fontPath="fonts/NunitoSans-Bold.ttf"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/recovery_code_layout"
+            android:textColorHint="@color/azure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="60dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/recovery_code"
+                android:textSize="15sp"
+                app:backgroundTint="@color/azure"
+                android:textColor="?attr/criptextPrimaryTextColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="@string/recovery_code_dialog_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="44dp"
+            android:gravity="center">
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_two_fa_resend_1"
+                android:textSize="14sp"
+                android:textColor="?attr/criptextSecondaryTextColor"
+                android:layout_gravity="center"/>
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/resend_code"
+                android:layout_marginStart="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_two_fa_resend_2"
+                android:textSize="14sp"
+                android:textColor="@color/azure"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:gravity="center">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contact_support"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/contact_support"
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contact_support_click"
+            android:textColor="@color/azure"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/creating_account_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/criptextColorBackground"
+        android:alpha="0.5"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true">
+
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            android:indeterminateOnly="true"
+            android:indeterminate="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -20,7 +20,7 @@ import com.google.android.material.textfield.TextInputLayout
 
 class PasswordLoginHolder(
         val view: View,
-        initialState: SignInLayoutState.InputPassword
+        initialState: SignInLayoutState
 ): BaseSignInHolder() {
 
     private val title: TextView = view.findViewById(R.id.textViewTitle)
@@ -33,13 +33,13 @@ class PasswordLoginHolder(
     private val progressBar: View = view.findViewById(R.id.signin_progress_login)
 
     init {
-        username.text  = "${initialState.username}@${initialState.domain}"
-        password.text = SpannableStringBuilder(initialState.password)
+       // username.text  = "${initialState.username}@${initialState.domain}"
+        //password.text = SpannableStringBuilder(initialState.password)
         passwordInput.isPasswordVisibilityToggleEnabled = true
         passwordInput.setPasswordVisibilityToggleTintList(
                 AppCompatResources.getColorStateList(view.context, R.color.login_password_eye))
         setListeners()
-        setSubmitButtonState(initialState.buttonState)
+        //setSubmitButtonState(initialState.buttonState)
     }
 
 

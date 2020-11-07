@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,81 +7,86 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/criptextColorBackground">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/remove_device_toolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/mailbox_back_button"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="48dp"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:src="@drawable/ic_arrow"/>
 
         <LinearLayout
-            android:layout_toEndOf="@id/mailbox_nav_button"
             android:layout_width="match_parent"
-            android:id="@+id/mailbox_title_layout"
-            android:layout_marginStart="-10dp"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:visibility="visible"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:id="@+id/mailbox_back_button"
-                android:src="@drawable/back"
-                android:gravity="center"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="center_vertical"
-                android:padding="10dp"
-                android:layout_height="70dp"
-                android:layout_width="70dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="106dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginEnd="56dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/settings_profile_name">
 
             <TextView
-                android:id="@+id/mailbox_toolbar_title"
-                android:layout_width="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:layout_height="match_parent"
-                android:text="@string/devices_toolbar_title"
-                android:gravity="left|center_vertical"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                fontPath="fonts/NunitoSans-Bold.ttf"/>
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_remove_devices_title"
+                android:textSize="24sp"
+                android:textColor="?attr/criptextPrimaryTextColor"/>
+
+            <TextView
+                fontPath="fonts/NunitoSans-Regular.ttf"
+                android:id="@+id/message_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_remove_devices_sub_title"
+                android:textSize="13sp"
+                android:layout_marginTop="20dp"
+                android:textColor="?attr/criptextSecondaryTextColor"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/recyclerViewDevices"
+                android:layout_marginTop="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="49dp"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/signin_progress_login"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:indeterminateTint="@color/white"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"/>
+
+                <Button
+                    android:id="@+id/signin_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_log_in"
+                    android:textColor="@drawable/btn_sign_in"
+                    android:text="@string/btn_continue"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:enabled="false"/>
+            </LinearLayout>
 
         </LinearLayout>
+    </RelativeLayout>
 
-    </androidx.appcompat.widget.Toolbar>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:id="@+id/settings_profile_name">
-
-        <TextView
-            fontPath="fonts/NunitoSans-Regular.ttf"
-            android:id="@+id/message_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_in_remove_message"
-            android:textSize="13sp"
-            android:textAlignment="center"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:textColor="?attr/criptextPrimaryTextColor"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="?attr/criptextLeftMenuSeparator"
-        android:layout_marginBottom="10dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/recyclerViewDevices"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</LinearLayout>
+</ScrollView>

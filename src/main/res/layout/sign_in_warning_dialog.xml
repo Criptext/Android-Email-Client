@@ -5,16 +5,24 @@
     android:background="@drawable/label_chooser_shape"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_warning"
+        android:layout_gravity="center"
+        android:layout_marginTop="55dp"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/sign_in_warning_dialog_title"
         fontPath="fonts/NunitoSans-SemiBold.ttf"
         android:gravity="center_horizontal"
+        android:layout_marginTop="28dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:textColor="?attr/criptextPrimaryTextColor"
-        android:textSize="18sp"/>
+        android:textSize="19.8sp"/>
 
     <TextView
         android:id="@+id/message_text"
@@ -25,9 +33,9 @@
         android:gravity="center_horizontal"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:paddingEnd="15dp"
-        android:paddingStart="15dp"
-        android:textSize="14sp"/>
+        android:paddingEnd="39dp"
+        android:paddingStart="39dp"
+        android:textSize="15sp"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -61,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="@string/yes" />
+            android:text="@string/btn_continue_with_time" />
 
     </LinearLayout>
 </LinearLayout>

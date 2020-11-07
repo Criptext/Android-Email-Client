@@ -34,16 +34,16 @@ class RemoveDevicesWorker(val httpClient: HttpClient,
 
     override fun work(reporter: ProgressReporter<SignInResult.RemoveDevices>): SignInResult.RemoveDevices? {
         val result = Result.of {
-            apiClient.deleteDevices(
+            val request = apiClient.deleteDevices(
                 devicesIds = deviceIds,
-                domain = userData.domain,
-                recipientId = userData.username,
-                token = tempToken)
+                token = tempToken
+            )
+            JSONObject(request.body).getString("token")
         }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.RemoveDevices.Success(deviceIds)
+                SignInResult.RemoveDevices.Success(deviceIds, result.value)
             }
             is Result.Failure -> catchException(result.error)
             }

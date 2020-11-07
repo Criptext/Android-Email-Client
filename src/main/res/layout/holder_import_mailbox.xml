@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="?attr/criptextColorBackground"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp">
+
+        <TextView
+            fontPath="fonts/NunitoSans-Bold.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:text="@string/import_mailbox_title"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:layout_gravity="center"/>
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/import_mailbox_sub_title"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="60dp"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/sync_device_progress"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                android:indeterminateTint="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"/>
+
+            <Button
+                android:id="@+id/sync_device"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"
+                android:textColor="@drawable/btn_sign_in"
+                android:text="@string/import_mailbox_sync_device"
+                android:textSize="16sp"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/from_cloud_progress"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                android:indeterminateTint="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"/>
+
+            <Button
+                android:id="@+id/from_cloud"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"
+                android:textColor="@drawable/btn_sign_in"
+                android:text="@string/import_mailbox_from_cloud"
+                android:textSize="16sp"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/from_file_progress"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                android:indeterminateTint="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"/>
+
+            <Button
+                android:id="@+id/from_file"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_log_in"
+                android:textColor="@drawable/btn_sign_in"
+                android:text="@string/import_mailbox_from_file"
+                android:textSize="16sp"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:gravity="center">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_skip"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/creating_account_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/criptextColorBackground"
+        android:alpha="0.5"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true">
+
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            android:indeterminateOnly="true"
+            android:indeterminate="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</RelativeLayout>

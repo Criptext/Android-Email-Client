@@ -57,8 +57,8 @@ class SyncDeviceAlertDialog(val context: Context) {
         when(trustedDeviceInfo.deviceType){
             DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
             DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
-            DeviceUtils.DeviceType.LinuxInstaller -> imageView.setImageResource(R.drawable.device_pc)
-            else -> imageView.setImageResource(R.drawable.device_m)
+            DeviceUtils.DeviceType.LinuxInstaller -> imageView.setImageResource(R.drawable.ic_laptoplimit)
+            else -> imageView.setImageResource(R.drawable.ic_mobilelimit)
         }
 
         assignButtonEvents(observer, dialogView,

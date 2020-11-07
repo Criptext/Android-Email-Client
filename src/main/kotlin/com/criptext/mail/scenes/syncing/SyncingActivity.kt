@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.syncing
+package com.criptext.mail.scenes.syncing
 
 import android.os.Bundle
 import android.view.ViewGroup
@@ -12,7 +12,6 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
-import com.criptext.mail.scenes.linking.data.LinkingDataSource
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.KeyboardManager

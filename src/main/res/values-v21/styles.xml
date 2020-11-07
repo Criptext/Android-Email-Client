@@ -159,13 +159,13 @@
 
     <style name="textinputlayout_login" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
-        <item name="android:textColorHint">@color/signup_hint_color</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@color/azure</item>
+        <item name="android:textColor">@color/azure</item>
         <item name="android:textSize">12sp</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
-        <item name="colorAccent">@color/signup_hint_color</item>
-        <item name="colorControlNormal">@color/signup_hint_color</item>
-        <item name="colorControlActivated">@android:color/white</item>
+        <item name="colorAccent">@color/azure</item>
+        <item name="colorControlNormal">@color/azure</item>
+        <item name="colorControlActivated">@color/azure</item>
     </style>
 
     <style name="NormalTextAppearence" parent="TextAppearance.AppCompat">

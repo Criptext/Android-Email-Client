@@ -1,17 +1,25 @@
 package com.criptext.mail.scenes.signin.holders
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
+import android.view.inputmethod.EditorInfo
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.TextView.OnEditorActionListener
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
 import com.criptext.mail.R
 import com.criptext.mail.scenes.signin.OnPasswordLoginDialogListener
 import com.criptext.mail.scenes.signin.PasswordLoginDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.validation.ProgressButtonState
+import com.google.android.material.textfield.TextInputLayout
+
 
 /**
  * Created by sebas on 3/8/18.
@@ -22,119 +30,28 @@ class LoginValidationHolder(
         val initialState: SignInLayoutState.LoginValidation
 ): BaseSignInHolder() {
 
-    private var animLoading: AnimatorSet? = null
-    private val rootLayout: View
-    private val cantAccessDevice: TextView
-    private val recoveryCodeText: TextView
-    private val skipText: TextView
-    private val textViewTitle: TextView
-    private val textViewBody: TextView
-    private val textViewPrompt: TextView
-    private val textViewNotApproved: TextView
     private val backButton: View
-    private val buttonResend: Button
-    private val failedImageLayout: FrameLayout
-    private val loadingImageLayout: FrameLayout
+    private val loadingOverlay: View
+    private val loadingProgress: ProgressBar
+    private val buttonResend: TextView
+    private val recoveryAddressLabel: TextView
+    private val codeInput : AppCompatEditText = view.findViewById(R.id.recovery_code)
+    private val codeInputLayout : TextInputLayout = view.findViewById(R.id.recovery_code_layout)
 
     private val passwordLoginDialog = PasswordLoginDialog(view.context)
 
     init {
-        rootLayout = view.findViewById<View>(R.id.viewRoot)
-        cantAccessDevice = view.findViewById(R.id.cant_access_device)
-        recoveryCodeText = view.findViewById(R.id.recovery_code)
-        skipText = view.findViewById(R.id.skip)
-        textViewTitle = view.findViewById(R.id.textViewTitle)
-        textViewBody = view.findViewById(R.id.textViewBody)
-        buttonResend = view.findViewById(R.id.buttonResend)
-        textViewNotApproved = view.findViewById(R.id.textViewNotAproved)
-        textViewPrompt = view.findViewById(R.id.textViewPrompt)
+        buttonResend = view.findViewById(R.id.resend_code)
         backButton = view.findViewById(R.id.icon_back)
-        failedImageLayout = view.findViewById(R.id.failed_x)
-        loadingImageLayout = view.findViewById(R.id.sign_in_anim)
+        recoveryAddressLabel = view.findViewById(R.id.textViewEmail)
+        loadingOverlay = view.findViewById(R.id.creating_account_overlay)
+        loadingProgress = view.findViewById(R.id.progress_horizontal)
 
-        if(initialState.hasTwoFA){
-            cantAccessDevice.visibility = View.GONE
-            textViewTitle.text = view.context.getText(R.string.title_two_fa)
-            recoveryCodeText.visibility = View.VISIBLE
-        }
-
-        if(initialState.hasRemovedDevices) {
-            cantAccessDevice.visibility = View.GONE
-            skipText.visibility = View.VISIBLE
-        }
+        if(initialState.recoveryAddress != null)
+            recoveryAddressLabel.text = initialState.recoveryAddress
 
 
         setListeners()
-        startLoadingAnimation()
-    }
-
-    private fun startLoadingAnimation(){
-
-        rootLayout.post {
-            animLoading = initLoadingAnimatorSet(view.findViewById(R.id.imageViewCircularArrow))
-            animLoading!!.start()
-        }
-
-    }
-
-    private fun initLoadingAnimatorSet(viewArrow: View): AnimatorSet{
-
-        val animArray = arrayOfNulls<ObjectAnimator>(2)
-        var animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 45f)
-
-        initSyncObjectAnim(animObj, ValueAnimator.RESTART, 250,0 )
-        animArray[0] = animObj
-
-        animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 360f)
-        initSyncObjectAnim(animObj, ValueAnimator.RESTART, 125, 250)
-        animArray[1] = animObj
-
-        val animSet = AnimatorSet()
-        animSet.playTogether(*animArray)
-        animSet.duration = 1000
-        return animSet
-    }
-
-    private fun initSyncObjectAnim(animObj: ObjectAnimator, repeatMode: Int,
-                                   duration: Long, delay: Long) {
-        animObj.repeatMode = repeatMode
-        animObj.repeatCount = -1
-        animObj.duration = duration
-        animObj.startDelay = delay
-    }
-
-    private fun initFailedAnimatorSet(viewArrow: View, viewWatch: View): AnimatorSet{
-
-        val animArray = arrayOfNulls<ObjectAnimator>(2)
-        var animObj = ObjectAnimator.ofFloat(viewArrow, "rotation", 0f)
-        animObj.duration = 250
-        animArray[0] = animObj
-
-        animObj = ObjectAnimator.ofFloat(viewWatch, "rotation", 0f)
-        animObj.duration = 250
-        animArray[1] = animObj
-
-        val animSet = AnimatorSet()
-        animSet.playTogether(*animArray)
-        animSet.duration = 250
-        return animSet
-    }
-
-    fun showFailedLogin(){
-
-        buttonResend.visibility = View.GONE
-        textViewPrompt.visibility = View.GONE
-        textViewTitle.text = view.context.getLocalizedUIMessage(UIMessage(R.string.title_failed))
-        textViewBody.text = view.context.getLocalizedUIMessage(UIMessage(R.string.login_failed_body))
-        textViewNotApproved.visibility = View.VISIBLE
-        animLoading?.cancel()
-        loadingImageLayout.visibility = View.GONE
-        failedImageLayout.visibility = View.VISIBLE
-        rootLayout.post {
-            val animLoading = initFailedAnimatorSet(view.findViewById(R.id.imageViewCircularArrow),
-                    view.findViewById(R.id.imageViewWatch))
-            animLoading.start()
-        }
     }
 
     fun setEnableButtons(enable: Boolean){
@@ -150,21 +67,58 @@ class LoginValidationHolder(
             uiObserver?.onBackPressed()
         }
 
-        cantAccessDevice.setOnClickListener {
-            uiObserver?.onCantAccessDeviceClick()
-        }
-
-        recoveryCodeText.setOnClickListener {
-            uiObserver?.onRecoveryCodeClicked()
-        }
-
-        skipText.setOnClickListener {
-            uiObserver?.onSkipClicked()
-        }
-
         buttonResend.setOnClickListener {
             uiObserver?.onResendDeviceLinkAuth(initialState.username, initialState.domain)
             setEnableButtons(false)
+        }
+
+        codeInput.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
+                    || actionId == EditorInfo.IME_ACTION_DONE) {
+                uiObserver?.onSubmitButtonClicked()
+            }
+            false
+        })
+
+        codeInput.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                uiObserver?.onRecoveryCodeChangeListener(text.toString())
+            }
+        })
+
+    }
+
+    fun setSubmitButtonState(state : ProgressButtonState){
+        when (state) {
+            ProgressButtonState.disabled,
+            ProgressButtonState.enabled -> {
+                loadingOverlay.visibility = View.GONE
+                loadingProgress.visibility = View.GONE
+            }
+            ProgressButtonState.waiting -> {
+                loadingOverlay.visibility = View.VISIBLE
+                loadingProgress.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun drawError(uiMessage: UIMessage?) {
+        if(uiMessage != null) {
+            codeInputLayout.setHintTextAppearance(R.style.textinputlayout_login_error)
+            codeInput.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.error_color))
+            codeInput.error = view.context.getLocalizedUIMessage(uiMessage)
+        } else {
+            codeInputLayout.setHintTextAppearance(R.style.textinputlayout_login)
+            codeInput.supportBackgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(view.context, R.color.azure))
+            codeInput.error = null
         }
     }
 

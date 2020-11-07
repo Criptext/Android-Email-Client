@@ -602,7 +602,8 @@
   <string name="sign_in_remove_dialog_title">Удалить устройства</string>
   <string name="sign_in_remove_error_dialog_title">Сессия истекла</string>
   <string name="sign_in_remove_error_dialog_message">Вы достигли максимально допустимого времени бездействия. Пожалуйста, войдите снова.</string>
-  <string name="contact_support">Попасть в неприятности? <b> Обратитесь в службу поддержки </b></string>
+  <string name="contact_support">Попасть в неприятности? </string>
+  <string name="contact_support_click"><b> Обратитесь в службу поддержки </b></string>
   <string name="sync_screen_message">Не покидайте приложение и не выключайте экран во время этого процесса</string>
   <string name="domain_validation_error">Не удалось получить подтверждение домена контактов ( %1$d )</string>
   <string name="contact_db_get_error">Не удалось получить контакты из локальной базы данных.</string>
@@ -807,4 +808,27 @@
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">Email to %1$s couldn\'t be sent</string>
   <string name="fail_to_send_notification_title">Fail to Send</string>
+  <string name="login_title">Ah, you\'re back!</string>
+  <string name="login_sub_title">It\'s not the same without you</string>
+  <string name="login_reset_password_title">Enter your Criptext Email</string>
+  <string name="login_reset_password_sub_title">You\'ll get an email with a link to reset your password</string>
+  <string name="login_reset_password_hint">Criptext Email</string>
+  <string name="login_reset_password_button">Reset Password</string>
+  <string name="login_reset_password_button_time">Reset Password (%1$d)</string>
+  <string name="login_reset_link_title">Reset link sent to your recovery email 📩</string>
+  <string name="login_reset_link_message">The link will expire in 30 min</string>
+  <string name="login_remove_devices_title">You\'ve reached your device limit 😰</string>
+  <string name="login_remove_devices_sub_title">Logout from one device to make room for this one.</string>
+  <string name="login_two_fa_title">Two-Factor\nAuthentication</string>
+  <string name="login_two_fa_message_1">Enter the code we sent to:</string>
+  <string name="login_two_fa_resend_1">Didn\'t get the code? </string>
+  <string name="login_two_fa_resend_2">Resend it</string>
+  <string name="login_remove_devices_success">Super cool! 👍</string>
+  <string name="import_mailbox_title">Where will you import your emails from?</string>
+  <string name="import_mailbox_sub_title">Select a source to import your emails and account info</string>
+  <string name="import_mailbox_sync_device">From other device  🖥</string>
+  <string name="import_mailbox_from_cloud">From iCloud  ☁️</string>
+  <string name="import_mailbox_from_file">From a Backup File  📁</string>
+  <string name="import_mailbox_import_title">Importing Mailbox</string>
+  <string name="import_mailbox_import_sub_title">Don\'t leave the app or turn off the screen</string>
 </resources>

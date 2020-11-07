@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.settings.syncing
+package com.criptext.mail.scenes.syncing
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator

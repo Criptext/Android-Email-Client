@@ -114,7 +114,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.settings.pinlock.PinLockActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".scenes.settings.syncing.SyncingActivity"
+        <activity android:name="com.criptext.mail.scenes.syncing.SyncingActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".scenes.mailbox.emailsource.EmailSourceActivity"
             android:screenOrientation="portrait"/>

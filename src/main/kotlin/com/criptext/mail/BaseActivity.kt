@@ -6,10 +6,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
@@ -27,14 +25,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.models.UserEvent
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.PushData
-import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.push.services.LinkDeviceActionService
@@ -69,7 +65,7 @@ import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.replyto.ReplyToModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
-import com.criptext.mail.scenes.settings.syncing.SyncingModel
+import com.criptext.mail.scenes.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel

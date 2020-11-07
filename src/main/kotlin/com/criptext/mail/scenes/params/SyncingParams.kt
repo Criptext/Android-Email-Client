@@ -1,6 +1,6 @@
 package com.criptext.mail.scenes.params
 
-import com.criptext.mail.scenes.settings.syncing.SyncingActivity
+import com.criptext.mail.scenes.syncing.SyncingActivity
 import com.criptext.mail.utils.DeviceUtils
 
 open class SyncingParams(val email: String, val deviceId: Int, val randomId: String,
