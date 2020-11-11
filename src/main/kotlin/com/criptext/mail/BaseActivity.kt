@@ -43,6 +43,7 @@ import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
+import com.criptext.mail.scenes.import_mailbox.ImportMailboxModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
@@ -85,7 +86,7 @@ import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 import com.github.kittinunf.result.Result
@@ -464,12 +465,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is DevicesParams -> DevicesModel()
             is LabelsParams -> LabelsModel()
             is PrivacyParams -> PrivacyModel()
-            is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
-                    params.deviceType, params.authorizerName)
+            is SyncingParams -> SyncingModel()
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.userData)
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
+            is ImportMailboxParams -> ImportMailboxModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
             is CustomizeParams -> CustomizeSceneModel(params.recoveryEmail, params.isMultiple)
             is WebViewParams -> {
@@ -491,7 +492,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
-                           activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+                           activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if (! keep) finish()
         BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
@@ -661,7 +662,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return null
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if(activityMessage != null) BaseActivity.activityMessage = activityMessage
         finish()
         if(animationData != null && animationData.forceAnimation) {

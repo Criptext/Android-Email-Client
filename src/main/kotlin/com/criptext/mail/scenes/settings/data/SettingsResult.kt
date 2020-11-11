@@ -9,11 +9,6 @@ sealed class SettingsResult{
         data class Failure(val message: UIMessage): ResetPassword()
     }
 
-    sealed class SyncBegin: SettingsResult() {
-        class Success: SyncBegin()
-        data class Failure(val message: UIMessage): SyncBegin()
-    }
-
     sealed class UpdateSignature: SettingsResult() {
         class Success: UpdateSignature()
         data class Failure(val message: UIMessage): UpdateSignature()

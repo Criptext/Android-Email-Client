@@ -13,8 +13,6 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
-import com.criptext.mail.scenes.signin.OnPasswordLoginDialogListener
-import com.criptext.mail.scenes.signin.PasswordLoginDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.validation.ProgressButtonState
@@ -37,8 +35,6 @@ class LoginValidationHolder(
     private val recoveryAddressLabel: TextView
     private val codeInput : AppCompatEditText = view.findViewById(R.id.recovery_code)
     private val codeInputLayout : TextInputLayout = view.findViewById(R.id.recovery_code_layout)
-
-    private val passwordLoginDialog = PasswordLoginDialog(view.context)
 
     init {
         buttonResend = view.findViewById(R.id.resend_code)
@@ -68,7 +64,7 @@ class LoginValidationHolder(
         }
 
         buttonResend.setOnClickListener {
-            uiObserver?.onResendDeviceLinkAuth(initialState.username, initialState.domain)
+            uiObserver?.onResendRecoveryCode()
             setEnableButtons(false)
         }
 
@@ -120,9 +116,5 @@ class LoginValidationHolder(
                     ContextCompat.getColor(view.context, R.color.azure))
             codeInput.error = null
         }
-    }
-
-    fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-        passwordLoginDialog.showPasswordLoginDialog(initialState.username, initialState.domain, onPasswordLoginDialogListener)
     }
 }

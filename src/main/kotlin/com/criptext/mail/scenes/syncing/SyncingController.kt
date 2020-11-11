@@ -11,6 +11,7 @@ import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.signin.data.LinkStatusData
+import com.criptext.mail.scenes.syncing.holders.SyncingLayoutState
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
@@ -39,22 +40,28 @@ class SyncingController(
         when(result) {
             is GeneralResult.LinkDataReady -> onLinkDataReady(result)
             is GeneralResult.LinkData -> onLinkData(result)
+            is GeneralResult.SyncStatus -> onSyncStatus(result)
+            is GeneralResult.SyncBegin -> onSyncBegin(result)
         }
     }
 
-    private val linkingUIObserver = object: SyncingUIObserver{
-        override fun onResendDeviceLinkAuth(username: String) {
-
-        }
-
-        override fun onBackPressed() {
+    private val uiObserver = object: SyncingUIObserver{
+        override fun onSubmitButtonPressed() {
+            when(model.state){
+                is SyncingLayoutState.SyncBegin -> {
+                    generalDataSource.submitRequest(GeneralRequest.SyncBegin())
+                }
+                is SyncingLayoutState.SyncRejected -> {
+                    restartSyncProcess()
+                }
+            }
 
         }
 
         override fun onRetrySyncOk(result: GeneralResult) {
             when(result){
                 is GeneralResult.LinkData -> {
-                    generalDataSource.submitRequest(GeneralRequest.LinkData(model.key, model.dataAddress, model.remoteDeviceId))
+                    restartSyncProcess()
                 }
             }
         }
@@ -79,7 +86,14 @@ class SyncingController(
         }
 
         override fun onBackButtonPressed() {
-
+            when(model.state){
+                is SyncingLayoutState.SyncBegin -> {
+                    host.finishScene()
+                }
+                is SyncingLayoutState.SyncRejected -> {
+                    restartSyncProcess()
+                }
+            }
         }
     }
 
@@ -87,16 +101,55 @@ class SyncingController(
         PinLockUtils.enablePinLock()
 
         websocketEvents.setListener(webSocketEventListener)
-        scene.attachView(model = model, syncingUIObserver = linkingUIObserver)
-        scene.setProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
+        scene.attachView(model = model, syncingUIObserver = uiObserver)
         generalDataSource.listener = generalDataSourceListener
-        generalDataSource.submitRequest(GeneralRequest.LinkDataReady())
+        generalDataSource.submitRequest(GeneralRequest.SyncStatus())
         return false
     }
 
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         websocketEvents.setListener(webSocketEventListener)
         return false
+    }
+
+    private fun handleSyncStatusSuccess(syncStatusData: SyncStatusData){
+        host.getHandler()?.removeCallbacks(null)
+        model.retryTimeLinkStatus = 0
+        model.authorizerName = syncStatusData.authorizerName
+        model.randomId = syncStatusData.randomId
+        model.remoteDeviceId = syncStatusData.authorizerId
+        model.deviceType = syncStatusData.authorizerType
+        model.state = SyncingLayoutState.SyncImport()
+        host.runOnUiThread(Runnable {
+            scene.attachView(model, uiObserver)
+            scene.setProgressStatus(
+                    message = UIMessage(R.string.sending_keys),
+                    drawable = R.drawable.img_keysexport
+            )
+            scene.setProgress(
+                    progress = SENDING_KEYS_PERCENTAGE,
+                    onFinish = {
+                        host.postDelay(Runnable {
+                            scene.setProgressStatus(
+                                    message = UIMessage(R.string.waiting_for_mailbox),
+                                    drawable = R.drawable.img_waitingimport
+                            )
+                            scene.setProgress(
+                                    progress = WAITING_FOR_MAILBOX_PERCENTAGE,
+                                    onFinish = {
+                                        generalDataSource.submitRequest(GeneralRequest.LinkDataReady())
+                                    }
+                            )
+                        }, 1000L)
+                    }
+            )
+        })
+    }
+
+    private fun restartSyncProcess(){
+        model.state = SyncingLayoutState.SyncBegin()
+        scene.attachView(model, uiObserver)
+        generalDataSource.submitRequest(GeneralRequest.SyncBegin())
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
@@ -121,11 +174,16 @@ class SyncingController(
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
-
+            if(model.state !is SyncingLayoutState.SyncImport) {
+                handleSyncStatusSuccess(syncStatusData)
+            }
         }
 
         override fun onSyncRequestDeny() {
-
+            host.runOnUiThread(Runnable {
+                model.state = SyncingLayoutState.SyncRejected()
+                scene.attachView(model, uiObserver)
+            })
         }
 
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
@@ -178,6 +236,7 @@ class SyncingController(
             is GeneralResult.LinkDataReady.Success -> {
                 model.key = result.key
                 model.dataAddress = result.dataAddress
+                scene.disableSkip()
                 generalDataSource.submitRequest(GeneralRequest.LinkData(model.key, model.dataAddress,
                         model.remoteDeviceId))
 
@@ -196,16 +255,67 @@ class SyncingController(
     private fun onLinkData(result: GeneralResult) {
         when (result) {
             is GeneralResult.LinkData.Success -> {
-                scene.setProgress(UIMessage(R.string.sync_complete), SYNC_COMPLETE_PERCENTAGE)
-                scene.startSucceedAnimation {
-                    linkingUIObserver.onLinkingHasFinished()
-                }
+                scene.setProgress(
+                        progress = SYNC_COMPLETE_PERCENTAGE,
+                        onFinish = {
+                            scene.setProgressStatus(
+                                    message = UIMessage(R.string.device_ready),
+                                    drawable = R.drawable.img_readyimport
+                            )
+                            host.postDelay(Runnable{
+                                uiObserver.onLinkingHasFinished()
+                            }, 1000L)
+                        }
+                )
             }
             is GeneralResult.LinkData.Progress -> {
-                scene.setProgress(result.message, result.progress)
+                scene.setProgressStatus(
+                        message = result.message,
+                        drawable = result.drawable
+                )
+                scene.setProgress(
+                        progress = result.progress,
+                        onFinish = null
+                )
             }
             is GeneralResult.LinkData.Failure -> {
                 scene.showRetrySyncDialog(result)
+            }
+        }
+    }
+
+    private fun onSyncBegin(result: GeneralResult.SyncBegin){
+        when(result) {
+            is GeneralResult.SyncBegin.Success -> {
+                model.state = SyncingLayoutState.SyncImport()
+                scene.attachView(model, uiObserver)
+                generalDataSource.submitRequest(GeneralRequest.SyncStatus())
+            }
+            is GeneralResult.SyncBegin.Failure -> {
+                scene.showMessage(result.message)
+            }
+        }
+    }
+
+    private fun onSyncStatus(result: GeneralResult.SyncStatus) {
+        when (result) {
+            is GeneralResult.SyncStatus.Success -> {
+                if(model.state !is SyncingLayoutState.SyncImport) {
+                    handleSyncStatusSuccess(result.syncStatusData)
+                }
+            }
+            is GeneralResult.SyncStatus.Waiting -> {
+                host.postDelay(Runnable {
+                    if (model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
+                        generalDataSource.submitRequest(GeneralRequest.SyncStatus())
+                        model.retryTimeLinkStatus++
+                    }
+                }, RETRY_TIME_DEFAULT)
+            }
+            is GeneralResult.SyncStatus.Denied -> {
+                model.state = SyncingLayoutState.SyncRejected()
+                scene.attachView(model, uiObserver)
+                model.retryTimeLinkStatus = 0
             }
         }
     }
@@ -228,7 +338,7 @@ class SyncingController(
     }
 
     override fun onBackPressed(): Boolean {
-        linkingUIObserver.onBackButtonPressed()
+        uiObserver.onBackButtonPressed()
         return false
     }
 

@@ -44,7 +44,7 @@ import com.criptext.mail.utils.mailtemplates.FWMailTemplate
 import com.criptext.mail.utils.mailtemplates.REMailTemplate
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -143,7 +143,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
                         unread = true)
             }
             host.finishScene(activityMessage = ActivityMessage.UpdateThreadPreview(model.threadPreview),
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = 0,
                             exitAnim = R.anim.slide_out_right

@@ -96,6 +96,7 @@ class ComposerActivity : BaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if(data != null) {
             when (requestCode){
                 FilePickerConst.REQUEST_CODE_DOC -> setNewAttachmentsAsActivityMessage(data, FilePickerConst.KEY_SELECTED_DOCS)

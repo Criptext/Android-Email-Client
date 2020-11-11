@@ -136,11 +136,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
         db.accountDao().updateSignature(account.id, metadata.signature)
         account.updateSignature(storage, metadata.signature)
         storage.putBool(KeyValueStorage.StringKey.HasDarkTheme, metadata.darkTheme)
-        if (metadata.darkTheme) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
         val footerData = ProfileFooterData(account.id, metadata.hasCriptextFooter)
         val allFooterData = storage.getString(KeyValueStorage.StringKey.ShowCriptextFooter, "")
         if (allFooterData.isNotEmpty()) {

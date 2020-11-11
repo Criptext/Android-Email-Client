@@ -1,20 +1,11 @@
 package com.criptext.mail.scenes.syncing
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.view.View
-import android.view.animation.Animation
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import com.beardedhen.androidbootstrap.BootstrapProgressBar
-import com.criptext.mail.BuildConfig
 import com.criptext.mail.R
-import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.scenes.syncing.holders.*
 import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.RetryManualSyncAlertDialogNewDevice
@@ -24,9 +15,9 @@ interface SyncingScene{
 
     fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver)
     fun showMessage(message : UIMessage)
-    fun setProgress(message: UIMessage, progress: Int)
-    fun startSucceedAnimation(launchMailboxScene: (
-            linkingUIObserver: SyncingUIObserver) -> Unit)
+    fun setProgress(progress: Int, onFinish:(() -> Unit)? = null)
+    fun setProgressStatus(message: UIMessage, drawable: Int? = null)
+    fun disableSkip()
     fun showRetrySyncDialog(result: GeneralResult)
 
 
@@ -37,98 +28,55 @@ interface SyncingScene{
         private val context = view.context
 
         override var syncingUIObserver: SyncingUIObserver? = null
+        private val viewGroup = view.parent as ViewGroup
+        private var holder: BaseSyncingHolder? = null
 
-
-
-        private val loadingView: View = view.findViewById(R.id.viewAnimation)
-        private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
-        private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
-        private val textViewVersion: TextView = view.findViewById(R.id.version_text)
-        private val progressBar: BootstrapProgressBar = view.findViewById(R.id.progressBar)
-        private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
-        private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
         private val retrySyncDialog: RetryManualSyncAlertDialogNewDevice = RetryManualSyncAlertDialogNewDevice(context)
-        private val oldDevice: ImageView = view.findViewById(R.id.imageViewDevice1)
 
         override fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver) {
             this.syncingUIObserver = syncingUIObserver
-            textViewEmail.text = model.email
-            textViewVersion.text = "v${BuildConfig.VERSION_NAME}"
-            when (model.deviceType){
-                DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
-                DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
-                DeviceUtils.DeviceType.LinuxInstaller -> oldDevice.setImageResource(R.drawable.device_pc)
-                else -> oldDevice.setImageResource(R.drawable.device_m)
+            removeAllViews()
+            val state = model.state
+            holder = when (state) {
+                is SyncingLayoutState.SyncBegin -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.holder_sync_import_begin, viewGroup)
+                    SyncBeginHolder(newLayout)
+                }
+                is SyncingLayoutState.SyncRejected -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.holder_sync_import_denied, viewGroup)
+                    SyncDeniedHolder(newLayout)
+                }
+                is SyncingLayoutState.SyncImport -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.holder_sync_import_restore, viewGroup)
+                    SyncImportHolder(newLayout)
+                }
             }
         }
 
-        override fun startSucceedAnimation(launchMailboxScene: (
-                linkingUIObserver: SyncingUIObserver) -> Unit) {
-            loadingView.post {
-                val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.imageViewSucceed))
-
-                animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
-                    override fun onAnimationStart(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animator?) {
-                        launchMailboxScene(syncingUIObserver!!)
-                    }
-
-                    override fun onAnimationCancel(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animation?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animation?) {
-                    }
-
-                    override fun onAnimationStart(p0: Animation?) {
-                    }
-
-                })
-
-                animSucceed.start()
-            }
-
-            textViewEmail.setTextColor(ContextCompat.getColor(view.context, R.color.colorAccent))
-            textViewStatus.text = view.resources.getText(R.string.device_ready)
+        private fun removeAllViews() {
+            viewGroup.removeAllViews()
+            holder?.uiObserver = null
         }
 
-
-        private fun initSuccessAnimatorSet(viewSucceed: View): AnimatorSet {
-
-            val animArray = arrayOfNulls<ObjectAnimator>(1)
-            val animObj = ObjectAnimator.ofFloat(viewSucceed, "alpha", 0.0f, 1f)
-            initSuccessObjectAnim(animObj, 0)
-            animArray[0] = animObj
-
-            val animSet = AnimatorSet()
-            animSet.playTogether(*animArray)
-            animSet.duration = 1000
-            return animSet
+        override fun setProgress(progress: Int, onFinish: (() -> Unit)?) {
+            val currentHolder = holder as SyncImportHolder
+            currentHolder.setProgress(progress, onFinish)
         }
 
-        private fun initSuccessObjectAnim(animObj: ObjectAnimator, delay: Long) {
-            if (delay > 0)
-                animObj.startDelay = delay
+        override fun setProgressStatus(message: UIMessage, drawable: Int?) {
+            val currentHolder = holder as SyncImportHolder
+            currentHolder.setStatus(message, drawable)
         }
 
-        override fun setProgress(message: UIMessage, progress: Int) {
-            textViewStatus.text = context.getLocalizedUIMessage(message)
-            if (progress >= 96) {
-                progressBar.progress = 100
-                progressBarNumber.text = 100.toString().plus("%")
-            }
-            else {
-                val anim = UIUtils.animationForProgressBar(progressBar, progress,
-                        progressBarNumber, 1000)
-                anim.start()
-            }
+        override fun disableSkip() {
+            val currentHolder = holder as SyncImportHolder
+            currentHolder.disableSkip()
         }
 
         override fun showRetrySyncDialog(result: GeneralResult) {

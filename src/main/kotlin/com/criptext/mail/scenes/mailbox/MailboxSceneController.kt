@@ -19,7 +19,6 @@ import com.criptext.mail.db.models.Account
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
-import com.criptext.mail.push.PushData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ComposerType
@@ -44,7 +43,7 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -171,7 +170,7 @@ class MailboxSceneController(private val scene: MailboxScene,
             }
             host.goToScene(EmailDetailParams(threadId = emailPreview.threadId,
                     currentLabel = model.selectedLabel, threadPreview = emailPreview), true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = 0,
                             exitAnim = R.anim.slide_left_out
@@ -239,7 +238,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     ),
                     activityMessage = ActivityMessage.ComesFromMailbox(),
                     keep = true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = R.anim.slide_in_up,
                             exitAnim = R.anim.stay
@@ -263,7 +262,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     ),
                     activityMessage = null,
                     keep = true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = R.anim.slide_in_up,
                             exitAnim = R.anim.stay
@@ -1011,7 +1010,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     dataSource.listener = null
                     host.goToScene(params = MailboxParams(),
                             activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.snack_bar_active_account, arrayOf(activeAccount.userEmail))),
-                            animationData = TransitionAnimationData(
+                            animationData = ActivityTransitionAnimationData(
                                     forceAnimation = true,
                                     enterAnim = 0,
                                     exitAnim = 0
@@ -1261,7 +1260,7 @@ class MailboxSceneController(private val scene: MailboxScene,
                     host.goToScene(EmailDetailParams(threadId = result.emailPreview.threadId,
                             currentLabel = model.selectedLabel, threadPreview = result.emailPreview,
                             doReply = result.doReply), true, activityMessage = result.activityMessage,
-                            animationData = TransitionAnimationData(
+                            animationData = ActivityTransitionAnimationData(
                                     forceAnimation = true,
                                     enterAnim = 0,
                                     exitAnim = R.anim.slide_out_right

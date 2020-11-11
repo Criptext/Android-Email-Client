@@ -31,14 +31,9 @@ interface SignInScene {
     fun initLayout(model: SignInSceneModel, signInUIObserver: SignInSceneController.SignInUIObserver,
                    devicesListItemListener: DevicesListItemListener? = null)
     fun showResetPasswordDialog(emailAddress: String)
-    fun showPasswordLoginDialog(
-            onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
-    fun showKeyGenerationHolder()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
-    fun startLinkSucceedAnimation()
-    fun setLinkProgress(message: UIMessage, progress: Int)
     fun showSyncRetryDialog(result: SignInResult)
     fun showSignInWarningDialog(oldAccountName: String, newUserData: UserData)
     fun showPasswordDialogError(message: UIMessage?)
@@ -128,12 +123,6 @@ interface SignInScene {
                             R.layout.holder_sign_in_reset_password, viewGroup)
                     ForgotPasswordHolder(newLayout)
                 }
-                is SignInLayoutState.Connection -> {
-                    val newLayout = View.inflate(
-                            view.context,
-                            R.layout.activity_connection, viewGroup)
-                    ConnectionHolder(newLayout, state.username, state.domain, state.authorizerType,signInUIObserver)
-                }
                 is SignInLayoutState.ChangePassword -> {
                     val newLayout = View.inflate(
                             view.context,
@@ -201,10 +190,6 @@ interface SignInScene {
             }
         }
 
-        override fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-            (holder as LoginValidationHolder).showPasswordLoginDialog(onPasswordLoginDialogListener)
-        }
-
         override fun showResetPasswordDialog(emailAddress: String) {
             ForgotPasswordDialog(view.context, emailAddress).showForgotPasswordDialog()
         }
@@ -226,16 +211,6 @@ interface SignInScene {
         override fun toggleResendClickable(isEnabled: Boolean) {
             val currentHolder = holder as LoginValidationHolder
             currentHolder.setEnableButtons(isEnabled)
-        }
-
-        override fun startLinkSucceedAnimation() {
-            val currentHolder = holder as? ConnectionHolder
-            currentHolder?.startSucceedAnimation(showMailboxScene)
-        }
-
-        override fun setLinkProgress(message: UIMessage, progress: Int) {
-            val currentHolder = holder as? ConnectionHolder
-            currentHolder?.setProgress(message, progress)
         }
 
         override fun showPasswordDialogError(message: UIMessage?) {
@@ -265,19 +240,6 @@ interface SignInScene {
                     )
             ).showDialog()
         }
-
-        override fun showKeyGenerationHolder() {
-            viewGroup.removeAllViews()
-            val keyGenerationLayout = View.inflate(
-                    view.context,
-                    R.layout.view_key_generation, viewGroup)
-            KeyGenerationHolder(keyGenerationLayout, {
-                if(it >= 100){
-                    holder.uiObserver?.onProgressHolderFinish()
-                }
-            }, 50)
-        }
-
     }
 }
 

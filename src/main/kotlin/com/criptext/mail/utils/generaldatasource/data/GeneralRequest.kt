@@ -11,8 +11,11 @@ import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.settings.data.AliasData
+import com.criptext.mail.scenes.settings.data.SettingsRequest
+import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.signal.PreKeyBundleShareData
 import com.criptext.mail.utils.ContactUtils
+import com.criptext.mail.utils.UIMessage
 
 sealed class GeneralRequest {
     data class DeviceRemoved(val letAPIKnow: Boolean): GeneralRequest()
@@ -37,6 +40,7 @@ sealed class GeneralRequest {
     data class CheckForKeyBundle(val deviceId: Int): GeneralRequest()
     data class LinkData(val key: String, val dataAddress: String, val authorizerId: Int): GeneralRequest()
     class LinkDataReady: GeneralRequest()
+    class SyncBegin: GeneralRequest()
     class SyncStatus: GeneralRequest()
     data class SyncAccept(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()
     data class SyncDenied(val trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo): GeneralRequest()

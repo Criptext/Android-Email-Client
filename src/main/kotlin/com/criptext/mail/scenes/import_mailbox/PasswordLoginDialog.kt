@@ -1,4 +1,4 @@
-package com.criptext.mail.scenes.signin
+package com.criptext.mail.scenes.import_mailbox
 
 import android.content.Context
 import androidx.core.content.ContextCompat
@@ -17,27 +17,22 @@ import com.criptext.mail.R
 class PasswordLoginDialog(val context: Context) {
     private var dialog: AlertDialog? = null
     private val res = context.resources
-    private var username: String = ""
-    private var domain: String = ""
 
-    fun showPasswordLoginDialog(username: String, domain: String,
-            onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+    fun showPasswordLoginDialog(importMailboxUIObserver: ImportMailboxUIObserver?) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = (context as AppCompatActivity).layoutInflater
         val dialogView = inflater.inflate(R.layout.password_login_dialog, null)
 
         dialogBuilder.setView(dialogView)
 
-        this.username = username
-        this.domain = domain
         dialog = createDialog(dialogView,
-                dialogBuilder,
-                onPasswordLoginDialogListener)
+                dialogBuilder, importMailboxUIObserver)
     }
 
     private fun createDialog(dialogView: View,
                              dialogBuilder: AlertDialog.Builder,
-                             onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
+                             importMailboxUIObserver: ImportMailboxUIObserver?
+    )
             : AlertDialog {
         val width = res.getDimension(R.dimen.password_login_dialog_width).toInt()
         val newPasswordLoginDialog = dialogBuilder.create()
@@ -50,26 +45,23 @@ class PasswordLoginDialog(val context: Context) {
         newPasswordLoginDialog.window?.setBackgroundDrawable(drawableBackground)
 
         assignButtonEvents(dialogView,
-                newPasswordLoginDialog,
-                onPasswordLoginDialogListener)
+                newPasswordLoginDialog, importMailboxUIObserver)
 
         return newPasswordLoginDialog
     }
 
     private fun assignButtonEvents(view: View,
-                                   dialog: AlertDialog,
-                                   onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
+                                   dialog: AlertDialog, importMailboxUIObserver: ImportMailboxUIObserver?) {
 
-        val btn_yes = view.findViewById(R.id.password_login_yes) as Button
-        val btn_no = view.findViewById(R.id.password_login_no) as Button
+        val btnContinue = view.findViewById(R.id.password_login_yes) as Button
+        val btnCancel = view.findViewById(R.id.password_login_no) as Button
 
-        btn_yes.setOnClickListener {
-            onPasswordLoginDialogListener.acceptPasswordLogin(username, domain)
+        btnContinue.setOnClickListener {
+            importMailboxUIObserver?.onSkipContinuePressed()
             dialog.dismiss()
         }
 
-        btn_no.setOnClickListener {
-            onPasswordLoginDialogListener.cancelPasswordLogin()
+        btnCancel.setOnClickListener {
             dialog.dismiss()
         }
     }

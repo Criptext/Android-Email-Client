@@ -22,7 +22,7 @@ import com.criptext.mail.websocket.WebSocketSingleton
 
 class LinkingActivity: BaseActivity(){
 
-    override val layoutId = R.layout.activity_connection
+    override val layoutId = R.layout.activity_export_mailbox
     override val toolbarId = null
 
     override fun initController(receivedModel: Any, savedInstanceState: Bundle?): SceneController {

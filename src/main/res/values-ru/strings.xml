@@ -33,7 +33,7 @@
   <string name="link_auth_message">%1$s </string>
   <string name="establishing">Установление безопасного соединения</string>
   <string name="cancel_sync">Отмена синхронизации</string>
-  <string name="device_ready">Устройство готово</string>
+  <string name="device_ready">Устройство готово! 😎</string>
   <string name="preparing_mailbox">Шифрование почтового ящика</string>
   <string name="getting_keys">Получение ключей</string>
   <string name="uploading_mailbox">Загрузка почтового ящика</string>
@@ -257,9 +257,8 @@
 
        Хотите продолжить?]]></string>
   <string name="sign_in_warning_dialog_title">Предупреждение о входе</string>
-  <string name="password_warning_dialog_title">Предупреждение ⚠️</string>
-  <string name="password_warning_dialog_message">Если вы осуществите вход с помощью вашего пароля, ваша
-        <b>история почтовых сообщений из других устройств не будет доступна</b> на данном устройстве. Хотите продолжить?</string>
+  <string name="password_warning_dialog_title">Sign In Warning️</string>
+  <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
   <string name="slide_1_title">
     <b>Добро пожаловать!</b>
   </string>
@@ -550,7 +549,8 @@
  <u> Пропустить восстановление </u> 
 </string>
   <string name="restore_backup_dialog_button">Восстановить с диска</string>
-  <string name="restore_backup_title">Резервная копия найдена</string>
+  <string name="restore_backup_title">Резервная копия найдена! 🙌</string>
+  <string name="restore_backup_sub_title">Your data is ready to be imported</string>
   <string name="restore_backup_title_encrypted">Найдена зашифрованная резервная копия</string>
   <string name="restore_backup_last_modified">Последнее резервное копирование: %1$s</string>
   <string name="restore_backup_size">Размер: %1$d МБ</string>

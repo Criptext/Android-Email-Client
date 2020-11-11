@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:paddingStart="56dp"
+        android:paddingEnd="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/restore_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_title_restoring"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+        <TextView
+            android:id="@+id/restore_sub_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_sub_title_searching"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerInParent="true">
+                <ImageView
+                    android:layout_width="83dp"
+                    android:layout_height="83dp"
+                    android:src="@drawable/restore_cloud"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:id="@+id/percentage_advanced"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/criptextPrimaryTextColor"
+                    android:layout_gravity="center"
+                    android:text="0%"/>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:max="100"
+                android:progress="0"
+                android:rotation="-90"
+                android:progressDrawable="@drawable/progress_bar_sync"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="39.5dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/restore_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/restore_backup_button"
+            android:enabled="false"
+            android:textAllCaps="false"
+            android:textSize="16sp"/>
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18.5dp"
+            android:text="@string/btn_skip"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:clickable="true"
+            android:id="@+id/btn_skip"/>
+    </LinearLayout>
+</RelativeLayout>

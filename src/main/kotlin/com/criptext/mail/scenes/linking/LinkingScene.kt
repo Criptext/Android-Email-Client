@@ -1,27 +1,26 @@
 package com.criptext.mail.scenes.linking
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
+import android.animation.*
 import android.view.View
 import android.view.animation.Animation
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import com.beardedhen.androidbootstrap.BootstrapProgressBar
-import com.criptext.mail.BuildConfig
+import com.airbnb.lottie.LottieAnimationView
 import com.criptext.mail.R
 import com.criptext.mail.androidui.progressdialog.IntervalTimer
-import com.criptext.mail.utils.DeviceUtils
+import com.criptext.mail.scenes.settings.privacy.PrivacyUIObserver
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.AccountSuspendedDialog
 import com.criptext.mail.utils.ui.KeepWaitingSyncAlertDialog
+import com.criptext.mail.utils.ui.ProgressBarAnimation
 import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
 import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.utils.ui.data.GeneralAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 
@@ -29,7 +28,8 @@ interface LinkingScene{
 
     fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver)
     fun showMessage(message : UIMessage)
-    fun setProgress(message: UIMessage, progress: Int)
+    fun setProgress(progress: Int, onFinish:(() -> Unit)? = null)
+    fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData? = null, onFinish: (() -> Unit)? = null)
     fun startSucceedAnimation(launchMailboxScene: (
             linkingUIObserver: LinkingUIObserver) -> Unit)
     fun showKeepWaitingDialog()
@@ -50,26 +50,14 @@ interface LinkingScene{
 
         private val loadingView: View = view.findViewById(R.id.viewAnimation)
         private val textViewStatus: TextView = view.findViewById(R.id.textViewStatus)
-        private val textViewEmail: TextView = view.findViewById(R.id.textViewEmail)
-        private val textViewVersion: TextView = view.findViewById(R.id.version_text)
-        private val progressBar: BootstrapProgressBar = view.findViewById(R.id.progressBar)
-        private val progressBarNumber: TextView = view.findViewById(R.id.percentage_advanced)
+        private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
+        private val statusImage: LottieAnimationView = view.findViewById(R.id.statusImage)
         private val keepWaitingDialog: KeepWaitingSyncAlertDialog = KeepWaitingSyncAlertDialog(context)
         private val retrySyncDialog: RetrySyncAlertDialogOldDevice = RetrySyncAlertDialogOldDevice(context)
-        private val newDevice: ImageView = view.findViewById(R.id.imageViewDevice2)
-        private val timer = IntervalTimer()
 
         override fun attachView(model: LinkingModel, linkingUIObserver: LinkingUIObserver) {
             this.linkingUIObserver = linkingUIObserver
-            textViewEmail.text = model.incomingAccount.userEmail
-            textViewVersion.text = "v${BuildConfig.VERSION_NAME}"
-            when (model.deviceType){
-                DeviceUtils.DeviceType.PC, DeviceUtils.DeviceType.MacStore, DeviceUtils.DeviceType.MacInstaller,
-                DeviceUtils.DeviceType.WindowsInstaller, DeviceUtils.DeviceType.WindowsStore,
-                DeviceUtils.DeviceType.LinuxInstaller -> newDevice.setImageResource(R.drawable.device_pc)
-                else -> newDevice.setImageResource(R.drawable.device_m)
-            }
             cancelSyncText.visibility = View.VISIBLE
             cancelSyncText.setOnClickListener {
                 this.linkingUIObserver?.onCancelSync()
@@ -79,7 +67,7 @@ interface LinkingScene{
         override fun startSucceedAnimation(launchMailboxScene: (
                 linkingUIObserver: LinkingUIObserver) -> Unit) {
             loadingView.post {
-                val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.imageViewSucceed))
+                val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.statusImage))
 
                 animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
                     override fun onAnimationStart(p0: Animator?) {
@@ -108,8 +96,6 @@ interface LinkingScene{
 
                 animSucceed.start()
             }
-
-            textViewEmail.setTextColor(ContextCompat.getColor(view.context, R.color.colorAccent))
             textViewStatus.text = view.resources.getText(R.string.device_ready)
         }
 
@@ -132,16 +118,28 @@ interface LinkingScene{
                 animObj.startDelay = delay
         }
 
-        override fun setProgress(message: UIMessage, progress: Int) {
+        override fun setProgress(progress: Int, onFinish: (() -> Unit)?) {
+            val anim = ProgressBarAnimation(progressBar, progressBar.progress, progress, null, onFinish)
+            anim.duration = 1000
+            progressBar.startAnimation(anim)
+        }
+
+        override fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData?, onFinish: (() -> Unit)?) {
             textViewStatus.text = context.getLocalizedUIMessage(message)
-            if (progress >= 96) {
-                progressBar.progress = 100
-                progressBarNumber.text = 100.toString().plus("%")
-            }
-            else {
-                val anim = UIUtils.animationForProgressBar(progressBar, progress,
-                        progressBarNumber, 1000)
-                anim.start()
+            if(animationData != null) {
+                statusImage.setMinAndMaxFrame(animationData.start, animationData.end)
+                if(animationData.isLoop)
+                    statusImage.repeatCount = ValueAnimator.INFINITE
+                else if(onFinish != null){
+                    statusImage.addAnimatorListener(
+                            object: AnimatorListenerAdapter(){
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    onFinish()
+                                }
+                            }
+                    )
+                }
+                statusImage.playAnimation()
             }
         }
 

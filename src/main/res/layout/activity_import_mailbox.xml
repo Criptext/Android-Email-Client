@@ -4,17 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="?attr/criptextColorBackground"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/icon_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="48dp"
-        android:layout_gravity="center_vertical"
-        android:clickable="true"
-        android:src="@drawable/ic_arrow"/>
+    android:layout_height="match_parent"
+    android:id="@+id/main_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -135,7 +126,9 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:clickable="true"
+        android:id="@+id/skip_layout">
         <TextView
             fontPath="fonts/NunitoSans-Regular.ttf"
             android:layout_width="wrap_content"

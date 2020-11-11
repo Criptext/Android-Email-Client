@@ -47,7 +47,6 @@
             android:text="@string/import_mailbox_import_sub_title"/>
 
         <RelativeLayout
-            android:id="@+id/viewAnimation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="49dp">
@@ -56,46 +55,34 @@
                 android:id="@+id/imageViewDevice1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/img_keysimport"
+                android:src="@drawable/img_rejectimport"
                 android:layout_centerInParent="true"/>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_centerInParent="true"
-                android:max="100"
-                android:progress="10"
-                android:rotation="-90"
-                android:progressDrawable="@drawable/progress_bar_sync" />
 
         </RelativeLayout>
 
 
         <TextView
             fontPath="fonts/NunitoSans-Regular.ttf"
-            android:id="@+id/textViewStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:textSize="18sp"
             android:textColor="?attr/criptextSecondaryTextColor"
             android:layout_gravity="center"
-            android:text="@string/sending_keys"/>
+            android:textAlignment="center"
+            android:text="@string/not_approved"/>
+
+        <Button
+            android:id="@+id/resend_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="59dp"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/sync_denied_btn"
+            android:textAllCaps="false"
+            android:textSize="16sp"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/cancelSync"
-        android:paddingBottom="20dp"
-        fontPath="fonts/NunitoSans-Bold.ttf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="@string/cancel_sync"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="?attr/criptextPrimaryTextColor"
-        android:textSize="16sp"
-        android:visibility="visible"/>
+
 </RelativeLayout>

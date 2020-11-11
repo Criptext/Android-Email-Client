@@ -13,6 +13,7 @@ import com.criptext.mail.scenes.settings.data.SettingsResult
 import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralAPIClient
+import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.mapError
@@ -22,18 +23,18 @@ class SyncBeginWorker(val httpClient: HttpClient,
                       private val activeAccount: ActiveAccount,
                       private val storage: KeyValueStorage,
                       private val accountDao: AccountDao,
-                      override val publishFn: (SettingsResult) -> Unit)
-    : BackgroundWorker<SettingsResult.SyncBegin> {
+                      override val publishFn: (GeneralResult) -> Unit)
+    : BackgroundWorker<GeneralResult.SyncBegin> {
 
     private val apiClient = GeneralAPIClient(httpClient, activeAccount.jwt)
 
     override val canBeParallelized = false
 
-    override fun catchException(ex: Exception): SettingsResult.SyncBegin {
-        return SettingsResult.SyncBegin.Failure(createErrorMessage(ex))
+    override fun catchException(ex: Exception): GeneralResult.SyncBegin {
+        return GeneralResult.SyncBegin.Failure(createErrorMessage(ex))
     }
 
-    override fun work(reporter: ProgressReporter<SettingsResult.SyncBegin>): SettingsResult.SyncBegin? {
+    override fun work(reporter: ProgressReporter<GeneralResult.SyncBegin>): GeneralResult.SyncBegin? {
         val result = workOperation()
 
         val sessionExpired = HttpErrorHandlingHelper.didFailBecauseInvalidSession(result)
@@ -45,7 +46,7 @@ class SyncBeginWorker(val httpClient: HttpClient,
 
         return when (finalResult) {
             is Result.Success ->{
-                SettingsResult.SyncBegin.Success()
+                GeneralResult.SyncBegin.Success()
             }
             is Result.Failure -> catchException(finalResult.error)
         }

@@ -10,7 +10,7 @@ import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.services.jobs.CloudBackupJobService
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 
 /**
  * Base class for all the main controllers.
@@ -92,7 +92,7 @@ abstract class SceneController(private val host: IHostActivity,
                         host.goToScene(
                                 params = SignInParams(),
                                 activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.expired_session)),
-                                animationData = TransitionAnimationData(
+                                animationData = ActivityTransitionAnimationData(
                                         forceAnimation = true,
                                         enterAnim = android.R.anim.fade_in,
                                         exitAnim = android.R.anim.fade_out
@@ -136,7 +136,7 @@ abstract class SceneController(private val host: IHostActivity,
                 is GeneralResult.DeviceRemoved.Success -> {
                     if (result.activeAccount == null)
                         host.goToScene(params = SignInParams(), activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.device_removed_remotely_exception)),
-                                animationData = TransitionAnimationData(
+                                animationData = ActivityTransitionAnimationData(
                                         forceAnimation = true,
                                         enterAnim = android.R.anim.fade_in,
                                         exitAnim = android.R.anim.fade_out

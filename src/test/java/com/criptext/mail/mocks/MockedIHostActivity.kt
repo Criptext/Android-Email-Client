@@ -13,7 +13,7 @@ import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 
 /**
@@ -100,11 +100,11 @@ class MockedIHostActivity: IHostActivity{
     override fun refreshToolbarItems() {
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if(!keep) isFinished = true
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         isFinished = true
     }
 

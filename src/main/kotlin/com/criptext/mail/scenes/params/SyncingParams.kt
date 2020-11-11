@@ -3,8 +3,7 @@ package com.criptext.mail.scenes.params
 import com.criptext.mail.scenes.syncing.SyncingActivity
 import com.criptext.mail.utils.DeviceUtils
 
-open class SyncingParams(val email: String, val deviceId: Int, val randomId: String,
-                         val deviceType: DeviceUtils.DeviceType, val authorizerName: String): SceneParams() {
+open class SyncingParams(): SceneParams() {
     override val activityClass = SyncingActivity::class.java
 
     override fun equals(other: Any?): Boolean {

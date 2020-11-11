@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:paddingStart="56dp"
+        android:paddingEnd="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/restore_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_title_searching"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+        <TextView
+            android:id="@+id/restore_sub_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_sub_title_searching"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/welcome_animation"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
+            android:layout_marginTop="49dp"
+            app:lottie_fileName="WaitingCloud.json"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            android:layout_gravity="center" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/restore_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="80dp"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/restore_backup_button"
+            android:enabled="false"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:layout_marginStart="56dp"
+            android:layout_marginEnd="56dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
+</RelativeLayout>

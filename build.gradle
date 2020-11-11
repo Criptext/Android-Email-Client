@@ -222,7 +222,7 @@ dependencies {
 
     implementation 'com.madgag.spongycastle:core:1.54.0.0'
 
-    implementation 'com.airbnb.android:lottie:2.5.0'
+    implementation 'com.airbnb.android:lottie:3.5.0'
 
     implementation 'com.inkapplications.viewpageindicator:library:2.4.4'
 

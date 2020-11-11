@@ -33,11 +33,11 @@
   <string name="link_auth_message">%1$s</string>
   <string name="establishing">Estableciendo conexión segura</string>
   <string name="cancel_sync">Cancelar Sincronización</string>
-  <string name="device_ready">Dispositivo preparado</string>
+  <string name="device_ready">¡Dispositivo listo! 😎</string>
   <string name="preparing_mailbox">Encriptando Buzón</string>
   <string name="getting_keys">Obteniendo Llaves</string>
   <string name="uploading_mailbox">Subiendo Buzón</string>
-  <string name="mailbox_upload_successful">¡Buzón subido exitosamente!</string>
+  <string name="mailbox_upload_successful">¡Listo! 🙌</string>
   <string name="keep_waiting_title">Bueno, eso está raro…</string>
   <string name="keep_waiting_message">Algo ha sucedido que está retrasando este proceso. ¿Quieres seguir esperando?</string>
   <string name="sending_keys">Enviando Llaves de Encriptación</string>
@@ -241,8 +241,8 @@
   <string name="no_devices_available">No hay dispositivos autorizados disponibles para aprobar este dispositivo.</string>
   <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?]]></string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
-  <string name="password_warning_dialog_title">Advertencia ⚠️</string>
-  <string name="password_warning_dialog_message">Si inicias sesión usando tu contraseña\n        <b>tu historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
+  <string name="password_warning_dialog_title">Sign In Warning️</string>
+  <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
   <string name="slide_1_title">
     <b>¡Bienvenido!</b>
   </string>
@@ -527,7 +527,8 @@
   <string name="restore_backup_dialog_message">Restaura tus correos desde un respaldo local o desde Google Drive, puedes hacer esto en otro momento entrando a Configuración &gt; Respaldo de Correos &gt; Restaurar Respaldo.</string>
   <string name="restore_backup_dialog_skip_restore">No Restaurar</string>
   <string name="restore_backup_dialog_button">Restaurar desde Drive</string>
-  <string name="restore_backup_title">Respaldo encontrado</string>
+  <string name="restore_backup_title">Respaldo encontrado! 🙌</string>
+  <string name="restore_backup_sub_title">Your data is ready to be imported</string>
   <string name="restore_backup_title_encrypted">Respaldo encriptado encontrado</string>
   <string name="restore_backup_last_modified">Último Respaldo: %1$s</string>
   <string name="restore_backup_size">Tamaño: %1$d MB</string>
