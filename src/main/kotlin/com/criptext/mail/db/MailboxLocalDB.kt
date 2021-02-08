@@ -75,8 +75,7 @@ interface MailboxLocalDB {
     fun getFileKeyByFileId(id: Long): String?
     fun increaseContactScore(emailIds: List<Long>)
     fun getAccountById(accountId: Long): Account?
-    fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
-    fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun getFromAddresses(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun updateIsTrusted(emailAddresses: List<String>, isTrusted: Boolean)
     fun getAlias(aliasEmail: String?): Alias?
 
@@ -98,20 +97,9 @@ interface MailboxLocalDB {
             }
         }
 
-        override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
+        override fun getFromAddresses(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
-            if(fromContacts.isNotEmpty())
-                db.contactDao().resetSpamCounter(fromContacts, accountId)
-            return fromContacts
-        }
-
-        override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
-            val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
-            if(fromContacts.isNotEmpty())
-                db.contactDao().uptickSpamCounter(fromContacts, accountId)
-            return fromContacts
+            return emails.filter { !it.fromAddress.contains(userEmail) }.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
         }
 
         override fun getAccountById(accountId: Long): Account? {

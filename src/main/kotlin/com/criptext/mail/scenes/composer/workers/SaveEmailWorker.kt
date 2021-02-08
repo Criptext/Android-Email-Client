@@ -132,7 +132,7 @@ class SaveEmailWorker(
         val senderEmail = aliasEmail ?: (account.userEmail)
         val sender = Contact(id = 0, name = account.name,
                 email = senderEmail,
-                isTrusted = true, score = 0, spamScore = 0)
+                isTrusted = true, score = 0)
 
         val tempThreadId = System.currentTimeMillis()
 

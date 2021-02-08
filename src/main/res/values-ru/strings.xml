@@ -827,7 +827,7 @@
   <string name="import_mailbox_title">Where will you import your emails from?</string>
   <string name="import_mailbox_sub_title">Select a source to import your emails and account info</string>
   <string name="import_mailbox_sync_device">From other device  🖥</string>
-  <string name="import_mailbox_from_cloud">From iCloud  ☁️</string>
+  <string name="import_mailbox_from_cloud">From Cloud  ☁️</string>
   <string name="import_mailbox_from_file">From a Backup File  📁</string>
   <string name="import_mailbox_import_title">Importing Mailbox</string>
   <string name="import_mailbox_import_sub_title">Don\'t leave the app or turn off the screen</string>

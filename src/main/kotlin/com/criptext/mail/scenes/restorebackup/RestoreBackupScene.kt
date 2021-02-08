@@ -55,8 +55,8 @@ interface RestoreBackupScene{
 
         override fun attachView(model: RestoreBackupModel, uiObserver: RestoreBackupUIObserver,
                                 message: UIMessage?) {
-            this.uiObserver = uiObserver
             removeAllViews()
+            this.uiObserver = uiObserver
             val state = model.state
             holder = when (state) {
                 is RestoreBackupLayoutState.Searching -> {

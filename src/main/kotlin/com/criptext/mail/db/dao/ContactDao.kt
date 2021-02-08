@@ -70,20 +70,6 @@ interface ContactDao {
             where email in (:emails)""")
     fun updateContactsIsTrusted(emails: List<String>, isTrusted: Boolean)
 
-    @Query("""UPDATE contact
-            SET spamScore = (spamScore + 1)
-            where email in (:emails)
-            AND EXISTS
-            (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)""")
-    fun uptickSpamCounter(emails: List<String>, accountId: Long)
-
-    @Query("""UPDATE contact
-            SET spamScore = 0
-            where email in (:emails)
-            AND EXISTS
-            (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)""")
-    fun resetSpamCounter(emails: List<String>, accountId: Long)
-
     @Query("DELETE FROM contact WHERE  EXISTS (SELECT DISTINCT * FROM contact LEFT JOIN account_contact ON contact.id = account_contact.contactId WHERE account_contact.accountId=:accountId)")
     fun nukeTable(accountId: Long)
 }

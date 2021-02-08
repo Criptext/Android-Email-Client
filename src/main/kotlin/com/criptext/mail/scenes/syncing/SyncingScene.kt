@@ -34,8 +34,8 @@ interface SyncingScene{
         private val retrySyncDialog: RetryManualSyncAlertDialogNewDevice = RetryManualSyncAlertDialogNewDevice(context)
 
         override fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver) {
-            this.syncingUIObserver = syncingUIObserver
             removeAllViews()
+            this.syncingUIObserver = syncingUIObserver
             val state = model.state
             holder = when (state) {
                 is SyncingLayoutState.SyncBegin -> {

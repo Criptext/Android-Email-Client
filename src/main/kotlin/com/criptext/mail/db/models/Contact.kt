@@ -30,10 +30,7 @@ open class Contact(
         var isTrusted : Boolean,
 
         @ColumnInfo(name = "score")
-        var score : Int,
-
-        @ColumnInfo(name = "spamScore")
-        var spamScore : Int
+        var score : Int
 ) {
 
     @Ignore
@@ -85,8 +82,7 @@ open class Contact(
                     email = email,
                     name = name,
                     isTrusted = isTrusted,
-                    score = 0,
-                    spamScore = spamScore
+                    score = 0
             )
         }
 
@@ -107,7 +103,6 @@ open class Contact(
             json.put("name", contact.name)
             json.put("isTrusted", contact.isTrusted)
             json.put("score", contact.score)
-            json.put("spamScore", contact.spamScore)
             return json
         }
 
@@ -117,5 +112,5 @@ open class Contact(
 
     }
 
-    class Invalid(email: String, name: String): Contact(0, email, name, false, 0, 0)
+    class Invalid(email: String, name: String): Contact(0, email, name, false, 0)
 }

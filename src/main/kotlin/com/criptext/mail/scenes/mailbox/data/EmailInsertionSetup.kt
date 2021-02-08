@@ -72,7 +72,7 @@ object  EmailInsertionSetup {
 
         val toContacts = mutableListOf<Contact>()
         for (i in 0..(toAddresses.size - 1))
-            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false, score = 0, spamScore = 0))
+            toContacts.add(Contact(id = 0, name = toNames[i], email = toAddresses[i], isTrusted = false, score = 0))
         val existingContacts = dao.findContactsByEmail(toContacts.toSet().map { it.email })
 
         val contactsMap = HashMap<String, Contact>()
@@ -91,8 +91,7 @@ object  EmailInsertionSetup {
                     name = EmailAddressUtils.extractName(senderContact.name),
                     email = EmailAddressUtils.extractEmailAddress(senderContact.email),
                     isTrusted = false,
-                    score = senderContact.score,
-                    spamScore = senderContact.spamScore)
+                    score = senderContact.score)
         } else {
             dao.updateContactName(existingContacts.first().id, EmailAddressUtils.extractName(senderContact.name), accountId)
             existingContacts.first()
@@ -332,17 +331,9 @@ object  EmailInsertionSetup {
         }
 
         if(!meAsSender) {
-            val fromContact = dao.findContactsByEmail(listOf(metadata.fromContact.email)).firstOrNull()
             when {
                 metadata.isSpam -> {
                     labels.add(Label.defaultItems.spam)
-                }
-                fromContact != null -> {
-                    if(fromContact.spamScore >= SPAM_COUNTER){
-                        labels.add(Label.defaultItems.spam)
-                        apiClient.postReportSpam(listOf(fromContact.email),
-                                ContactUtils.ContactReportTypes.spam, null)
-                    }
                 }
             }
         }

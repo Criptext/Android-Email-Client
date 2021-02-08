@@ -135,7 +135,6 @@ class SignInSceneController(
                                 buttonState = ProgressButtonState.disabled,
                                 devices = model.devices
                         )
-                        scene.initLayout(model, uiObserver, onDevicesListItemListener)
                     }
                     else -> {
                         val currentState = model.state as SignInLayoutState.Login
@@ -146,9 +145,9 @@ class SignInSceneController(
                                 buttonState = ProgressButtonState.disabled,
                                 devices = model.devices
                         )
-                        scene.initLayout(model, uiObserver)
                     }
                 }
+                scene.initLayout(model, uiObserver, onDevicesListItemListener)
             }
             is SignInResult.FindDevices.Failure -> {
                 onAuthenticationFailed(result.message)

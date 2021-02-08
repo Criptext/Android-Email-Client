@@ -97,6 +97,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:clickable="true"
         android:src="@drawable/ic_logout"/>
 
     <ProgressBar

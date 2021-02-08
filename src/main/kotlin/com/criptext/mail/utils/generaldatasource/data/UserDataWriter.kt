@@ -166,7 +166,6 @@ class UserDataWriter(private val db: AppDatabase, private val filesDir: File)
                 jsonObject.put("email", contact.email)
                 jsonObject.put("name", contact.name)
                 jsonObject.put("isTrusted", contact.isTrusted)
-                jsonObject.put("spamScore", contact.spamScore)
                 jsonArrayAllContacts.add(jsonObject.toString())
                 tmpFile.appendText("${JSONObject("{table: contact, object: $jsonObject}")}\n")
             }
