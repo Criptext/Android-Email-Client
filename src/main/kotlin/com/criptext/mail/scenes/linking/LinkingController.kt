@@ -132,6 +132,7 @@ class LinkingController(
         }
 
         private fun exitToMailbox(){
+            host.stopMessagesAndCallbacks()
             host.goToScene(params = MailboxParams(), activityMessage = null,
                     keep = false, deletePastIntents = true)
         }
@@ -176,6 +177,7 @@ class LinkingController(
     }
 
     private fun cleanup(){
+        host.stopMessagesAndCallbacks()
         websocketEvents.clearListener(webSocketEventListener)
     }
 
@@ -244,10 +246,12 @@ class LinkingController(
                                         isLoop = true
                                 )
                         )
-                        scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE)
-                        generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                                model.dataFilePath, model.dataFileKey!!, model.randomId, null,
-                                model.incomingAccount))
+                        scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE, onFinish = {
+                            generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                                    model.dataFilePath, model.dataFileKey!!, model.randomId, null,
+                                    model.incomingAccount))
+                        })
+
                     }
                 }
             })
@@ -289,21 +293,19 @@ class LinkingController(
     private fun onPostUserData(result: GeneralResult.PostUserData){
         when (result) {
             is GeneralResult.PostUserData.Success -> {
-                scene.setProgress( SYNC_COMPLETE_PERCENTAGE,
-                    onFinish = {
-                        scene.setProgressStatus(UIMessage(R.string.mailbox_upload_successful),
-                                animationData = GeneralAnimationData(
-                                    start = ExportMailboxAnimationData.exportingTransition.first,
-                                    end = ExportMailboxAnimationData.exportingTransition.second,
-                                    isLoop = false
-                            ),
-                            onFinish = {
-                                host.postDelay(Runnable {
-                                    linkingUIObserver.onLinkingHasFinished()
-                                }, 1000L)
-                            }
-                        )
-                    }
+                scene.setProgress(SYNC_COMPLETE_PERCENTAGE)
+                scene.setProgressStatus(UIMessage(R.string.mailbox_upload_successful),
+                        animationData = GeneralAnimationData(
+                                start = ExportMailboxAnimationData.exportingTransition.first,
+                                end = ExportMailboxAnimationData.exportingTransition.second,
+                                isLoop = false
+                        ),
+                        onFinish = {
+                            scene.showCompleteExport()
+                            host.postDelay(Runnable {
+                                linkingUIObserver.onLinkingHasFinished()
+                            }, 1000L)
+                        }
                 )
             }
             is GeneralResult.PostUserData.Failure -> {
@@ -333,40 +335,32 @@ class LinkingController(
                 model.dataFileHasBeenCreated = true
                 model.dataFilePath = resultData.filePath
                 model.dataFileKey = resultData.key
-                scene.setProgressStatus(UIMessage(R.string.getting_keys),
-                        animationData = GeneralAnimationData(
-                            start = ExportMailboxAnimationData.encryptToReceiveKeysTransition.first,
-                            end = ExportMailboxAnimationData.encryptToReceiveKeysTransition.second,
-                            isLoop = false
-                        ),
-                        onFinish = {
-                            scene.setProgress(GETTING_KEYS_PERCENTAGE, onFinish = {
-                                if(model.untrustedDevicePostedKeyBundle){
-                                    scene.setProgressStatus(UIMessage(R.string.getting_keys),
-                                            animationData = GeneralAnimationData(
-                                                    start = ExportMailboxAnimationData.receivingKeysLoop.first,
-                                                    end = ExportMailboxAnimationData.receivingKeysLoop.second,
-                                                    isLoop = true
-                                            ))
-                                    scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE, onFinish = {
-                                        scene.setProgressStatus(UIMessage(R.string.uploading_mailbox),
-                                                animationData = GeneralAnimationData(
-                                                        start = ExportMailboxAnimationData.receivingKeysToExportTransition.first,
-                                                        end = ExportMailboxAnimationData.receivingKeysToExportTransition.second,
-                                                        isLoop = false
-                                                ),
-                                        onFinish = {
-                                            generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                                                    model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
-                                                    model.incomingAccount))
-                                        })
-                                    })
-                                }else{
-                                    delayPostCheckForKeyBundle()
-                                }
-                            })
-                        }
-                )
+                if(model.untrustedDevicePostedKeyBundle){
+                    scene.setProgressStatus(UIMessage(R.string.getting_keys),
+                            animationData = GeneralAnimationData(
+                                    start = ExportMailboxAnimationData.receivingKeysLoop.first,
+                                    end = ExportMailboxAnimationData.receivingKeysLoop.second,
+                                    isLoop = true
+                            )
+                    )
+                    host.postDelay(Runnable {
+                        scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE)
+                        scene.setProgressStatus(
+                                message = UIMessage(R.string.uploading_mailbox),
+                                animationData = GeneralAnimationData(
+                                        start = ExportMailboxAnimationData.receivingKeysToExportTransition.first,
+                                        end = ExportMailboxAnimationData.receivingKeysToExportTransition.second,
+                                        isLoop = false
+                                ),
+                                onFinish = {
+                                    generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                                            model.dataFilePath, model.dataFileKey!!, model.randomId, model.keyBundle,
+                                            model.incomingAccount))
+                                })
+                    }, 2000L)
+                }else{
+                    delayPostCheckForKeyBundle()
+                }
             }
             is GeneralResult.DataFileCreation.Progress -> {
                 scene.setProgressStatus(resultData.message, null)
@@ -384,18 +378,19 @@ class LinkingController(
                 if(!model.untrustedDevicePostedKeyBundle) {
                     model.untrustedDevicePostedKeyBundle = true
                     model.keyBundle = result.keyBundle
-                    scene.setProgressStatus(UIMessage(R.string.uploading_mailbox), animationData = GeneralAnimationData(
-                            start = ExportMailboxAnimationData.receivingKeysToExportTransition.first,
-                            end = ExportMailboxAnimationData.receivingKeysToExportTransition.second,
-                            isLoop = false
-                    ))
-                    scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE,
-                        onFinish = {
-                            generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
-                                    model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
-                                    model.incomingAccount))
-                        }
-                    )
+                    scene.setProgressStatus(
+                            message = UIMessage(R.string.uploading_mailbox),
+                            animationData = GeneralAnimationData(
+                                start = ExportMailboxAnimationData.receivingKeysToExportTransition.first,
+                                end = ExportMailboxAnimationData.receivingKeysToExportTransition.second,
+                                isLoop = false
+                            ),
+                            onFinish = {
+                                generalDataSource.submitRequest(GeneralRequest.PostUserData(model.remoteDeviceId,
+                                        model.dataFilePath, model.dataFileKey!!,model.randomId, model.keyBundle,
+                                        model.incomingAccount))
+                            })
+                    scene.setProgress(UPLOADING_MAILBOX_PERCENTAGE)
                 }
             }
             is LinkingResult.CheckForKeyBundle.Failure -> {
@@ -407,10 +402,19 @@ class LinkingController(
     }
 
     private fun delayPostCheckForKeyBundle(){
+        scene.setProgressStatus(
+                message = UIMessage(R.string.uploading_mailbox),
+                animationData = GeneralAnimationData(
+                        start = ExportMailboxAnimationData.receivingKeysLoop.first,
+                        end = ExportMailboxAnimationData.receivingKeysLoop.second,
+                        isLoop = true
+                )
+        )
         host.postDelay(Runnable {
             if(model.retryTimesCheckForKeyBundle < RETRY_TIMES_DEFAULT) {
-                if (!model.untrustedDevicePostedKeyBundle)
+                if (!model.untrustedDevicePostedKeyBundle) {
                     dataSource.submitRequest(LinkingRequest.CheckForKeyBundle(model.incomingAccount, model.remoteDeviceId))
+                }
                 model.retryTimesCheckForKeyBundle++
             }else{
                 scene.showKeepWaitingDialog()

@@ -95,6 +95,11 @@ import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.api.services.drive.DriveScopes
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
@@ -297,9 +302,28 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         super.onStart()
         dismissAllNotifications()
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        checkForUpdate()
 
         if (controller.onStart(activityMessage))
             activityMessage = null
+    }
+
+    private fun checkForUpdate(){
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this,
+                        UPDATE_REQUEST_CODE
+                )
+            }
+        }
     }
 
     override fun onResume() {
@@ -309,6 +333,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             storage.putLong(KeyValueStorage.StringKey.ResumeEventTimer, System.currentTimeMillis())
             controller.onNeedToSendEvent(UserEvent.onResumeApp)
         }
+        checkForUpdate()
         if (controller.onResume(activityMessage))
             activityMessage = null
     }
@@ -485,6 +510,10 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
 
     override fun refreshToolbarItems() {
         this.invalidateOptionsMenu()
+    }
+
+    override fun getReviewManager(): ReviewManager {
+        return ReviewManagerFactory.create(this)
     }
 
     override fun getLocalizedString(message: UIMessage): String {
@@ -977,6 +1006,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val SIGN_UP_MODEL = "SignUpModel"
 
         private const val RESUME_TIMER = 180000L
+
+        private const val UPDATE_REQUEST_CODE = 100
     }
 
     enum class RequestCode {

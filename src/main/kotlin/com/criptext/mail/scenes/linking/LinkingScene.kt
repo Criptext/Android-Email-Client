@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.linking
 
 import android.animation.*
+import android.media.Image
 import android.view.View
 import android.view.animation.Animation
 import android.widget.ImageView
@@ -30,8 +31,7 @@ interface LinkingScene{
     fun showMessage(message : UIMessage)
     fun setProgress(progress: Int, onFinish:(() -> Unit)? = null)
     fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData? = null, onFinish: (() -> Unit)? = null)
-    fun startSucceedAnimation(launchMailboxScene: (
-            linkingUIObserver: LinkingUIObserver) -> Unit)
+    fun showCompleteExport()
     fun showKeepWaitingDialog()
     fun showRetrySyncDialog(result: GeneralResult)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
@@ -53,6 +53,7 @@ interface LinkingScene{
         private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
         private val cancelSyncText: TextView = view.findViewById(R.id.cancelSync)
         private val statusImage: LottieAnimationView = view.findViewById(R.id.statusImage)
+        private val completeImage: ImageView = view.findViewById(R.id.completeImage)
         private val keepWaitingDialog: KeepWaitingSyncAlertDialog = KeepWaitingSyncAlertDialog(context)
         private val retrySyncDialog: RetrySyncAlertDialogOldDevice = RetrySyncAlertDialogOldDevice(context)
 
@@ -64,58 +65,9 @@ interface LinkingScene{
             }
         }
 
-        override fun startSucceedAnimation(launchMailboxScene: (
-                linkingUIObserver: LinkingUIObserver) -> Unit) {
-            loadingView.post {
-                val animSucceed = initSuccessAnimatorSet(view.findViewById(R.id.statusImage))
-
-                animSucceed.addListener(object : Animation.AnimationListener, Animator.AnimatorListener {
-                    override fun onAnimationStart(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animator?) {
-                        launchMailboxScene(linkingUIObserver!!)
-                    }
-
-                    override fun onAnimationCancel(p0: Animator?) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animation?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animation?) {
-                    }
-
-                    override fun onAnimationStart(p0: Animation?) {
-                    }
-
-                })
-
-                animSucceed.start()
-            }
-            textViewStatus.text = view.resources.getText(R.string.device_ready)
-        }
-
-
-        private fun initSuccessAnimatorSet(viewSucceed: View): AnimatorSet {
-
-            val animArray = arrayOfNulls<ObjectAnimator>(1)
-            val animObj = ObjectAnimator.ofFloat(viewSucceed, "alpha", 0.0f, 1f)
-            initSuccessObjectAnim(animObj, 0)
-            animArray[0] = animObj
-
-            val animSet = AnimatorSet()
-            animSet.playTogether(*animArray)
-            animSet.duration = 1000
-            return animSet
-        }
-
-        private fun initSuccessObjectAnim(animObj: ObjectAnimator, delay: Long) {
-            if (delay > 0)
-                animObj.startDelay = delay
+        override fun showCompleteExport() {
+            completeImage.visibility = View.VISIBLE
+            statusImage.visibility = View.GONE
         }
 
         override fun setProgress(progress: Int, onFinish: (() -> Unit)?) {
@@ -127,10 +79,13 @@ interface LinkingScene{
         override fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData?, onFinish: (() -> Unit)?) {
             textViewStatus.text = context.getLocalizedUIMessage(message)
             if(animationData != null) {
-                statusImage.setMinAndMaxFrame(animationData.start, animationData.end)
                 if(animationData.isLoop)
                     statusImage.repeatCount = ValueAnimator.INFINITE
-                else if(onFinish != null){
+                else
+                    statusImage.repeatCount = 0
+                statusImage.setMinAndMaxFrame(animationData.start, animationData.end)
+
+                if(onFinish != null && !animationData.isLoop){
                     statusImage.addAnimatorListener(
                             object: AnimatorListenerAdapter(){
                                 override fun onAnimationEnd(animation: Animator?) {

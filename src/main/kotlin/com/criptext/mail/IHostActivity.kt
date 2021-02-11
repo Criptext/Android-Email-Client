@@ -14,12 +14,14 @@ import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.google.android.play.core.review.ReviewManager
 
 /**
  * Created by sebas on 1/29/18.
  */
 interface IHostActivity {
     fun refreshToolbarItems()
+    fun getReviewManager(): ReviewManager
     /**
      * Launches a new activity to show the new scene.
      * @param params object used to create the new scene. If the activity for the scene is used,

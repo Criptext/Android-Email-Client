@@ -36,6 +36,7 @@ import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
 import com.criptext.mail.utils.*
+import com.criptext.mail.utils.apputils.AppRater
 import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
@@ -714,7 +715,7 @@ class MailboxSceneController(private val scene: MailboxScene,
 
             dataSource.submitRequest(MailboxRequest.ResendPeerEvents())
         }
-        scene.checkRating(storage)
+        AppRater.startReviewFlow(host)
 
         return handleActivityMessage(activityMessage)
     }
