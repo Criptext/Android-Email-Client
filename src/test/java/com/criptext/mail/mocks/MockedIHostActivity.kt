@@ -15,6 +15,7 @@ import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.google.android.play.core.review.ReviewManager
 
 /**
  * Created by gabriel on 3/1/18.
@@ -98,6 +99,10 @@ class MockedIHostActivity: IHostActivity{
     }
 
     override fun refreshToolbarItems() {
+    }
+
+    override fun getReviewManager(): ReviewManager? {
+        return null
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {

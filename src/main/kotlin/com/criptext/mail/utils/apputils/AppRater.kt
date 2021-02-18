@@ -6,7 +6,7 @@ import com.criptext.mail.IHostActivity
 
 object AppRater {
     fun startReviewFlow(host: IHostActivity){
-        val manager = host.getReviewManager()
+        val manager = host.getReviewManager() ?: return
         val request = manager.requestReviewFlow()
         request.addOnCompleteListener {
             if (it.isSuccessful) {

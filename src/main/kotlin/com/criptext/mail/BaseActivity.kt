@@ -512,7 +512,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         this.invalidateOptionsMenu()
     }
 
-    override fun getReviewManager(): ReviewManager {
+    override fun getReviewManager(): ReviewManager? {
         return ReviewManagerFactory.create(this)
     }
 

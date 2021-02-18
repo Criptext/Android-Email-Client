@@ -9,6 +9,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.getLocalizedUIMessage
 import com.criptext.mail.utils.ui.RetryManualSyncAlertDialogNewDevice
+import com.criptext.mail.utils.ui.data.GeneralAnimationData
 
 
 interface SyncingScene{
@@ -16,7 +17,8 @@ interface SyncingScene{
     fun attachView(model: SyncingModel, syncingUIObserver: SyncingUIObserver)
     fun showMessage(message : UIMessage)
     fun setProgress(progress: Int, onFinish:(() -> Unit)? = null)
-    fun setProgressStatus(message: UIMessage, drawable: Int? = null)
+    fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData? = null, onFinish: (() -> Unit)? = null)
+    fun showCompleteImport()
     fun disableSkip()
     fun showRetrySyncDialog(result: GeneralResult)
 
@@ -69,9 +71,14 @@ interface SyncingScene{
             currentHolder.setProgress(progress, onFinish)
         }
 
-        override fun setProgressStatus(message: UIMessage, drawable: Int?) {
+        override fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData?, onFinish: (() -> Unit)?) {
             val currentHolder = holder as SyncImportHolder
-            currentHolder.setStatus(message, drawable)
+            currentHolder.setStatus(message, animationData, onFinish)
+        }
+
+        override fun showCompleteImport() {
+            val currentHolder = holder as SyncImportHolder
+            currentHolder.showCompleteImport()
         }
 
         override fun disableSkip() {

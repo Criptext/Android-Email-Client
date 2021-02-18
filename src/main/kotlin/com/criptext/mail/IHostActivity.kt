@@ -21,7 +21,7 @@ import com.google.android.play.core.review.ReviewManager
  */
 interface IHostActivity {
     fun refreshToolbarItems()
-    fun getReviewManager(): ReviewManager
+    fun getReviewManager(): ReviewManager?
     /**
      * Launches a new activity to show the new scene.
      * @param params object used to create the new scene. If the activity for the scene is used,

@@ -230,6 +230,9 @@ class AuthenticateUserWorkerTest {
          every {
              httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>()).body
          } returns mockedAuthResponse
+         every {
+             db.getAccount("tester", "criptext.com")?.isLoggedIn
+         } returns false
 
 
         every {

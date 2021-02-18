@@ -42,18 +42,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="49dp">
 
+            <ImageView
+                android:id="@+id/completeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:src="@drawable/img_readyimport"
+                android:layout_centerInParent="true" />
+
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/statusImage"
-                android:layout_width="230dp"
-                android:layout_height="230dp"
-                app:lottie_fileName="ImportingMailboxFixed.json"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:lottie_fileName="ImportingMobileFixed.json"
                 android:layout_centerInParent="true" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="210dp"
+                android:layout_height="210dp"
+                android:paddingEnd="10dp"
                 android:layout_centerInParent="true"
                 android:max="100"
                 android:progress="10"

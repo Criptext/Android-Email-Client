@@ -38,9 +38,9 @@ class UserDataWriterTest {
     val strDate = DateAndTimeUtils.printDateWithServerFormat(nowDate)
 
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
-            isTrusted = false, score = 0, spamScore = 0)
+            isTrusted = false, score = 0)
     private val joeContact = Contact(email = "joe@criptext.com", name = "Joe", id = 2,
-            isTrusted = false, score = 0, spamScore = 0)
+            isTrusted = false, score = 0)
 
     private val labelOne = Label(id = 1, color = "red", text = "Custom Label 1", type = LabelTypes.CUSTOM,
             visible = true, uuid = "uuid1", accountId = activeAccount.id)
@@ -89,8 +89,8 @@ class UserDataWriterTest {
             showPreview = false)
 
     private val deviceLinkFileExpectedContent = listOf(BackupFileMetadata.toJSON(metadata).toString(),
-    "{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false,\"spamScore\":0}}",
-    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false,\"spamScore\":0}}",
+    "{\"table\":\"contact\",\"object\":{\"id\":1,\"email\":\"bob@criptext.com\",\"name\":\"Bob\",\"isTrusted\":false}}",
+    "{\"table\":\"contact\",\"object\":{\"id\":2,\"email\":\"joe@criptext.com\",\"name\":\"Joe\",\"isTrusted\":false}}",
     "{\"table\":\"label\",\"object\":{\"id\":1,\"color\":\"red\",\"text\":\"Custom Label 1\",\"type\":\"custom\",\"uuid\":\"uuid1\",\"visible\":true}}",
     "{\"table\":\"label\",\"object\":{\"id\":2,\"color\":\"blue\",\"text\":\"Custom Label 2\",\"type\":\"custom\",\"uuid\":\"uuid2\",\"visible\":true}}",
     "{\"table\":\"email\",\"object\":{\"id\":1,\"messageId\":\"id_1\",\"threadId\":\"\",\"unread\":true,\"secure\":true,\"content\":\"contents 1\",\"preview\":\"cont\",\"fromAddress\":\"bob@criptext.com\",\"subject\":\"subject 1\",\"status\":6,\"date\":\"$strDate\",\"key\":123,\"unsentDate\":\"$strDate\",\"trashDate\":\"$strDate\"}}",

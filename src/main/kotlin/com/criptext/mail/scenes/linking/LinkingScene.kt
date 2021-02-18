@@ -77,24 +77,40 @@ interface LinkingScene{
         }
 
         override fun setProgressStatus(message: UIMessage, animationData: GeneralAnimationData?, onFinish: (() -> Unit)?) {
-            textViewStatus.text = context.getLocalizedUIMessage(message)
             if(animationData != null) {
-                if(animationData.isLoop)
-                    statusImage.repeatCount = ValueAnimator.INFINITE
-                else
-                    statusImage.repeatCount = 0
-                statusImage.setMinAndMaxFrame(animationData.start, animationData.end)
+                fun playNewAnimation(){
+                    if(animationData.isLoop)
+                        statusImage.repeatCount = ValueAnimator.INFINITE
+                    else
+                        statusImage.repeatCount = 0
+                    statusImage.setMinAndMaxFrame(animationData.start, animationData.end)
 
-                if(onFinish != null && !animationData.isLoop){
+                    if(onFinish != null && !animationData.isLoop){
+                        statusImage.addAnimatorListener(
+                                object: AnimatorListenerAdapter(){
+                                    override fun onAnimationEnd(animation: Animator?) {
+                                        textViewStatus.text = context.getLocalizedUIMessage(message)
+                                        onFinish()
+                                    }
+                                }
+                        )
+                    }
+                    statusImage.playAnimation()
+                }
+                if(statusImage.repeatCount == ValueAnimator.INFINITE){
+                    statusImage.repeatCount = 1
                     statusImage.addAnimatorListener(
                             object: AnimatorListenerAdapter(){
                                 override fun onAnimationEnd(animation: Animator?) {
-                                    onFinish()
+                                    playNewAnimation()
                                 }
                             }
                     )
+                } else {
+                    playNewAnimation()
                 }
-                statusImage.playAnimation()
+            } else {
+                textViewStatus.text = context.getLocalizedUIMessage(message)
             }
         }
 

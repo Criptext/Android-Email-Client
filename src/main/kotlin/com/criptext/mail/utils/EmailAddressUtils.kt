@@ -10,7 +10,7 @@ import com.criptext.mail.validation.FormData
 
 object EmailAddressUtils {
 
-    val CRIPTEXT_DOMAIN_SUFFIX = "@jigl.com"
+    val CRIPTEXT_DOMAIN_SUFFIX = "@criptext.com"
 
     val isFromCriptextDomain:(String) -> Boolean =
             { address -> address.endsWith(CRIPTEXT_DOMAIN_SUFFIX) }

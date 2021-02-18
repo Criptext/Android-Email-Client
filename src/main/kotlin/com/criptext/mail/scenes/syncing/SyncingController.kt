@@ -17,6 +17,8 @@ import com.criptext.mail.utils.PinLockUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
+import com.criptext.mail.utils.ui.data.GeneralAnimationData
+import com.criptext.mail.utils.ui.data.ImportMailboxAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 
@@ -124,25 +126,39 @@ class SyncingController(
             scene.attachView(model, uiObserver)
             scene.setProgressStatus(
                     message = UIMessage(R.string.sending_keys),
-                    drawable = R.drawable.img_keysexport
+                    animationData = GeneralAnimationData(
+                            start = ImportMailboxAnimationData.sendingKeysLoop.first,
+                            end = ImportMailboxAnimationData.sendingKeysLoop.second,
+                            isLoop = true
+                    )
             )
             scene.setProgress(
-                    progress = SENDING_KEYS_PERCENTAGE,
-                    onFinish = {
-                        host.postDelay(Runnable {
+                    progress = SENDING_KEYS_PERCENTAGE
+            )
+            host.postDelay(Runnable {
+                scene.setProgressStatus(
+                        message = UIMessage(R.string.waiting_for_mailbox),
+                        animationData = GeneralAnimationData(
+                                start = ImportMailboxAnimationData.keysToWaitTransition.first,
+                                end = ImportMailboxAnimationData.keysToWaitTransition.second,
+                                isLoop = false
+                        ),
+                        onFinish = {
                             scene.setProgressStatus(
                                     message = UIMessage(R.string.waiting_for_mailbox),
-                                    drawable = R.drawable.img_waitingimport
+                                    animationData = GeneralAnimationData(
+                                            start = ImportMailboxAnimationData.waitingLoop.first,
+                                            end = ImportMailboxAnimationData.waitingLoop.second,
+                                            isLoop = true
+                                    )
                             )
-                            scene.setProgress(
-                                    progress = WAITING_FOR_MAILBOX_PERCENTAGE,
-                                    onFinish = {
-                                        generalDataSource.submitRequest(GeneralRequest.LinkDataReady())
-                                    }
-                            )
-                        }, 1000L)
-                    }
-            )
+                            generalDataSource.submitRequest(GeneralRequest.LinkDataReady())
+                        }
+                )
+                scene.setProgress(
+                        progress = WAITING_FOR_MAILBOX_PERCENTAGE
+                )
+            }, 500)
         })
     }
 
@@ -259,9 +275,9 @@ class SyncingController(
                         progress = SYNC_COMPLETE_PERCENTAGE,
                         onFinish = {
                             scene.setProgressStatus(
-                                    message = UIMessage(R.string.device_ready),
-                                    drawable = R.drawable.img_readyimport
+                                    message = UIMessage(R.string.device_ready)
                             )
+                            scene.showCompleteImport()
                             host.postDelay(Runnable{
                                 uiObserver.onLinkingHasFinished()
                             }, 1000L)
@@ -269,10 +285,53 @@ class SyncingController(
                 )
             }
             is GeneralResult.LinkData.Progress -> {
-                scene.setProgressStatus(
-                        message = result.message,
-                        drawable = result.drawable
-                )
+                when(result.progress){
+                    70 -> {
+                        scene.setProgressStatus(
+                                message = result.message,
+                                animationData = GeneralAnimationData(
+                                        start = ImportMailboxAnimationData.waitingToDownloadTransition.first,
+                                        end = ImportMailboxAnimationData.waitingToDownloadTransition.second,
+                                        isLoop = false
+                                ),
+                                onFinish = {
+                                    scene.setProgressStatus(
+                                            message = result.message,
+                                            animationData = GeneralAnimationData(
+                                                    start = ImportMailboxAnimationData.downloadingLoop.first,
+                                                    end = ImportMailboxAnimationData.downloadingLoop.second,
+                                                    isLoop = true
+                                            )
+                                    )
+                                }
+                        )
+                    }
+                    80 -> {
+                        scene.setProgressStatus(
+                                message = result.message,
+                                animationData = GeneralAnimationData(
+                                        start = ImportMailboxAnimationData.downloadingToImportTransition.first,
+                                        end = ImportMailboxAnimationData.downloadingToImportTransition.second,
+                                        isLoop = false
+                                ),
+                                onFinish = {
+                                    scene.setProgressStatus(
+                                            message = result.message,
+                                            animationData = GeneralAnimationData(
+                                                    start = ImportMailboxAnimationData.importingLoop.first,
+                                                    end = ImportMailboxAnimationData.importingLoop.second,
+                                                    isLoop = true
+                                            )
+                                    )
+                                }
+                        )
+                    }
+                    else -> {
+                        scene.setProgressStatus(
+                                message = result.message
+                        )
+                    }
+                }
                 scene.setProgress(
                         progress = result.progress,
                         onFinish = null
