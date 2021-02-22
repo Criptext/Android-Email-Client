@@ -80,7 +80,7 @@ class LoadInitialDataWorker(
         val replyToContact = if(replyTo == null) null
         else
             Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
-                    isTrusted = false, score = 0, spamScore = 0)
+                    isTrusted = false, score = 0)
         var to = if (replyToAll) {
             if(fullEmail.from.email == userEmailAddress)
                 fullEmail.to
@@ -173,7 +173,7 @@ class LoadInitialDataWorker(
                     attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }else{
             val newSupportContact = Contact(id = 0, email = "support@${Contact.mainDomain}",
-                    name = "Criptext Support", isTrusted = true, score = 0, spamScore = 0)
+                    name = "Criptext Support", isTrusted = true, score = 0)
             db.contactDao.insertAll(listOf(newSupportContact))
             ComposerInputData(to = listOf(newSupportContact), cc = emptyList(), bcc = emptyList(),
                     body = supportTemplate.body, subject = supportTemplate.subject,
@@ -191,7 +191,7 @@ class LoadInitialDataWorker(
                     attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)
         }else{
             val newReportContact = Contact(id = 0, email = "abuse@${Contact.mainDomain}",
-                    name = "Criptext Report Abuse", isTrusted = true, score = 0, spamScore = 0)
+                    name = "Criptext Report Abuse", isTrusted = true, score = 0)
             db.contactDao.insertAll(listOf(newReportContact))
             ComposerInputData(to = listOf(newReportContact), cc = emptyList(), bcc = emptyList(),
                     body = reportTemplate.body, subject = reportTemplate.subject,
@@ -207,7 +207,7 @@ class LoadInitialDataWorker(
                     body = "", subject = "", fileKey = null, attachments = null, fromAddress = activeAccount.userEmail)
         }else{
             val newContact = Contact(id = 0, email = to,
-                    name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0, spamScore = 0)
+                    name = EmailAddressUtils.extractName(to), isTrusted = false, score = 0)
             db.contactDao.insertAll(listOf(newContact))
             ComposerInputData(to = listOf(newContact), cc = emptyList(), bcc = emptyList(),
                     body = "", subject = "", attachments = null, fileKey = null, fromAddress = activeAccount.userEmail)

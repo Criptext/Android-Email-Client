@@ -74,7 +74,7 @@ sealed class SignInResult {
     }
 
     sealed class FindDevices: SignInResult() {
-        data class Success(val token: String, val devices: ArrayList<DeviceItem>): FindDevices()
+        data class Success(val devices: ArrayList<DeviceItem>): FindDevices()
         data class Failure(val message: UIMessage,
                            val exception: Exception): FindDevices()
     }
@@ -86,7 +86,7 @@ sealed class SignInResult {
     }
 
     sealed class RemoveDevices: SignInResult() {
-        data class Success(val deviceIds: List<Int>): RemoveDevices()
+        data class Success(val deviceIds: List<Int>, val newToken: String): RemoveDevices()
         data class Failure(val message: UIMessage,
                            val exception: Exception): RemoveDevices()
     }

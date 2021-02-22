@@ -124,12 +124,12 @@ class LinkDataWorker(private val authorizerId: Int,
     private fun workOperation(reporter: ProgressReporter<GeneralResult.LinkData>) : Result<Unit, Exception> = Result.of {
         val params = mutableMapOf<String, String>()
         params["id"] = dataAddress
-        reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.downloading_mailbox), 70))
+        reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.downloading_mailbox), 70, R.drawable.img_downlimport))
         apiClient.getFileStream(params)
     }
             .flatMap { readIntoFile(it) }
             .flatMap { Result.of {
-                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80))
+                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 80, R.drawable.img_restoreimport))
                 val user = if(activeAccount.domain == Contact.mainDomain) activeAccount.recipientId
                 else activeAccount.userEmail
                 Pair(signalClient.decryptBytes(user,
@@ -139,15 +139,15 @@ class LinkDataWorker(private val authorizerId: Int,
                 )
             }}
             .flatMap { Result.of {
-                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 85))
+                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 85, R.drawable.img_restoreimport))
                 AESUtil.decryptFileByChunks(it.second, it.first)
             } }
             .flatMap { Result.of {
-                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 90))
+                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 90, R.drawable.img_restoreimport))
                 decompress(it)
             } }
             .flatMap { Result.of {
-                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95))
+                reporter.report(GeneralResult.LinkData.Progress(UIMessage(R.string.processing_mailbox), 95, R.drawable.img_restoreimport))
                 val decryptedFile = File(it)
                 deleteLocalData()
                 dataWriter.createDBFromFile(decryptedFile, storage)

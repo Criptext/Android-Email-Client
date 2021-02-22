@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="48dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/ic_arrow"/>
+
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:paddingStart="56dp"
+        android:paddingEnd="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/restore_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_title_not_found"
+            fontPath="fonts/NunitoSans-SemiBold.ttf"/>
+
+        <TextView
+            android:id="@+id/restore_sub_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:gravity="center_horizontal"
+            android:text="@string/restore_backup_sub_title_not_found"
+            fontPath="fonts/NunitoSans-Regular.ttf"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/img_nobackup"
+            android:layout_marginTop="49dp"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/restore_button"
+            android:layout_marginTop="47dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/restore_backup_button"
+            android:enabled="false"
+            android:textAllCaps="false"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/restore_change_account_button"
+            android:layout_marginTop="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/btn_welcome_tour"
+            android:textColor="@drawable/btn_sign_in"
+            android:text="@string/cloud_backup_change_google_account"
+            android:enabled="false"
+            android:textAllCaps="false"
+            android:textSize="16sp"/>
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:id="@+id/skip_layout">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_skip"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:textSize="14sp"/>
+    </LinearLayout>
+</RelativeLayout>

@@ -122,7 +122,7 @@ class MoveEmailWorker(
             db.createLabelEmailRelations(emailLabels)
 
             if(chosenLabel == Label.LABEL_SPAM){
-                val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                val fromContacts = db.getFromAddresses(emailIds, activeAccount.id, activeAccount.userEmail)
                 if(fromContacts.isNotEmpty()) {
                     db.updateContactsIsTrusted(fromContacts, false)
                     val lastValidEmail = db.getFullEmailFromId(emailId, activeAccount)

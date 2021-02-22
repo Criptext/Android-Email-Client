@@ -63,7 +63,7 @@ class AuthenticateUserWorkerTest {
             AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                     keyGenerator = keyGenerator, userData = UserData(username, Contact.mainDomain, password, oldPassword),
                     publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
-                    isMultiple = false, aliasDao = aliasDao, customDomainDao = customDomainDao)
+                    isMultiple = false, aliasDao = aliasDao, customDomainDao = customDomainDao, tempToken = null)
 
 
     @Test
@@ -76,7 +76,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester",
-                type = AccountTypes.STANDARD, blockRemoteContent = true)
+                type = AccountTypes.STANDARD, blockRemoteContent = true, hasTwoFA = false, needToRemoveDevices = false)
                     .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
@@ -147,7 +147,7 @@ class AuthenticateUserWorkerTest {
         val authRequestSlot = CapturingSlot<JSONObject>()
         val postKeyBundleRequestSlot = CapturingSlot<JSONObject>()
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester",
-                type = AccountTypes.STANDARD, blockRemoteContent = true)
+                type = AccountTypes.STANDARD, blockRemoteContent = true, hasTwoFA = false, needToRemoveDevices = false)
                 .toJSON().put("addresses", JSONArray()).toString()
         val jsonObject = JSONObject()
         jsonObject.put("token", "__JWTOKEN__")
@@ -218,7 +218,7 @@ class AuthenticateUserWorkerTest {
         every { storage.getString(KeyValueStorage.StringKey.SignInSession, "") } returns ""
 
         val mockedAuthResponse = SignInSession(token = "__JWTOKEN__", deviceId = 2, name = "A Tester",
-                type = AccountTypes.STANDARD, blockRemoteContent = true)
+                type = AccountTypes.STANDARD, blockRemoteContent = true, needToRemoveDevices = false, hasTwoFA = false)
                     .toJSON().put("addresses", JSONArray()).toString()
         every {
             httpClient.post("/user/auth", null, any<JSONObject>()).body
@@ -230,6 +230,9 @@ class AuthenticateUserWorkerTest {
          every {
              httpClient.put("/keybundle/pushtoken", "__JWTOKEN__", any<JSONObject>()).body
          } returns mockedAuthResponse
+         every {
+             db.getAccount("tester", "criptext.com")?.isLoggedIn
+         } returns false
 
 
         every {

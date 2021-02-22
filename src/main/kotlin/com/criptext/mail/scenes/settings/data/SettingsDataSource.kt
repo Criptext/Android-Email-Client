@@ -29,13 +29,6 @@ class SettingsDataSource(
                     httpClient = httpClient,
                     publishFn = { res -> flushResults(res) }
             )
-            is SettingsRequest.SyncBegin -> SyncBeginWorker(
-                    httpClient = httpClient,
-                    storage = storage,
-                    accountDao = settingsLocalDB.accountDao,
-                    activeAccount = activeAccount,
-                    publishFn = { res -> flushResults(res) }
-            )
             is SettingsRequest.UpdateSignature -> UpdateSignatureWorker(
                     signature = params.signature,
                     accountDao = settingsLocalDB.accountDao,

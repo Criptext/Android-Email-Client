@@ -13,8 +13,9 @@ import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.google.android.play.core.review.ReviewManager
 
 /**
  * Created by gabriel on 3/1/18.
@@ -100,11 +101,15 @@ class MockedIHostActivity: IHostActivity{
     override fun refreshToolbarItems() {
     }
 
-    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun getReviewManager(): ReviewManager? {
+        return null
+    }
+
+    override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean, activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if(!keep) isFinished = true
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         isFinished = true
     }
 

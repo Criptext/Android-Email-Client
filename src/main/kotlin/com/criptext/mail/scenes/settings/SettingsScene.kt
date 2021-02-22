@@ -9,7 +9,7 @@ import com.criptext.mail.R
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.models.ActiveAccount
-import com.criptext.mail.scenes.settings.syncing.SyncBeginDialog
+import com.criptext.mail.scenes.syncing.SyncBeginDialog
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.UIUtils
 import com.criptext.mail.utils.getLocalizedUIMessage
@@ -21,10 +21,10 @@ import com.criptext.mail.utils.uiobserver.UIObserver
 interface SettingsScene{
 
     fun attachView(account: ActiveAccount, model: SettingsModel, settingsUIObserver: SettingsUIObserver)
+    fun syncIsLoading(loading: Boolean)
     fun showMessage(message : UIMessage)
     fun showGeneralDialogWithInput(replyToEmail: String, dialogData: DialogData.DialogDataForReplyToEmail)
     fun showGeneralDialogConfirmation(dialogData: DialogData.DialogConfirmationData)
-    fun showSyncBeginDialog()
     fun toggleGeneralDialogWithInputLoad(isLoading: Boolean)
     fun showLinkDeviceAuthConfirmation(untrustedDeviceInfo: DeviceInfo.UntrustedDeviceInfo)
     fun showSyncDeviceAuthConfirmation(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo)
@@ -33,10 +33,7 @@ interface SettingsScene{
     fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean)
     fun setSyncContactsProgressVisisble(isVisible: Boolean)
     fun getLabelLocalizedName(name: String): String
-    fun enableSyncBeginResendButton()
-    fun dismissSyncBeginDialog()
     fun dismissReplyToEmailDialog()
-    fun syncBeginDialogDenied()
     fun clearThemeSwitchListener()
     fun setEmailPreview(isChecked: Boolean)
     fun showAccountSuspendedDialog(observer: UIObserver, email: String, dialogType: DialogType)
@@ -69,6 +66,9 @@ interface SettingsScene{
         }
         private val settingsMailboxSync: View by lazy {
             view.findViewById<View>(R.id.settings_sync_mailbox)
+        }
+        private val settingsMailboxSyncLoad: View by lazy {
+            view.findViewById<ProgressBar>(R.id.sync_mailbox_progress)
         }
         private val settingsBilling: View by lazy {
             view.findViewById<View>(R.id.settings_billing)
@@ -126,7 +126,6 @@ interface SettingsScene{
 
         private val linkAuthDialog = LinkNewDeviceAlertDialog(context)
         private val twoFADialog = Settings2FADialog(context)
-        private val syncBeginDialog = SyncBeginDialog(context, UIMessage(R.string.title_sync))
         private val syncAuthDialog = SyncDeviceAlertDialog(context)
         private val accountSuspended = AccountSuspendedDialog(context)
 
@@ -154,6 +153,15 @@ interface SettingsScene{
 
             backButton.setOnClickListener {
                 settingsUIObserver.onBackButtonPressed()
+            }
+        }
+
+        override fun syncIsLoading(loading: Boolean) {
+            settingsMailboxSync.isEnabled = !loading
+            settingsMailboxSyncLoad.visibility = if(loading) {
+                View.VISIBLE
+            } else {
+                View.INVISIBLE
             }
         }
 
@@ -208,22 +216,6 @@ interface SettingsScene{
 
         override fun showTwoFADialog(hasRecoveryEmailConfirmed: Boolean) {
             twoFADialog.showLogoutDialog(hasRecoveryEmailConfirmed)
-        }
-
-        override fun showSyncBeginDialog() {
-            syncBeginDialog.showDialog(settingsUIObserver)
-        }
-
-        override fun dismissSyncBeginDialog() {
-            syncBeginDialog.dismiss()
-        }
-
-        override fun syncBeginDialogDenied() {
-            syncBeginDialog.showFailedSync()
-        }
-
-        override fun enableSyncBeginResendButton() {
-            syncBeginDialog.enableResendButton()
         }
 
         override fun setSyncContactsProgressVisisble(isVisible: Boolean) {

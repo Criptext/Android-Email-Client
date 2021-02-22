@@ -31,8 +31,7 @@ interface EmailDetailLocalDB {
     fun getCustomLabels(accountId: Long): List<Label>
     fun setTrashDate(emailIds: List<Long>, accountId: Long)
     fun getInternalFilesDir(): String
-    fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
-    fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
+    fun getFromAddresses(emailIds: List<Long>, accountId: Long, userEmail: String): List<String>
     fun updateContactIsTrusted(contact: Contact, newIsTrusted: Boolean)
     fun updateContactsIsTrusted(emailAddresses: List<String>, newIsTrusted: Boolean)
 
@@ -45,24 +44,11 @@ interface EmailDetailLocalDB {
             db.contactDao().updateContactIsTrusted(contact.email, newIsTrusted)
         }
 
-        override fun resetSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
+        override fun getFromAddresses(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
             val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
+           return emails.filter { !it.fromAddress.contains(userEmail) }
                     .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
                     .distinct()
-            if(fromContacts.isNotEmpty())
-                db.contactDao().resetSpamCounter(fromContacts, accountId)
-            return fromContacts
-        }
-
-        override fun updateSpamCounter(emailIds: List<Long>, accountId: Long, userEmail: String): List<String> {
-            val emails = db.emailDao().getAllEmailsbyId(emailIds, accountId)
-            val fromContacts = emails.filter { !it.fromAddress.contains(userEmail) }
-                    .map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }
-                    .distinct()
-            if(fromContacts.isNotEmpty())
-                db.contactDao().uptickSpamCounter(fromContacts, accountId)
-            return fromContacts
         }
 
         override fun getEmailMetadataKeyById(emailId: Long, accountId: Long): Long {
@@ -126,8 +112,7 @@ interface EmailDetailLocalDB {
                                 email = EmailAddressUtils.extractEmailAddress(it.fromAddress),
                                 name = EmailAddressUtils.extractName(it.fromAddress),
                                 isTrusted = contactsFROM[0].isTrusted,
-                                score = contactsFROM[0].score,
-                                spamScore = contactsFROM[0].spamScore
+                                score = contactsFROM[0].score
                         ),
                         files = files,
                         labels = labels,
@@ -166,8 +151,7 @@ interface EmailDetailLocalDB {
                             email = EmailAddressUtils.extractEmailAddress(email.fromAddress),
                             name = EmailAddressUtils.extractName(email.fromAddress),
                             isTrusted = contactsFROM[0].isTrusted,
-                            score = contactsFROM[0].score,
-                            spamScore = contactsFROM[0].spamScore
+                            score = contactsFROM[0].score
                     ),
                     files = files,
                     labels = labels,

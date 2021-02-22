@@ -65,14 +65,12 @@ class RetrySyncAlertDialogNewDevice(val context: Context) {
         val btnOk = view.findViewById(R.id.link_auth_yes) as Button
 
         btnOk.setOnClickListener {
-            signInUIObserver?.onRetrySyncOk(result)
             dialog.dismiss()
         }
 
         val btnCancel = view.findViewById(R.id.link_auth_no) as Button
 
         btnCancel.setOnClickListener {
-            signInUIObserver?.onRetrySyncCancel()
             dialog.dismiss()
         }
     }

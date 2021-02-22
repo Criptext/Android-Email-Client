@@ -15,7 +15,7 @@ import com.criptext.mail.scenes.signup.data.SignUpRequest
 import com.criptext.mail.scenes.signup.data.SignUpResult
 import com.criptext.mail.scenes.signup.holders.SignUpLayoutState
 import com.criptext.mail.utils.*
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.validation.*
 import java.util.*
 
@@ -190,7 +190,7 @@ class SignUpSceneController(
                     ),
                     activityMessage = null,
                     keep = true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = R.anim.slide_in_up,
                             exitAnim = R.anim.stay
@@ -213,7 +213,7 @@ class SignUpSceneController(
                     ),
                     activityMessage = null,
                     keep = true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = R.anim.slide_in_up,
                             exitAnim = R.anim.stay

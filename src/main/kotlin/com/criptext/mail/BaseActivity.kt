@@ -6,10 +6,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
@@ -27,14 +25,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.criptext.mail.androidui.CriptextNotification
 import com.criptext.mail.api.models.UserEvent
-import com.criptext.mail.db.AppDatabase
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.PushData
-import com.criptext.mail.push.PushTypes
 import com.criptext.mail.push.data.IntentExtrasData
 import com.criptext.mail.push.notifiers.*
 import com.criptext.mail.push.services.LinkDeviceActionService
@@ -47,6 +43,7 @@ import com.criptext.mail.scenes.composer.ComposerModel
 import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
+import com.criptext.mail.scenes.import_mailbox.ImportMailboxModel
 import com.criptext.mail.scenes.linking.LinkingModel
 import com.criptext.mail.scenes.mailbox.MailboxActivity
 import com.criptext.mail.scenes.mailbox.MailboxSceneModel
@@ -69,7 +66,7 @@ import com.criptext.mail.scenes.settings.profile.data.ProfileUserData
 import com.criptext.mail.scenes.settings.recovery_email.RecoveryEmailModel
 import com.criptext.mail.scenes.settings.replyto.ReplyToModel
 import com.criptext.mail.scenes.settings.signature.SignatureModel
-import com.criptext.mail.scenes.settings.syncing.SyncingModel
+import com.criptext.mail.scenes.syncing.SyncingModel
 import com.criptext.mail.scenes.signin.SignInActivity
 import com.criptext.mail.scenes.signin.SignInSceneModel
 import com.criptext.mail.scenes.signup.SignUpSceneModel
@@ -89,7 +86,7 @@ import com.criptext.mail.utils.ui.ConfirmPasswordDialog
 import com.criptext.mail.utils.ui.GeneralCriptextPlusDialog
 import com.criptext.mail.utils.ui.StartGuideTapped
 import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.validation.FormInputState
 import com.github.kittinunf.result.Result
@@ -98,6 +95,11 @@ import com.github.omadahealth.lollipin.lib.managers.AppLock
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.api.services.drive.DriveScopes
 import com.google.firebase.analytics.FirebaseAnalytics
 import droidninja.filepicker.FilePickerConst
@@ -300,9 +302,28 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         super.onStart()
         dismissAllNotifications()
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        checkForUpdate()
 
         if (controller.onStart(activityMessage))
             activityMessage = null
+    }
+
+    private fun checkForUpdate(){
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this,
+                        UPDATE_REQUEST_CODE
+                )
+            }
+        }
     }
 
     override fun onResume() {
@@ -312,6 +333,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             storage.putLong(KeyValueStorage.StringKey.ResumeEventTimer, System.currentTimeMillis())
             controller.onNeedToSendEvent(UserEvent.onResumeApp)
         }
+        checkForUpdate()
         if (controller.onResume(activityMessage))
             activityMessage = null
     }
@@ -468,12 +490,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is DevicesParams -> DevicesModel()
             is LabelsParams -> LabelsModel()
             is PrivacyParams -> PrivacyModel()
-            is SyncingParams -> SyncingModel(params.email, params.deviceId, params.randomId,
-                    params.deviceType, params.authorizerName)
+            is SyncingParams -> SyncingModel()
             is EmailSourceParams -> EmailSourceModel(params.emailSource)
             is ReplyToParams -> ReplyToModel(params.userData)
             is ProfileParams -> ProfileModel(params.comesFromMailbox)
             is CloudBackupParams -> CloudBackupModel()
+            is ImportMailboxParams -> ImportMailboxModel()
             is RestoreBackupParams -> RestoreBackupModel(params.isLocal, params.localFile)
             is CustomizeParams -> CustomizeSceneModel(params.recoveryEmail, params.isMultiple)
             is WebViewParams -> {
@@ -490,12 +512,16 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         this.invalidateOptionsMenu()
     }
 
+    override fun getReviewManager(): ReviewManager? {
+        return ReviewManagerFactory.create(this)
+    }
+
     override fun getLocalizedString(message: UIMessage): String {
         return getLocalizedUIMessage(message)
     }
 
     override fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean,
-                           activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+                           activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if (! keep) finish()
         BaseActivity.activityMessage = activityMessage
         val newSceneModel = createNewSceneFromParams(params)
@@ -665,7 +691,7 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         return null
     }
 
-    override fun finishScene(activityMessage: ActivityMessage?, animationData: TransitionAnimationData?) {
+    override fun finishScene(activityMessage: ActivityMessage?, animationData: ActivityTransitionAnimationData?) {
         if(activityMessage != null) BaseActivity.activityMessage = activityMessage
         finish()
         if(animationData != null && animationData.forceAnimation) {
@@ -980,6 +1006,8 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
         private const val SIGN_UP_MODEL = "SignUpModel"
 
         private const val RESUME_TIMER = 180000L
+
+        private const val UPDATE_REQUEST_CODE = 100
     }
 
     enum class RequestCode {

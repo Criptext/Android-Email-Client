@@ -52,21 +52,16 @@ class SignUpAPIClient(private val httpClient: HttpClient) {
         return httpClient.post(path = "/user/password/reset", authToken = null, body = jsonPut)
     }
 
-    fun postFindDevices(recipientId: String, domain: String, password: String): HttpResponseData{
-        val jsonPut = JSONObject()
-        jsonPut.put("recipientId", recipientId)
-        jsonPut.put("domain", domain)
-        jsonPut.put("password", password)
-
-        return httpClient.post(path = "/device/find", authToken = null, body = jsonPut)
+    fun getDeviceList(tempToken: String): HttpResponseData{
+        return httpClient.get(path = "/device/list", authToken = tempToken)
     }
 
     fun getMaxDevices(tempToken: String): HttpResponseData{
         return httpClient.get(path = "/device/max", authToken = tempToken)
     }
 
-    fun deleteDevices(devicesIds: List<Int>, token: String, recipientId: String, domain: String): HttpResponseData{
-        return httpClient.delete(path = "/device/$recipientId/$domain/$token?${devicesIds.map { "deviceId=$it" }.joinToString(separator = "&")}", authToken = null, body = JSONObject())
+    fun deleteDevices(devicesIds: List<Int>, token: String): HttpResponseData{
+        return httpClient.delete(path = "/device/bulk?${devicesIds.joinToString(separator = "&") { "deviceId=$it" }}", authToken = token, body = JSONObject())
     }
 
     fun putFirebaseToken(pushToken: String, jwt: String): HttpResponseData {

@@ -178,7 +178,7 @@ class PushRequestHandlerTest {
                     )),
                     cc = emptyList(),
                     bcc = emptyList(),
-                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0, 0),
+                    from = Contact(1,"mayer@jigl.com", "Mayer Mizrachi", true, 0),
                     fileKey = null,
                     headers = null)
         }.reversed()

@@ -25,7 +25,6 @@ class SignInStartHolder(
     private val progressBar: ProgressBar = view.findViewById(R.id.signin_progress_login)
     private val createProgressBar: ProgressBar = view.findViewById(R.id.create_progress_login)
     private val backButton: View = view.findViewById(R.id.icon_back)
-    private val contactSupport: View = view.findViewById(R.id.contact_support)
     private val versionText: TextView = view.findViewById(R.id.version_text)
 
     init {
@@ -74,9 +73,6 @@ class SignInStartHolder(
         }
         backButton.setOnClickListener{
             uiObserver?.onBackPressed()
-        }
-        contactSupport.setOnClickListener{
-            uiObserver?.onContactSupportPressed()
         }
     }
 

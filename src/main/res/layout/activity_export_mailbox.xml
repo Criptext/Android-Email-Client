@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main_content"
+    android:keepScreenOn="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:orientation="vertical">
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/titleSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textColor="?attr/criptextPrimaryTextColor"
+            android:text="@string/mailbox_export_title"/>
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/subTitleSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:text="@string/import_mailbox_import_sub_title"/>
+
+        <RelativeLayout
+            android:id="@+id/viewAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="49dp">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/statusImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:lottie_fileName="ExportingMobileFixed.json"
+                android:layout_centerInParent="true" />
+
+            <ImageView
+                android:id="@+id/completeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:src="@drawable/img_readyimport"
+                android:layout_centerInParent="true" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:paddingEnd="10dp"
+                android:layout_width="210dp"
+                android:layout_height="210dp"
+                android:layout_centerInParent="true"
+                android:max="100"
+                android:progress="10"
+                android:rotation="-90"
+                android:progressDrawable="@drawable/progress_bar_sync" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            fontPath="fonts/NunitoSans-Regular.ttf"
+            android:id="@+id/textViewStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textSize="18sp"
+            android:textColor="?attr/criptextSecondaryTextColor"
+            android:layout_gravity="center"
+            android:text="@string/sending_keys"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cancelSync"
+        android:paddingBottom="20dp"
+        fontPath="fonts/NunitoSans-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="@string/mailbox_export_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="?attr/criptextPrimaryTextColor"
+        android:textSize="16sp"
+        android:visibility="visible"/>
+</RelativeLayout>

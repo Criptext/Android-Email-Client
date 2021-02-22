@@ -9,6 +9,8 @@ import com.criptext.mail.db.EventLocalDB
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.MailboxLocalDB
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.scenes.settings.data.SettingsRequest
+import com.criptext.mail.scenes.settings.workers.SyncBeginWorker
 import com.criptext.mail.utils.generaldatasource.workers.SetCloudBackupActiveWorker
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.utils.generaldatasource.workers.*
@@ -158,6 +160,13 @@ class GeneralDataSource(override val runner: WorkRunner,
             is GeneralRequest.LinkDataReady -> LinkDataReadyWorker(
                     activeAccount = activeAccount!!,
                     httpClient = httpClient,
+                    publishFn = { res -> flushResults(res) }
+            )
+            is GeneralRequest.SyncBegin -> SyncBeginWorker(
+                    httpClient = httpClient,
+                    storage = storage,
+                    accountDao = db.accountDao(),
+                    activeAccount = activeAccount!!,
                     publishFn = { res -> flushResults(res) }
             )
             is GeneralRequest.SyncStatus -> SyncStatusWorker(

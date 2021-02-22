@@ -22,6 +22,7 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
     private val imageDeviceType: ImageView
     private val imageTrashDevice: ImageView
     private val deviceCheckbox: CheckBox
+    private val progressBar: ProgressBar
 
     private var listenerOnClick: (() -> Boolean)? = null
 
@@ -34,6 +35,7 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
         imageDeviceType = view.findViewById(R.id.imageViewDeviceType) as ImageView
         imageTrashDevice = view.findViewById(R.id.imageViewTrashDevice) as ImageView
         deviceCheckbox = view.findViewById(R.id.deviceCheckbox) as CheckBox
+        progressBar = view.findViewById(R.id.logoutProgress) as ProgressBar
     }
 
     fun bindDevice(deviceItem: DeviceItem){
@@ -99,8 +101,18 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
             }
         }
         when (deviceItem.deviceType){
-            1 -> imageDeviceType.setImageResource(R.drawable.device_pc)
-            2, 3 -> imageDeviceType.setImageResource(R.drawable.device_m)
+            1 -> imageDeviceType.setImageResource(R.drawable.ic_laptoplimit)
+            2, 3 -> imageDeviceType.setImageResource(R.drawable.ic_mobilelimit)
+        }
+    }
+
+    fun isLoading(isLoading: Boolean){
+        if(isLoading){
+            imageTrashDevice.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
+        } else {
+            imageTrashDevice.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -108,6 +120,7 @@ class DeviceHolder(val view: View, val deviceItemType: DeviceItem.Companion.Type
         when(deviceItemType){
             DeviceItem.Companion.Type.Normal -> {
                 imageTrashDevice.setOnClickListener {
+                    isLoading(true)
                     onClick()
                 }
             }

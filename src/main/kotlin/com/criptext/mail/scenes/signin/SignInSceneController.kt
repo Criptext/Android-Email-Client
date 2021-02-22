@@ -7,11 +7,11 @@ import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.api.models.SyncStatusData
 import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.db.models.Contact
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.composer.data.ContactDomainCheckData
+import com.criptext.mail.scenes.params.ImportMailboxParams
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.SignUpParams
 import com.criptext.mail.scenes.params.WebViewParams
@@ -20,14 +20,15 @@ import com.criptext.mail.scenes.settings.changepassword.ChangePasswordController
 import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.signin.data.*
 import com.criptext.mail.scenes.signin.holders.SignInLayoutState
-import com.criptext.mail.scenes.webview.WebViewSceneController
+import com.criptext.mail.scenes.signin.workers.AuthenticateUserWorker
+import com.criptext.mail.scenes.signin.workers.RecoveryCodeWorker
 import com.criptext.mail.utils.*
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
 import com.criptext.mail.utils.virtuallist.VirtualListView
 import com.criptext.mail.validation.AccountDataValidator
@@ -55,7 +56,6 @@ class SignInSceneController(
 
     override val menuResourceId: Int? = R.menu.menu_remove_device_holder
 
-    private var tempWebSocket: WebSocketEventPublisher? = null
     private var webSocket: WebSocketEventPublisher? = null
 
     private val arePasswordsMatching: Boolean
@@ -64,13 +64,6 @@ class SignInSceneController(
     private val dataSourceListener = { result: SignInResult ->
         when (result) {
             is SignInResult.AuthenticateUser -> onUserAuthenticated(result)
-            is SignInResult.CheckUsernameAvailability -> onCheckUsernameAvailability(result)
-            is SignInResult.LinkBegin -> onLinkBegin(result)
-            is SignInResult.LinkAuth -> onLinkAuth(result)
-            is SignInResult.CreateSessionFromLink -> onCreateSessionFromLink(result)
-            is SignInResult.LinkDataReady -> onLinkDataReady(result)
-            is SignInResult.LinkData -> onLinkData(result)
-            is SignInResult.LinkStatus -> onLinkStatus(result)
             is SignInResult.FindDevices -> onFindDevices(result)
             is SignInResult.RemoveDevices -> onRemoveDevices(result)
             is SignInResult.RecoveryCode -> onGenerateRecoveryCode(result)
@@ -87,58 +80,28 @@ class SignInSceneController(
 
     private var deviceWrapperListController: DeviceWrapperListController? = null
 
-    private fun cancelLink(canceledByMe: Boolean = true){
-        stopTempWebSocket()
-        stopWebSocket()
-        host.getHandler()?.removeCallbacks(null)
-        model.linkDeviceState = LinkDeviceState.Begin()
-        val activeAccount = ActiveAccount.loadFromStorage(storage)
-        if(activeAccount == null){
-            val currentState = model.state as? SignInLayoutState.LoginValidation
-            if(currentState != null) {
-                model.state = SignInLayoutState.LoginUsername(currentState.username, firstTime = false)
-                resetLayout()
-                if(canceledByMe)
-                    generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
-            }
-        }else{
-            if(canceledByMe)
-                generalDataSource.submitRequest(GeneralRequest.LinkCancel(activeAccount.recipientId, activeAccount.domain, activeAccount.jwt, activeAccount.deviceId))
-            host.goToScene(
-                    params = MailboxParams(),
-                    activityMessage = null,
-                    keep = false,
-                    deletePastIntents = true
-            )
-        }
-    }
-
     private fun onAuthenticationFailed(errorMessage: UIMessage) {
         scene.showError(errorMessage)
 
         val currentState = model.state
-        if (currentState is SignInLayoutState.InputPassword) {
+        if (currentState is SignInLayoutState.Login) {
             model.state = currentState.copy(password = "",
                     buttonState = ProgressButtonState.disabled)
             scene.resetInput()
-        } else if(currentState is SignInLayoutState.LoginValidation) {
-            if(model.needToRemoveDevices){
-                model.realSecurePassword = null
-                model.needToRemoveDevices = false
-            }
-            model.state = SignInLayoutState.InputPassword(
-                    username = currentState.username,
-                    domain = currentState.domain,
+        } else {
+            model.state = SignInLayoutState.Login(
+                    username = "",
+                    recipientId = "",
                     password = "",
                     buttonState = ProgressButtonState.disabled,
-                    hasTwoFA = model.hasTwoFA
-            )
+                    domain = "",
+                    firstTime = false)
             scene.initLayout(model, uiObserver)
         }
     }
 
     private fun onForgotPassword(result: GeneralResult.ResetPassword){
-        if(model.state is SignInLayoutState.InputPassword) {
+        if(model.state is SignInLayoutState.ForgotPassword) {
             scene.toggleForgotPasswordClickable(true)
             when (result) {
                 is GeneralResult.ResetPassword.Success -> {
@@ -158,231 +121,32 @@ class SignInSceneController(
         }
     }
 
-    private fun onCheckUsernameAvailability(result: SignInResult.CheckUsernameAvailability) {
-        when (result) {
-            is SignInResult.CheckUsernameAvailability.Success -> {
-                if(result.userExists) {
-                    keyboard.hideKeyboard()
-                    val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
-                    if(oldAccounts.isNotEmpty() && result.username.plus("@${result.domain}") !in oldAccounts)
-                        scene.showSignInWarningDialog(
-                                oldAccountName = oldAccounts.joinToString {
-                                    if(AccountDataValidator.validateEmailAddress(it) is FormData.Valid) it
-                                    else it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
-                                },
-                                newUserName = result.username,
-                                domain = result.domain
-                        )
-                    else {
-                        //LINK DEVICE FEATURE
-                        model.state = SignInLayoutState.LoginValidation(username = result.username,
-                                domain = result.domain,
-                                hasTwoFA = model.hasTwoFA)
-                        dataSource.submitRequest(SignInRequest.LinkBegin(result.username, result.domain))
-                    }
-                }
-                else{
-                    scene.drawInputError(UIMessage(R.string.username_doesnt_exist))
-                }
-            }
-            is SignInResult.CheckUsernameAvailability.Failure -> scene.showError(result.message)
-        }
-        scene.setSubmitButtonState(ProgressButtonState.enabled)
-    }
-
-    private fun onLinkBegin(result: SignInResult.LinkBegin) {
-        when (result) {
-            is SignInResult.LinkBegin.Success -> {
-
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                model.ephemeralJwt = result.ephemeralJwt
-                model.hasTwoFA = result.hasTwoFA
-                model.accountType = result.accountType
-                if(model.hasTwoFA){
-                    if(model.realSecurePassword != null){
-                        dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
-                                model.ephemeralJwt, currentState.domain, model.realSecurePassword))
-                    } else {
-                        onAcceptPasswordLogin(currentState.username, currentState.domain)
-                    }
-                }else{
-                    scene.initLayout(model, uiObserver)
-                    scene.toggleResendClickable(true)
-                    handleNewTemporalWebSocket()
-                    dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
-                            model.ephemeralJwt, currentState.domain))
-                }
-            }
-            is SignInResult.LinkBegin.Failure -> returnToStart(result.message)
-            is SignInResult.LinkBegin.NeedToRemoveDevices -> {
-                model.needToRemoveDevices = true
-                model.maxDevices = result.maxDevices
-                model.accountType = result.accountType
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                onAcceptPasswordLogin(currentState.username, currentState.domain)
-            }
-            is SignInResult.LinkBegin.NoDevicesAvailable -> {
-                val currentState = model.state as SignInLayoutState.LoginValidation
-                onAcceptPasswordLogin(currentState.username, currentState.domain)
-            }
-        }
-    }
-
-    private fun returnToStart(message: UIMessage){
-        model.state = SignInLayoutState.Start(false)
-        scene.initLayout(model, uiObserver)
-        scene.showError(message)
-    }
-
-    private fun onLinkAuth(result: SignInResult.LinkAuth) {
-        if(model.state is SignInLayoutState.Start) return
-        when (result) {
-            is SignInResult.LinkAuth.Success -> {
-                if(model.linkDeviceState is LinkDeviceState.Accepted) return
-                handleNewTemporalWebSocket()
-                model.linkDeviceState = LinkDeviceState.Auth()
-                host.postDelay(Runnable{
-                    if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
-                        if (model.linkDeviceState is LinkDeviceState.Auth)
-                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                        model.retryTimeLinkStatus++
-                    }
-                }, RETRY_TIME_DEFAULT)
-
-            }
-            is SignInResult.LinkAuth.Failure -> {
-                if(model.hasTwoFA){
-                    val resultData = SignInResult.AuthenticateUser.Failure(result.message,
-                            result.exception)
-                    onAuthenticationFailed(resultData.message)
-                }else {
-                    scene.showError(UIMessage(R.string.server_error_exception))
-                }
-            }
-        }
-    }
-
-    private fun onCreateSessionFromLink(result: SignInResult.CreateSessionFromLink) {
-        if(model.state is SignInLayoutState.Start) return
-        when (result) {
-            is SignInResult.CreateSessionFromLink.Success -> {
-                scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
-                model.activeAccount = result.activeAccount
-                stopTempWebSocket()
-                handleNewWebSocket()
-                if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
-                    if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
-                        host.postDelay(Runnable {
-                            dataSource.submitRequest(SignInRequest.LinkDataReady())
-                        }, RETRY_TIME_DEFAULT)
-                    }
-                    model.retryTimeLinkDataReady++
-                }
-            }
-            is SignInResult.CreateSessionFromLink.Failure -> {
-                scene.showSyncRetryDialog(result)
-            }
-        }
-    }
-
-    private fun onLinkDataReady(result: SignInResult.LinkDataReady) {
-        if(model.state is SignInLayoutState.Start) return
-        when (result) {
-            is SignInResult.LinkDataReady.Success -> {
-                if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
-                    model.linkDeviceState = LinkDeviceState.WaitingForDownload()
-                    model.key = result.key
-                    model.dataAddress = result.dataAddress
-                    dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress,
-                            model.authorizerId))
-                }
-            }
-            is SignInResult.LinkDataReady.Failure -> {
-                if(model.retryTimeLinkDataReady < RETRY_TIMES_DATA_READY) {
-                    if (model.linkDeviceState !is LinkDeviceState.WaitingForDownload){
-                        host.postDelay(Runnable{
-                            dataSource.submitRequest(SignInRequest.LinkDataReady())
-                        }, RETRY_TIME_DATA_READY)
-                        model.retryTimeLinkDataReady++
-                    }
-                } else {
-                    scene.showSyncRetryDialog(result)
-                }
-            }
-        }
-    }
-
-    private fun onLinkData(result: SignInResult.LinkData) {
-        if(model.state is SignInLayoutState.Start) return
-        when (result) {
-            is SignInResult.LinkData.Success -> {
-                scene.setLinkProgress(UIMessage(R.string.sync_complete), SYNC_COMPLETE_PERCENTAGE)
-                scene.startLinkSucceedAnimation()
-            }
-            is SignInResult.LinkData.Progress -> {
-                scene.setLinkProgress(result.message, result.progress)
-            }
-            is SignInResult.LinkData.Failure -> {
-                scene.showSyncRetryDialog(result)
-            }
-        }
-    }
-
-    private fun onLinkStatus(result: SignInResult.LinkStatus) {
-        if(model.state is SignInLayoutState.Start) return
-        when (result) {
-            is SignInResult.LinkStatus.Success -> {
-                if(model.linkDeviceState is LinkDeviceState.Auth) {
-                    model.linkDeviceState = LinkDeviceState.Accepted()
-                    val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.name = result.linkStatusData.name
-                    model.randomId = result.linkStatusData.deviceId
-                    model.authorizerId = result.linkStatusData.authorizerId
-                    model.authorizerType = result.linkStatusData.authorizerType
-                    model.state = SignInLayoutState.Connection(currentState.username, currentState.domain, model.authorizerType)
-                    scene.initLayout(model, uiObserver)
-                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
-                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
-                            username = currentState.username,
-                            domain = currentState.domain,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple,
-                            accountType = model.accountType))
-                }
-
-            }
-            is SignInResult.LinkStatus.Waiting -> {
-                host.postDelay(Runnable{
-                    if(model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
-                        if (model.linkDeviceState is LinkDeviceState.Auth)
-                            dataSource.submitRequest(SignInRequest.LinkStatus(model.ephemeralJwt))
-                        model.retryTimeLinkStatus++
-                    }
-                }, RETRY_TIME_DEFAULT)
-            }
-            is SignInResult.LinkStatus.Denied -> {
-                if(model.linkDeviceState !is LinkDeviceState.Denied) {
-                    model.linkDeviceState = LinkDeviceState.Denied()
-                    val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.DeniedValidation(currentState.username, currentState.domain)
-                    scene.initLayout(model, uiObserver)
-                }
-            }
-        }
-    }
-
     private fun onFindDevices(result: SignInResult.FindDevices){
         when (result) {
             is SignInResult.FindDevices.Success -> {
-                model.temporalJWT = result.token
                 model.devices = result.devices
-                val currentState = model.state as SignInLayoutState.InputPassword
-                model.state = SignInLayoutState.RemoveDevices(
-                        username = currentState.username,
-                        buttonState = ProgressButtonState.disabled,
-                        domain = currentState.domain,
-                        devices = model.devices,
-                        password = currentState.password)
+                when(model.state){
+                    is SignInLayoutState.LoginValidation -> {
+                        val currentState = model.state as SignInLayoutState.LoginValidation
+                        model.state = SignInLayoutState.RemoveDevices(
+                                username = currentState.username,
+                                domain = currentState.domain,
+                                password = currentState.password,
+                                buttonState = ProgressButtonState.disabled,
+                                devices = model.devices
+                        )
+                    }
+                    else -> {
+                        val currentState = model.state as SignInLayoutState.Login
+                        model.state = SignInLayoutState.RemoveDevices(
+                                username = currentState.username,
+                                domain = currentState.domain,
+                                password = currentState.password,
+                                buttonState = ProgressButtonState.disabled,
+                                devices = model.devices
+                        )
+                    }
+                }
                 scene.initLayout(model, uiObserver, onDevicesListItemListener)
             }
             is SignInResult.FindDevices.Failure -> {
@@ -395,17 +159,11 @@ class SignInSceneController(
         when (result) {
             is SignInResult.GetMaxDevices.Success -> {
                 model.maxDevices = result.maxDevices
-                if(model.devices.size >= model.maxDevices) {
-                    scene.updateMaxDevices(model.maxDevices, (model.devices.size - model.maxDevices) - 1)
-                } else {
+                if(model.devices.size < model.maxDevices) {
                     val state = model.state as SignInLayoutState.RemoveDevices
-                    model.state = SignInLayoutState.LoginValidation(username = state.username,
-                            domain = state.domain,
-                            hasTwoFA = model.hasTwoFA,
-                            hasRemovedDevices = true)
-                    scene.initLayout(model, uiObserver, onDevicesListItemListener)
+
                     model.realSecurePassword = state.password.sha256()
-                    dataSource.submitRequest(SignInRequest.LinkBegin(state.username, state.domain))
+                    scene.setSubmitButtonState(ProgressButtonState.enabled)
                 }
             }
         }
@@ -414,20 +172,11 @@ class SignInSceneController(
     private fun onRemoveDevices(result: SignInResult.RemoveDevices){
         when (result) {
             is SignInResult.RemoveDevices.Success -> {
-                uiObserver.onXPressed()
                 deviceWrapperListController?.remove(result.deviceIds)
-                if(model.devices.size >= model.maxDevices){
-                    scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
-                } else {
-                    val state = model.state as SignInLayoutState.RemoveDevices
-                    model.state = SignInLayoutState.LoginValidation(username = state.username,
-                            domain = state.domain,
-                            hasTwoFA = model.hasTwoFA,
-                            hasRemovedDevices = true)
-                    scene.initLayout(model, uiObserver, onDevicesListItemListener)
-                    model.realSecurePassword = state.password.sha256()
-                    dataSource.submitRequest(SignInRequest.LinkBegin(state.username, state.domain))
-                }
+                val state = model.state as SignInLayoutState.RemoveDevices
+                model.realSecurePassword = state.password.sha256()
+                model.ephemeralJwt = result.newToken
+                scene.setSubmitButtonState(ProgressButtonState.enabled)
             }
             is SignInResult.RemoveDevices.Failure -> {
                 scene.showDeviceRemovalError()
@@ -439,18 +188,29 @@ class SignInSceneController(
         when(result){
             is SignInResult.RecoveryCode.Success -> {
                 if(result.isValidate) {
-                    scene.dismissRecoveryCodeDialog()
-                    scene.showKeyGenerationHolder()
+                    host.goToScene(ImportMailboxParams(), false)
                 } else {
-                    val message = if(result.emailAddress == null) UIMessage(R.string.recovery_code_dialog_message)
-                    else UIMessage(R.string.recovery_code_dialog_message_with_email, arrayOf(result.emailAddress))
-                    scene.showRecoveryCode(message)
+                    val currentState = model.state as SignInLayoutState.Login
+                    model.state = SignInLayoutState.LoginValidation(
+                            username = currentState.username,
+                            domain = currentState.domain,
+                            password = currentState.password,
+                            recoveryCode = "",
+                            needToRemoveDevices = model.needToRemoveDevices,
+                            recoveryAddress = result.emailAddress
+                    )
+                    scene.initLayout(model, uiObserver)
                 }
             }
             is SignInResult.RecoveryCode.Failure -> {
+                scene.setSubmitButtonState(ProgressButtonState.disabled)
                 if(result.isValidate){
-                    scene.toggleLoadRecoveryCode(false)
-                    scene.showRecoveryDialogError(result.message)
+                    if(result.exception is RecoveryCodeWorker.NeedToRemoveDevices){
+                        model.ephemeralJwt = result.exception.tempToken
+                        dataSource.submitRequest(SignInRequest.FindDevices(model.ephemeralJwt))
+                    } else {
+                        scene.drawInputError(result.message)
+                    }
                 } else {
                     scene.showError(result.message)
                 }
@@ -461,49 +221,48 @@ class SignInSceneController(
     private fun onUserAuthenticated(result: SignInResult.AuthenticateUser) {
         when (result) {
             is SignInResult.AuthenticateUser.Success -> {
-                scene.showKeyGenerationHolder()
+                host.goToScene(ImportMailboxParams(), false)
             }
             is SignInResult.AuthenticateUser.Failure -> {
-                if(result.exception is ServerErrorException
-                        && result.exception.errorCode == ServerCodes.PreconditionFail){
-                    val currentState = model.state as SignInLayoutState.InputPassword
-                    model.state = SignInLayoutState.ChangePassword(
-                            username = currentState.username,
-                            buttonState = ProgressButtonState.disabled,
-                            domain = currentState.domain,
-                            oldPassword = currentState.password)
-                    scene.initLayout(model, uiObserver)
-                } else {
-                    onAuthenticationFailed(result.message)
+                when(result.exception){
+                    is ServerErrorException -> {
+                        if(result.exception.errorCode == ServerCodes.PreconditionFail){
+                            val currentState = model.state as SignInLayoutState.Login
+                            model.state = SignInLayoutState.ChangePassword(
+                                    username = currentState.username,
+                                    buttonState = ProgressButtonState.disabled,
+                                    domain = currentState.domain,
+                                    oldPassword = currentState.password)
+                            scene.initLayout(model, uiObserver)
+                        } else {
+                            onAuthenticationFailed(result.message)
+                        }
+                    }
+                    is AuthenticateUserWorker.LoginNeededAction -> {
+                        model.hasTwoFA = result.exception.hastwoFA
+                        model.needToRemoveDevices = result.exception.hasTooManyDevices
+                        model.ephemeralJwt = result.exception.ephemeralJwt
+                        val currentState = model.state as SignInLayoutState.Login
+                        if(model.hasTwoFA){
+                            dataSource.submitRequest(SignInRequest.RecoveryCode(
+                                    recipientId = currentState.recipientId,
+                                    domain = currentState.domain,
+                                    tempToken = model.ephemeralJwt,
+                                    isMultiple = model.isMultiple,
+                                    needToRemoveDevices = model.needToRemoveDevices
+                            ))
+                        } else if(model.needToRemoveDevices){
+                            dataSource.submitRequest(SignInRequest.FindDevices(
+                                    temporalJwt = model.ephemeralJwt
+                            ))
+                        }
+                    }
+                    else -> {
+                        onAuthenticationFailed(result.message)
+                    }
                 }
             }
         }
-    }
-
-    private fun onAcceptPasswordLogin(username: String, domain: String){
-        host.stopMessagesAndCallbacks()
-        model.state = SignInLayoutState.InputPassword(
-                username = username,
-                password = "",
-                buttonState = ProgressButtonState.disabled,
-                domain = domain,
-                hasTwoFA = model.hasTwoFA)
-        scene.initLayout(model, uiObserver)
-    }
-
-    private val passwordLoginDialogListener = object : OnPasswordLoginDialogListener {
-
-        override fun acceptPasswordLogin(username: String, domain: String) {
-            onAcceptPasswordLogin(username, domain)
-        }
-
-        override fun cancelPasswordLogin() {
-        }
-    }
-
-    private fun handleNewTemporalWebSocket(){
-        tempWebSocket = webSocketFactory.createTemporalWebSocket(model.ephemeralJwt)
-        tempWebSocket?.setListener(webSocketEventListener)
     }
 
     private fun handleNewWebSocket(){
@@ -513,84 +272,90 @@ class SignInSceneController(
         }
     }
 
-    private fun onSignInButtonClicked(currentState: SignInLayoutState.LoginUsername) {
-        val userInput = AccountDataValidator.validateUsername(currentState.username)
-        when (userInput) {
-            is FormData.Valid -> {
-                val (recipientId, domain) = if(AccountDataValidator.validateEmailAddress(userInput.value) is FormData.Valid) {
-                    val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(userInput.value)
-                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(userInput.value, nonCriptextDomain),
-                            nonCriptextDomain
-                    )
-                } else {
-                    Pair(userInput.value, Contact.mainDomain)
-                }
-                if(model.checkedDomains.map { it.name }.contains(domain))
-                    scene.drawInputError(UIMessage(R.string.username_is_not_criptext))
-                else {
-                    val newRequest = SignInRequest.CheckUserAvailability(recipientId, domain)
-                    dataSource.submitRequest(newRequest)
-                    scene.setSubmitButtonState(ProgressButtonState.waiting)
+    private fun onSignInButtonClicked(currentState: SignInLayoutState) {
+        keyboard.hideKeyboard()
+        when(currentState){
+            is SignInLayoutState.Login -> {
+                val userInput = AccountDataValidator.validateUsername(currentState.username)
+                when (userInput) {
+                    is FormData.Valid -> {
+                        val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(userInput.value) is FormData.Valid) {
+                            val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(userInput.value)
+                            Pair(EmailAddressUtils.extractRecipientIdFromAddress(userInput.value, nonCriptextDomain),
+                                    nonCriptextDomain
+                            )
+                        } else {
+                            Pair(userInput.value, Contact.mainDomain)
+                        }
+
+                        if (model.checkedDomains.map { it.name }.contains(domain))
+                            scene.drawInputError(UIMessage(R.string.username_is_not_criptext))
+                        else if (currentState.password.isNotEmpty()) {
+                            val newButtonState = ProgressButtonState.waiting
+                            val hashedPassword = currentState.password.sha256()
+                            model.state = currentState.copy(recipientId = recipientId,
+                                    domain = domain, buttonState = newButtonState)
+                            scene.setSubmitButtonState(newButtonState)
+                            val state = model.state as SignInLayoutState.Login
+
+
+                            val userData = UserData(state.recipientId, state.domain, hashedPassword, null)
+                            val req = SignInRequest.AuthenticateUser(
+                                    userData = userData,
+                                    isMultiple = model.isMultiple
+                            )
+
+
+                            val oldAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                            if (oldAccounts.isNotEmpty() && state.recipientId.plus("@${state.domain}") !in oldAccounts)
+                                scene.showSignInWarningDialog(
+                                        oldAccountName = oldAccounts.joinToString {
+                                            if (AccountDataValidator.validateEmailAddress(it) is FormData.Valid) it
+                                            else it.plus(EmailAddressUtils.CRIPTEXT_DOMAIN_SUFFIX)
+                                        },
+                                        newUserData = userData
+                                )
+                            else {
+                                val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                                if (!lastLoggedAccounts.contains(state.username))
+                                    model.showRestoreBackupDialog = true
+
+                                dataSource.submitRequest(req)
+                            }
+                        }
+                    }
+                    is FormData.Error ->
+                        scene.drawInputError(userInput.message)
                 }
             }
-            is FormData.Error ->
-                scene.drawInputError(userInput.message)
-        }
-    }
+            is SignInLayoutState.ChangePassword -> {
+                val newButtonState = ProgressButtonState.waiting
+                model.state = currentState.copy(buttonState = newButtonState)
+                scene.setSubmitButtonState(newButtonState)
 
-    private fun onSignInButtonClicked(currentState: SignInLayoutState) {
-        if (currentState is SignInLayoutState.InputPassword && currentState.password.isNotEmpty()) {
-            val newButtonState = ProgressButtonState.waiting
-            model.state = currentState.copy(buttonState = newButtonState)
-            scene.setSubmitButtonState(newButtonState)
-
-            val hashedPassword = currentState.password.sha256()
-            val userData = UserData(currentState.username, currentState.domain, hashedPassword, null)
-            val req = if(model.needToRemoveDevices) {
-                SignInRequest.FindDevices(
-                        userData = userData
-                )
-            } else {
-                SignInRequest.AuthenticateUser(
+                val hashedPassword = model.confirmPasswordText.sha256()
+                val userData = UserData(currentState.username, currentState.domain, hashedPassword, currentState.oldPassword.sha256())
+                val req = SignInRequest.AuthenticateUser(
                         userData = userData,
                         isMultiple = model.isMultiple
                 )
+
+                val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
+                if(!lastLoggedAccounts.contains(currentState.username))
+                    model.showRestoreBackupDialog = true
+
+                dataSource.submitRequest(req)
             }
-
-            val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
-            if(!lastLoggedAccounts.contains(currentState.username))
-                model.showRestoreBackupDialog = true
-
-            dataSource.submitRequest(req)
-        } else if(currentState is SignInLayoutState.ChangePassword){
-            val newButtonState = ProgressButtonState.waiting
-            model.state = currentState.copy(buttonState = newButtonState)
-            scene.setSubmitButtonState(newButtonState)
-
-            val hashedPassword = model.confirmPasswordText.sha256()
-            val userData = UserData(currentState.username, currentState.domain, hashedPassword, currentState.oldPassword.sha256())
-            val req = SignInRequest.AuthenticateUser(
-                    userData = userData,
-                    isMultiple = model.isMultiple
-            )
-
-            val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
-            if(!lastLoggedAccounts.contains(currentState.username))
-                model.showRestoreBackupDialog = true
-
-            dataSource.submitRequest(req)
         }
     }
 
     private val webSocketEventListener = object : WebSocketEventListener {
         override fun onLinkDeviceDismiss(accountEmail: String) {
-            if(model.state is SignInLayoutState.Connection)
-                cancelLink(false)
+
         }
 
         override fun onSyncDeviceDismiss(accountEmail: String) {
-            if(model.state is SignInLayoutState.Connection)
-                cancelLink(false)
+
         }
 
         override fun onAccountSuspended(accountEmail: String) {
@@ -614,49 +379,15 @@ class SignInSceneController(
         }
 
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
-            host.runOnUiThread(Runnable {
-                if(model.linkDeviceState !is LinkDeviceState.WaitingForDownload) {
-                    model.linkDeviceState = LinkDeviceState.WaitingForDownload()
-                    model.key = key
-                    model.dataAddress = dataAddress
-                    model.authorizerId = authorizerId
-                    dataSource.submitRequest(SignInRequest.LinkData(key, dataAddress, authorizerId))
-                }
-            })
+
         }
 
         override fun onDeviceLinkAuthDeny() {
-            host.runOnUiThread(Runnable {
-                if(model.linkDeviceState !is LinkDeviceState.Denied) {
-                    model.linkDeviceState = LinkDeviceState.Denied()
-                    val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.state = SignInLayoutState.DeniedValidation(currentState.username, currentState.domain)
-                    scene.initLayout(model, uiObserver)
-                }
-            })
+
         }
 
         override fun onDeviceLinkAuthAccept(linkStatusData: LinkStatusData) {
-            if(model.linkDeviceState is LinkDeviceState.Auth) {
-                host.runOnUiThread(Runnable {
-                    model.linkDeviceState = LinkDeviceState.Accepted()
-                    val currentState = model.state as SignInLayoutState.LoginValidation
-                    model.name = linkStatusData.name
-                    model.randomId = linkStatusData.deviceId
-                    model.authorizerId = linkStatusData.authorizerId
-                    model.authorizerType = linkStatusData.authorizerType
-                    model.state = SignInLayoutState.Connection(currentState.username,
-                            currentState.domain, model.authorizerType)
-                    scene.initLayout(model, uiObserver)
-                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
-                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = linkStatusData.name,
-                            username = currentState.username,
-                            domain = currentState.domain,
-                            randomId = linkStatusData.deviceId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple,
-                            accountType = model.accountType))
-                })
-            }
+
         }
 
         override fun onKeyBundleUploaded(deviceId: Int) {
@@ -693,18 +424,20 @@ class SignInSceneController(
     }
 
     private val uiObserver = object : SignInUIObserver(generalDataSource, host) {
-        override fun onSkipClicked() {
+        override fun onRecoveryCodeChangeListener(newCode: String) {
             val currentState = model.state as SignInLayoutState.LoginValidation
-            val hashedPassword = model.realSecurePassword!!
-            val userData = UserData(currentState.username, currentState.domain, hashedPassword, null)
-            dataSource.submitRequest(SignInRequest.AuthenticateUser(
-                    userData = userData,
-                    isMultiple = model.isMultiple
-            ))
-        }
-
-        override fun onRecoveryCodeChangeListener(newPassword: String) {
-
+            val buttonState = when(val input = AccountDataValidator.validateRecoveryCode(newCode)){
+                is FormData.Valid -> {
+                    model.state = currentState.copy(recoveryCode = newCode)
+                    scene.drawInputError(null)
+                    ProgressButtonState.enabled
+                }
+                is FormData.Error -> {
+                    scene.drawInputError(input.message)
+                    ProgressButtonState.disabled
+                }
+            }
+            scene.setSubmitButtonState(buttonState)
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -713,23 +446,16 @@ class SignInSceneController(
 
         override fun onGeneralOkButtonPressed(result: DialogResult) {
             when(result){
-                is DialogResult.DialogWithInput -> {
-                    if(result.type is DialogType.RecoveryCode){
-                        scene.toggleLoadRecoveryCode(true)
-                        val currentState = model.state as SignInLayoutState.LoginValidation
-                        dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple, result.textInput))
-                    }
-                }
                 is DialogResult.DialogCriptextPlus -> {
                     if(result.type is DialogType.CriptextPlus){
                         host.goToScene(
                                 params = WebViewParams(
-                                        url = Hosts.billing(model.temporalJWT, Locale.getDefault().language),
+                                        url = Hosts.billing(model.ephemeralJwt, Locale.getDefault().language),
                                         title = null
                                 ),
                                 activityMessage = null,
                                 keep = true,
-                                animationData = TransitionAnimationData(
+                                animationData = ActivityTransitionAnimationData(
                                         forceAnimation = true,
                                         enterAnim = R.anim.slide_in_up,
                                         exitAnim = R.anim.stay
@@ -752,83 +478,25 @@ class SignInSceneController(
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun onRecoveryCodeClicked() {
-            val currentState = model.state as SignInLayoutState.LoginValidation
-            dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username, currentState.domain, model.ephemeralJwt, model.isMultiple))
-        }
-
-        override fun onTrashPressed(recipient: String, domain: String) {
-            val checkedIndexes = Pair(mutableListOf<Int>(), mutableListOf<Int>())
-            model.devices.forEachIndexed { index, deviceItem ->
-                if(deviceItem.checked) {
-                    checkedIndexes.first.add(deviceItem.id)
-                    checkedIndexes.second.add(index)
-                }
-            }
-            if(checkedIndexes.first.isEmpty()){
-                scene.showDeviceCountRemaining(model.devices.size - (model.maxDevices - 1))
-            } else {
-                dataSource.submitRequest(SignInRequest.RemoveDevices(
-                        userData = UserData(recipient, domain, "", null),
-                        tempToken = model.temporalJWT,
-                        deviceIds = checkedIndexes.first,
-                        deviceIndexes = checkedIndexes.second
-                ))
-            }
-        }
-
         override fun onSetupDevices(devicesListView: VirtualListView) {
             deviceWrapperListController = DeviceWrapperListController(model, devicesListView)
         }
 
-        override fun onSignInWarningContinue(userName: String, domain: String) {
-            //LINK DEVICE FEATURE
-            model.state = SignInLayoutState.LoginValidation(username = userName,
-                    domain = domain,
-                    hasTwoFA = model.hasTwoFA)
-            dataSource.submitRequest(SignInRequest.LinkBegin(userName, domain))
-        }
+        override fun onSignInWarningContinue(newUserData: UserData) {
+            val req = SignInRequest.AuthenticateUser(
+                    userData = newUserData,
+                    isMultiple = model.isMultiple
+            )
+            val lastLoggedAccounts = AccountUtils.getLastLoggedAccounts(storage)
+            if(!lastLoggedAccounts.contains(newUserData.username))
+                model.showRestoreBackupDialog = true
 
-        override fun onRetrySyncOk(result: SignInResult) {
-            when(result){
-                is SignInResult.CreateSessionFromLink -> {
-                    val currentState = model.state as SignInLayoutState.Connection
-                    scene.setLinkProgress(UIMessage(R.string.sending_keys), SENDING_KEYS_PERCENTAGE)
-                    dataSource.submitRequest(SignInRequest.CreateSessionFromLink(name = model.name,
-                            username = currentState.username,
-                            domain = currentState.domain,
-                            randomId = model.randomId, ephemeralJwt = model.ephemeralJwt,
-                            isMultiple = model.isMultiple,
-                            accountType = model.accountType))
-                }
-                is SignInResult.LinkData -> {
-                    scene.setLinkProgress(UIMessage(R.string.waiting_for_mailbox), WAITING_FOR_MAILBOX_PERCENTAGE)
-                    dataSource.submitRequest(SignInRequest.LinkData(model.key, model.dataAddress, model.authorizerId))
-                }
-            }
-        }
-
-        override fun onRetrySyncCancel() {
-            cancelLink()
-        }
-
-        override fun onResendDeviceLinkAuth(username: String, domain: String) {
-            dataSource.submitRequest(SignInRequest.LinkAuth(username, model.ephemeralJwt,
-                    domain, model.realSecurePassword))
-        }
-
-        override fun onProgressHolderFinish() {
-            host.goToScene(MailboxParams(askForRestoreBackup = model.showRestoreBackupDialog), false)
+            dataSource.submitRequest(req)
         }
 
         override fun onBackPressed() {
             model.linkDeviceState = LinkDeviceState.Begin()
             this@SignInSceneController.onBackPressed()
-        }
-
-        override fun onXPressed() {
-            deviceWrapperListController?.clearChecks()
-            scene.showToolbarCount(0)
         }
 
         override fun onContactSupportPressed() {
@@ -839,7 +507,7 @@ class SignInSceneController(
                     ),
                     activityMessage = null,
                     keep = true,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = R.anim.slide_in_up,
                             exitAnim = R.anim.stay
@@ -851,43 +519,82 @@ class SignInSceneController(
             val state = model.state
             when (state) {
                 is SignInLayoutState.Start -> {
-                    model.state = SignInLayoutState.LoginUsername("", state.firstTime)
+                    model.state = SignInLayoutState.Login(
+                            username = "",
+                            password = "",
+                            buttonState = ProgressButtonState.disabled,
+                            domain = "",
+                            firstTime = state.firstTime,
+                            recipientId = "")
                     scene.initLayout(model, this)
                 }
-                is SignInLayoutState.LoginUsername -> onSignInButtonClicked(state)
-                is SignInLayoutState.InputPassword -> {
-                    if(model.hasTwoFA){
-                        val currentState = model.state as SignInLayoutState.InputPassword
-                        model.realSecurePassword = currentState.password.sha256()
-                        model.state = SignInLayoutState.LoginValidation(currentState.username, currentState.domain, model.hasTwoFA)
-                        scene.initLayout(model, this)
-                        dataSource.submitRequest(SignInRequest.LinkAuth(currentState.username,
-                                model.ephemeralJwt, currentState.domain, model.realSecurePassword))
-                    }else{
-                        onSignInButtonClicked(state)
-                    }
-                }
+                is SignInLayoutState.Login -> onSignInButtonClicked(state)
                 is SignInLayoutState.ChangePassword -> {
                     keyboard.hideKeyboard()
                     onSignInButtonClicked(state)
+                }
+                is SignInLayoutState.ForgotPassword -> {
+                    scene.toggleForgotPasswordClickable(false)
+                    scene.setSubmitButtonState(ProgressButtonState.waiting)
+                    val userInput = AccountDataValidator.validateUsername(state.username)
+                    when (userInput) {
+                        is FormData.Valid -> {
+                            val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(userInput.value) is FormData.Valid) {
+                                val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(userInput.value)
+                                Pair(EmailAddressUtils.extractRecipientIdFromAddress(userInput.value, nonCriptextDomain),
+                                        nonCriptextDomain
+                                )
+                            } else {
+                                Pair(userInput.value, Contact.mainDomain)
+                            }
+                            generalDataSource.submitRequest(GeneralRequest.ResetPassword(recipientId,
+                                    domain))
+                        }
+                        is FormData.Error -> {
+                            scene.setSubmitButtonState(ProgressButtonState.disabled)
+                            scene.drawInputError(userInput.message)
+                        }
+                    }
+                }
+                is SignInLayoutState.LoginValidation -> {
+                    scene.setSubmitButtonState(ProgressButtonState.waiting)
+                    val currentState = model.state as SignInLayoutState.LoginValidation
+                    dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username,
+                            currentState.domain, model.ephemeralJwt, model.isMultiple,
+                            model.needToRemoveDevices, currentState.recoveryCode))
+                }
+                is SignInLayoutState.RemoveDevices -> {
+                    scene.setSubmitButtonState(ProgressButtonState.waiting)
+                    val currentState = model.state as SignInLayoutState.RemoveDevices
+                    dataSource.submitRequest(SignInRequest.AuthenticateUser(
+                            userData = UserData(
+                                    username = currentState.username,
+                                    domain = currentState.domain,
+                                    password = currentState.password.sha256(),
+                                    oldPassword = null
+                            ),
+                            isMultiple = model.isMultiple,
+                            tempToken = model.ephemeralJwt
+                    ))
                 }
             }
         }
 
         override fun onForgotPasswordClick() {
-            scene.toggleForgotPasswordClickable(false)
-            val currentState = model.state as SignInLayoutState.InputPassword
-            generalDataSource.submitRequest(GeneralRequest.ResetPassword(currentState.username,
-                    currentState.domain))
-        }
-
-        override fun onCantAccessDeviceClick(){
-            scene.showPasswordLoginDialog(
-                    onPasswordLoginDialogListener = this@SignInSceneController.passwordLoginDialogListener)
+            val currentState = model.state as SignInLayoutState.Login
+            model.state = SignInLayoutState.ForgotPassword(currentState.username)
+            scene.initLayout(model, this)
         }
 
         override fun userLoginReady() {
             host.goToScene(MailboxParams(), false, true, ActivityMessage.RefreshUI())
+        }
+
+        override fun onResendRecoveryCode() {
+            val currentState = model.state as SignInLayoutState.LoginValidation
+            dataSource.submitRequest(SignInRequest.RecoveryCode(currentState.username,
+                    currentState.domain, model.ephemeralJwt, model.isMultiple,
+                    model.needToRemoveDevices, currentState.recoveryCode))
         }
 
         override fun toggleUsernameFocusState(isFocused: Boolean) {
@@ -895,13 +602,17 @@ class SignInSceneController(
 
         override fun onPasswordChangeListener(newPassword: String) {
             val currentState = model.state
-            if (currentState is SignInLayoutState.InputPassword) {
-                val newButtonState = if (newPassword.isEmpty()) ProgressButtonState.disabled
-                                     else ProgressButtonState.enabled
+            if (currentState is SignInLayoutState.Login) {
+                val buttonState = if (currentState.username.isNotEmpty() && newPassword.isNotEmpty()
+                        && newPassword.length >= AccountDataValidator.minimumPasswordLength)
+                    ProgressButtonState.enabled
+                else
+                    ProgressButtonState.disabled
                 model.state = currentState.copy(
+                        username = currentState.username,
                         password = newPassword,
-                        buttonState = newButtonState)
-                scene.setSubmitButtonState(state = newButtonState)
+                        buttonState = buttonState)
+                scene.setSubmitButtonState(state = buttonState)
             } else if(currentState is SignInLayoutState.ChangePassword) {
                 model.passwordText = newPassword
                 if(model.confirmPasswordText.isNotEmpty())
@@ -941,10 +652,26 @@ class SignInSceneController(
         }
 
         override fun onUsernameTextChanged(newUsername: String) {
-            model.state = SignInLayoutState.LoginUsername(username = newUsername, firstTime = false)
-            val buttonState = if (newUsername.isNotEmpty()) ProgressButtonState.enabled
-                              else ProgressButtonState.disabled
-            scene.setSubmitButtonState(buttonState)
+            val currentState = model.state
+            when(currentState){
+                is SignInLayoutState.Login -> {
+                    val buttonState = if (newUsername.isNotEmpty() && currentState.password.isNotEmpty()
+                            && currentState.password.length >= AccountDataValidator.minimumPasswordLength)
+                        ProgressButtonState.enabled
+                    else
+                        ProgressButtonState.disabled
+                    model.state = currentState.copy(username = newUsername, password = currentState.password, firstTime = false)
+                    scene.setSubmitButtonState(buttonState)
+                }
+                is SignInLayoutState.ForgotPassword -> {
+                    val buttonState = if (newUsername.isNotEmpty()
+                            && AccountDataValidator.validateEmailAddress(newUsername) is FormData.Valid)
+                        ProgressButtonState.enabled
+                    else ProgressButtonState.disabled
+                    model.state = currentState.copy(username = newUsername)
+                    scene.setSubmitButtonState(buttonState)
+                }
+            }
         }
 
         override fun onSignUpLabelClicked() {
@@ -960,13 +687,6 @@ class SignInSceneController(
         if(webSocket != null) {
             webSocket?.clearListener(webSocketEventListener)
             webSocket?.disconnectWebSocket()
-        }
-    }
-
-    private fun stopTempWebSocket(){
-        if(tempWebSocket != null) {
-            tempWebSocket?.clearListener(webSocketEventListener)
-            tempWebSocket?.disconnectWebSocket()
         }
     }
 
@@ -987,7 +707,7 @@ class SignInSceneController(
     override fun onResume(activityMessage: ActivityMessage?): Boolean {
         handleNewWebSocket()
         if(model.state is SignInLayoutState.RemoveDevices)
-            dataSource.submitRequest(SignInRequest.GetMaxDevices(model.temporalJWT))
+            dataSource.submitRequest(SignInRequest.GetMaxDevices(model.ephemeralJwt))
         return false
     }
 
@@ -1020,7 +740,7 @@ class SignInSceneController(
                 } else
                     true
             }
-            is SignInLayoutState.LoginUsername -> {
+            is SignInLayoutState.Login -> {
                 model.state = SignInLayoutState.Start(currentState.firstTime)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
@@ -1031,50 +751,68 @@ class SignInSceneController(
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
+                model.state = SignInLayoutState.Login(
+                        username = username,
+                        recipientId = currentState.username,
+                        password = currentState.password,
+                        buttonState = ProgressButtonState.enabled,
+                        domain = currentState.domain,
+                        firstTime = false)
+                model.needToRemoveDevices = false
+                model.realSecurePassword = null
+                model.ephemeralJwt = ""
+                resetLayout()
+                false
+            }
+            is SignInLayoutState.ForgotPassword -> {
+                model.state = SignInLayoutState.Login(
+                        username = "",
+                        recipientId = "",
+                        password = "",
+                        buttonState = ProgressButtonState.disabled,
+                        domain = "",
+                        firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
-                generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
                 false
             }
             is SignInLayoutState.DeniedValidation -> {
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
+                //model.state = SignInLayoutState.Login(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
                 generalDataSource.submitRequest(GeneralRequest.LinkCancel(currentState.username, currentState.domain, model.ephemeralJwt, null))
                 false
             }
-            is SignInLayoutState.InputPassword -> {
-                val username = if(currentState.domain != Contact.mainDomain)
-                    currentState.username.plus("@${currentState.domain}")
-                else currentState.username
-                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
-                model.needToRemoveDevices = false
-                model.realSecurePassword = null
-                resetLayout()
-                false
-            }
             is SignInLayoutState.ChangePassword -> {
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
+                model.state = SignInLayoutState.Login(
+                        username = username,
+                        recipientId = currentState.username,
+                        domain = currentState.domain,
+                        password = currentState.oldPassword,
+                        buttonState = ProgressButtonState.enabled,
+                        firstTime = false)
                 resetLayout()
-                false
-            }
-            is SignInLayoutState.Connection -> {
                 false
             }
             is SignInLayoutState.RemoveDevices -> {
                 val username = if(currentState.domain != Contact.mainDomain)
                     currentState.username.plus("@${currentState.domain}")
                 else currentState.username
-                model.state = SignInLayoutState.LoginUsername(username, firstTime = false)
+                model.state = SignInLayoutState.Login(
+                        username = username,
+                        recipientId = currentState.username,
+                        domain = currentState.domain,
+                        password = currentState.password,
+                        buttonState = ProgressButtonState.enabled,
+                        firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
@@ -1086,16 +824,17 @@ class SignInSceneController(
 
     private val onDevicesListItemListener: DevicesListItemListener = object: DevicesListItemListener {
         override fun onDeviceCheckChanged(): Boolean {
-            val hasSpace = ((model.devices.size - model.devices.filter { it.checked }.size) <= model.maxDevices - 1)
-            scene.updateMaxDevices(model.maxDevices,
-                    if(hasSpace) 0 else ((model.devices.size - model.devices.filter { it.checked }.size)
-                            - (model.maxDevices - 1)))
             return true
         }
 
         override fun onDeviceTrashClicked(device: DeviceItem, position: Int): Boolean {
-            val checkedDevices = model.devices.filter { it.checked }.size
-            scene.showToolbarCount(checkedDevices)
+            val currentState = model.state as SignInLayoutState.RemoveDevices
+            dataSource.submitRequest(SignInRequest.RemoveDevices(
+                    userData = UserData(currentState.username, currentState.domain, currentState.password, null),
+                    tempToken = model.ephemeralJwt,
+                    deviceIds = listOf(device.id),
+                    deviceIndexes = listOf(position)
+            ))
             return true
         }
     }
@@ -1112,24 +851,16 @@ class SignInSceneController(
         abstract fun toggleUsernameFocusState(isFocused: Boolean)
         abstract fun onSignUpLabelClicked()
         abstract fun userLoginReady()
-        abstract fun onCantAccessDeviceClick()
-        abstract fun onRecoveryCodeClicked()
-        abstract fun onSkipClicked()
-        abstract fun onResendDeviceLinkAuth(username: String, domain: String)
+        abstract fun onResendRecoveryCode()
         abstract fun onPasswordChangeListener(newPassword: String)
-        abstract fun onRecoveryCodeChangeListener(newPassword: String)
+        abstract fun onRecoveryCodeChangeListener(newCode: String)
         abstract fun onConfirmPasswordChangeListener(confirmPassword: String)
         abstract fun onUsernameTextChanged(newUsername: String)
         abstract fun onForgotPasswordClick()
         abstract fun onBackPressed()
-        abstract fun onXPressed()
         abstract fun onContactSupportPressed()
-        abstract fun onProgressHolderFinish()
-        abstract fun onRetrySyncOk(result: SignInResult)
-        abstract fun onRetrySyncCancel()
-        abstract fun onSignInWarningContinue(userName: String, domain: String)
+        abstract fun onSignInWarningContinue(newUserData: UserData)
         abstract fun onSetupDevices(devicesListView: VirtualListView)
-        abstract fun onTrashPressed(recipient: String, domain: String)
     }
 
     companion object {

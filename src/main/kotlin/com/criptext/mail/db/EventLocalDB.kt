@@ -300,7 +300,6 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             if(Label.defaultItems.spam in addedLabels){
                 val fromContacts = threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
                 if(fromContacts.isNotEmpty()) {
-                    db.contactDao().uptickSpamCounter(fromContacts, accountId)
                     db.contactDao().updateContactsIsTrusted(fromContacts, false)
                 }
             }
@@ -308,7 +307,6 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             if(Label.defaultItems.spam in removedLabels){
                 val fromContacts = threads.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
                 if(fromContacts.isNotEmpty()) {
-                    db.contactDao().resetSpamCounter(fromContacts, accountId)
                     db.contactDao().updateContactsIsTrusted(fromContacts, true)
                 }
             }
@@ -353,7 +351,6 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             if(Label.defaultItems.spam in addedLabels){
                 val fromContacts = emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
                 if(fromContacts.isNotEmpty()) {
-                    db.contactDao().uptickSpamCounter(fromContacts, accountId)
                     db.contactDao().updateContactsIsTrusted(fromContacts, false)
                 }
             }
@@ -361,7 +358,6 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
             if(Label.defaultItems.spam in removedLabels){
                 val fromContacts = emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }
                 if(fromContacts.isNotEmpty()) {
-                    db.contactDao().resetSpamCounter(emails.map { EmailAddressUtils.extractEmailAddress(it.fromAddress) }.filter { it != account.userEmail }, accountId)
                     db.contactDao().updateContactsIsTrusted(fromContacts, true)
                 }
             }

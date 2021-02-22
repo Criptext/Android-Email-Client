@@ -8,8 +8,6 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
-import com.criptext.mail.scenes.params.LinkingParams
-import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.ProfileParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.settings.replyto.data.ReplyToDataSource
@@ -25,7 +23,6 @@ import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
 import com.criptext.mail.validation.AccountDataValidator
 import com.criptext.mail.validation.FormData
 import com.criptext.mail.websocket.WebSocketEventListener

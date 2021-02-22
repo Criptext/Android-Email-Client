@@ -8,4 +8,5 @@ interface RestoreBackupUIObserver {
     fun onPasswordChangedListener(password: String)
     fun onRestore()
     fun onLocalProgressFinished()
+    fun onBackPressed()
 }

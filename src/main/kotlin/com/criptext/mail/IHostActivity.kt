@@ -1,7 +1,6 @@
 package com.criptext.mail
 
 import android.content.ContentResolver
-import android.graphics.Bitmap
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
@@ -13,14 +12,16 @@ import com.criptext.mail.scenes.params.SceneParams
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.google.android.play.core.review.ReviewManager
 
 /**
  * Created by sebas on 1/29/18.
  */
 interface IHostActivity {
     fun refreshToolbarItems()
+    fun getReviewManager(): ReviewManager?
     /**
      * Launches a new activity to show the new scene.
      * @param params object used to create the new scene. If the activity for the scene is used,
@@ -32,11 +33,11 @@ interface IHostActivity {
      * @param animationData a data class to determinate if you want to force the transition animation.
      */
     fun goToScene(params: SceneParams, keep: Boolean, deletePastIntents: Boolean = false,
-                  activityMessage: ActivityMessage? = null, animationData: TransitionAnimationData? = null)
+                  activityMessage: ActivityMessage? = null, animationData: ActivityTransitionAnimationData? = null)
     /**
      * Finishes the current activity.
      */
-    fun finishScene(activityMessage: ActivityMessage? = null, animationData: TransitionAnimationData? = null)
+    fun finishScene(activityMessage: ActivityMessage? = null, animationData: ActivityTransitionAnimationData? = null)
     fun getLocalizedString(message: UIMessage): String
     fun getIntentExtras(): IntentExtrasData?
     fun showDialog(message: UIMessage)

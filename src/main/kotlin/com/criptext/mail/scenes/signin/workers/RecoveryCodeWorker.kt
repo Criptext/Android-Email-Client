@@ -37,6 +37,7 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                          private val db: AppDatabase,
                          signUpDao: SignUpDao,
                          private val keyGenerator: SignalKeyGenerator,
+                         private val needToRemoveDevices: Boolean,
                          private val messagingInstance: MessagingInstance,
                          private val isMultiple: Boolean,
                          private val accountDao: AccountDao,
@@ -74,13 +75,21 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
                 val deviceId = json.getInt("deviceId")
                 val name = json.getString("name")
                 val type = AccountTypes.fromInt(json.getInt("customerType"))
-                val addresses = json.optJSONArray("addresses")
+                val token = json.getString("token")
+                val addresses = json.optJSONArray("addresses") ?: JSONArray()
                 if(!isMultiple){
                     db.clearAllTables()
                     keyValueStorage.clearAll()
                 }
-                val signalPair = signalRegistrationOperation(deviceId, name, type)
-                storeAccountOperation(signalPair.first, signalPair.second, if(addresses.toString().isEmpty()) null else addresses)
+                if(needToRemoveDevices){
+                    throw NeedToRemoveDevices(token)
+                } else {
+                    val signalPair = signalRegistrationOperation(deviceId, name, type)
+                    storeAccountOperation(signalPair.first, signalPair.second,
+                            if (addresses.toString().isEmpty()) null else addresses,
+                            token
+                    )
+                }
             }
         }
 
@@ -110,10 +119,11 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
         return Pair(registrationBundles, account)
     }
 
-    private fun storeAccountOperation(registrationBundles: SignalKeyGenerator.RegistrationBundles, account: Account, addressesJsonArray: JSONArray?) {
+    private fun storeAccountOperation(registrationBundles: SignalKeyGenerator.RegistrationBundles,
+                                      account: Account, addressesJsonArray: JSONArray?, token: String) {
         val postKeyBundleStep = Runnable {
             val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
-                    jwt = account.jwt)
+                    jwt = token)
             val json = JSONObject(response.body)
             account.jwt = json.getString("token")
             account.refreshToken = json.getString("refreshToken")
@@ -147,4 +157,5 @@ class RecoveryCodeWorker(val httpClient: HttpClient,
         }
     }
 
+    class NeedToRemoveDevices(val tempToken: String): Exception()
 }

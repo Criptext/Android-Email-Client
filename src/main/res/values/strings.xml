@@ -32,18 +32,18 @@
   <string name="link_auth_sub_title">Do you want to approve?</string>
   <string name="link_auth_message">%1$s</string>
   <string name="establishing">Establishing secure connection</string>
-  <string name="cancel_sync">Cancel Sync</string>
-  <string name="device_ready">Device Ready</string>
+  <string name="cancel_sync"><u>Cancel Import</u></string>
+  <string name="device_ready">Device Ready! 😎</string>
   <string name="preparing_mailbox">Encrypting Mailbox</string>
   <string name="getting_keys">Getting Keys</string>
   <string name="uploading_mailbox">Uploading Mailbox</string>
-  <string name="mailbox_upload_successful">Mailbox uploaded successfully!</string>
+  <string name="mailbox_upload_successful">Done! 🙌</string>
   <string name="keep_waiting_title">Well, that\'s odd…</string>
   <string name="keep_waiting_message">Something has happened that is delaying this process. Do want to continue waiting?</string>
-  <string name="sending_keys">Sending Keys</string>
-  <string name="waiting_for_mailbox">Waiting for Mailbox</string>
-  <string name="downloading_mailbox">Downloading Mailbox</string>
-  <string name="processing_mailbox">Decrypting Mailbox</string>
+  <string name="sending_keys">Sending Keys…</string>
+  <string name="waiting_for_mailbox">Waiting for Mailbox…</string>
+  <string name="downloading_mailbox">Downloading Mailbox…</string>
+  <string name="processing_mailbox">Restoring Mailbox…</string>
   <string name="sync_complete">Sync Complete!</string>
   <string name="push_approve">Approve</string>
   <string name="push_deny">Reject</string>
@@ -228,7 +228,7 @@
   <string name="login">Log In</string>
   <string name="login_body">Check and approve on your existing Criptext device to continue.</string>
   <string name="didnt_get_prompt">Didn\'t get the prompt?</string>
-  <string name="not_approved">Warning: Multiple rejections could lead your device to be blacklisted from Criptext.</string>
+  <string name="not_approved"><b>Warning:</b> Multiple rejections could lead your device to be blacklisted from Criptext.</string>
   <string name="button_resendit">Resend it</string>
   <string name="cant_access_device">
     <u>Sign in with password?</u>
@@ -239,10 +239,10 @@
   <string name="too_many_login_attempts">Too many login attempts, try again later.</string>
   <string name="too_many_devices">Too many devices already logged in.</string>
   <string name="no_devices_available">No devices available to authenticate this device.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Signing in with a different email account\n        <b>will erase all mailbox data</b> stored on this device for account \n\n <b>%1$s</b>\n\n\n        Would you like to continue?]]></string>
+  <string name="sign_in_warning_dialog_message">Your entire mailbox data will be erased and replaced with the mailbox data from your other device.\n\n<b>Are you sure you want to continue?</b></string>
   <string name="sign_in_warning_dialog_title">Sign In Warning</string>
-  <string name="password_warning_dialog_title">Warning ⚠️</string>
-  <string name="password_warning_dialog_message">If you sign in using your password your\n        <b>mailbox history from other devices won\'t be available</b> on this device. Would you like to continue?</string>
+  <string name="password_warning_dialog_title">Sign In Warning️</string>
+  <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
   <string name="slide_1_title">
     <b>Welcome!</b>
   </string>
@@ -529,7 +529,8 @@
     <u>Skip Restore</u>
   </string>
   <string name="restore_backup_dialog_button">Restore from Drive</string>
-  <string name="restore_backup_title">Backup found</string>
+  <string name="restore_backup_title">Backup Found! 🙌</string>
+  <string name="restore_backup_sub_title">Your data is ready to be imported</string>
   <string name="restore_backup_title_encrypted">Encrypted backup found</string>
   <string name="restore_backup_last_modified">Last Backup: %1$s</string>
   <string name="restore_backup_size">Size: %1$d MB</string>
@@ -581,7 +582,8 @@
   <string name="sign_in_remove_dialog_title">Remove Devices</string>
   <string name="sign_in_remove_error_dialog_title">Session Expired</string>
   <string name="sign_in_remove_error_dialog_message">You\'ve reached the maximum inactivity time permitted. Please sign in again.</string>
-  <string name="contact_support">Having trouble? <b>Contact Support</b></string>
+  <string name="contact_support">Having trouble? </string>
+  <string name="contact_support_click"><b>Contact Support</b></string>
   <string name="sync_screen_message">Do not leave the app or turn off your screen while this process is happening</string>
   <string name="domain_validation_error">Failed to get Contacts Domain Validation (%1$d)</string>
   <string name="contact_db_get_error">Failed to retrieve contacts from the local data base.</string>
@@ -786,4 +788,43 @@
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">Email to %1$s couldn\'t be sent</string>
   <string name="fail_to_send_notification_title">Fail to Send</string>
+  <string name="login_title">Ah, you\'re back!</string>
+  <string name="login_sub_title">It\'s not the same without you</string>
+  <string name="login_reset_password_title">Enter your Criptext Email</string>
+  <string name="login_reset_password_sub_title">You\'ll get an email with a link to reset your password</string>
+  <string name="login_reset_password_hint">Criptext Email</string>
+  <string name="login_reset_password_button">Reset Password</string>
+  <string name="login_reset_password_button_time">Reset Password (%1$d)</string>
+  <string name="login_reset_link_title">Reset link sent to your recovery email 📩</string>
+  <string name="login_reset_link_message">The link will expire in 30 min</string>
+  <string name="login_remove_devices_title">You\'ve reached your device limit 😰</string>
+  <string name="login_remove_devices_sub_title">Logout from one device to make room for this one.</string>
+  <string name="login_two_fa_title">Two-Factor\nAuthentication</string>
+  <string name="login_two_fa_message_1">Enter the code we sent to:</string>
+  <string name="login_two_fa_resend_1">Didn\'t get the code? </string>
+  <string name="login_two_fa_resend_2">Resend it</string>
+  <string name="login_remove_devices_success">Super cool! 👍</string>
+  <string name="import_mailbox_title">Where will you import your emails from?</string>
+  <string name="import_mailbox_sub_title">Select a source to import your emails and account info</string>
+  <string name="import_mailbox_sync_device">From other device  🖥</string>
+  <string name="import_mailbox_from_cloud">From Google Drive ☁️</string>
+  <string name="import_mailbox_from_file">From a Backup File  📁</string>
+  <string name="import_mailbox_import_title">Importing Mailbox</string>
+  <string name="import_mailbox_import_sub_title">Don\'t leave the app or turn off the screen</string>
+  <string name="restore_backup_title_searching">Searching for Backup</string>
+  <string name="restore_backup_sub_title_searching">Don’t leave the app or turn off the screen</string>
+  <string name="restore_backup_title_not_found">No backup found  😟</string>
+  <string name="restore_backup_sub_title_not_found">Are you sure you chose the correct drive account?</string>
+  <string name="restore_backup_title_restoring">Restoring…</string>
+  <string name="restore_backup_title_error">Well that’s odd 🤨</string>
+  <string name="restore_backup_sub_title_error">Something has happened that is delaying this process. <br/><b>Do you want to keep trying?</b></string>
+  <string name="restore_backup_title_encrypted_found">Encrypted backup found</string>
+  <string name="restore_backup_sub_title_encrypted_found">Enter backup passphrase to start restoring your mailbox</string>
+  <string name="sync_begin_title">Check other device</string>
+  <string name="sync_begin_sub_title">Open Criptext on the other device to begin import</string>
+  <string name="sync_begin_btn">Resend Request</string>
+  <string name="sync_denied_btn">Try again</string>
+  <string name="mailbox_export_title">Exporting Mailbox</string>
+  <string name="mailbox_export_btn"><u>Cancel connection</u></string>
+  <string name="checking_for_devices">Checking for devices…</string>
 </resources>

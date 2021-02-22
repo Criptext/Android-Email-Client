@@ -111,7 +111,7 @@ class MoveEmailThreadWorker(
 
         val result = Result.of {
             if(chosenLabel == Label.LABEL_SPAM){
-                val fromContacts = db.updateSpamCounter(emailIds, activeAccount.id, activeAccount.userEmail)
+                val fromContacts = db.getFromAddresses(emailIds, activeAccount.id, activeAccount.userEmail)
                 val lastValidEmail = emails.findLast {
                     it.email.fromAddress != activeAccount.userEmail
                 }

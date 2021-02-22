@@ -33,11 +33,11 @@
   <string name="link_auth_message">%1$s</string>
   <string name="establishing">Estableciendo conexión segura</string>
   <string name="cancel_sync">Cancelar Sincronización</string>
-  <string name="device_ready">Dispositivo preparado</string>
+  <string name="device_ready">¡Dispositivo listo! 😎</string>
   <string name="preparing_mailbox">Encriptando Buzón</string>
   <string name="getting_keys">Obteniendo Llaves</string>
   <string name="uploading_mailbox">Subiendo Buzón</string>
-  <string name="mailbox_upload_successful">¡Buzón subido exitosamente!</string>
+  <string name="mailbox_upload_successful">¡Listo! 🙌</string>
   <string name="keep_waiting_title">Bueno, eso está raro…</string>
   <string name="keep_waiting_message">Algo ha sucedido que está retrasando este proceso. ¿Quieres seguir esperando?</string>
   <string name="sending_keys">Enviando Llaves de Encriptación</string>
@@ -241,8 +241,8 @@
   <string name="no_devices_available">No hay dispositivos autorizados disponibles para aprobar este dispositivo.</string>
   <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?]]></string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
-  <string name="password_warning_dialog_title">Advertencia ⚠️</string>
-  <string name="password_warning_dialog_message">Si inicias sesión usando tu contraseña\n        <b>tu historial de correos no estará disponible</b> en este dispositivo. ¿Deseas continuar?</string>
+  <string name="password_warning_dialog_title">Advertencia de Inicio de Sesión</string>
+  <string name="password_warning_dialog_message">Todos los datos de tu bandeja de correos serán borrados y reemplazados con los datos de tu otro dispositivo. \n\n<b>¿Estás seguro que deseas continuar?</b></string>
   <string name="slide_1_title">
     <b>¡Bienvenido!</b>
   </string>
@@ -527,7 +527,8 @@
   <string name="restore_backup_dialog_message">Restaura tus correos desde un respaldo local o desde Google Drive, puedes hacer esto en otro momento entrando a Configuración &gt; Respaldo de Correos &gt; Restaurar Respaldo.</string>
   <string name="restore_backup_dialog_skip_restore">No Restaurar</string>
   <string name="restore_backup_dialog_button">Restaurar desde Drive</string>
-  <string name="restore_backup_title">Respaldo encontrado</string>
+  <string name="restore_backup_title">Respaldo encontrado! 🙌</string>
+  <string name="restore_backup_sub_title">Tu información está lista para ser importada</string>
   <string name="restore_backup_title_encrypted">Respaldo encriptado encontrado</string>
   <string name="restore_backup_last_modified">Último Respaldo: %1$s</string>
   <string name="restore_backup_size">Tamaño: %1$d MB</string>
@@ -579,7 +580,8 @@
   <string name="sign_in_remove_dialog_title">Borrar Dispositivos</string>
   <string name="sign_in_remove_error_dialog_title">Sesión Expirada</string>
   <string name="sign_in_remove_error_dialog_message">Excediste el tiempo de inactividad permitido. Por favor inicia sesión nuevamente.</string>
-  <string name="contact_support">¿Necesitas ayuda? <b>Contáctanos</b></string>
+  <string name="contact_support">¿Necesitas ayuda?</string>
+  <string name="contact_support_click"><b> Contáctanos</b></string>
   <string name="sync_screen_message">No cierres la aplicación o apagues la pantalla hasta que termine este proceso</string>
   <string name="domain_validation_error">Error al tratar de validar los dominios (%1$d)</string>
   <string name="contact_db_get_error">Error al obtener contactos de la base de datos.</string>
@@ -784,4 +786,27 @@
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">No se ha podido enviar el correo a %1$s</string>
   <string name="fail_to_send_notification_title">Fallo al Enviar Correo</string>
+  <string name="login_title">¡Bienvenido nuevamente!</string>
+  <string name="login_sub_title">No ha sido lo mismo sin ti.</string>
+  <string name="login_reset_password_title">Ingresa tu email de Criptext</string>
+  <string name="login_reset_password_sub_title">Te llegará un correo con un enlace para que puedas reestablecer tu contraseña.</string>
+  <string name="login_reset_password_hint">Correo de Criptext</string>
+  <string name="login_reset_password_button">Reestablecer Contraseña</string>
+  <string name="login_reset_password_button_time">Reestablecer Contraseña (%1$d)</string>
+  <string name="login_reset_link_title">Enlace enviado a tu correo de recuperación 📩</string>
+  <string name="login_reset_link_message">El enlace expirará en 30 min</string>
+  <string name="login_remove_devices_title">Has alcanzo el máximo de dispositivos permitidos 😰</string>
+  <string name="login_remove_devices_sub_title">Remueve uno de tus dispositivos para hacerle espacio para este nuevo.</string>
+  <string name="login_two_fa_title">Autenticación de\ndos factores</string>
+  <string name="login_two_fa_message_1">Ingresa el código que te enviamos:</string>
+  <string name="login_two_fa_resend_1">¿No te ha llegado el código? </string>
+  <string name="login_two_fa_resend_2">Reenviarlo</string>
+  <string name="login_remove_devices_success">Super cool! 👍</string>
+  <string name="import_mailbox_title">¿Desde donde quisieras importar tus correos?</string>
+  <string name="import_mailbox_sub_title">Elige de donde quisieras importar tus correos y configuraciones de cuenta.</string>
+  <string name="import_mailbox_sync_device">Desde otro dispositivo  🖥</string>
+  <string name="import_mailbox_from_cloud">Desde la nube  ☁️</string>
+  <string name="import_mailbox_from_file">Desde un archivo  📁</string>
+  <string name="import_mailbox_import_title">Importando Bandeja de Correos</string>
+  <string name="import_mailbox_import_sub_title">No salgas del app ni apagues la pantalla.</string>
 </resources>

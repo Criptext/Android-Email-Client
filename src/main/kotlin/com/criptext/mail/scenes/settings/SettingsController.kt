@@ -57,15 +57,14 @@ class SettingsController(
             is GeneralResult.LinkAccept -> onLinkAccept(result)
             is GeneralResult.SyncAccept -> onSyncAccept(result)
             is GeneralResult.SyncPhonebook -> onSyncPhoneBook(result)
-            is GeneralResult.SyncStatus -> onSyncStatus(result)
             is GeneralResult.ChangeToNextAccount -> onChangeToNextAccount(result)
+            is GeneralResult.SyncBegin -> onSyncBegin(result)
         }
     }
 
     private val dataSourceListener = { result: SettingsResult ->
         when (result) {
             is SettingsResult.ResetPassword -> onResetPassword(result)
-            is SettingsResult.SyncBegin -> onSyncBegin(result)
         }
     }
 
@@ -166,15 +165,12 @@ class SettingsController(
         }
 
         override fun onResendDeviceLinkAuth() {
-            dataSource.submitRequest(SettingsRequest.SyncBegin())
+
         }
 
         override fun onSyncMailbox() {
-            scene.showGeneralDialogConfirmation(DialogData.DialogConfirmationData(
-                        title = UIMessage(R.string.sync_confirmation_dialog_title),
-                        message = listOf(UIMessage(R.string.sync_confirmation_dialog_message)),
-                        type = DialogType.ManualSyncConfirmation()
-                ))
+            scene.syncIsLoading(true)
+            generalDataSource.submitRequest(GeneralRequest.SyncBegin())
         }
 
         override fun onGeneralCancelButtonPressed(result: DialogResult) {
@@ -185,11 +181,6 @@ class SettingsController(
             when(result){
                 is DialogResult.DialogConfirmation -> {
                     when(result.type){
-                        is DialogType.ManualSyncConfirmation -> {
-                            scene.showSyncBeginDialog()
-                            dataSource.submitRequest(SettingsRequest.SyncBegin())
-                            model.isWaitingForSync = true
-                        }
                         is DialogType.SwitchAccount -> {
                             generalDataSource.submitRequest(GeneralRequest.ChangeToNextAccount())
                         }
@@ -368,20 +359,6 @@ class SettingsController(
         }
     }
 
-    private fun onSyncBegin(result: SettingsResult.SyncBegin){
-        when(result) {
-            is SettingsResult.SyncBegin.Success -> {
-                scene.enableSyncBeginResendButton()
-                generalDataSource.submitRequest(GeneralRequest.SyncStatus())
-            }
-            is SettingsResult.SyncBegin.Failure -> {
-                scene.dismissSyncBeginDialog()
-                model.isWaitingForSync = false
-                scene.showMessage(result.message)
-            }
-        }
-    }
-
     private fun onResetPassword(result: SettingsResult.ResetPassword){
         when(result) {
             is SettingsResult.ResetPassword.Success -> {
@@ -393,28 +370,14 @@ class SettingsController(
         }
     }
 
-    private fun onSyncStatus(result: GeneralResult.SyncStatus) {
-        if(model.isWaitingForSync) {
-            when (result) {
-                is GeneralResult.SyncStatus.Success -> {
-                    model.isWaitingForSync = false
-                    model.retryTimeLinkStatus = 0
-                    host.goToScene(SyncingParams(activeAccount.userEmail, result.syncStatusData.authorizerId,
-                            result.syncStatusData.randomId, result.syncStatusData.authorizerType,
-                            result.syncStatusData.authorizerName), true)
-                }
-                is GeneralResult.SyncStatus.Waiting -> {
-                    host.postDelay(Runnable {
-                        if (model.retryTimeLinkStatus < RETRY_TIMES_DEFAULT) {
-                            generalDataSource.submitRequest(GeneralRequest.SyncStatus())
-                            model.retryTimeLinkStatus++
-                        }
-                    }, RETRY_TIME_DEFAULT)
-                }
-                is GeneralResult.SyncStatus.Denied -> {
-                    scene.syncBeginDialogDenied()
-                    model.retryTimeLinkStatus = 0
-                }
+    private fun onSyncBegin(result: GeneralResult.SyncBegin){
+        scene.syncIsLoading(false)
+        when(result) {
+            is GeneralResult.SyncBegin.Success -> {
+                host.goToScene(SyncingParams(), true)
+            }
+            is GeneralResult.SyncBegin.Failure -> {
+                scene.showMessage(result.message)
             }
         }
     }
@@ -482,30 +445,17 @@ class SettingsController(
         }
 
         override fun onSyncBeginRequest(trustedDeviceInfo: DeviceInfo.TrustedDeviceInfo) {
-            if (!model.isWaitingForSync){
-                host.runOnUiThread(Runnable {
-                    scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
-                })
-            }
+            host.runOnUiThread(Runnable {
+                scene.showSyncDeviceAuthConfirmation(trustedDeviceInfo)
+            })
         }
 
         override fun onSyncRequestAccept(syncStatusData: SyncStatusData) {
-            if(model.isWaitingForSync){
-                model.isWaitingForSync = false
-                host.getHandler()?.removeCallbacks(null)
-                host.goToScene(SyncingParams(activeAccount.userEmail, syncStatusData.authorizerId,
-                        syncStatusData.randomId, syncStatusData.authorizerType,
-                        syncStatusData.authorizerName), true)
-            }
+
         }
 
         override fun onSyncRequestDeny() {
-            if(model.isWaitingForSync){
-                model.isWaitingForSync = false
-                host.runOnUiThread(Runnable {
-                    scene.syncBeginDialogDenied()
-                })
-            }
+
         }
 
         override fun onDeviceDataUploaded(key: String, dataAddress: String, authorizerId: Int) {
@@ -556,9 +506,4 @@ class SettingsController(
             scene.showMessage(uiMessage)
         }
     }
-    companion object {
-        const val RETRY_TIME_DEFAULT = 5000L
-        const val RETRY_TIMES_DEFAULT = 12
-    }
-
 }

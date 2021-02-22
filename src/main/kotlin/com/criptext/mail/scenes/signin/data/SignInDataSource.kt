@@ -47,6 +47,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     customDomainDao = db.customDomainDao(),
                     isMultiple = params.isMultiple,
                     messagingInstance = MessagingInstance.Default(),
+                    tempToken = params.tempToken,
                     publishFn = { result ->
                         flushResults(result)
                     })
@@ -78,6 +79,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     accountDao = accountDao,
                     isMultiple = params.isMultiple,
                     messagingInstance = MessagingInstance.Default(),
+                    needToRemoveDevices = params.needToRemoveDevices,
                     publishFn = { result ->
                         flushResults(result)
                     }
@@ -140,7 +142,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     }
             )
             is SignInRequest.FindDevices -> GetDevicesWorker(
-                    userData = params.userData,
+                    temporalToken = params.temporalJwt,
                     httpClient = httpClient,
                     publishFn = { result ->
                         flushResults(result)

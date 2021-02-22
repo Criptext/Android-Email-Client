@@ -39,15 +39,15 @@
         android:id="@+id/restore_button"
         android:layout_width="220dp"
         android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:layout_gravity="center_horizontal"
         android:background="@drawable/btn_welcome_tour"
-        android:textColor="@drawable/btn_sign_in"
-        android:textAllCaps="false"
+        android:padding="10dp"
         android:text="@string/restore_backup_dialog_button"
-        android:textSize="12sp"
-        android:padding="10dp"/>
+        android:textAllCaps="false"
+        android:textColor="@drawable/btn_sign_in"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/restore_local_button"

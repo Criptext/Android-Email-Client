@@ -7,7 +7,6 @@ import com.criptext.mail.api.HttpErrorHandlingHelper
 import com.criptext.mail.api.ServerErrorException
 import com.criptext.mail.bgworker.BackgroundWorker
 import com.criptext.mail.bgworker.ProgressReporter
-import com.criptext.mail.db.AccountTypes
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.SignInLocalDB
 import com.criptext.mail.db.dao.AccountDao
@@ -39,6 +38,7 @@ class AuthenticateUserWorker(
         signUpDao: SignUpDao,
         httpClient: HttpClient,
         private val isMultiple: Boolean,
+        private val tempToken: String?,
         private val accountDao: AccountDao,
         private val aliasDao: AliasDao,
         private val customDomainDao: CustomDomainDao,
@@ -68,7 +68,9 @@ class AuthenticateUserWorker(
     private fun authenticateUser(): String {
         val responseString = apiClient.authenticateUser(userData).body
         keyValueStorage.putString(KeyValueStorage.StringKey.SignInSession, responseString)
-        addressesJsonArray = JSONObject(responseString).getJSONArray("addresses")
+        val json = JSONObject(responseString)
+        addressesJsonArray = if(json.has("addresses")) json.getJSONArray("addresses")
+        else JSONArray()
         return responseString
     }
 
@@ -99,8 +101,15 @@ class AuthenticateUserWorker(
     }
 
     private fun signInOperation(): Result<SignInSession, Exception> =
-        Result.of { getSignInSession() }
-                .mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
+        Result.of {
+            if(db.getAccount(userData.username, userData.domain)?.isLoggedIn == true)
+                throw AlreadyLoggedException()
+            val session = getSignInSession()
+            if((session.hasTwoFA || session.needToRemoveDevices) && tempToken == null){
+                throw LoginNeededAction(session.hasTwoFA, session.needToRemoveDevices, session.token)
+            }
+            session
+        }.mapError(HttpErrorHandlingHelper.httpExceptionsToNetworkExceptions)
 
     private val signalRegistrationOperation
             : (SignInSession) ->
@@ -130,7 +139,7 @@ class AuthenticateUserWorker(
         Result.of {
             val postKeyBundleStep = Runnable {
                 val response = apiClient.postKeybundle(bundle = registrationBundles.uploadBundle,
-                        jwt = account.jwt)
+                        jwt = tempToken ?: account.jwt)
                 val json = JSONObject(response.body)
                 account.jwt = json.getString("token")
                 account.refreshToken = json.getString("refreshToken")
@@ -162,7 +171,8 @@ class AuthenticateUserWorker(
                 keyValueStorage.remove(listOf(KeyValueStorage.StringKey.SignInSession))
                 SignInResult.AuthenticateUser.Failure(
                         message = createErrorMessage(result.error),
-                        exception = result.error)
+                        exception = result.error
+                )
             }
         }
     }
@@ -173,6 +183,8 @@ class AuthenticateUserWorker(
 
     private val createErrorMessage: (ex: Exception) -> UIMessage = { ex ->
         when (ex) {
+            is AlreadyLoggedException ->
+                UIMessage(resId = R.string.user_already_logged_in)
             is NetworkErrorException ->
                 UIMessage(resId = R.string.login_network_error_exception)
             is JSONException ->
@@ -201,4 +213,6 @@ class AuthenticateUserWorker(
             else -> UIMessage(resId = R.string.login_fail_try_again_error_with_exception, args = arrayOf(ex.toString()))
         }
     }
+    class LoginNeededAction(val hastwoFA: Boolean, val hasTooManyDevices: Boolean, val ephemeralJwt: String): Exception()
+    class AlreadyLoggedException(): Exception()
 }

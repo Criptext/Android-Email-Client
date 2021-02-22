@@ -9,7 +9,6 @@ import com.criptext.mail.scenes.settings.devices.data.DeviceItem
 import com.criptext.mail.scenes.signin.data.SignInResult
 import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.scenes.signup.data.SignUpAPIClient
-import com.criptext.mail.utils.ServerCodes
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap
@@ -17,7 +16,7 @@ import org.json.JSONObject
 
 
 class GetDevicesWorker(val httpClient: HttpClient,
-                       private val userData: UserData,
+                       private val temporalToken: String,
                        override val publishFn: (SignInResult) -> Unit)
     : BackgroundWorker<SignInResult.FindDevices> {
 
@@ -30,16 +29,16 @@ class GetDevicesWorker(val httpClient: HttpClient,
     }
 
     override fun work(reporter: ProgressReporter<SignInResult.FindDevices>): SignInResult.FindDevices? {
-        val result = Result.of { apiClient.postFindDevices(userData.username, userData.domain, userData.password) }
+        val result = Result.of { apiClient.getDeviceList(temporalToken) }
             .flatMap { Result.of {
                 val jsonResponse = JSONObject(it.body)
-                Pair(jsonResponse.getString("token"), DeviceItem.fromJSON(jsonResponse.getJSONArray("devices").toString()))
+                DeviceItem.fromJSON(jsonResponse.getJSONArray("devices").toString())
             }
         }
 
         return when (result) {
             is Result.Success ->{
-                SignInResult.FindDevices.Success(result.value.first, ArrayList(result.value.second))
+                SignInResult.FindDevices.Success(ArrayList(result.value))
             }
             is Result.Failure -> catchException(result.error)
             }

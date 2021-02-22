@@ -125,7 +125,6 @@ interface MailboxScene{
     fun showPreparingFileDialog()
     fun dismissPreparingFileDialog()
     fun hideComposer(shouldHide: Boolean)
-    fun checkRating(storage: KeyValueStorage)
     fun showRecommendBackupDialog()
     fun scheduleCloudBackupJob(period: Int, accountId: Long, useWifiOnly: Boolean)
     fun removeFromScheduleCloudBackupJob(accountId: Long)
@@ -424,10 +423,6 @@ interface MailboxScene{
                     credential)
                     .setApplicationName("Criptext Secure Email")
                     .build()
-        }
-
-        override fun checkRating(storage: KeyValueStorage) {
-            AppRater.appLaunched(context, storage)
         }
 
         override fun showRecommendBackupDialog() {

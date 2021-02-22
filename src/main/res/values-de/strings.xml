@@ -33,7 +33,7 @@
   <string name="link_auth_message">%1$s</string>
   <string name="establishing">Sichere Verbindung herstellen</string>
   <string name="cancel_sync">Synchronisation abbrechen</string>
-  <string name="device_ready">Gerät bereit</string>
+  <string name="device_ready">Gerät bereit! 😎</string>
   <string name="preparing_mailbox">Postfach verschlüsseln</string>
   <string name="getting_keys">Abrufen von Schlüsseln</string>
   <string name="uploading_mailbox">Postfach wird hochgeladen</string>
@@ -261,9 +261,8 @@ schwarze Liste gesetzt wird</string>
 
         Wollen Sie fortfahren?]]></string>
   <string name="sign_in_warning_dialog_title">Anmeldungswarnung</string>
-  <string name="password_warning_dialog_title">Warnung ⚠️</string>
-  <string name="password_warning_dialog_message">Wenn Sie sich mit Ihrem Passwort anmelden, wird der 
- <b> Postfachverlauf von anderen Geräten auf diesem Gerät nicht verfügbar sein </b> . Wollen Sie fortfahren?</string>
+  <string name="password_warning_dialog_title">Sign In Warning️</string>
+  <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
   <string name="slide_1_title">
     <b>Willkommen!</b>
   </string>
@@ -555,7 +554,8 @@ Möchten Sie sie verwerfen und fortfahren?</string>
     <u>Wiederherstellung überspringen</u>
   </string>
   <string name="restore_backup_dialog_button">Wiederherstellen vom Laufwerk</string>
-  <string name="restore_backup_title">Sicherung gefunden</string>
+  <string name="restore_backup_title">Sicherung gefunden! 🙌</string>
+  <string name="restore_backup_sub_title">Your data is ready to be imported</string>
   <string name="restore_backup_title_encrypted">Verschlüsselte Sicherung gefunden</string>
   <string name="restore_backup_last_modified">Letzte Sicherung: %1$s</string>
   <string name="restore_backup_size">Größe: %1$d MB</string>
@@ -607,7 +607,8 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="sign_in_remove_dialog_title">Geräte entfernen </string>
   <string name="sign_in_remove_error_dialog_title">Abgelaufene Sitzung</string>
   <string name="sign_in_remove_error_dialog_message">Es tut uns leid, aber Ihre Sitzung ist abgelaufen. Dies bedeutet, dass Sie die für Inaktivität zulässige Zeit überschritten haben. Bitte versuchen Sie es erneut.</string>
-  <string name="contact_support">Haben Sie Probleme? <b>Kontaktieren Sie den Support</b></string>
+  <string name="contact_support">Haben Sie Probleme? </string>
+  <string name="contact_support_click"><b>Kontaktieren Sie den Support</b></string>
   <string name="sync_screen_message">Verlassen Sie die App nicht und schalten Sie Ihren Bildschirm nicht aus, während dieser Prozess läuft.</string>
   <string name="domain_validation_error">Es ist nicht gelungen, die Kontaktedomänenüberprüfung abzurufen</string>
   <string name="contact_db_get_error">Es ist nicht gelungen, Kontakte aus der lokalen Datenbank wiederherzustellen.</string>
@@ -812,4 +813,27 @@ Möchten Sie sie verwerfen und fortfahren?</string>
   <string name="dismiss_notification">Dismiss</string>
   <string name="fail_to_send_notification_message">Email to %1$s couldn\'t be sent</string>
   <string name="fail_to_send_notification_title">Fail to Send</string>
+  <string name="login_title">Ah, you\'re back!</string>
+  <string name="login_sub_title">It\'s not the same without you</string>
+  <string name="login_reset_password_title">Enter your Criptext Email</string>
+  <string name="login_reset_password_sub_title">You\'ll get an email with a link to reset your password</string>
+  <string name="login_reset_password_hint">Criptext Email</string>
+  <string name="login_reset_password_button">Reset Password</string>
+  <string name="login_reset_password_button_time">Reset Password (%1$d)</string>
+  <string name="login_reset_link_title">Reset link sent to your recovery email 📩</string>
+  <string name="login_reset_link_message">The link will expire in 30 min</string>
+  <string name="login_remove_devices_title">You\'ve reached your device limit 😰</string>
+  <string name="login_remove_devices_sub_title">Logout from one device to make room for this one.</string>
+  <string name="login_two_fa_title">Two-Factor\nAuthentication</string>
+  <string name="login_two_fa_message_1">Enter the code we sent to:</string>
+  <string name="login_two_fa_resend_1">Didn\'t get the code? </string>
+  <string name="login_two_fa_resend_2">Resend it</string>
+  <string name="login_remove_devices_success">Super cool! 👍</string>
+  <string name="import_mailbox_title">Where will you import your emails from?</string>
+  <string name="import_mailbox_sub_title">Select a source to import your emails and account info</string>
+  <string name="import_mailbox_sync_device">From other device  🖥</string>
+  <string name="import_mailbox_from_cloud">From Cloud  ☁️</string>
+  <string name="import_mailbox_from_file">From a Backup File  📁</string>
+  <string name="import_mailbox_import_title">Importing Mailbox</string>
+  <string name="import_mailbox_import_sub_title">Don\'t leave the app or turn off the screen</string>
 </resources>

@@ -204,9 +204,14 @@ sealed class GeneralResult {
 
     sealed class LinkData: GeneralResult() {
         class Success: LinkData()
-        data class Progress(val message: UIMessage, val progress: Int): LinkData()
+        data class Progress(val message: UIMessage, val progress: Int, val drawable: Int? = null ): LinkData()
         data class Failure(val message: UIMessage,
                            val exception: Exception): LinkData()
+    }
+
+    sealed class SyncBegin: GeneralResult() {
+        class Success: SyncBegin()
+        data class Failure(val message: UIMessage): SyncBegin()
     }
 
     sealed class SyncStatus: GeneralResult() {

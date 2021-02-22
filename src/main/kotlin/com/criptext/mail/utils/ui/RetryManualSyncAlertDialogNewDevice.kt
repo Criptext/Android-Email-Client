@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.criptext.mail.R
-import com.criptext.mail.scenes.settings.syncing.SyncingUIObserver
+import com.criptext.mail.scenes.syncing.SyncingUIObserver
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 
 class RetryManualSyncAlertDialogNewDevice(val context: Context) {

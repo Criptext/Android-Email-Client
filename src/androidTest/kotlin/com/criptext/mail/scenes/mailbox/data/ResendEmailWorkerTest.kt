@@ -54,7 +54,7 @@ class ResendEmailWorkerTest {
             domain = Contact.mainDomain, type = AccountTypes.STANDARD, blockRemoteContent = true,
             defaultAddress = null)
     private val bobContact = Contact(email = "bob@criptext.com", name = "Bob", id = 1,
-            isTrusted = false, score = 0, spamScore = 0)
+            isTrusted = false, score = 0)
     @Before
     fun setup() {
         db = TestDatabase.getInstance(mActivityRule.activity)

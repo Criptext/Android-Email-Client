@@ -1,69 +1,19 @@
 package com.criptext.mail.utils.apputils
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.view.View
-import com.criptext.mail.R
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.utils.UIMessage
-import com.criptext.mail.utils.getLocalizedUIMessage
-import com.criptext.mail.utils.ui.GeneralDialogConfirmation
-import com.criptext.mail.utils.ui.data.DialogData
-import com.criptext.mail.utils.ui.data.DialogType
+import com.criptext.mail.BaseActivity
+import com.criptext.mail.IHostActivity
 
 
 object AppRater {
-    private const val APP_NAME = "com.criptext.mail"// Package Name
-
-    private const val DAYS_UNTIL_PROMPT = 3//Min number of days
-    private const val LAUNCHES_UNTIL_PROMPT = 5//Min number of launches
-
-    fun appLaunched(ctx: Context, storage: KeyValueStorage) {
-        if (storage.getBool(KeyValueStorage.StringKey.RateDontShowAgain, false)) {
-            return
-        }
-
-        val launchCount = storage.getLong(KeyValueStorage.StringKey.RateLaunchCount, 0) + 1
-        storage.putLong(KeyValueStorage.StringKey.RateLaunchCount, launchCount)
-
-        // Get date of first launch
-        var dateFirstLaunch = storage.getLong(KeyValueStorage.StringKey.RateDateFirstLaunch, 0L)
-        if (dateFirstLaunch == 0L) {
-            dateFirstLaunch = System.currentTimeMillis()
-            storage.putLong(KeyValueStorage.StringKey.RateDateFirstLaunch, dateFirstLaunch)
-        }
-
-        // Wait at least n days before opening
-        if (launchCount >= LAUNCHES_UNTIL_PROMPT) {
-            if (System.currentTimeMillis() >= dateFirstLaunch + DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000) {
-                showRateDialog(ctx, storage)
+    fun startReviewFlow(host: IHostActivity){
+        val manager = host.getReviewManager() ?: return
+        val request = manager.requestReviewFlow()
+        request.addOnCompleteListener {
+            if (it.isSuccessful) {
+                // We got the ReviewInfo object
+                val reviewInfo = it.result
+                manager.launchReviewFlow(host as BaseActivity, reviewInfo)
             }
-        }
-    }
-
-    private fun showRateDialog(mContext: Context, storage: KeyValueStorage) {
-        val dialogData = DialogData.DialogConfirmationData(
-                title = UIMessage(R.string.rate_us_title),
-                message = listOf(UIMessage(R.string.rate_us_message)),
-                type = DialogType.Message()
-        )
-        val generalDialogConfirmation = GeneralDialogConfirmation(mContext, dialogData)
-        generalDialogConfirmation.showDialog(null)
-        generalDialogConfirmation.btnOk.text = mContext.getLocalizedUIMessage(UIMessage(R.string.rate_us))
-        generalDialogConfirmation.btnCancel.text = mContext.getLocalizedUIMessage(UIMessage(R.string.rate_remind_later))
-        generalDialogConfirmation.btnNoThanks.visibility = View.VISIBLE
-        generalDialogConfirmation.btnOk.setOnClickListener {
-            mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$APP_NAME")))
-            storage.putBool(KeyValueStorage.StringKey.RateDontShowAgain, true)
-            generalDialogConfirmation.dismissDialog()
-        }
-        generalDialogConfirmation.btnNoThanks.setOnClickListener {
-            storage.putBool(KeyValueStorage.StringKey.RateDontShowAgain, true)
-            generalDialogConfirmation.dismissDialog()
-        }
-        generalDialogConfirmation.btnCancel.setOnClickListener {
-            generalDialogConfirmation.dismissDialog()
         }
     }
 }

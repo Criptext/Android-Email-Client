@@ -30,11 +30,10 @@ import com.criptext.mail.utils.eventhelper.ParsedEvent
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
-import com.criptext.mail.utils.mailtemplates.CriptextMailTemplate
 import com.criptext.mail.utils.ui.data.DialogData
 import com.criptext.mail.utils.ui.data.DialogResult
 import com.criptext.mail.utils.ui.data.DialogType
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
@@ -210,7 +209,7 @@ class ProfileController(
                 host.goToScene(
                         params = MailboxParams(),
                         activityMessage = null,
-                        animationData = TransitionAnimationData(
+                        animationData = ActivityTransitionAnimationData(
                                 forceAnimation = true,
                                 enterAnim = 0,
                                 exitAnim = R.anim.slide_out_right
@@ -222,7 +221,7 @@ class ProfileController(
                 host.goToScene(
                         params = SettingsParams(),
                         activityMessage = null,
-                        animationData = TransitionAnimationData(
+                        animationData = ActivityTransitionAnimationData(
                                 forceAnimation = true,
                                 enterAnim = 0,
                                 exitAnim = R.anim.slide_out_right

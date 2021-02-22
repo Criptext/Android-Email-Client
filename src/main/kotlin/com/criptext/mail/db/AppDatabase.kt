@@ -33,7 +33,7 @@ import java.util.*
                      , CRFile::class, FileKey::class, Open::class, FeedItem::class, CRPreKey::class, Contact::class
                      , CRSessionRecord::class, CRIdentityKey::class, CRSignedPreKey::class, EmailExternalSession::class
                      , PendingEvent::class, AccountContact::class, AntiPushMap::class, CustomDomain::class, Alias::class],
-        version = 21,
+        version = 22,
         exportSchema = false)
 @TypeConverters(
         DateConverter::class,
@@ -78,7 +78,8 @@ abstract class AppDatabase : RoomDatabase() {
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
                                 MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
                                 MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17,
-                                MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21)
+                                MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21,
+                                MIGRATION_21_22)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -606,6 +607,27 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_20_21: Migration = object : Migration(20, 21) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE email ADD COLUMN isNewsletter INTEGER""")
+            }
+        }
+
+        val MIGRATION_21_22: Migration = object : Migration(21, 22) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""CREATE TABLE IF NOT EXISTS  new_contact (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                        email TEXT NOT NULL,
+                                        name TEXT NOT NULL,
+                                        isTrusted INTEGER NOT NULL,
+                                        score INTEGER NOT NULL)""")
+
+                database.execSQL(
+                        """INSERT INTO new_contact (id, email, name, isTrusted, score)
+                                SELECT id, email, name, isTrusted, score
+                                FROM contact""")
+
+                database.execSQL("DROP TABLE contact")
+                database.execSQL("ALTER TABLE new_contact RENAME TO contact")
+
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_contact_email ON contact (email)")
             }
         }
     }

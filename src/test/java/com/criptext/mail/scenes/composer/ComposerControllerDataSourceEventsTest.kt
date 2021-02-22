@@ -48,7 +48,7 @@ class ComposerControllerDataSourceEventsTest: ComposerControllerTest() {
     private val mockedComposerInputData =
         ComposerInputData(
             to = listOf(Contact(id = 0, email = "mayer@jigl.com", name = "Mayer Mizrachi", isTrusted = true,
-                    score = 0, spamScore = 0)),
+                    score = 0)),
                 cc = emptyList(), bcc = emptyList(), subject = "test email",
                 body = "this is a test", attachments = null, fileKey = null, fromAddress = "")
 

@@ -14,6 +14,7 @@ import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupRequest
 import com.criptext.mail.scenes.restorebackup.data.RestoreBackupResult
+import com.criptext.mail.scenes.restorebackup.holders.RestoreBackupLayoutState
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.PinLockUtils
@@ -21,7 +22,7 @@ import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.generaldatasource.data.GeneralResult
 import com.criptext.mail.utils.generaldatasource.data.UserDataWriter
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.google.api.client.googleapis.media.MediaHttpDownloader
@@ -75,15 +76,22 @@ class RestoreBackupController(
 
     private val uiObserver = object: RestoreBackupUIObserver{
         override fun onLocalProgressFinished() {
-            host.goToScene(
-                    params = MailboxParams(),
-                    activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
-                    animationData = TransitionAnimationData(
-                            forceAnimation = true,
-                            enterAnim = 0,
-                            exitAnim = 0
-                    ),
-                    keep = false)
+            host.postDelay(Runnable {
+                host.goToScene(
+                        params = MailboxParams(),
+                        activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
+                        animationData = ActivityTransitionAnimationData(
+                                forceAnimation = true,
+                                enterAnim = 0,
+                                exitAnim = 0
+                        ),
+                        keep = false
+                )
+            }, 1000L)
+        }
+
+        override fun onBackPressed() {
+            this@RestoreBackupController.onBackPressed()
         }
 
         override fun onPasswordChangedListener(password: String) {
@@ -97,9 +105,18 @@ class RestoreBackupController(
         }
 
         override fun onRetryRestore() {
-            scene.setProgress(0)
-            scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
-            scene.enableRestoreButton(true)
+            when(model.state){
+                is RestoreBackupLayoutState.NotFound -> {
+                    model.state = RestoreBackupLayoutState.Found()
+                    scene.attachView(model, this)
+                    scene.enableRestoreButton(true)
+                }
+                is RestoreBackupLayoutState.Error -> {
+                    model.state = RestoreBackupLayoutState.Found()
+                    scene.attachView(model, this)
+                    scene.enableRestoreButton(true)
+                }
+            }
         }
 
         override fun onChangeDriveAccount() {
@@ -112,11 +129,14 @@ class RestoreBackupController(
         }
 
         override fun onRestore() {
-            scene.showProgressLayout(model.isLocal)
+            model.state = RestoreBackupLayoutState.Restoring()
+            scene.attachView(model, this)
             if(!model.isLocal) scene.setProgress(20)
-            else scene.setProgress(0)
+            else scene.setProgress(10)
             if(model.backupFilePath.isNotEmpty()){
-                generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
+                host.runOnUiThread(Runnable {
+                    generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
+                })
             }else{
                 dataSource.submitRequest(RestoreBackupRequest.DownloadBackup(model.mDriveServiceHelper!!, progressListener))
             }
@@ -141,7 +161,7 @@ class RestoreBackupController(
             host.goToScene(
                     params = MailboxParams(),
                     activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.restore_backup_no_account)),
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = 0,
                             exitAnim = 0
@@ -195,20 +215,24 @@ class RestoreBackupController(
         val file = File(filePath)
         if(file.extension !in listOf(UserDataWriter.FILE_ENCRYPTED_EXTENSION, UserDataWriter.FILE_UNENCRYPTED_EXTENSION,
                         UserDataWriter.FILE_GZIP_EXTENSION, UserDataWriter.FILE_TXT_EXTENSION)){
-            scene.showMessage(UIMessage(R.string.restore_backup_bad_file))
-            scene.showBackupNotFoundLayout(model.isLocal)
+            model.state = RestoreBackupLayoutState.Error()
+            scene.attachView(model, uiObserver, UIMessage(R.string.restore_backup_bad_file))
         } else {
             model.backupFilePath = filePath
             model.lastModified = file.lastModified()
             model.backupSize = file.length()
             model.isFileEncrypted = file.extension == UserDataWriter.FILE_ENCRYPTED_EXTENSION
-            scene.enableRestoreButton(!model.isFileEncrypted)
+
             if(model.isLocal && !model.isFileEncrypted) {
-                scene.showProgressLayout(model.isLocal)
+                model.state = RestoreBackupLayoutState.Restoring()
+                scene.attachView(model, uiObserver)
                 scene.setProgress(0)
-                generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
+                host.runOnUiThread(Runnable {
+                    generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase, model.isLocal))
+                })
             } else {
-                scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
+                model.state = RestoreBackupLayoutState.Found()
+                scene.attachView(model, uiObserver)
                 scene.updateFileData(model.backupSize, model.lastModified, model.isLocal)
             }
         }
@@ -299,11 +323,13 @@ class RestoreBackupController(
                 model.backupSize = result.fileSize
                 model.isFileEncrypted = result.isEncrypted
                 scene.enableRestoreButton(!result.isEncrypted)
-                scene.showBackupFoundLayout(model.isFileEncrypted, model.isLocal)
+                model.state = RestoreBackupLayoutState.Found()
+                scene.attachView(model, uiObserver)
                 scene.updateFileData(model.backupSize, model.lastModified, model.isLocal)
             }
             is RestoreBackupResult.CheckForBackup.Failure -> {
-                scene.showBackupNotFoundLayout(model.isLocal)
+                model.state = RestoreBackupLayoutState.NotFound()
+                scene.attachView(model, uiObserver)
             }
         }
     }
@@ -314,13 +340,15 @@ class RestoreBackupController(
                 model.backupFilePath = result.filePath
                 if(!model.hasPathReady){
                     model.hasPathReady = true
-                    generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                    host.runOnUiThread(Runnable {
+                        generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                    })
                 }
 
             }
             is RestoreBackupResult.DownloadBackup.Failure -> {
-                scene.showBackupRetryLayout(model.isLocal)
-                scene.showMessage(result.message)
+                model.state = RestoreBackupLayoutState.Error()
+                scene.attachView(model, uiObserver, result.message)
             }
         }
     }
@@ -331,28 +359,36 @@ class RestoreBackupController(
                 if(model.isLocal) {
                     scene.localPercentageAnimation()
                 } else {
-                    host.goToScene(
-                            params = MailboxParams(),
-                            activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
-                            animationData = TransitionAnimationData(
-                                    forceAnimation = true,
-                                    enterAnim = 0,
-                                    exitAnim = 0
-                            ),
-                            keep = false
-                    )
+                    scene.setProgress(100) {
+                        host.postDelay(Runnable {
+                            host.goToScene(
+                                    params = MailboxParams(),
+                                    activityMessage = ActivityMessage.ShowUIMessage(UIMessage(R.string.sync_complete)),
+                                    animationData = ActivityTransitionAnimationData(
+                                            forceAnimation = true,
+                                            enterAnim = 0,
+                                            exitAnim = 0
+                                    ),
+                                    keep = false
+                            )
+                        }, 1000L)
+                    }
                 }
             }
             is GeneralResult.RestoreMailbox.Progress -> scene.setProgress(result.progress)
             is GeneralResult.RestoreMailbox.SyncError -> {
                 scene.showMessage(result.message)
-                if(model.isLocal)
-                    scene.showBackupNotFoundLayout(model.isLocal)
-                else
-                    scene.showBackupRetryLayout(model.isLocal)
+                if(model.isLocal) {
+                    model.state = RestoreBackupLayoutState.NotFound()
+                    scene.attachView(model, uiObserver)
+                } else {
+                    model.state = RestoreBackupLayoutState.Error()
+                    scene.attachView(model, uiObserver)
+                }
             }
             is GeneralResult.RestoreMailbox.Failure -> {
-                scene.showBackupRetryLayout(model.isLocal)
+                model.state = RestoreBackupLayoutState.Error()
+                scene.attachView(model, uiObserver)
                 model.passphrase = null
                 scene.enableRestoreButton(false)
                 scene.showMessage(result.message)
@@ -384,7 +420,10 @@ class RestoreBackupController(
                 MediaHttpDownloader.DownloadState.MEDIA_COMPLETE -> {
                     if(!model.hasPathReady && model.backupFilePath.isNotEmpty()) {
                         model.hasPathReady = true
-                        generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                        host.runOnUiThread(Runnable {
+                            generalDataSource.submitRequest(GeneralRequest.RestoreMailbox(model.backupFilePath, model.passphrase))
+                        })
+
                         host.runOnUiThread(Runnable {
                             scene.setProgress(60)
                         })
@@ -412,6 +451,7 @@ class RestoreBackupController(
     }
 
     override fun onBackPressed(): Boolean {
+        host.finishScene()
         return false
     }
 

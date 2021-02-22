@@ -11,7 +11,6 @@ import com.criptext.mail.ExternalActivityParams
 import com.criptext.mail.IHostActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.Hosts
-import com.criptext.mail.api.models.DeviceInfo
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
@@ -19,12 +18,11 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.search.data.SearchResult
 import com.criptext.mail.scenes.webview.ui.WebViewUIObserver
-import com.criptext.mail.utils.AccountUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.utils.generaldatasource.data.GeneralRequest
 import com.criptext.mail.utils.ui.data.DialogResult
-import com.criptext.mail.utils.ui.data.TransitionAnimationData
+import com.criptext.mail.utils.ui.data.ActivityTransitionAnimationData
 
 class WebViewSceneController(private val scene: WebViewScene,
                              private val model: WebViewSceneModel,
@@ -113,7 +111,7 @@ class WebViewSceneController(private val scene: WebViewScene,
                     deletePastIntents = true,
                     keep = false,
                     activityMessage = null,
-                    animationData = TransitionAnimationData(
+                    animationData = ActivityTransitionAnimationData(
                             forceAnimation = true,
                             enterAnim = 0,
                             exitAnim = R.anim.slide_out_right

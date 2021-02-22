@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.criptext.mail.R
 import com.criptext.mail.scenes.settings.DevicesListItemListener
 import com.criptext.mail.scenes.signin.data.SignInResult
+import com.criptext.mail.scenes.signin.data.UserData
 import com.criptext.mail.scenes.signin.holders.*
 import com.criptext.mail.scenes.signup.holders.KeyGenerationHolder
 import com.criptext.mail.utils.UIMessage
@@ -25,32 +26,21 @@ import com.criptext.mail.validation.ProgressButtonState
 interface SignInScene {
     fun resetInput()
     fun showError(message: UIMessage)
-    fun drawInputError(error: UIMessage)
+    fun drawInputError(error: UIMessage?)
     fun drawSuccess()
     fun initLayout(model: SignInSceneModel, signInUIObserver: SignInSceneController.SignInUIObserver,
                    devicesListItemListener: DevicesListItemListener? = null)
     fun showResetPasswordDialog(emailAddress: String)
-    fun showPasswordLoginDialog(
-            onPasswordLoginDialogListener: OnPasswordLoginDialogListener)
     fun setSubmitButtonState(state: ProgressButtonState)
-    fun showKeyGenerationHolder()
     fun toggleForgotPasswordClickable(isEnabled: Boolean)
     fun toggleResendClickable(isEnabled: Boolean)
-    fun startLinkSucceedAnimation()
-    fun setLinkProgress(message: UIMessage, progress: Int)
     fun showSyncRetryDialog(result: SignInResult)
-    fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String)
+    fun showSignInWarningDialog(oldAccountName: String, newUserData: UserData)
     fun showPasswordDialogError(message: UIMessage?)
     fun toggleChangePasswordButton(enable: Boolean)
     fun showDeviceCountRemaining(remaining: Int)
     fun showDeviceRemovalError()
-    fun showToolbarCount(checked: Int)
-    fun showRecoveryCode(message: UIMessage)
-    fun showRecoveryDialogError(message: UIMessage?)
-    fun toggleLoadRecoveryCode(load: Boolean)
-    fun dismissRecoveryCodeDialog()
     fun showGenericOkAlert(message: UIMessage)
-    fun updateMaxDevices(maxDevices: Int, currentDevicesSize: Int)
 
     var signInUIObserver: SignInSceneController.SignInUIObserver?
 
@@ -76,8 +66,6 @@ interface SignInScene {
                         onOkPress = { signInUIObserver?.onBackPressed() }
                 )
         )
-
-        private var recoveryCodeDialog: GeneralDialogWithInput? = null
 
         override var signInUIObserver: SignInSceneController.SignInUIObserver? = null
             set(value) {
@@ -111,18 +99,29 @@ interface SignInScene {
             removeAllViews()
             val state = model.state
             holder = when (state) {
-                is SignInLayoutState.Connection -> {
+                is SignInLayoutState.Start -> {
                     val newLayout = View.inflate(
                             view.context,
-                            R.layout.activity_connection, viewGroup)
-                    ConnectionHolder(newLayout, state.username, state.domain, state.authorizerType,signInUIObserver)
+                            R.layout.activity_start, viewGroup)
+                    SignInStartHolder(newLayout, state.firstTime, model.isMultiple)
                 }
-
-                is SignInLayoutState.InputPassword -> {
+                is SignInLayoutState.Login -> {
                     val newLayout = View.inflate(
                             view.context,
-                            R.layout.activity_password_login, viewGroup)
-                    PasswordLoginHolder(newLayout, state)
+                            R.layout.activity_signin_form, viewGroup)
+                    LoginHolder(newLayout, state, state.firstTime, model.isMultiple)
+                }
+                is SignInLayoutState.LoginValidation -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.holder_sign_in_two_fa, viewGroup)
+                    LoginValidationHolder(newLayout, state)
+                }
+                is SignInLayoutState.ForgotPassword -> {
+                    val newLayout = View.inflate(
+                            view.context,
+                            R.layout.holder_sign_in_reset_password, viewGroup)
+                    ForgotPasswordHolder(newLayout)
                 }
                 is SignInLayoutState.ChangePassword -> {
                     val newLayout = View.inflate(
@@ -130,35 +129,17 @@ interface SignInScene {
                             R.layout.activity_change_password_login, viewGroup)
                     ChangePasswordLoginHolder(newLayout, state)
                 }
-                is SignInLayoutState.LoginValidation -> {
-                    val newLayout = View.inflate(
-                            view.context,
-                            R.layout.activity_login_validation, viewGroup)
-                    LoginValidationHolder(newLayout, state)
-                }
                 is SignInLayoutState.DeniedValidation -> {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_denied_validation, viewGroup)
                     DeniedValidationHolder(newLayout)
                 }
-                is SignInLayoutState.Start -> {
-                    val newLayout = View.inflate(
-                            view.context,
-                            R.layout.activity_start, viewGroup)
-                    SignInStartHolder(newLayout, state.firstTime, model.isMultiple)
-                }
-                is SignInLayoutState.LoginUsername -> {
-                    val newLayout = View.inflate(
-                            view.context,
-                            R.layout.activity_signin_form, viewGroup)
-                    LoginUsernameHolder(newLayout, state.username, state.firstTime, model.isMultiple)
-                }
                 is SignInLayoutState.RemoveDevices -> {
                     val newLayout = View.inflate(
                             view.context,
                             R.layout.activity_sign_in_remove_devices, viewGroup)
-                    RemoveDevicesHolder(newLayout, state.username, state.domain, model, devicesListItemListener)
+                    RemoveDevicesHolder(newLayout, model, devicesListItemListener)
                 }
             }
             this.signInUIObserver = signInUIObserver
@@ -187,7 +168,7 @@ interface SignInScene {
         override fun resetInput() {
             val currentHolder = holder
             when (currentHolder) {
-                is PasswordLoginHolder -> currentHolder.resetInput()
+                is LoginHolder -> currentHolder.resetInput()
             }
         }
 
@@ -195,52 +176,41 @@ interface SignInScene {
             retrySyncDialog.showLinkDeviceAuthDialog(signInUIObserver, result)
         }
 
-        override fun showSignInWarningDialog(oldAccountName: String, newUserName: String, domain: String) {
-            signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserName, domain)
+        override fun showSignInWarningDialog(oldAccountName: String, newUserData: UserData) {
+            signInWarningDialog.showDialog(holder.uiObserver, oldAccountName, newUserData)
         }
 
         override fun setSubmitButtonState(state: ProgressButtonState) {
-            val currentHolder = holder
-            when (currentHolder) {
-                is PasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
-                is LoginUsernameHolder -> currentHolder.setSubmitButtonState(state)
+            when (val currentHolder = holder) {
+                is LoginHolder -> currentHolder.setSubmitButtonState(state)
                 is ChangePasswordLoginHolder -> currentHolder.setSubmitButtonState(state)
+                is LoginValidationHolder -> currentHolder.setSubmitButtonState(state)
+                is RemoveDevicesHolder -> currentHolder.setSubmitButtonState(state)
+                is ForgotPasswordHolder -> currentHolder.setSubmitButtonState(state)
             }
-        }
-
-        override fun showPasswordLoginDialog(onPasswordLoginDialogListener: OnPasswordLoginDialogListener) {
-            (holder as LoginValidationHolder).showPasswordLoginDialog(onPasswordLoginDialogListener)
         }
 
         override fun showResetPasswordDialog(emailAddress: String) {
             ForgotPasswordDialog(view.context, emailAddress).showForgotPasswordDialog()
         }
 
-        override fun drawInputError(error: UIMessage) {
+        override fun drawInputError(error: UIMessage?) {
             val currentHolder = holder
             when (currentHolder) {
-                is LoginUsernameHolder -> currentHolder.drawError(error)
+                is LoginHolder -> currentHolder.drawError(error)
+                is ForgotPasswordHolder -> currentHolder.drawError(error)
+                is LoginValidationHolder -> currentHolder.drawError(error)
             }
         }
 
         override fun toggleForgotPasswordClickable(isEnabled: Boolean) {
-            val currentHolder = holder as PasswordLoginHolder
+            val currentHolder = holder as ForgotPasswordHolder
             currentHolder.toggleForgotPasswordClickable(isEnabled)
         }
 
         override fun toggleResendClickable(isEnabled: Boolean) {
             val currentHolder = holder as LoginValidationHolder
             currentHolder.setEnableButtons(isEnabled)
-        }
-
-        override fun startLinkSucceedAnimation() {
-            val currentHolder = holder as? ConnectionHolder
-            currentHolder?.startSucceedAnimation(showMailboxScene)
-        }
-
-        override fun setLinkProgress(message: UIMessage, progress: Int) {
-            val currentHolder = holder as? ConnectionHolder
-            currentHolder?.setProgress(message, progress)
         }
 
         override fun showPasswordDialogError(message: UIMessage?) {
@@ -261,41 +231,6 @@ interface SignInScene {
             deviceExpirationWarning.showDialog()
         }
 
-        override fun updateMaxDevices(maxDevices: Int, currentDevicesSize: Int){
-            val currentHolder = holder as RemoveDevicesHolder
-            currentHolder.updateMaxDevices(maxDevices, currentDevicesSize)
-        }
-
-        override fun showToolbarCount(checked: Int) {
-            val currentHolder = holder as RemoveDevicesHolder
-            currentHolder.setToolbarCount(checked)
-        }
-
-        override fun showRecoveryCode(message: UIMessage) {
-            recoveryCodeDialog = GeneralDialogWithInput(view.context,
-                    DialogData.DialogDataForRecoveryCode(
-                            title = UIMessage(R.string.recovery_code_dialog_title),
-                            message = message,
-                            type = DialogType.RecoveryCode()
-                    )
-            )
-            recoveryCodeDialog?.showDialog(signInUIObserver)
-            recoveryCodeDialog?.editTextEmail?.setHint(R.string.recovery_code_dialog_hint)
-            recoveryCodeDialog?.editTextEmailLayout?.hint = view.context.getLocalizedUIMessage(UIMessage(R.string.recovery_code_dialog_hint))
-        }
-
-        override fun showRecoveryDialogError(message: UIMessage?) {
-            recoveryCodeDialog?.setEmailError(message)
-        }
-
-        override fun toggleLoadRecoveryCode(load: Boolean) {
-            recoveryCodeDialog?.toggleLoad(load)
-        }
-
-        override fun dismissRecoveryCodeDialog() {
-            recoveryCodeDialog?.dismiss()
-        }
-
         override fun showGenericOkAlert(message: UIMessage) {
             GeneralMessageOkDialog(view.context,
                     DialogData.DialogMessageData(
@@ -305,19 +240,6 @@ interface SignInScene {
                     )
             ).showDialog()
         }
-
-        override fun showKeyGenerationHolder() {
-            viewGroup.removeAllViews()
-            val keyGenerationLayout = View.inflate(
-                    view.context,
-                    R.layout.view_key_generation, viewGroup)
-            KeyGenerationHolder(keyGenerationLayout, {
-                if(it >= 100){
-                    holder.uiObserver?.onProgressHolderFinish()
-                }
-            }, 50)
-        }
-
     }
 }
 

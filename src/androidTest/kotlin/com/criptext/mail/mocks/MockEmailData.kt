@@ -13,7 +13,7 @@ import java.util.*
  * Created by gabriel on 6/28/18.
  */
 object MockEmailData {
-    private val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi", true, 0, 0)
+    private val fromContact = Contact(1,"mayer@criptext.com", "Mayer Mizrachi", true, 0)
 
     fun createNewEmail(dateMilis: Long, number: Int, accountId: Long): Email =
             Email(id = number.toLong(), messageId = number.toString(),
