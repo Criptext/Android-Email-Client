@@ -23,6 +23,7 @@ import com.criptext.mail.utils.ui.RetrySyncAlertDialogOldDevice
 import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.utils.ui.data.GeneralAnimationData
 import com.criptext.mail.utils.uiobserver.UIObserver
+import com.github.kittinunf.result.Result
 
 
 interface LinkingScene{
@@ -115,7 +116,7 @@ interface LinkingScene{
         }
 
         override fun showRetrySyncDialog(result: GeneralResult) {
-            retrySyncDialog.showLinkDeviceAuthDialog(linkingUIObserver, result)
+            Result.of { retrySyncDialog.showLinkDeviceAuthDialog(linkingUIObserver, result) }
         }
 
         override fun showKeepWaitingDialog() {

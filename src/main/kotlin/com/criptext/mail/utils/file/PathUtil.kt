@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.Log
+import com.github.kittinunf.result.Result
 import java.io.*
 import java.lang.NullPointerException
 import java.net.URISyntaxException
@@ -331,8 +332,14 @@ object PathUtil {
                     selection, selectionArgs, null
             )
             if (cursor != null && cursor.moveToFirst()) {
-                val index = cursor.getColumnIndexOrThrow(column)
-                return cursor.getString(index)
+                return when(val index = Result.of {  cursor.getColumnIndexOrThrow(column) }){
+                    is Result.Success -> {
+                        cursor.getString(index.value)
+                    }
+                    is Result.Failure -> {
+                        null
+                    }
+                }
             }
         } finally {
             cursor?.close()

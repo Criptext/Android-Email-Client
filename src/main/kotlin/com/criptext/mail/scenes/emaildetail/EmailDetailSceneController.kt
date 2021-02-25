@@ -693,7 +693,7 @@ class EmailDetailSceneController(private val storage: KeyValueStorage,
             else{
                 labelsWithoutFilter.filter { it.id != Label.defaultItems.starred.id }
             }
-            selectedLabels.addMultipleSelected(labels.toSet().map { LabelWrapper(it) })
+            selectedLabels.addMultipleSelected(labels.toList().distinctBy { it.uuid }.map { LabelWrapper(it) })
             updateThreadLabelsRelation(selectedLabels)
         }
 

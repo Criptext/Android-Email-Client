@@ -66,7 +66,7 @@ class ImportMailboxActivity: BaseActivity(){
                 filesDir = this.filesDir,
                 cacheDir = this.cacheDir
         )
-        return ImportMailboxController(
+        val controller = ImportMailboxController(
                 model = model,
                 scene = scene,
                 websocketEvents = webSocketEvents,
@@ -74,6 +74,8 @@ class ImportMailboxActivity: BaseActivity(){
                 storage = storage,
                 activeAccount = ActiveAccount.loadFromStorage(this)!!,
                 host = this)
+        googleSignInListener = controller.googleSignInListener
+        return controller
     }
 
     private fun setNewAttachmentsAsActivityMessage(data: Intent?, filePickerConst: String?) {

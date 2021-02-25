@@ -81,25 +81,27 @@ class LoadInitialDataWorker(
         else
             Contact(id = 0, name = EmailAddressUtils.extractName(replyTo), email = EmailAddressUtils.extractEmailAddress(replyTo),
                     isTrusted = false, score = 0)
-        var to = if (replyToAll) {
-            if(fullEmail.from.email == userEmailAddress)
+
+        var to = if(replyToAll) {
+            if(isFromMe(fullEmail.from.email)){
                 fullEmail.to
-            else
-                fullEmail.to.filter { it.email != userEmailAddress }
-                    .plus(replyToContact ?: fullEmail.from)
-        }
-        else {
-            if(fullEmail.from.email == userEmailAddress)
+            } else {
+                fullEmail.to.filter { !isFromMe(it.email) }
+                        .plus(replyToContact ?: fullEmail.from)
+            }
+        } else {
+            if(isFromMe(fullEmail.from.email)){
                 fullEmail.to
-            else
+            } else {
                 listOf(replyToContact ?: fullEmail.from)
+            }
         }
 
         val template = if(replyToAll) (composerType as ComposerType.ReplyAll).template
         else
             (composerType as ComposerType.Reply).template
 
-        var cc = if (replyToAll) fullEmail.cc.filter { it.email != userEmailAddress } else emptyList()
+        var cc = if (replyToAll) fullEmail.cc.filter { !isFromMe(it.email) } else emptyList()
 
         val allRecipients = (to + cc).map { EmailAddressUtils.extractEmailAddressDomain(it.email) }
                 .filter { domain -> domain !in (ContactDomainCheckData.KNOWN_EXTERNAL_DOMAINS
@@ -127,21 +129,48 @@ class LoadInitialDataWorker(
 
 
     private fun getFromAddress(fullEmail: FullEmail): String {
-        if(activeAccount.userEmail in fullEmail.to.map { it.email }
-                || activeAccount.userEmail in fullEmail.cc.map { it.email }
-                || activeAccount.userEmail in fullEmail.bcc.map { it.email }){
+        if(isFromMe(fullEmail.from.email)){
+            return fullEmail.from.email
+        } else {
+            if (activeAccount.userEmail in fullEmail.to.map { it.email }
+                    || activeAccount.userEmail in fullEmail.cc.map { it.email }
+                    || activeAccount.userEmail in fullEmail.bcc.map { it.email }) {
+                return activeAccount.userEmail
+            }
+            val aliases = db.aliasDao.getAll(activeAccount.id)
+            aliases.filter { it.active }.forEach { alias ->
+                val aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
+                if (aliasEmail in fullEmail.to.map { it.email }
+                        || aliasEmail in fullEmail.cc.map { it.email }
+                        || aliasEmail in fullEmail.bcc.map { it.email }) {
+                    return aliasEmail
+                }
+            }
+            val customDomains = db.customDomainDao.getAll(activeAccount.id)
+            customDomains.filter { it.validated }.forEach { customDomainAddress ->
+                val customDomainEmail = customDomainAddress.name
+                if (customDomainEmail in fullEmail.to.map { it.email }
+                        || customDomainEmail in fullEmail.cc.map { it.email }
+                        || customDomainEmail in fullEmail.bcc.map { it.email }) {
+                    return customDomainEmail
+                }
+            }
             return activeAccount.userEmail
         }
+    }
+
+    private fun isFromMe(fromAddress: String): Boolean {
         val aliases = db.aliasDao.getAll(activeAccount.id)
-        aliases.filter { it.active }.forEach { alias ->
-            val aliasEmail = alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
-            if(aliasEmail in fullEmail.to.map { it.email }
-                    || aliasEmail in fullEmail.cc.map { it.email }
-                    || aliasEmail in fullEmail.bcc.map { it.email }){
-                return aliasEmail
-            }
+                .filter { it.active }
+                .map { alias ->
+            alias.name.plus("@${alias.domain ?: Contact.mainDomain}")
         }
-        return activeAccount.userEmail
+        val customDomainAddresses = db.customDomainDao.getAll(activeAccount.id)
+                .filter { it.validated }
+                .map { customDomainAddress ->
+                    customDomainAddress.name
+        }
+        return fromAddress == activeAccount.userEmail || fromAddress in aliases || fromAddress in customDomainAddresses
     }
 
     private fun convertForwardToInputData(fullEmail: FullEmail): ComposerInputData {

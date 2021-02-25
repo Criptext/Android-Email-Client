@@ -47,7 +47,8 @@ class SaveEmailWorkerTest {
                 backupPassword = null, autoBackupFrequency = 0, hasCloudBackup = false, wifiOnly = true,
                 lastTimeBackup = null, defaultAddress = null))
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(),
+                db.accountDao(), db.aliasDao(), db.customDomainDao(), mActivityRule.activity.filesDir)
         emailInsertionDao = db.emailInsertionDao()
     }
 
