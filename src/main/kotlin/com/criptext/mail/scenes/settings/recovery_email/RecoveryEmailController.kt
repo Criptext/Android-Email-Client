@@ -213,8 +213,12 @@ class RecoveryEmailController(
                 if(result.ex is ServerErrorException){
                     when(result.ex.errorCode){
                         ServerCodes.BadRequest -> {
-                            scene.enterPasswordDialogError(result.message)
-                            scene.dialogToggleLoad(false)
+                            if(model.userData.isEmailConfirmed) {
+                                scene.enterPasswordDialogError(result.message)
+                                scene.dialogToggleLoad(false)
+                            } else {
+                                scene.showMessage(result.message)
+                            }
                         }
                         else -> {
                             scene.enterPasswordDialogDismiss()

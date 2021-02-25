@@ -48,7 +48,7 @@ class ComposerActivity : BaseActivity() {
                 emailLabelDao = appDB.emailLabelDao(), emailContactDao = appDB.emailContactDao(),
                 labelDao = appDB.labelDao(), accountDao = appDB.accountDao(),
                 fileDao = appDB.fileDao(), fileKeyDao = appDB.fileKeyDao(), aliasDao = appDB.aliasDao(),
-                filesDir = this.filesDir)
+                customDomainDao = appDB.customDomainDao(), filesDir = this.filesDir)
         val remoteChangeDataSource = GeneralDataSource(
                 signalClient = signalClient,
                 eventLocalDB = EventLocalDB(appDB, this.filesDir, this.cacheDir),

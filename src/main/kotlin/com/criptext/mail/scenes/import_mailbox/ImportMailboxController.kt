@@ -9,10 +9,12 @@ import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.ActivityMessage
 import com.criptext.mail.scenes.SceneController
+import com.criptext.mail.scenes.mailbox.ui.GoogleSignInObserver
 import com.criptext.mail.scenes.params.MailboxParams
 import com.criptext.mail.scenes.params.RestoreBackupParams
 import com.criptext.mail.scenes.params.SignInParams
 import com.criptext.mail.scenes.params.SyncingParams
+import com.criptext.mail.scenes.settings.cloudbackup.data.CloudBackupData
 import com.criptext.mail.scenes.signin.data.LinkStatusData
 import com.criptext.mail.signal.SignalClient
 import com.criptext.mail.signal.SignalStoreCriptext
@@ -27,6 +29,7 @@ import com.criptext.mail.utils.ui.data.DialogType
 import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
+import com.google.api.services.drive.Drive
 import java.io.File
 
 class ImportMailboxController(
@@ -42,6 +45,16 @@ class ImportMailboxController(
 
 
     override val menuResourceId: Int? = null
+
+    val googleSignInListener = object: GoogleSignInObserver {
+        override fun signInSuccess(drive: Drive){
+            model.mDriveService = drive
+        }
+
+        override fun signInFailed(){
+            scene.showMessage(UIMessage(R.string.login_fail_try_again_error_exception))
+        }
+    }
 
 
     private val generalDataSourceListener: (GeneralResult) -> Unit = { result ->

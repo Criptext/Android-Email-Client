@@ -77,11 +77,11 @@ class HeaderViewHolder(val view: View, val subject: String, val labels: VirtualL
     }
 
     fun setListeners(emailListener: FullEmailListAdapter.OnFullEmailEventListener?) {
-        starredImage.setOnClickListener({
+        starredImage.setOnClickListener {
             currentStar = !currentStar
             emailListener?.onStarredButtonPressed(currentStar)
             setStarredColor(currentStar)
-        })
+        }
     }
 
 }

@@ -49,6 +49,7 @@ import com.criptext.mail.websocket.WebSocketEventListener
 import com.criptext.mail.websocket.WebSocketEventPublisher
 import com.criptext.mail.websocket.WebSocketSingleton
 import com.g00fy2.versioncompare.Version
+import com.github.kittinunf.result.Result
 import com.google.api.services.drive.Drive
 import java.io.File
 import java.util.*
@@ -1037,7 +1038,9 @@ class MailboxSceneController(private val scene: MailboxScene,
             when(result){
                 is MailboxResult.CheckCloudBackupEnabled.Success -> {
                     if(!result.isEnabled) {
-                        scene.showRecommendBackupDialog()
+                        Result.of {
+                            scene.showRecommendBackupDialog()
+                        }
                     }
                 }
             }

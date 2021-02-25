@@ -235,8 +235,16 @@ class ComposerController(private val storage: KeyValueStorage,
                 model.originalBody = model.body
                 model.initialized = true
                 model.selectedAddress = result.initialData.fromAddress
-                if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)){
-                    scene.switchToSimpleFrom(model.selectedAddress)
+                when(model.type){
+                    is ComposerType.Empty,
+                    is ComposerType.Support,
+                    is ComposerType.Draft -> {
+                        if(result.initialData.subject.startsWith("RE"))
+                            scene.switchToSimpleFrom(model.selectedAddress)
+                    }
+                    else -> {
+                        scene.switchToSimpleFrom(model.selectedAddress)
+                    }
                 }
                 host.refreshToolbarItems()
             }
@@ -487,13 +495,21 @@ class ComposerController(private val storage: KeyValueStorage,
                     fromAddresses.addAll(result.aliases.map { it.name.plus("@${it.domain ?: Contact.mainDomain} (${model.accounts.findLast { account -> account.id == it.accountId}!!.userEmail})") })
                     model.selectedAddress = activeAccount.userEmail
                 }
-                model.fromAddresses = fromAddresses
+                model.fromAddresses = fromAddresses.distinct().toMutableList()
                 val selectedIndex = if(model.selectedAddress.isNotEmpty()) model.fromAddresses.indexOfFirst { it.contains(model.selectedAddress) } else 0
-                if(!(model.type is ComposerType.Empty || model.type is ComposerType.Support)
-                        || (model.accounts.size == 1 && result.aliases.isEmpty())){
-                    scene.switchToSimpleFrom(model.selectedAddress)
-                } else {
-                    scene.fillFromOptions(model.fromAddresses, if(selectedIndex >= 0) selectedIndex else 0)
+                when(model.type){
+                    is ComposerType.Empty,
+                    is ComposerType.Support,
+                    is ComposerType.Draft -> {
+                        if(model.subject.startsWith("RE") || (model.accounts.size == 1 && result.aliases.isEmpty())){
+                            scene.switchToSimpleFrom(model.selectedAddress)
+                        } else {
+                            scene.fillFromOptions(model.fromAddresses, if(selectedIndex >= 0) selectedIndex else 0)
+                        }
+                    }
+                    else -> {
+                        scene.switchToSimpleFrom(model.selectedAddress)
+                    }
                 }
             }
             is ComposerResult.GetAllFromAddresses.Failure -> {

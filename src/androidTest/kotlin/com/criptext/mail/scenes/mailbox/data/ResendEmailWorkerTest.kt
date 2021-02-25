@@ -62,7 +62,8 @@ class ResendEmailWorkerTest {
         db.contactDao().insertIgnoringConflicts(bobContact)
 
         composerLocalDB = ComposerLocalDB(db.contactDao(), db.emailDao(), db.fileDao(),
-                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(), db.accountDao(), db.aliasDao(), mActivityRule.activity.filesDir)
+                db.fileKeyDao(), db.labelDao(), db.emailLabelDao(), db.emailContactDao(),
+                db.accountDao(), db.aliasDao(), db.customDomainDao(), mActivityRule.activity.filesDir)
         mailboxLocalDB = MailboxLocalDB.Default(db, mActivityRule.activity.filesDir)
         signalClient = SignalClient.Default(store = SignalStoreCriptext(db))
         storage = mockk(relaxed = true)

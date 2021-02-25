@@ -16,7 +16,7 @@ import java.io.File
 class ComposerLocalDB(val contactDao: ContactDao, val emailDao: EmailDao, val fileDao: FileDao,
                       val fileKeyDao: FileKeyDao, val labelDao: LabelDao, val emailLabelDao: EmailLabelDao,
                       val emailContactDao: EmailContactJoinDao, val accountDao: AccountDao, val aliasDao: AliasDao,
-                      val filesDir: File) {
+                      val customDomainDao: CustomDomainDao, val filesDir: File) {
 
     fun setActiveAccount(id: Long){
         accountDao.updateActiveInAccount()
