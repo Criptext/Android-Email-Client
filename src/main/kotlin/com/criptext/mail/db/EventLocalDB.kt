@@ -291,6 +291,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
                 db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.trash.id), emailIds)
             }
 
+            if(Label.defaultItems.inbox in removedLabels){
+                db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.inbox.id), emailIds)
+            }
+
             if(Label.defaultItems.trash in addedLabels){
                 db.emailDao().updateEmailTrashDate(Date(), emailIds, accountId)
             }
@@ -340,6 +344,10 @@ class EventLocalDB(private val db: AppDatabase, private val filesDir: File, priv
 
             if(Label.defaultItems.trash in removedLabels){
                 db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.trash.id), emailIds)
+            }
+
+            if(Label.defaultItems.inbox in removedLabels){
+                db.emailLabelDao().deleteRelationByLabelsAndEmailIds(listOf(Label.defaultItems.inbox.id), emailIds)
             }
 
             if(Label.defaultItems.trash in addedLabels){
