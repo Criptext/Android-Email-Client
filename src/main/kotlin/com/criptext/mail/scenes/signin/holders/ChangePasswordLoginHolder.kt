@@ -10,8 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import com.criptext.mail.R
 import com.criptext.mail.db.models.Contact
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.criptext.mail.utils.getLocalizedUIMessage
+import com.criptext.mail.validation.AccountDataValidator
+import com.criptext.mail.validation.FormData
 import com.criptext.mail.validation.ProgressButtonState
 import com.google.android.material.textfield.TextInputLayout
 
@@ -30,7 +33,15 @@ class ChangePasswordLoginHolder(
     private val progressBar: View = view.findViewById(R.id.signin_progress_login)
 
     init {
-        username.text  = "${initialState.username}@${initialState.domain}"
+        val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(initialState.username) is FormData.Valid) {
+            val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(initialState.username)
+            Pair(EmailAddressUtils.extractRecipientIdFromAddress(initialState.username, nonCriptextDomain),
+                    nonCriptextDomain
+            )
+        } else {
+            Pair(initialState.username, Contact.mainDomain)
+        }
+        username.text  = "$recipientId@$domain"
         passwordInput.isPasswordVisibilityToggleEnabled = true
         passwordInput.setPasswordVisibilityToggleTintList(
                 AppCompatResources.getColorStateList(view.context, R.color.non_criptext_email_send_eye))

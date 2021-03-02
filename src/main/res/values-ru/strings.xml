@@ -249,13 +249,13 @@
   <string name="too_many_login_attempts">Слишком много попыток входа, попробуйте позже.</string>
   <string name="too_many_devices">Вход со слишком большого количество устройств.</string>
   <string name="no_devices_available">Нет устройств для установления подлинности данного устройства.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Вход с помощью другой учетной записи 
+  <string name="sign_in_warning_dialog_message">Вход с помощью другой учетной записи
         <b>приведет к удалению всех почтовых сообщений</b>, хранящихся на данном устройстве, принадлежащей учетной записи  
 
  <b>%1$s</b>
 
 
-       Хотите продолжить?]]></string>
+       Хотите продолжить?</string>
   <string name="sign_in_warning_dialog_title">Предупреждение о входе</string>
   <string name="password_warning_dialog_title">Sign In Warning️</string>
   <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>

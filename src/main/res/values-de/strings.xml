@@ -253,13 +253,7 @@ schwarze Liste gesetzt wird</string>
   <string name="too_many_login_attempts">Zu viele Anmeldeversuche, versuchen Sie es später noch einmal.</string>
   <string name="too_many_devices">Zu viele Geräte sind bereits angemeldet.</string>
   <string name="no_devices_available">Keine Geräte zur Authentifizierung dieses Geräts verfügbar.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Anmelden mit einem anderen E-Mail-Konto
-       <b> löscht alle</b> auf diesem Gerät gespeicherten <b>Postfachdaten</b> für das Konto. 
-
- <b>%1$s</b>
-
-
-        Wollen Sie fortfahren?]]></string>
+  <string name="sign_in_warning_dialog_message">Anmelden mit einem anderen E-Mail-Konto<b> löscht alle</b> auf diesem Gerät gespeicherten <b>Postfachdaten</b> für das Konto. <b>%1$s</b>Wollen Sie fortfahren?</string>
   <string name="sign_in_warning_dialog_title">Anmeldungswarnung</string>
   <string name="password_warning_dialog_title">Sign In Warning️</string>
   <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
