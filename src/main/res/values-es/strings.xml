@@ -239,7 +239,7 @@
   <string name="too_many_login_attempts">Demasiados intentos de acceso, intenta de nuevo después.</string>
   <string name="too_many_devices">Demasiados dispositivos autorizados.</string>
   <string name="no_devices_available">No hay dispositivos autorizados disponibles para aprobar este dispositivo.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?]]></string>
+  <string name="sign_in_warning_dialog_message">Iniciar sesión con otra cuenta de usuario\n <b>borrará todos los correos</b> guardados en este dispositivo de la cuenta:\n\n <b>%1$s</b>\n\n\n ¿Deseas continuar?</string>
   <string name="sign_in_warning_dialog_title">Advertencia de Inicio de Sesión</string>
   <string name="password_warning_dialog_title">Advertencia de Inicio de Sesión</string>
   <string name="password_warning_dialog_message">Todos los datos de tu bandeja de correos serán borrados y reemplazados con los datos de tu otro dispositivo. \n\n<b>¿Estás seguro que deseas continuar?</b></string>

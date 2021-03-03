@@ -249,12 +249,12 @@ Si vous annulez, l\'appareil se déconnectera et toutes les données locales <b>
   <string name="too_many_login_attempts">Trop de tentatives de connexion, réessayez plus tard.</string>
   <string name="too_many_devices">Trop d\'appareils déjà connectés.</string>
   <string name="no_devices_available">Aucun appareil disponible pour authentifier cet appareil.</string>
-  <string name="sign_in_warning_dialog_message"><![CDATA[Se connecter avec un compte de messagerie différent <b>effacera toutes les données de messagerie</b> stockées sur cet appareil pour le compte
+  <string name="sign_in_warning_dialog_message">Se connecter avec un compte de messagerie différent <b>effacera toutes les données de messagerie</b> stockées sur cet appareil pour le compte
 
  <b>%1$s</b>
 
 
-        Voulez-vous continuer ?]]></string>
+        Voulez-vous continuer ?</string>
   <string name="sign_in_warning_dialog_title">Avertissement de connexion</string>
   <string name="password_warning_dialog_title">Sign In Warning️</string>
   <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>

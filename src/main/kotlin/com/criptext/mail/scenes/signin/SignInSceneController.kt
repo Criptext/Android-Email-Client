@@ -333,8 +333,17 @@ class SignInSceneController(
                 model.state = currentState.copy(buttonState = newButtonState)
                 scene.setSubmitButtonState(newButtonState)
 
+                val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(currentState.username) is FormData.Valid) {
+                    val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(currentState.username)
+                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(currentState.username, nonCriptextDomain),
+                            nonCriptextDomain
+                    )
+                } else {
+                    Pair(currentState.username, Contact.mainDomain)
+                }
+
                 val hashedPassword = model.confirmPasswordText.sha256()
-                val userData = UserData(currentState.username, currentState.domain, hashedPassword, currentState.oldPassword.sha256())
+                val userData = UserData(recipientId, domain, hashedPassword, currentState.oldPassword.sha256())
                 val req = SignInRequest.AuthenticateUser(
                         userData = userData,
                         isMultiple = model.isMultiple
@@ -778,10 +787,6 @@ class SignInSceneController(
                 false
             }
             is SignInLayoutState.DeniedValidation -> {
-                val username = if(currentState.domain != Contact.mainDomain)
-                    currentState.username.plus("@${currentState.domain}")
-                else currentState.username
-                //model.state = SignInLayoutState.Login(username, firstTime = false)
                 model.needToRemoveDevices = false
                 model.realSecurePassword = null
                 resetLayout()
@@ -789,13 +794,18 @@ class SignInSceneController(
                 false
             }
             is SignInLayoutState.ChangePassword -> {
-                val username = if(currentState.domain != Contact.mainDomain)
-                    currentState.username.plus("@${currentState.domain}")
-                else currentState.username
+                val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(currentState.username) is FormData.Valid) {
+                    val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(currentState.username)
+                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(currentState.username, nonCriptextDomain),
+                            nonCriptextDomain
+                    )
+                } else {
+                    Pair(currentState.username, Contact.mainDomain)
+                }
                 model.state = SignInLayoutState.Login(
-                        username = username,
-                        recipientId = currentState.username,
-                        domain = currentState.domain,
+                        username = currentState.username,
+                        recipientId = recipientId,
+                        domain = domain,
                         password = currentState.oldPassword,
                         buttonState = ProgressButtonState.enabled,
                         firstTime = false)
@@ -803,13 +813,18 @@ class SignInSceneController(
                 false
             }
             is SignInLayoutState.RemoveDevices -> {
-                val username = if(currentState.domain != Contact.mainDomain)
-                    currentState.username.plus("@${currentState.domain}")
-                else currentState.username
+                val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(currentState.username) is FormData.Valid) {
+                    val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(currentState.username)
+                    Pair(EmailAddressUtils.extractRecipientIdFromAddress(currentState.username, nonCriptextDomain),
+                            nonCriptextDomain
+                    )
+                } else {
+                    Pair(currentState.username, Contact.mainDomain)
+                }
                 model.state = SignInLayoutState.Login(
-                        username = username,
-                        recipientId = currentState.username,
-                        domain = currentState.domain,
+                        username = currentState.username,
+                        recipientId = recipientId,
+                        domain = domain,
                         password = currentState.password,
                         buttonState = ProgressButtonState.enabled,
                         firstTime = false)

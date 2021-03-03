@@ -50,6 +50,8 @@ class SignInWarningDialog(val context: Context) {
         val drawableBackground = ContextCompat.getDrawable(dialogView.context,
                 R.drawable.dialog_label_chooser_shape)
         newLogoutDialog.window?.setBackgroundDrawable(drawableBackground)
+        newLogoutDialog.setCanceledOnTouchOutside(false)
+        newLogoutDialog.setCancelable(false)
 
         assignButtonEvents(dialogView, newLogoutDialog, observer, newUserData)
 

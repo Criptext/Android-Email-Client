@@ -239,7 +239,7 @@
   <string name="too_many_login_attempts">Too many login attempts, try again later.</string>
   <string name="too_many_devices">Too many devices already logged in.</string>
   <string name="no_devices_available">No devices available to authenticate this device.</string>
-  <string name="sign_in_warning_dialog_message">Your entire mailbox data will be erased and replaced with the mailbox data from your other device.\n\n<b>Are you sure you want to continue?</b></string>
+  <string name="sign_in_warning_dialog_message">Signing in with a different email account\n        <b>will erase all mailbox data</b> stored on this device for account \n\n <b>%1$s</b>\n\n\n        Would you like to continue?</string>
   <string name="sign_in_warning_dialog_title">Sign In Warning</string>
   <string name="password_warning_dialog_title">Sign In Warning️</string>
   <string name="password_warning_dialog_message">If you sign in without importing, your mailbox history from other devices won\'t be available on this device \n\n<b>Would you like to continue?</b></string>
