@@ -46,6 +46,7 @@ class SignInDataSource(override val runner: WorkRunner,
                     aliasDao = db.aliasDao(),
                     customDomainDao = db.customDomainDao(),
                     isMultiple = params.isMultiple,
+                    removeOldUserData = params.removeOldUserData,
                     messagingInstance = MessagingInstance.Default(),
                     tempToken = params.tempToken,
                     publishFn = { result ->

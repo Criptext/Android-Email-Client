@@ -63,7 +63,8 @@ class AuthenticateUserWorkerTest {
             AuthenticateUserWorker(signUpDao = signUpDao, keyValueStorage = storage, httpClient = httpClient,
                     keyGenerator = keyGenerator, userData = UserData(username, Contact.mainDomain, password, oldPassword),
                     publishFn = {}, accountDao = accountDao, messagingInstance = messagingInstance, db = db,
-                    isMultiple = false, aliasDao = aliasDao, customDomainDao = customDomainDao, tempToken = null)
+                    isMultiple = false, removeOldUserData = false, aliasDao = aliasDao, customDomainDao = customDomainDao,
+                    tempToken = null)
 
 
     @Test
@@ -116,6 +117,7 @@ class AuthenticateUserWorkerTest {
         every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
+        every { db.deleteDatabase() } just Runs
 
         val result = worker.work(mockk())
 
@@ -189,6 +191,7 @@ class AuthenticateUserWorkerTest {
         every { db.getAccount("tester", "criptext.com") } returns null
         every { aliasDao.insertAll(listOf()) } just Runs
         every { customDomainDao.insertAll(listOf()) } just Runs
+        every { db.deleteDatabase() } just Runs
 
         val result = worker.work(mockk())
 

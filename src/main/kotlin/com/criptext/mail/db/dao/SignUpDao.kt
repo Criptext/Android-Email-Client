@@ -36,7 +36,7 @@ interface SignUpDao {
         autoBackupFrequency=:backupFrequency,
         type=:type,
         blockRemoteContent=:blockedRemoteContent
-        WHERE recipientId=:recipientId
+        WHERE recipientId=:recipientId AND domain=:domain
     """)
     fun updateAccount(recipientId: String, name: String, jwt: String, refreshJwt: String,
                       deviceId: Int, identityKey: String, registrationId: Int, domain: String,
