@@ -38,6 +38,7 @@ class AuthenticateUserWorker(
         signUpDao: SignUpDao,
         httpClient: HttpClient,
         private val isMultiple: Boolean,
+        private val removeOldUserData: Boolean,
         private val tempToken: String?,
         private val accountDao: AccountDao,
         private val aliasDao: AliasDao,
@@ -78,22 +79,37 @@ class AuthenticateUserWorker(
         val authenticatedUser = authenticateUser()
         var storedValue = keyValueStorage.getString(KeyValueStorage.StringKey.SignInSession, "")
         val lastLoggedUsers = AccountUtils.getLastLoggedAccounts(keyValueStorage)
-        if(lastLoggedUsers.isNotEmpty()) {
-            if(!shouldKeepData){
-                if(isMultiple) {
-                    db.deleteDatabase(lastLoggedUsers)
-                    keyValueStorage.remove(listOf(
-                            KeyValueStorage.StringKey.LastLoggedUser
-                    ))
-                } else {
-                    db.deleteDatabase()
-                    keyValueStorage.clearAll()
+        when {
+            lastLoggedUsers.isNotEmpty() -> {
+                if(!shouldKeepData){
+                    if(isMultiple) {
+                        db.deleteDatabase(lastLoggedUsers)
+                        keyValueStorage.remove(listOf(
+                                KeyValueStorage.StringKey.LastLoggedUser
+                        ))
+                    } else {
+                        db.deleteDatabase()
+                        keyValueStorage.clearAll()
+                    }
+                    lastLoggedUsers.clear()
                 }
-                lastLoggedUsers.clear()
+                storedValue = ""
+                lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
+                keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.distinct().joinToString())
             }
-            storedValue = ""
-            lastLoggedUsers.removeAll { it == userData.username.plus("@${userData.domain}") }
-            keyValueStorage.putString(KeyValueStorage.StringKey.LastLoggedUser, lastLoggedUsers.distinct().joinToString())
+            lastLoggedUsers.isEmpty() && removeOldUserData -> {
+                if(!shouldKeepData){
+                    if(!isMultiple) {
+                        db.deleteDatabase()
+                        keyValueStorage.clearAll()
+                    }
+                    lastLoggedUsers.clear()
+                }
+            }
+            !isMultiple && !shouldKeepData -> {
+                db.deleteDatabase()
+                keyValueStorage.clearAll()
+            }
         }
         val jsonString = if (storedValue.isEmpty() || (isMultiple && !shouldKeepData)) authenticatedUser else storedValue
         val jsonObject = JSONObject(jsonString)

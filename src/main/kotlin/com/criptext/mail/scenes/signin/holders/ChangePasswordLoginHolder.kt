@@ -33,15 +33,7 @@ class ChangePasswordLoginHolder(
     private val progressBar: View = view.findViewById(R.id.signin_progress_login)
 
     init {
-        val (recipientId, domain) = if (AccountDataValidator.validateEmailAddress(initialState.username) is FormData.Valid) {
-            val nonCriptextDomain = EmailAddressUtils.extractEmailAddressDomain(initialState.username)
-            Pair(EmailAddressUtils.extractRecipientIdFromAddress(initialState.username, nonCriptextDomain),
-                    nonCriptextDomain
-            )
-        } else {
-            Pair(initialState.username, Contact.mainDomain)
-        }
-        username.text  = "$recipientId@$domain"
+        username.text  = "${initialState.recipientId}@${initialState.domain}"
         passwordInput.isPasswordVisibilityToggleEnabled = true
         passwordInput.setPasswordVisibilityToggleTintList(
                 AppCompatResources.getColorStateList(view.context, R.color.non_criptext_email_send_eye))

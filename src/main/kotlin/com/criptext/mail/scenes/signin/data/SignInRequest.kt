@@ -9,6 +9,7 @@ import com.criptext.mail.db.AccountTypes
 sealed class SignInRequest{
     class AuthenticateUser(val userData: UserData,
                            val isMultiple: Boolean,
+                           val removeOldUserData: Boolean = false,
                            val tempToken: String? = null
     ): SignInRequest()
 

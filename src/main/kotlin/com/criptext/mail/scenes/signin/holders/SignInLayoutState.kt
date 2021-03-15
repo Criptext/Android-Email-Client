@@ -11,11 +11,11 @@ sealed class SignInLayoutState {
     data class Start(val firstTime: Boolean): SignInLayoutState()
     data class Login(val username: String, val recipientId: String, val password: String, val domain: String,
                      val buttonState: ProgressButtonState, val firstTime: Boolean): SignInLayoutState()
-    data class LoginValidation(val username: String, val domain: String, val recoveryCode: String,
+    data class LoginValidation(val recipientId: String, val domain: String, val recoveryCode: String,
                                val needToRemoveDevices: Boolean, val password: String, val recoveryAddress: String? = null): SignInLayoutState()
-    data class ForgotPassword(val username: String): SignInLayoutState()
-    data class DeniedValidation(val username: String, val domain: String): SignInLayoutState()
-    data class ChangePassword(val username: String, val oldPassword: String, val domain: String,
+    data class ForgotPassword(val recipientId: String, val domain: String): SignInLayoutState()
+    data class DeniedValidation(val recipientId: String, val domain: String): SignInLayoutState()
+    data class ChangePassword(val recipientId: String, val oldPassword: String, val domain: String,
                              val buttonState: ProgressButtonState): SignInLayoutState()
-    data class RemoveDevices(val username: String, val domain: String, val password: String, val devices: List<DeviceItem>, val buttonState: ProgressButtonState): SignInLayoutState()
+    data class RemoveDevices(val recipientId: String, val domain: String, val password: String, val devices: List<DeviceItem>, val buttonState: ProgressButtonState): SignInLayoutState()
 }
