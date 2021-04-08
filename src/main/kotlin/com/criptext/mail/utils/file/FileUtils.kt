@@ -8,6 +8,7 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.criptext.mail.aes.AESUtil
 import com.criptext.mail.db.AttachmentTypes
+import com.github.kittinunf.result.Result
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -255,10 +256,26 @@ class FileUtils {
         fun getPathAndSizeFromUri(uri: Uri, contentResolver: ContentResolver?,
                                             context: Context, data: Intent): Pair<String, Long>?{
             return if(uri.toString().contains("com.google.android")){
-                var takeFlags = data.flags
-                takeFlags = takeFlags and Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION and Intent.FLAG_GRANT_READ_URI_PERMISSION
-                contentResolver?.takePersistableUriPermission(uri, takeFlags)
-                Pair(uri.toString(), -1L)
+                val op = Result.of {
+                    context.grantUriPermission(
+                            context.packageName,
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                    )
+                    var takeFlags = data.flags
+                    takeFlags =
+                            takeFlags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    contentResolver?.takePersistableUriPermission(uri, takeFlags)
+                    Pair(uri.toString(), -1L)
+                }
+                when(op){
+                    is Result.Success -> {
+                        op.value
+                    }
+                    else -> {
+                        null
+                    }
+                }
             }else {
                 val filePair = contentResolver?.query(uri, null, null, null, null)?.use {
                     val absolutePath = PathUtil.getPath(context, uri)
@@ -270,7 +287,8 @@ class FileUtils {
                         null
                 }
                 if(filePair == null){
-                    val file = File(uri.path)
+                    val file = File(uri.path!!)
+                    file.length()
                     Pair(file.absolutePath, file.length())
                 } else filePair
             }

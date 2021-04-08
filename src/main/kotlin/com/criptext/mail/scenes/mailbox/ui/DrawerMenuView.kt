@@ -65,7 +65,6 @@ class DrawerMenuView(private val navigationView: NavigationView,
     private val sliderTrash : LinearLayout
     private val sliderAllMail : LinearLayout
     private val sliderLabels : LinearLayout
-    private val sliderUpgradePlus : LinearLayout
     private val sliderSettings : LinearLayout
     private val sliderInviteFriend : LinearLayout
     private val sliderSupport : LinearLayout
@@ -157,10 +156,6 @@ class DrawerMenuView(private val navigationView: NavigationView,
                         R.drawable.arrowup).into(imageViewArrow)
         }
 
-        sliderUpgradePlus.setOnClickListener {
-            drawerMenuItemListener.onUpgradePlusOptionClicked()
-        }
-
         sliderSettings.setOnClickListener {
             drawerMenuItemListener.onSettingsOptionClicked()
         }
@@ -218,7 +213,6 @@ class DrawerMenuView(private val navigationView: NavigationView,
         sliderTrash = navigationView.findViewById(R.id.slider_trash)
         sliderAllMail = navigationView.findViewById(R.id.slider_all_mail)
         sliderLabels = navigationView.findViewById(R.id.slider_labels)
-        sliderUpgradePlus = navigationView.findViewById(R.id.slider_upgrade_plus)
         sliderSettings = navigationView.findViewById(R.id.slider_settings)
         sliderInviteFriend = navigationView.findViewById(R.id.slider_invite_friend)
         sliderSupport = navigationView.findViewById(R.id.slider_support)
@@ -277,13 +271,11 @@ class DrawerMenuView(private val navigationView: NavigationView,
 
         if(AccountUtils.canJoinPlus(accountType)){
             avatarPlusRing.visibility = View.INVISIBLE
-            sliderUpgradePlus.visibility = View.VISIBLE
             plusBadge.visibility = View.GONE
         } else if(AccountUtils.isPlus(accountType)){
             plusBadge.visibility = View.VISIBLE
             plusBadge.background = UIUtils.getPlusBadgeColor(navigationView.context, accountType)
             avatarPlusRing.visibility = View.VISIBLE
-            sliderUpgradePlus.visibility = View.GONE
         }
 
     }
