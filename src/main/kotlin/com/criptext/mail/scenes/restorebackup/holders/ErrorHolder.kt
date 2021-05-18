@@ -12,7 +12,7 @@ class ErrorHolder(val view: View, isLocal: Boolean, errorMessage: UIMessage?): B
     private val backButton: View = view.findViewById(R.id.icon_back)
     private val retryButton: Button = view.findViewById(R.id.restore_button)
     private val changeAccountButton: Button = view.findViewById(R.id.restore_change_account_button)
-    private val skipButton: TextView = view.findViewById(R.id.btn_skip)
+    private val skipButton: TextView = view.findViewById(R.id.skip_layout)
     private val subTitle: TextView = view.findViewById(R.id.restore_sub_title)
 
     init {

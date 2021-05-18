@@ -910,7 +910,12 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             }
             is ExternalActivityParams.OpenExternalBrowser -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(params.url))
-                startActivity(browserIntent)
+                val op = Result.of {
+                    startActivity(browserIntent)
+                }
+                if(op is Result.Failure){
+                    showToastMessage(UIMessage(R.string.unknown_error, arrayOf(op.error.toString())))
+                }
             }
             is ExternalActivityParams.OpenBrowserFilePicker -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
