@@ -21,9 +21,7 @@ class SignInStartHolder(
 
     private val rootLayout: View = view.findViewById<View>(R.id.viewRoot)
     private val signInButton : Button = view.findViewById(R.id.signin_button)
-    private val signUpButton: TextView = view.findViewById(R.id.create_account_button)
     private val progressBar: ProgressBar = view.findViewById(R.id.signin_progress_login)
-    private val createProgressBar: ProgressBar = view.findViewById(R.id.create_progress_login)
     private val backButton: View = view.findViewById(R.id.icon_back)
     private val versionText: TextView = view.findViewById(R.id.version_text)
 
@@ -67,9 +65,6 @@ class SignInStartHolder(
 
         signInButton.setOnClickListener {
             uiObserver?.onSubmitButtonClicked()
-        }
-        signUpButton.setOnClickListener{
-            uiObserver?.onSignUpLabelClicked()
         }
         backButton.setOnClickListener{
             uiObserver?.onBackPressed()
